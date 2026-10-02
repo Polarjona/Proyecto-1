@@ -1,0 +1,168 @@
+[gd_scene load_steps=3 format=3 uid="uid://m8h3qvxjkxmy"]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.09, 0.09, 0.16, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.35, 0.55, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 24.0
+content_margin_top = 20.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.35, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "STUMBLE GUYS"
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "INICIAR"
+
+[node name="ControlsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Controles"
+
+[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Crèdits"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Sortir"
+
+[node name="BestTimeLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 200.0
+grow_vertical = 0
+text = "Sin récord"
+horizontal_alignment = 1
+
+[node name="ControlsPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ControlsPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "CONTROLES"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MoveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Moure: W A S D o Fletxes"
+
+[node name="JumpLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Saltar: Espai"
+
+[node name="PauseLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Pausar: Escape"
+
+[node name="BackButton" type="Button" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Tornar"
+
+[node name="CreditsPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CreditsPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+text = "CRÈDITS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Stumble Guys (Prototip)"
+
+[node name="AuthorLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Autors: Pol Arjona i Yazan Issa"
+
+[node name="EngineLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Motor: Godot Engine 4.7"
+
+[node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Tornar"

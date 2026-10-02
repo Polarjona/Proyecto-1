@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://spin_platform"]
+
+[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/cyan.tres" id="2_cyan"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_plat"]
+height = 0.4
+radius = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_plat"]
+top_radius = 4.0
+bottom_radius = 4.0
+height = 0.4
+radial_segments = 16
+
+[node name="SpinningPlatform" type="AnimatableBody3D"]
+collision_layer = 1
+collision_mask = 0
+sync_to_physics = true
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CylinderShape3D_plat")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_plat")
+surface_material_override/0 = ExtResource("2_cyan")

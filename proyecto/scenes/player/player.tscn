@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://player_stumble"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Material" path="res://materials/pink.tres" id="2_pink"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="3_yellow"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.4
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.4
+height = 1.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.35
+height = 0.7
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 5
+floor_stop_on_slope = false
+floor_max_angle = 0.9
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+mesh = SubResource("CapsuleMesh_body")
+surface_material_override/0 = ExtResource("2_pink")
+
+[node name="Head" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("SphereMesh_head")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 7)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+current = true
+fov = 55.0

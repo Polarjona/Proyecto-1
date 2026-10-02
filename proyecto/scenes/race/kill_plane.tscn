@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://kill_plane"]
+
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="1_script"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kill"]
+size = Vector3(200, 2, 200)
+
+[node name="KillPlane" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_kill")

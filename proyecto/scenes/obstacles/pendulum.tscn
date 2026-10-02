@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://pendulum_obs"]
+
+[ext_resource type="Script" path="res://scripts/pendulum.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/orange.tres" id="2_orange"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="3_yellow"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_arm"]
+size = Vector3(0.35, 3.2, 0.35)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arm"]
+size = Vector3(0.35, 3.2, 0.35)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_head"]
+radius = 0.75
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.75
+height = 1.5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_push"]
+radius = 0.95
+
+[node name="Pendulum" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Hammer" type="AnimatableBody3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+sync_to_physics = false
+
+[node name="Arm" type="CollisionShape3D" parent="Hammer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
+shape = SubResource("BoxShape3D_arm")
+
+[node name="ArmMesh" type="MeshInstance3D" parent="Hammer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
+mesh = SubResource("BoxMesh_arm")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="Head" type="CollisionShape3D" parent="Hammer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.4, 0)
+shape = SubResource("SphereShape3D_head")
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Hammer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.4, 0)
+mesh = SubResource("SphereMesh_head")
+surface_material_override/0 = ExtResource("2_orange")
+
+[node name="PushArea" type="Area3D" parent="Hammer"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="PushShape" type="CollisionShape3D" parent="Hammer/PushArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.4, 0)
+shape = SubResource("SphereShape3D_push")

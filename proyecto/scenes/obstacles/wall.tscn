@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://wall_obstacle"]
+
+[ext_resource type="Material" path="res://materials/cyan.tres" id="1_cyan"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(0.4, 1.5, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+size = Vector3(0.4, 1.5, 4)
+
+[node name="Wall" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = ExtResource("1_cyan")
