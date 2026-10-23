@@ -18,21 +18,20 @@ const SECTIONS := [
 	{"name": "LandingA", "center": Vector3(0.0, 0.6, -112.5), "size": Vector2(10.0, 7.0), "color": Color(0.62, 0.9, 1.0)},
 	{"name": "WindBridge", "center": Vector3(0.0, 0.6, -131.5), "size": Vector2(4.0, 17.0), "color": Color(0.88, 0.76, 1.0)},
 	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(0.7, 1.0, 1.0)},
-	{"name": "BallCorridor", "center": Vector3(0.0, 1.0, -171.0), "size": Vector2(7.0, 18.0), "color": Color(0.88, 0.76, 1.0)},
 	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.9, 0.5)},
 	{"name": "Finish", "center": Vector3(0.0, 1.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(0.85, 1.0, 0.6)},
 ]
 
 const ISLAND_COLORS := [
-	Color(0.58, 0.95, 0.55),
-	Color(1.0, 0.8, 0.45),
-	Color(0.6, 0.9, 1.0),
-	Color(1.0, 0.66, 0.82),
-	Color(0.76, 0.68, 1.0),
+	Color(0.35, 0.82, 0.42),
+	Color(0.95, 0.62, 0.28),
+	Color(0.32, 0.68, 0.95),
+	Color(0.92, 0.45, 0.65),
+	Color(0.58, 0.45, 0.92),
 ]
 
 const ROCK_COLOR := Color(0.24, 0.26, 0.48)
-const DISTANT_COLOR := Color(0.6, 0.72, 0.92)
+const DISTANT_COLOR := Color(0.46, 0.58, 0.82)
 
 var _rng := RandomNumberGenerator.new()
 var _toy_cache: Dictionary = {}
@@ -45,8 +44,8 @@ func _ready() -> void:
 	_build_islands()
 	_build_distant_mountains()
 	_build_arches()
+	_build_pendulum_frames()
 	_build_light_towers()
-	_build_stadium_rings()
 	_build_ambient_sparks()
 
 
@@ -65,7 +64,7 @@ func _toy_material(color: Color, rim: float = 0.9, emission: float = 0.08) -> Sh
 	return mat
 
 
-func _glow_material(color: Color, energy: float = 2.4) -> StandardMaterial3D:
+func _glow_material(color: Color, energy: float = 1.2) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
 	mat.roughness = 0.35
@@ -78,6 +77,7 @@ func _glow_material(color: Color, energy: float = 2.4) -> StandardMaterial3D:
 func _flat_material(color: Color, emission_energy: float = 0.0) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.roughness = 0.95
 	mat.emission_enabled = emission_energy > 0.0
 	mat.emission = color
@@ -169,9 +169,9 @@ func _omni_light(position: Vector3, color: Color, energy: float, light_range: fl
 func _build_cloud_sea() -> void:
 	var material := ShaderMaterial.new()
 	material.shader = SEA_SHADER
-	material.set_shader_parameter("deep_color", Color(0.24, 0.38, 0.72))
-	material.set_shader_parameter("mid_color", Color(0.64, 0.84, 1.0))
-	material.set_shader_parameter("foam_color", Color(1.0, 0.98, 1.0))
+	material.set_shader_parameter("deep_color", Color(0.1, 0.22, 0.52))
+	material.set_shader_parameter("mid_color", Color(0.3, 0.5, 0.86))
+	material.set_shader_parameter("foam_color", Color(0.76, 0.86, 1.0))
 	material.set_shader_parameter("wave_height", 1.3)
 	material.set_shader_parameter("wave_scale", 0.065)
 	material.set_shader_parameter("flow_speed", 0.4)
@@ -192,14 +192,13 @@ func _build_cloud_sea() -> void:
 
 func _build_platform_edges() -> void:
 	var support_material := _toy_material(ROCK_COLOR, 0.6, 0.02)
-	var cloud_material := _toy_material(Color(0.94, 0.97, 1.0), 0.5, 0.15)
 
 	for section in SECTIONS:
 		var section_name: String = section["name"]
 		var center: Vector3 = section["center"]
 		var size: Vector2 = section["size"]
 		var color: Color = section["color"]
-		var glow := _glow_material(color, 2.6)
+		var glow := _glow_material(color, 1.2)
 		var top_y: float = center.y
 
 		# Neon trim along both long edges.
@@ -209,7 +208,7 @@ func _build_platform_edges() -> void:
 		_box(Vector3(0.16, 0.1, rail_length), Vector3(center.x + rail_x, top_y + 0.05, center.z), glow, "RailR_%s" % section_name)
 
 		# Soft glow on the underside, visible while falling.
-		_box(Vector3(minf(size.x * 0.7, 4.0), 0.08, rail_length * 0.85), Vector3(center.x, top_y - 0.58, center.z), _glow_material(color, 1.4), "UnderGlow_%s" % section_name)
+		_box(Vector3(minf(size.x * 0.7, 4.0), 0.08, rail_length * 0.85), Vector3(center.x, top_y - 0.58, center.z), _glow_material(color, 0.7), "UnderGlow_%s" % section_name)
 
 		# Hanging supports.
 		var pylon_count := 2
@@ -219,13 +218,8 @@ func _build_platform_edges() -> void:
 			var pz: float = center.z + (1.0 if i == 0 else -1.0) * size.y * 0.32
 			var pylon_height := 11.0
 			_cylinder(0.16, 0.38, pylon_height, Vector3(px, top_y - pylon_height * 0.5 - 0.45, pz), support_material, "Pylon_%s_%d" % [section_name, i], 8)
-			_torus(0.42, 0.58, Vector3(px, top_y - 0.62, pz), _glow_material(color, 1.8), "PylonRing_%s_%d" % [section_name, i], Vector3.ZERO, 16)
+			_torus(0.42, 0.58, Vector3(px, top_y - 0.62, pz), _glow_material(color, 0.9), "PylonRing_%s_%d" % [section_name, i], Vector3.ZERO, 16)
 
-		# A couple of cloud puffs so the slab does not look like it is glued to air.
-		for i in 2:
-			var cx: float = center.x + (-1.0 if i == 0 else 1.0) * size.x * 0.62
-			var cz: float = center.z + (-1.0 if i == 0 else 1.0) * size.y * 0.3
-			_sphere(1.6, 1.0, Vector3(cx, top_y - 3.6 - float(i) * 0.7, cz), cloud_material, "Cloud_%s_%d" % [section_name, i], Vector3(1.6, 0.7, 1.2))
 
 
 func _build_islands() -> void:
@@ -246,7 +240,7 @@ func _build_islands() -> void:
 			var cx := x + _rng.randf_range(-radius * 0.45, radius * 0.45)
 			var cz := z + _rng.randf_range(-radius * 0.45, radius * 0.45)
 			var crystal_height := _rng.randf_range(1.0, 2.4)
-			_cylinder(0.0, _rng.randf_range(0.18, 0.32), crystal_height, Vector3(cx, top_y + crystal_height * 0.5, cz), _glow_material(color.lightened(0.25), 1.9), "Crystal_%d_%d" % [i, c], 6, Vector3(_rng.randf_range(-16.0, 16.0), 0.0, _rng.randf_range(-16.0, 16.0)))
+			_cylinder(0.0, _rng.randf_range(0.18, 0.32), crystal_height, Vector3(cx, top_y + crystal_height * 0.5, cz), _glow_material(color.lightened(0.25), 1.0), "Crystal_%d_%d" % [i, c], 6, Vector3(_rng.randf_range(-16.0, 16.0), 0.0, _rng.randf_range(-16.0, 16.0)))
 
 		if radius > 4.4:
 			var tx := x + _rng.randf_range(-radius * 0.4, radius * 0.4)
@@ -282,13 +276,34 @@ func _build_arches() -> void:
 		var base_y: float = arch["y"]
 		var color: Color = arch["color"]
 		var solid := _toy_material(color.darkened(0.2), 0.9, 0.15)
-		var glow := _glow_material(color, 2.8)
+		var glow := _glow_material(color, 1.4)
 		_box(Vector3(0.45, height, 0.45), Vector3(-width * 0.5, base_y + height * 0.5, z), solid, "ArchPillarL_%d" % i)
 		_box(Vector3(0.45, height, 0.45), Vector3(width * 0.5, base_y + height * 0.5, z), solid, "ArchPillarR_%d" % i)
 		_box(Vector3(width + 0.45, 0.5, 0.55), Vector3(0.0, base_y + height, z), solid, "ArchBeam_%d" % i)
 		_box(Vector3(width - 0.9, 0.12, 0.14), Vector3(0.0, base_y + height - 0.55, z), glow, "ArchGlow_%d" % i)
 		_box(Vector3(0.12, height - 0.9, 0.14), Vector3(-width * 0.5, base_y + height * 0.5 - 0.2, z), glow, "ArchStripL_%d" % i)
 		_box(Vector3(0.12, height - 0.9, 0.14), Vector3(width * 0.5, base_y + height * 0.5 - 0.2, z), glow, "ArchStripR_%d" % i)
+
+
+## Steel gantries over the pendulum bridge: the hammers hang from these
+## beams instead of floating in the air.
+func _build_pendulum_frames() -> void:
+	var metal := _toy_material(Color(0.3, 0.33, 0.52), 0.55, 0.02)
+	var glow := _glow_material(Color(1.0, 0.84, 0.38), 1.0)
+	var pendulum_z := [-71.0, -76.5, -82.0, -86.5]
+	for i in pendulum_z.size():
+		var z: float = pendulum_z[i]
+		for side in [-1.0, 1.0]:
+			var x: float = side * 4.2
+			# Tall pylon: top at beam height, bottom fades into the cloud sea.
+			_box(Vector3(0.42, 11.5, 0.42), Vector3(x, -0.35, z), metal, "PendulumPost_%d_%s" % [i, "L" if side < 0.0 else "R"])
+			_box(Vector3(0.7, 0.2, 0.7), Vector3(x, 5.25, z), glow, "PendulumFoot_%d_%s" % [i, "L" if side < 0.0 else "R"])
+		_box(Vector3(8.9, 0.42, 0.42), Vector3(0.0, 5.35, z), metal, "PendulumBeam_%d" % i)
+		_box(Vector3(7.6, 0.08, 0.14), Vector3(0.0, 5.09, z), glow, "PendulumGlow_%d" % i)
+		_box(Vector3(0.7, 0.55, 0.7), Vector3(0.0, 5.2, z), metal, "PendulumMount_%d" % i)
+	# Longitudinal rails tie the four gantries together.
+	for side in [-1.0, 1.0]:
+		_box(Vector3(0.34, 0.34, 22.8), Vector3(side * 4.2, 5.35, -78.75), metal, "PendulumRail_%s" % ("L" if side < 0.0 else "R"))
 
 
 func _build_light_towers() -> void:
@@ -307,13 +322,9 @@ func _build_light_towers() -> void:
 		var z: float = tower["z"]
 		var color: Color = tower["color"]
 		_cylinder(0.16, 0.42, 12.0, Vector3(x, 6.0, z), metal, "TowerPole_%d" % i, 8)
-		_box(Vector3(1.4, 0.85, 2.4), Vector3(x, 12.3, z), _glow_material(color, 3.0), "TowerLamp_%d" % i)
+		_box(Vector3(1.4, 0.85, 2.4), Vector3(x, 12.3, z), _glow_material(color, 1.6), "TowerLamp_%d" % i)
 		_omni_light(Vector3(x * 0.82, 11.4, z), color, 1.5, 20.0, "TowerLight_%d" % i)
 
-
-func _build_stadium_rings() -> void:
-	_torus(28.0, 30.0, Vector3(0.0, 24.0, -272.0), _glow_material(Color(0.7, 0.85, 1.0), 2.0), "HaloRingBack", Vector3(90.0, 0.0, 0.0), 48)
-	_torus(20.0, 21.4, Vector3(0.0, 18.0, 62.0), _glow_material(Color(1.0, 0.7, 0.88), 1.8), "HaloRingFront", Vector3(90.0, 0.0, 0.0), 40)
 
 
 func _build_ambient_sparks() -> void:
@@ -322,7 +333,7 @@ func _build_ambient_sparks() -> void:
 	spark_mesh.height = 0.09
 	spark_mesh.radial_segments = 8
 	spark_mesh.rings = 4
-	var spark_material := _glow_material(Color(1.0, 0.97, 0.8), 2.2)
+	var spark_material := _glow_material(Color(1.0, 0.97, 0.8), 1.5)
 	spark_mesh.material = spark_material
 
 	var particles := CPUParticles3D.new()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://conveyor_belt"]
+[gd_scene load_steps=7 format=3 uid="uid://conveyor_belt"]
 
 [ext_resource type="Script" path="res://scripts/conveyor.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/purple.tres" id="2_purple"]
@@ -13,9 +13,6 @@ size = Vector3(6, 0.25, 4)
 [sub_resource type="BoxMesh" id="BoxMesh_belt"]
 size = Vector3(6, 0.05, 4)
 
-[sub_resource type="BoxMesh" id="BoxMesh_arrow"]
-size = Vector3(0.6, 0.08, 3.4)
-
 [node name="Conveyor" type="Area3D"]
 collision_layer = 0
 collision_mask = 2
@@ -24,6 +21,7 @@ monitorable = false
 script = ExtResource("1_script")
 direction = Vector3(1, 0, 0)
 force = 14.0
+arrow_material = ExtResource("3_yellow")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -40,18 +38,3 @@ collision_mask = 0
 
 [node name="FloorShape" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_floor")
-
-[node name="Arrow1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.215, 0)
-mesh = SubResource("BoxMesh_arrow")
-surface_material_override/0 = ExtResource("3_yellow")
-
-[node name="Arrow2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.215, 0)
-mesh = SubResource("BoxMesh_arrow")
-surface_material_override/0 = ExtResource("3_yellow")
-
-[node name="Arrow3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.215, 0)
-mesh = SubResource("BoxMesh_arrow")
-surface_material_override/0 = ExtResource("3_yellow")

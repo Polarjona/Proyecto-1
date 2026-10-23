@@ -76,6 +76,8 @@ func _run() -> void:
 	_check(sweeper != null, "Barra giratoria presente en el mapa")
 	_check(mover != null, "Plataforma móvil presente en el mapa")
 	_check(dropper != null, "Dispensador de pelotas presente en el mapa")
+	_check(game.get_node_or_null("Course/FinalConveyor") != null, "Combo final: cinta bajo el sweeper")
+	_check(game.get_node_or_null("Course/BallDropperMoving") != null, "Combo: pelotas sobre la plataforma móvil")
 	if pad == null or sweeper == null or mover == null or dropper == null:
 		print("RESULT: %d fallos (faltan obstáculos)" % _failures)
 		quit(1)
@@ -110,6 +112,12 @@ func _run() -> void:
 		await physics_frame
 	_check(absf(sweeper.get_angle() - angle_before) > 0.1,
 		"La barra giratoria rota (%.2f rad)" % absf(sweeper.get_angle() - angle_before))
+	var sweeper3: Node3D = game.get_node("Course/Sweeper3")
+	_check(signf(sweeper.get_angle()) != signf(sweeper3.get_angle()),
+		"Las dos barras de la sala giran en sentidos opuestos")
+	var sweeper_bar: AnimatableBody3D = sweeper.get_node("Bar")
+	_check(sweeper_bar.collision_layer == 0,
+		"La barra no bloquea físicamente al jugador (solo empuja)")
 
 	# --- 6. La plataforma móvil se desplaza -----------------------------
 	await _place_player(player, Vector3(0.0, 0.6, 0.0))
@@ -137,6 +145,9 @@ func _run() -> void:
 		if player.is_stunned():
 			got_stunned = true
 	_check(got_stunned, "Una pelota que cae empuja y aturde al jugador")
+	# La pelota de prueba no debe seguir por la plataforma y aturdir al
+	# jugador en las comprobaciones siguientes.
+	ball.queue_free()
 
 	# --- 9. Aturdimiento manual -----------------------------------------
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.6, 0.0)))
@@ -152,18 +163,23 @@ func _run() -> void:
 	_check(full_apex > short_apex + 0.3,
 		"Salto de altura variable (mantener %.2f m vs soltar %.2f m)" % [full_apex, short_apex])
 
-	# --- 11. Extremidades y cara del personaje --------------------------
-	_check(player.get_node_or_null("MeshInstance3D/ArmPivotLeft") != null, "El personaje tiene brazo izquierdo")
-	_check(player.get_node_or_null("MeshInstance3D/LegPivotRight") != null, "El personaje tiene pierna derecha")
-	_check(player.get_node_or_null("MeshInstance3D/Head/EyeLeft") != null, "El personaje tiene ojos")
-	_check(player.get_node_or_null("MeshInstance3D/Head/EyeRight/PupilRight") != null, "El personaje tiene pupilas")
+	# --- 11. Modelo y animaciones del personaje -------------------------
+	var model: Node3D = player.get_node_or_null("MeshInstance3D/Model")
+	var anim: AnimationPlayer = player.get_node_or_null("MeshInstance3D/Model/AnimationPlayer")
+	_check(model != null, "El personaje usa el modelo 3D descargado")
+	_check(anim != null, "El modelo trae AnimationPlayer")
+	if anim == null:
+		print("RESULT: %d fallos (el modelo no tiene animaciones)" % _failures)
+		quit(1)
+		return
 
 	await _place_player(player, Vector3(0.0, 0.6, 0.0))
 	Input.action_press("move_forward")
 	for i in 30:
 		await physics_frame
-	var arm: Node3D = player.get_node("MeshInstance3D/ArmPivotLeft")
-	_check(absf(arm.rotation.x) > 0.01, "Las extremidades se animan al correr (%.2f rad)" % arm.rotation.x)
+	var clip: String = anim.current_animation
+	_check(clip == "Walking_A" or clip == "Running_A",
+		"El personaje reproduce animación al correr (%s)" % clip)
 	Input.action_release("move_forward")
 
 	# --- 12. Sombra proyectada ------------------------------------------
@@ -179,6 +195,7 @@ func _run() -> void:
 	# Se apaga el dispensador para que las pelotas no empujen al jugador fuera
 	# del punto de aterrizaje y falseen la medición.
 	var dropper2: Node3D = game.get_node_or_null("Course/BallDropper2")
+	var dropper_moving: Node3D = game.get_node_or_null("Course/BallDropperMoving")
 	dropper.set_physics_process(false)
 	for child in dropper.get_children():
 		if child is RigidBody3D:
@@ -186,6 +203,11 @@ func _run() -> void:
 	if dropper2 != null:
 		dropper2.set_physics_process(false)
 		for child in dropper2.get_children():
+			if child is RigidBody3D:
+				child.queue_free()
+	if dropper_moving != null:
+		dropper_moving.set_physics_process(false)
+		for child in dropper_moving.get_children():
 			if child is RigidBody3D:
 				child.queue_free()
 	await physics_frame
@@ -198,9 +220,24 @@ func _run() -> void:
 	_check(absf(player.global_position.y) < 0.15,
 		"Aterriza en la plataforma giratoria (y=%.2f)" % player.global_position.y)
 
-	await _place_player(player, Vector3(0.0, 2.0, -171.0))
-	_check(absf(player.global_position.y - 1.0) < 0.2,
-		"Aterriza en el corredor de pelotas (y=%.2f)" % player.global_position.y)
+	await _place_player(player, Vector3(0.0, 3.5, -171.0))
+	_check(absf(player.global_position.y - 2.2) < 0.3,
+		"Aterriza en la cima de la rampa de pelotas (y=%.2f)" % player.global_position.y)
+
+	# El segundo dispensador queda al borde de un hueco: las bolas ruedan y caen.
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var gap_query := PhysicsRayQueryParameters3D.create(
+		Vector3(0.0, 3.0, -179.0), Vector3(0.0, -2.0, -179.0), 1)
+	var gap_hit := space.intersect_ray(gap_query)
+	_check(gap_hit.is_empty(), "Hay un hueco tras el segundo dispensador para que caigan las bolas")
+	var landing_query := PhysicsRayQueryParameters3D.create(
+		Vector3(0.0, 3.0, -181.0), Vector3(0.0, -2.0, -181.0), 1)
+	var landing_hit := space.intersect_ray(landing_query)
+	var landing_y := -99.0
+	if not landing_hit.is_empty():
+		landing_y = (landing_hit["position"] as Vector3).y
+	_check(absf(landing_y - 1.0) < 0.1,
+		"Hay una plataforma de aterrizaje tras el hueco (y=%.2f)" % landing_y)
 
 	await _place_player(player, Vector3(0.0, 2.0, -112.0))
 	_check(absf(player.global_position.y - 0.6) < 0.2,

@@ -22,7 +22,6 @@ const FINISH_Z := -205.0
 @onready var results_best: Label = $Root/ResultsPanel/VBox/ResultsBest
 @onready var results_medal: Label = $Root/ResultsPanel/VBox/ResultsMedal
 @onready var results_rank: Label = $Root/ResultsPanel/VBox/ResultsRank
-@onready var results_splits: Label = $Root/ResultsPanel/VBox/ResultsSplits
 @onready var results_coins: Label = $Root/ResultsPanel/VBox/ResultsCoins
 @onready var retry_button: Button = $Root/ResultsPanel/VBox/Buttons/RetryButton
 @onready var next_round_button: Button = $Root/ResultsPanel/VBox/Buttons/NextRoundButton
@@ -224,14 +223,6 @@ func _on_results_ready(data: Dictionary) -> void:
 		results_best.text = "Récord: %.2f s" % best
 	results_medal.text = "Medalla: %s" % SaveManager.medal_label(medal)
 	results_medal.modulate = _medal_color(medal)
-
-	var split_text := ""
-	var splits: Array = data.get("splits", [])
-	for i in splits.size():
-		if i > 0:
-			split_text += "   ·   "
-		split_text += "CP%d %.2f s" % [i + 1, float(splits[i])]
-	results_splits.text = split_text
 
 	var falls := int(data.get("falls", 0))
 	results_coins.text = "+%d monedas (total %d)   ·   %d caída(s)" % [

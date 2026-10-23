@@ -88,6 +88,7 @@ var _watch_position: Vector3 = Vector3.ZERO
 ## Bots hold at the line until the countdown ends, like the player.
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
+var _anim: AnimationPlayer
 
 @onready var body: MeshInstance3D = $Body
 
@@ -99,30 +100,52 @@ func _ready() -> void:
 	_speed = randf_range(speed_min, speed_max) * speed_scale
 	_stumble_cooldown = randf_range(1.5, 4.0)
 	_watch_position = global_position
-	var color := body_color
-	if color == Color(0.95, 0.4, 0.55):
-		color = COLORS[randi() % COLORS.size()]
-	_tint(self, color)
+	_setup_model()
 
 
-## Recolours every mesh tagged with the `tint` metadata while keeping the
-## shared toy shader, so each bot is a single-coloured bean.
-func _tint(node: Node, color: Color) -> void:
-	for child in node.get_children():
-		if child is MeshInstance3D and child.has_meta("tint"):
-			var mesh_instance := child as MeshInstance3D
-			var source := mesh_instance.get_surface_override_material(0)
-			if source is ShaderMaterial:
-				var mat := (source as ShaderMaterial).duplicate() as ShaderMaterial
-				mat.set_shader_parameter("base_color", color)
-				mat.set_shader_parameter("rim_color", color.lightened(0.35))
-				mesh_instance.set_surface_override_material(0, mat)
-			else:
-				var fallback := StandardMaterial3D.new()
-				fallback.albedo_color = color
-				fallback.roughness = 0.72
-				mesh_instance.set_surface_override_material(0, fallback)
-		_tint(child, color)
+## Picks one of the downloaded adventurers, hides its weapons and starts the
+## idle clip. Bots keep their own AnimationPlayer, independent of the player.
+func _setup_model() -> void:
+	var knight := body.get_node_or_null("Knight") as Node3D
+	var mage := body.get_node_or_null("Mage") as Node3D
+	var use_knight := randf() < 0.5
+	if knight:
+		knight.visible = use_knight
+	if mage:
+		mage.visible = not use_knight
+	var model: Node3D = knight if use_knight else mage
+	if model == null:
+		return
+	for part in ["1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield", "Spike_Shield", "1H_Sword", "2H_Sword", "Knife_Offhand", "1H_Crossbow", "2H_Crossbow", "Knife", "Throwable", "Knight_Cape", "Mage_Cape", "2H_Staff", "1H_Wand", "Spellbook", "Spellbook_open"]:
+		var accessory := model.find_child(part, true, false)
+		if accessory is Node3D:
+			(accessory as Node3D).visible = false
+	model.scale *= randf_range(0.96, 1.04)
+	_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	if _anim:
+		for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Cheer"]:
+			var clip := _anim.get_animation(clip_name)
+			if clip:
+				clip.loop_mode = Animation.LOOP_LINEAR
+		_play_anim("Idle", 0.0)
+
+
+func _play_anim(clip: String, blend: float = 0.15) -> void:
+	if _anim == null or _anim.current_animation == clip:
+		return
+	_anim.play(clip, blend)
+	_anim.speed_scale = 1.2 if clip == "Running_A" else 1.0
+
+
+func _update_animation(walking: bool) -> void:
+	var clip := "Idle"
+	if _stumble_time > 0.0:
+		clip = "Hit_A"
+	elif not is_on_floor():
+		clip = "Jump_Idle"
+	elif walking:
+		clip = "Running_A"
+	_play_anim(clip)
 
 
 func _physics_process(delta: float) -> void:
@@ -180,6 +203,7 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_face(direction, delta)
+	_update_animation(walk_speed > 0.0)
 	if global_position.z <= finish_z:
 		_finish()
 
@@ -251,6 +275,7 @@ func _finish() -> void:
 	_finished = true
 	velocity = Vector3.ZERO
 	set_physics_process(false)
+	_play_anim("Cheer", 0.2)
 	var elapsed := float(Time.get_ticks_msec() - _start_ms) / 1000.0
 	finished.emit(self, elapsed)
 

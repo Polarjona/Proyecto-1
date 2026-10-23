@@ -61,7 +61,7 @@ func _build_stand(side: float) -> void:
 	trim_material.albedo_color = Color(0.5, 0.95, 1.0)
 	trim_material.emission_enabled = true
 	trim_material.emission = Color(0.32, 0.85, 1.0)
-	trim_material.emission_energy_multiplier = 2.2
+	trim_material.emission_energy_multiplier = 1.2
 	trim_mesh.material = trim_material
 	var trim := MeshInstance3D.new()
 	trim.name = "StandTrim%s" % ("Left" if side < 0.0 else "Right")

@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
 
 [sub_resource type="Gradient" id="Gradient_bg"]
-offsets = PackedFloat32Array(0, 0.55, 1)
-colors = PackedColorArray(0.04, 0.05, 0.14, 1, 0.16, 0.11, 0.36, 1, 0.42, 0.18, 0.45, 1)
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0.035, 0.043, 0.055, 1, 0.059, 0.074, 0.094, 1, 0.035, 0.043, 0.055, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
 gradient = SubResource("Gradient_bg")
@@ -46,68 +46,95 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 6
+
+[node name="AccentBar" type="ColorRect" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(40, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.4, 0.82, 0.9, 1)
+
+[node name="TitleSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
 
 [node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.32, 1)
-theme_override_colors/font_outline_color = Color(0.12, 0.05, 0.14, 1)
-theme_override_constants/outline_size = 14
-theme_override_font_sizes/font_size = 72
+theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 54
 text = "STUMBLE GUYS"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.86, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "CARRERA DE OBSTÁCULOS  ·  ITERACIÓN 3"
+theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 0.9)
+theme_override_font_sizes/font_size = 12
+text = "CARRERA DE OBSTÁCULOS"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 8)
+[node name="MenuSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
 [node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 48)
+custom_minimum_size = Vector2(340, 42)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "CARRERA CLÁSICA"
+text = "Carrera clásica"
 
 [node name="BotsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 48)
+custom_minimum_size = Vector2(340, 42)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "CARRERA VS BOTS"
+text = "Carrera vs bots"
 
 [node name="TournamentButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 48)
+custom_minimum_size = Vector2(340, 42)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "TORNEO"
+text = "Torneo"
+
+[node name="GroupSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="SecondarySeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(340, 1)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SecondarySpacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
 
 [node name="ControlsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 46)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 15
 text = "Controles"
 
 [node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 46)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 15
 text = "Ajustes"
 
 [node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 46)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 15
 text = "Créditos"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(380, 46)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
 text = "Salir"
 
 [node name="BestTimeLabel" type="Label" parent="."]
@@ -115,13 +142,13 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -82.0
+offset_left = 28.0
+offset_top = -74.0
 offset_right = 440.0
-offset_bottom = -50.0
+offset_bottom = -48.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.62, 0.68, 0.75, 1)
+theme_override_font_sizes/font_size = 14
 text = "Sin récord todavía"
 
 [node name="MedalLabel" type="Label" parent="."]
@@ -129,13 +156,13 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -48.0
+offset_left = 28.0
+offset_top = -46.0
 offset_right = 440.0
-offset_bottom = -20.0
+offset_bottom = -24.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.45, 0.51, 0.58, 1)
+theme_override_font_sizes/font_size = 12
 text = "Medalla de oro: 70.0 s"
 
 [node name="CoinsLabel" type="Label" parent="."]
@@ -146,13 +173,13 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -440.0
-offset_top = -48.0
-offset_right = -24.0
-offset_bottom = -20.0
+offset_top = -46.0
+offset_right = -28.0
+offset_bottom = -24.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.86, 0.4, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.45, 0.51, 0.58, 1)
+theme_override_font_sizes/font_size = 12
 text = "0 monedas   ·   0/3 coronas"
 horizontal_alignment = 2
 
@@ -164,13 +191,13 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -180.0
-offset_top = -26.0
+offset_top = -24.0
 offset_right = 180.0
 offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.65, 0.7, 0.85, 0.8)
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.32, 0.37, 0.43, 1)
+theme_override_font_sizes/font_size = 11
 text = "Godot 4.7  ·  Prototipo"
 horizontal_alignment = 1
 
@@ -182,9 +209,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
+offset_left = -270.0
 offset_top = -250.0
-offset_right = 280.0
+offset_right = 270.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -195,8 +222,8 @@ theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 22
 text = "CONTROLES"
 horizontal_alignment = 1
 
@@ -205,29 +232,33 @@ layout_mode = 2
 
 [node name="MoveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Moverte:  W A S D  o  flechas"
 
 [node name="JumpLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Saltar:  Espacio  (mantén para saltar más alto)"
 
 [node name="DiveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Dive:  Shift  (te lanzas al suelo y deslizas)"
+theme_override_font_sizes/font_size = 16
+text = "Dive:  Shift  (lanzamiento corto y deslizamiento)"
 
 [node name="PauseLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Pausa:  Escape  o  Start del mando"
 
 [node name="GoalLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
+theme_override_font_sizes/font_size = 14
 text = "Objetivo: sobrevive al circuito, recoge las 3 coronas y baja de 70 s para el oro."
 autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="ControlsPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Volver"
 
@@ -239,21 +270,21 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -220.0
-offset_right = 280.0
-offset_bottom = 220.0
+offset_left = -270.0
+offset_top = -190.0
+offset_right = 270.0
+offset_bottom = 190.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CreditsPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 22
 text = "CRÉDITOS"
 horizontal_alignment = 1
 
@@ -262,22 +293,28 @@ layout_mode = 2
 
 [node name="ProjectLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Stumble Guys (prototipo)"
 
 [node name="AuthorLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Autores: Pol Arjona y Yazan Issa"
 
 [node name="EngineLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Motor: Godot Engine 4.7"
 
 [node name="AILabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
+theme_override_font_sizes/font_size = 14
 text = "Desarrollo asistido por IA (Freebuff)"
+autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Volver"
 

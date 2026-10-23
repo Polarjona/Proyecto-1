@@ -1,65 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://bot_racer"]
+[gd_scene load_steps=5 format=3 uid="uid://bot_racer"]
 
 [ext_resource type="Script" path="res://scripts/bot_racer.gd" id="1_script"]
-[ext_resource type="Material" path="res://materials/character_body.tres" id="2_body"]
-[ext_resource type="Material" path="res://materials/white.tres" id="3_white"]
-[ext_resource type="Material" path="res://materials/boot.tres" id="4_boot"]
+[ext_resource type="PackedScene" path="res://assets/characters/Knight.glb" id="2_knight"]
+[ext_resource type="PackedScene" path="res://assets/characters/Mage.glb" id="3_mage"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bot"]
-radius = 0.4
-height = 1.4
-
-[sub_resource type="SphereMesh" id="SphereMesh_body"]
-radius = 0.45
+radius = 0.28
 height = 1.0
-radial_segments = 24
-rings = 12
-
-[sub_resource type="SphereMesh" id="SphereMesh_head"]
-radius = 0.36
-height = 0.76
-radial_segments = 24
-rings = 12
-
-[sub_resource type="SphereMesh" id="SphereMesh_eye"]
-radius = 0.1
-height = 0.2
-radial_segments = 16
-rings = 8
-
-[sub_resource type="SphereMesh" id="SphereMesh_pupil"]
-radius = 0.05
-height = 0.1
-radial_segments = 12
-rings = 6
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
-radius = 0.1
-height = 0.4
-
-[sub_resource type="SphereMesh" id="SphereMesh_hand"]
-radius = 0.12
-height = 0.24
-radial_segments = 16
-rings = 8
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_leg"]
-radius = 0.12
-height = 0.28
-
-[sub_resource type="SphereMesh" id="SphereMesh_boot"]
-radius = 0.15
-height = 0.28
-radial_segments = 16
-rings = 8
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
-albedo_color = Color(1, 1, 1, 1)
-roughness = 0.25
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pupil"]
-albedo_color = Color(0.08, 0.07, 0.14, 1)
-roughness = 0.3
 
 [node name="BotRacer" type="CharacterBody3D"]
 collision_layer = 2
@@ -70,81 +17,14 @@ floor_snap_length = 0.35
 script = ExtResource("1_script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_bot")
 
 [node name="Body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
-mesh = SubResource("SphereMesh_body")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
 
-[node name="Head" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0.02)
-mesh = SubResource("SphereMesh_head")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
+[node name="Knight" parent="Body" instance=ExtResource("2_knight")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 
-[node name="EyeLeft" type="MeshInstance3D" parent="Head"]
-transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 0.55, -0.13, 0.02, 0.3)
-mesh = SubResource("SphereMesh_eye")
-surface_material_override/0 = SubResource("StandardMaterial3D_eye")
-
-[node name="PupilLeft" type="MeshInstance3D" parent="Head/EyeLeft"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.55, 0, 0, 0.045)
-mesh = SubResource("SphereMesh_pupil")
-surface_material_override/0 = SubResource("StandardMaterial3D_pupil")
-
-[node name="EyeRight" type="MeshInstance3D" parent="Head"]
-transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 0.55, 0.13, 0.02, 0.3)
-mesh = SubResource("SphereMesh_eye")
-surface_material_override/0 = SubResource("StandardMaterial3D_eye")
-
-[node name="PupilRight" type="MeshInstance3D" parent="Head/EyeRight"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.55, 0, 0, 0.045)
-mesh = SubResource("SphereMesh_pupil")
-surface_material_override/0 = SubResource("StandardMaterial3D_pupil")
-
-[node name="ArmLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.9801, -0.1987, 0, 0.1987, 0.9801, 0, 0, 0, 1, -0.46, 0.72, 0)
-mesh = SubResource("CapsuleMesh_arm")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
-
-[node name="HandLeft" type="MeshInstance3D" parent="ArmLeft"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.24, 0)
-mesh = SubResource("SphereMesh_hand")
-surface_material_override/0 = ExtResource("3_white")
-
-[node name="ArmRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.9801, 0.1987, 0, -0.1987, 0.9801, 0, 0, 0, 1, 0.46, 0.72, 0)
-mesh = SubResource("CapsuleMesh_arm")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
-
-[node name="HandRight" type="MeshInstance3D" parent="ArmRight"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.24, 0)
-mesh = SubResource("SphereMesh_hand")
-surface_material_override/0 = ExtResource("3_white")
-
-[node name="LegLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.2, 0)
-mesh = SubResource("CapsuleMesh_leg")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
-
-[node name="BootLeft" type="MeshInstance3D" parent="LegLeft"]
-transform = Transform3D(1.1, 0, 0, 0, 0.7, 0, 0, 0, 1.3, 0, -0.1, 0.04)
-mesh = SubResource("SphereMesh_boot")
-surface_material_override/0 = ExtResource("4_boot")
-
-[node name="LegRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, 0)
-mesh = SubResource("CapsuleMesh_leg")
-surface_material_override/0 = ExtResource("2_body")
-metadata/tint = true
-
-[node name="BootRight" type="MeshInstance3D" parent="LegRight"]
-transform = Transform3D(1.1, 0, 0, 0, 0.7, 0, 0, 0, 1.3, 0, -0.1, 0.04)
-mesh = SubResource("SphereMesh_boot")
-surface_material_override/0 = ExtResource("4_boot")
+[node name="Mage" parent="Body" instance=ExtResource("3_mage")]
+transform = Transform3D(0.46, 0, 0, 0, 0.46, 0, 0, 0, 0.46, 0, 0, 0)
+visible = false

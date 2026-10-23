@@ -4,8 +4,9 @@ extends Node3D
 ## The bar itself is solid, the push area adds the knockback on contact.
 
 @export var spin_speed: float = 1.6
-@export var push_force: float = 11.0
-@export var push_lift: float = 2.5
+@export var push_force: float = 4.8
+## Small hop so the hit reads, without launching the player across the hall.
+@export var push_lift: float = 1.2
 ## Flip to -1.0 to make the bar spin the other way.
 @export var spin_direction: float = 1.0
 

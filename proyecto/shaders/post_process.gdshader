@@ -39,7 +39,7 @@ void fragment() {
 
 	// Radial smear towards the screen edges when moving fast.
 	vec3 blur = vec3(0.0);
-	float smear = speed * 0.012;
+	float smear = speed * 0.006;
 	blur += texture(screen_texture, uv + direction * smear * 0.35).rgb * 0.5;
 	blur += texture(screen_texture, uv + direction * smear * 0.75).rgb * 0.3;
 	blur += texture(screen_texture, uv + direction * smear).rgb * 0.2;
@@ -49,7 +49,7 @@ void fragment() {
 	col.r = texture(screen_texture, uv + offset).r;
 	col.g = texture(screen_texture, uv).g;
 	col.b = texture(screen_texture, uv - offset).b;
-	col = mix(col, blur, clamp(speed * 0.65, 0.0, 0.7));
+	col = mix(col, blur, clamp(speed * 0.4, 0.0, 0.5));
 
 	// Stun: desaturate towards a cold tint.
 	float luma = dot(col, vec3(0.299, 0.587, 0.114));
@@ -59,7 +59,7 @@ void fragment() {
 	float angle = atan(centered.y, centered.x);
 	float streaks = sin(angle * 64.0 + TIME * 8.0) * 0.5 + 0.5;
 	streaks = smoothstep(0.86, 1.0, streaks) * smoothstep(0.18, 0.62, dist);
-	col += vec3(streaks) * speed * 0.11;
+	col += vec3(streaks) * speed * 0.035;
 
 	col = grade(col);
 

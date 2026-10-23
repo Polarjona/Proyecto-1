@@ -25,25 +25,26 @@ extends CharacterBody3D
 @export var platform_jump_cap: float = 6.0
 
 @export_group("Dive")
-@export var dive_speed: float = 9.0
-@export var dive_hop: float = 2.2
-@export var prone_time: float = 0.55
+## Short lunge: the slide is meant to dodge one hazard, not cross the map.
+@export var dive_speed: float = 6.0
+@export var dive_hop: float = 1.2
+@export var prone_time: float = 0.35
 ## Time before the next dive, counted from the start of the previous one.
-@export var dive_cooldown: float = 1.6
+@export var dive_cooldown: float = 2.0
 ## Control left while lying on the ground.
-@export var prone_control: float = 0.25
+@export var prone_control: float = 0.2
 
 @export_group("Camera")
-@export var camera_distance: float = 6.5
-@export var camera_height: float = 2.0
+@export var camera_distance: float = 4.7
+@export var camera_height: float = 1.5
 ## Downward pitch of the camera, in degrees. Negative looks down.
-@export var camera_pitch: float = -20.0
+@export var camera_pitch: float = -15.0
 @export var camera_lerp: float = 7.0
 ## Vertical smoothing, slower than the horizontal one so slopes do not
 ## drag the camera along the floor.
 @export var camera_height_lerp: float = 5.0
 ## Minimum distance between the pivot and the ground below it.
-@export var camera_min_clearance: float = 1.5
+@export var camera_min_clearance: float = 1.2
 @export var camera_look_ahead: float = 0.12
 @export var camera_fov_base: float = 55.0
 @export var camera_fov_max: float = 70.0
@@ -65,14 +66,8 @@ extends CharacterBody3D
 var input_locked: bool = false
 
 @onready var mesh: MeshInstance3D = $MeshInstance3D
-@onready var arm_left: Node3D = $MeshInstance3D/ArmPivotLeft
-@onready var arm_right: Node3D = $MeshInstance3D/ArmPivotRight
-@onready var leg_left: Node3D = $MeshInstance3D/LegPivotLeft
-@onready var leg_right: Node3D = $MeshInstance3D/LegPivotRight
-@onready var head: MeshInstance3D = $MeshInstance3D/Head
-@onready var eye_left: MeshInstance3D = $MeshInstance3D/Head/EyeLeft
-@onready var eye_right: MeshInstance3D = $MeshInstance3D/Head/EyeRight
-@onready var mouth: MeshInstance3D = $MeshInstance3D/Head/Mouth
+@onready var model: Node3D = $MeshInstance3D/Model
+@onready var anim: AnimationPlayer = $MeshInstance3D/Model/AnimationPlayer
 @onready var dizzy: Node3D = $Dizzy
 @onready var shadow: MeshInstance3D = $Shadow
 @onready var dust: CPUParticles3D = $Dust
@@ -100,11 +95,8 @@ var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _prone_timer: float = 0.0
 var _dive_cooldown_timer: float = 0.0
-var _pose_pitch: float = 0.0
 var _fall_speed: float = 0.0
 var _impact_speed: float = 0.0
-var _blink_timer: float = 3.0
-var _blink_time: float = 0.0
 var _wish_dir: Vector3 = Vector3.ZERO
 
 ## Bot input mirror (world-space).
@@ -127,11 +119,33 @@ func _ready() -> void:
 	spring_arm.add_excluded_object(get_rid())
 	camera.fov = camera_fov_base
 	_mesh_base_y = mesh.position.y
+	_hide_accessories()
+	_setup_animations()
+	_play_animation("idle", 0.0)
 	if shadow and shadow.material_override is StandardMaterial3D:
 		_shadow_material = (shadow.material_override as StandardMaterial3D).duplicate()
 		shadow.material_override = _shadow_material
 	if dizzy:
 		dizzy.visible = false
+
+
+## The downloaded adventurer carries weapons. The race is unarmed, so those
+## prop meshes stay hidden.
+func _hide_accessories() -> void:
+	for part in ["2H_Staff", "1H_Wand", "Spellbook", "Spellbook_open", "1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield", "Spike_Shield", "1H_Sword", "2H_Sword", "Knife_Offhand", "1H_Crossbow", "2H_Crossbow", "Knife", "Throwable", "Rogue_Cape", "Mage_Cape", "Knight_Cape"]:
+		var node := model.find_child(part, true, false)
+		if node is Node3D:
+			(node as Node3D).visible = false
+
+
+## Locomotion clips loop; one-shots (landing, hit) play once.
+func _setup_animations() -> void:
+	if anim == null:
+		return
+	for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Lie_Idle"]:
+		var clip := anim.get_animation(clip_name)
+		if clip:
+			clip.loop_mode = Animation.LOOP_LINEAR
 
 
 ## Locks or releases player input without touching physics (used by the
@@ -168,7 +182,6 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 	_update_shadow()
 	_update_animation(delta, was_on_floor)
-	_update_face(delta)
 
 
 func _tick_timers(delta: float) -> void:
@@ -258,7 +271,7 @@ func _handle_movement(delta: float) -> void:
 	if wish.length_squared() > 0.01:
 		_control_velocity = _control_velocity.move_toward(target, acceleration * control * delta)
 	else:
-		var current_friction := friction * (0.35 if _prone_timer > 0.0 else 1.0)
+		var current_friction := friction * (0.7 if _prone_timer > 0.0 else 1.0)
 		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, current_friction * control * delta)
 
 
@@ -281,7 +294,9 @@ func _handle_dive() -> void:
 
 	_dive_cooldown_timer = dive_cooldown
 	_prone_timer = prone_time
-	_control_velocity += direction * dive_speed
+	# Replace the run speed instead of adding to it: the dive is a short
+	# dodge, not a free boost across the map.
+	_control_velocity = direction * dive_speed
 	if is_on_floor():
 		velocity.y = maxf(velocity.y, dive_hop)
 	else:
@@ -368,14 +383,14 @@ func _update_shadow() -> void:
 	shadow.visible = true
 	shadow.global_position = ground + Vector3.UP * 0.04
 	var closeness := clampf(1.0 - (from.y - ground.y) / shadow_max_distance, 0.0, 1.0)
-	var spread := lerpf(0.55, 1.0, closeness)
+	var spread := lerpf(0.45, 0.85, closeness)
 	shadow.scale = Vector3(spread, 1.0, spread)
 	if _shadow_material:
 		_shadow_material.albedo_color.a = lerpf(0.05, 0.36, closeness)
 
 
-## Procedural state machine: idle bob, run bounce, jump stretch, stun wobble,
-## prone slide and landing squash.
+## Picks the animation clip for the state and keeps a light procedural
+## squash/bounce on top, so the downloaded model still feels cartoony.
 func _update_animation(delta: float, was_on_floor: bool) -> void:
 	var on_floor := is_on_floor()
 	var horizontal_speed := Vector3(velocity.x, 0.0, velocity.z).length()
@@ -400,11 +415,16 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		new_state = "stun"
 	elif not on_floor:
 		new_state = "jump"
-	elif horizontal_speed > 0.8:
+	elif _land_squash_timer > 0.0:
+		new_state = "land"
+	elif horizontal_speed > 6.0:
 		new_state = "run"
+	elif horizontal_speed > 0.8:
+		new_state = "walk"
 	if new_state != _anim_state:
 		_anim_state = new_state
 		_anim_time = 0.0
+		_play_animation(new_state)
 
 	_anim_time += delta
 	if _anim_state != "stun" and _anim_state != "prone":
@@ -413,93 +433,68 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 	match _anim_state:
 		"idle":
 			var t := _anim_time * 2.0
-			var squash := 1.0 + sin(t) * 0.025
+			var squash := 1.0 + sin(t) * 0.012
 			mesh.scale = Vector3(1.0 / squash, squash, 1.0 / squash)
-			mesh.position.y = _mesh_base_y + (squash - 1.0) * 0.35
-			_swing_limbs(sin(t) * 0.09)
-		"run":
-			var t := _anim_time * (3.0 + horizontal_speed * 0.9)
-			var bounce := 1.0 + absf(sin(t)) * 0.09
+			mesh.position.y = _mesh_base_y + (squash - 1.0) * 0.2
+		"walk", "run":
+			var t := _anim_time * (5.0 if _anim_state == "walk" else 8.0)
+			var bounce := 1.0 + absf(sin(t)) * 0.035
 			mesh.scale = Vector3(2.0 - bounce, bounce, 2.0 - bounce)
-			mesh.position.y = _mesh_base_y + absf(sin(t)) * 0.12
-			_swing_limbs(sin(t) * 0.9)
+			mesh.position.y = _mesh_base_y + absf(sin(t)) * 0.04
 		"jump":
 			var rising := velocity.y > 0.0
-			var stretch := 1.15 if rising else 1.05
+			var stretch := 1.05 if rising else 1.03
 			mesh.scale = Vector3(1.0 / stretch, stretch, 1.0 / stretch)
 			mesh.position.y = _mesh_base_y
-			_swing_limbs(-0.9 if rising else 0.45)
+		"land":
+			mesh.scale = Vector3.ONE
+			mesh.position.y = _mesh_base_y
 		"stun":
-			var wobble := sin(_anim_time * 20.0) * (0.12 + 0.22 * (_stun_timer / maxf(stun_time, 0.01)))
+			var wobble := sin(_anim_time * 20.0) * (0.08 + 0.16 * (_stun_timer / maxf(stun_time, 0.01)))
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
 			mesh.rotation.z = wobble
-			_swing_limbs(wobble * 4.0)
 		"prone":
 			mesh.scale = Vector3.ONE
-			mesh.position.y = _mesh_base_y - 0.28
+			mesh.position.y = _mesh_base_y
 			mesh.rotation.z = lerpf(mesh.rotation.z, 0.0, 10.0 * delta)
-			_swing_limbs(0.5)
-
-	# Prone pitch: the whole blob tips forward while sliding.
-	var target_pitch := -1.25 if _prone_timer > 0.0 else 0.0
-	_pose_pitch = lerpf(_pose_pitch, target_pitch, 12.0 * delta)
-	mesh.rotation.x = _pose_pitch
 
 	# Landing squash overrides for a few frames after touching the ground.
 	if _land_squash_timer > 0.0 and _prone_timer <= 0.0:
 		var strength := _land_squash_timer / 0.18
-		var squash := 1.0 - 0.18 * strength
+		var squash := 1.0 - 0.12 * strength
 		mesh.scale = Vector3(1.0 + (1.0 - squash) * 0.5, squash, 1.0 + (1.0 - squash) * 0.5)
 		mesh.position.y = _mesh_base_y
 
 	_update_dust(horizontal_speed)
 
-
-## Blink, mouth and dizzy stars. Cheap but very readable feedback.
-func _update_face(delta: float) -> void:
-	_blink_timer -= delta
-	if _blink_timer <= 0.0:
-		_blink_time = 0.12
-		_blink_timer = randf_range(2.4, 5.2)
-	if _blink_time > 0.0:
-		_blink_time -= delta
-		var lid := 0.12
-		eye_left.scale.y = lid
-		eye_right.scale.y = lid
-	else:
-		eye_left.scale.y = lerpf(eye_left.scale.y, 1.0, 20.0 * delta)
-		eye_right.scale.y = lerpf(eye_right.scale.y, 1.0, 20.0 * delta)
-
-	var open := 0.0
-	match _anim_state:
-		"run":
-			open = 0.35
-		"jump":
-			open = 1.0
-		"stun":
-			open = 0.8
-		"prone":
-			open = 0.6
-	mouth.scale = Vector3(1.0 + open * 0.5, 1.0 + open * 1.2, 1.0)
-
 	if dizzy:
 		dizzy.visible = _stun_timer > 0.0
 		if dizzy.visible:
 			dizzy.rotate_y(delta * 7.0)
-			dizzy.position.y = 2.0 + sin(Time.get_ticks_msec() * 0.006) * 0.08
+			dizzy.position.y = 1.6 + sin(Time.get_ticks_msec() * 0.006) * 0.08
 
 
-## Opposite-phase arm/leg swing; one call poses all four limbs.
-func _swing_limbs(swing: float) -> void:
-	if arm_left:
-		arm_left.rotation.x = swing
-	if arm_right:
-		arm_right.rotation.x = -swing
-	if leg_left:
-		leg_left.rotation.x = -swing
-	if leg_right:
-		leg_right.rotation.x = swing
+func _play_animation(state: String, blend: float = 0.15) -> void:
+	if anim == null:
+		return
+	var clip := "Idle"
+	match state:
+		"walk":
+			clip = "Walking_A"
+		"run":
+			clip = "Running_A"
+		"jump":
+			clip = "Jump_Idle"
+		"land":
+			clip = "Jump_Land"
+		"prone":
+			clip = "Lie_Idle"
+		"stun":
+			clip = "Hit_A"
+	if anim.current_animation != clip:
+		anim.play(clip, blend)
+	anim.speed_scale = 1.3 if clip == "Running_A" else 1.0
 
 
 func _update_dust(horizontal_speed: float) -> void:
@@ -608,7 +603,6 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	_jump_buffer_timer = 0.0
 	_prone_timer = 0.0
 	_dive_cooldown_timer = 0.0
-	_pose_pitch = 0.0
 	_fall_speed = 0.0
 	_anim_state = "idle"
 	_anim_time = 0.0
@@ -616,6 +610,7 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	mesh.position.y = _mesh_base_y
 	mesh.scale = Vector3.ONE
 	mesh.rotation.y = 0.0
+	_play_animation("idle", 0.0)
 	if dizzy:
 		dizzy.visible = false
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)

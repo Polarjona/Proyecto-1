@@ -10,9 +10,9 @@ uniform vec3 accent_color : source_color = vec3(0.65, 0.92, 1.0);
 uniform vec3 grout_color : source_color = vec3(0.07, 0.11, 0.28);
 uniform float tile_scale : hint_range(0.1, 4.0) = 0.7;
 uniform float line_width : hint_range(0.01, 0.2) = 0.045;
-uniform float glow_strength : hint_range(0.0, 4.0) = 1.2;
+uniform float glow_strength : hint_range(0.0, 4.0) = 0.35;
 uniform float pulse_speed : hint_range(0.0, 4.0) = 0.8;
-uniform float sweep_strength : hint_range(0.0, 2.0) = 0.45;
+uniform float sweep_strength : hint_range(0.0, 2.0) = 0.3;
 
 varying vec3 world_position;
 varying vec3 world_normal;
@@ -46,6 +46,6 @@ void fragment() {
 	ALBEDO = color;
 	ROUGHNESS = 0.55;
 	SPECULAR = 0.5;
-	EMISSION = accent_color * (lines * 0.3 + sweep * sweep_strength) * glow_strength;
+	EMISSION = accent_color * (lines * 0.25 + sweep * sweep_strength) * glow_strength;
 	EMISSION *= 0.72 + 0.28 * ripple;
 }

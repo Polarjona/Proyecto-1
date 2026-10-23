@@ -64,37 +64,38 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 Un único circuito de **~220 m y 13 tramos** que usa todos los obstáculos del juego, con 5 checkpoints:
 
 1. **Salida** (plataforma azul) → salto de 2,5 m.
-2. **Sala de barras** (18 m) en una pasarela de solo 9 m: las tres barras barren todo el ancho, así que no hay hueco por los lados.
+2. **Sala de barras** (18 m) en una pasarela de solo 9 m: dos barras barren todo el ancho en sentidos opuestos, así que no hay hueco por los lados. El empuje ya no te lanza de un extremo al otro.
 3. **Cintas perpendiculares** (14,5 m): dos filas de cintas de 6 m de largo cruzadas al recorrido, que empujan hacia los bordes en sentidos opuestos; hay que cruzar en diagonal o te tiran al vacío.
-4. **Puente de balancines**: tres balancines de 2,2 m sobre el vacío.
+4. **Balancín gigante**: una única tabla de 8 × 13 m sobre el vacío que se inclina hacia donde estás, como en Fall Guys.
 5. **Avenida de martillos** (22 m, puente de 5 m): cuatro péndulos desfasados.
-6. **Disco giratorio** y dos plataformas móviles seguidas.
+6. **Disco giratorio** y dos plataformas móviles seguidas; la primera está bajo una lluvia de pelotas.
 7. **Puente del viento** (4 m de ancho): dos túneles en sentidos opuestos y un trampolín para la corona.
 8. **Salto del cañón**: 9 m de vacío que solo cruza el cañón lanzador.
-9. **Corredor de pelotas** (18 m): dos dispensadores y muros en zigzag.
-10. **Recta final**: barra giratoria + martillo + raíles.
+9. **Rampa de pelotas**: el antiguo corredor es ahora una subida y bajada; los dos dispensadores sueltan bolas que ruedan pendiente abajo y caen por un hueco al final de la rampa.
+10. **Recta final**: barra giratoria, martillo, raíles y una cinta que empuja hacia atrás.
 11. **Meta** con trampolín y corona alta.
 
 - **Tres coronas** con brillo, luz y partículas: sobre el trampolín de los balancines, en el puente del viento y sobre la meta.
 
 ### Arte y presentación
 
-- **Shaders propios con look "juguete"**: toon de bandas + rim + emisión (`toy.gdshader`) en obstáculos, multitud y personajes; suelos con rejilla, vetas y barrido de energía (`platform.gdshader`); mar de nubes animado bajo el circuito (`void_sea.gdshader`) y contorno cartoon del personaje (`outline.gdshader`).
+- **Shaders propios**: toon de bandas + rim + emisión (`toy.gdshader`) en obstáculos y multitud; suelos con rejilla, vetas y barrido de energía (`platform.gdshader`); mar de nubes animado bajo el circuito (`void_sea.gdshader`).
 - **Postproceso** en tiempo real: viñeta, grano, aberración cromática, *split-toning* frío/cálido, desenfoque radial al correr, líneas de velocidad, dithering, tinte de aturdimiento y flash de impacto.
 - **Cielo procedural** con sol, halo cálido y **dos capas de nubes** a distinta velocidad; niebla volumétrica, SSAO, SSIL, bloom y ajuste de color.
-- **Personaje rediseñado**: bean redondo con barriga, guantes, botas con suela, gorro con pompón, cejas, mejillas, brillos en los ojos, parpadeo y estrellas de aturdimiento; contorno y sombreado toon. Los bots usan el mismo cuerpo y se tiñen por corredor.
+- **Personajes 3D descargados**: el jugador usa el modelo *Rogue* de **KayKit Adventurers** (CC0) con animaciones reales de idle, caminar, correr, salto, aterrizaje, caída y aturdimiento; los bots usan *Knight* y *Mage* del mismo pack. Las armas y capas se ocultan en runtime para que corran ligeros. Ver `assets/characters/README.md`.
 - **Escenografía procedural** alrededor del circuito: mar de nubes, islas flotantes con cristales y árboles, arcos de neón, torres de luz, montañas lejanas, anillos de estadio, chispas ambientales, bordes luminosos y soportes en cada plataforma.
 - **Multitud** en gradas laterales con `MultiMeshInstance3D`: cuerpos y cabezas pastel con el shader toon, más guirnaldas luminosas en las gradas.
-- **Tema de UI propio**: botones redondeados con foco, paneles, barras de progreso y tipografía con contorno.
-- Menú principal rediseñado con fondo degradado, modos, ajustes, récord, medalla, monedas y coronas.
+- **Tema de UI propio**: interfaz oscura y minimalista, botones planos con borde fino y foco cian, paneles sobrios y barras de progreso.
+- Menú principal rediseñado con degradado oscuro, separadores finos, modos, ajustes, récord, medalla, monedas y coronas.
 
 ## Estructura
 
 ```
 proyecto/
 ├── audio/                  # Música y SFX generados (10 SFX)
+├── assets/characters/      # Modelos GLB CC0 de KayKit + licencia
 ├── materials/              # Materiales toy/platform (shaders) por color
-├── shaders/                # postproceso, cielo, toon, plataformas, mar y contorno
+├── shaders/                # postproceso, cielo, toon, plataformas y mar
 ├── ui/theme.tres           # tema compartido de la interfaz
 ├── scenes/
 │   ├── main.tscn           # curso + jugador + HUD + pausa + postproceso
@@ -159,4 +160,5 @@ Genera 10 SFX (salto, checkpoint, meta, caída, dive, aterrizaje, impacto, moned
 
 - Autores: **Pol Arjona** e **Yazan Issa**
 - Motor: [Godot Engine](https://godotengine.org) 4.7
+- Personajes 3D: [KayKit - Character Pack: Adventurers](https://kaylousberg.itch.io/kaykit-adventurers) de Kay Lousberg, licencia **CC0** (ver `proyecto/assets/characters/LICENSE_KayKit.txt`).
 - IA usada en el desarrollo (ver informe en `documentacion/`).
