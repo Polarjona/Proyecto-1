@@ -1,0 +1,46 @@
+[gd_scene load_steps=8 format=3 uid="uid://ball_dropper_obs"]
+
+[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="2_ball"]
+[ext_resource type="Material" path="res://materials/purple.tres" id="3_purple"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="4_yellow"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pipe"]
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.4
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam"]
+size = Vector3(5.5, 0.3, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_column"]
+size = Vector3(0.3, 6, 0.3)
+
+[node name="BallDropper" type="Node3D"]
+script = ExtResource("1_script")
+ball_scene = ExtResource("2_ball")
+interval = 1.8
+drop_radius = 2.2
+max_balls = 6
+despawn_below_y = -4.0
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("BoxMesh_beam")
+surface_material_override/0 = ExtResource("3_purple")
+
+[node name="Pipe" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_pipe")
+surface_material_override/0 = ExtResource("4_yellow")
+
+[node name="ColumnLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, -3.25, 0)
+mesh = SubResource("BoxMesh_column")
+surface_material_override/0 = ExtResource("3_purple")
+
+[node name="ColumnRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, -3.25, 0)
+mesh = SubResource("BoxMesh_column")
+surface_material_override/0 = ExtResource("3_purple")

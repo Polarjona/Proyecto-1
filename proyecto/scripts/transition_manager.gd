@@ -29,6 +29,7 @@ func change_scene(path: String) -> void:
 	if _busy:
 		return
 	_busy = true
+	GameFeel.reset()
 	get_tree().paused = true
 	await fade_out()
 	get_tree().paused = false

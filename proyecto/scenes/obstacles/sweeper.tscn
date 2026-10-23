@@ -1,0 +1,80 @@
+[gd_scene load_steps=10 format=3 uid="uid://sweeper_obs"]
+
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/orange.tres" id="2_orange"]
+[ext_resource type="Material" path="res://materials/pink.tres" id="3_pink"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_hub"]
+height = 0.7
+radius = 0.35
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hub"]
+top_radius = 0.35
+bottom_radius = 0.35
+height = 0.7
+radial_segments = 16
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_arm"]
+size = Vector3(9.6, 0.35, 0.35)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arm"]
+size = Vector3(9.6, 0.35, 0.35)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_push"]
+size = Vector3(10, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cap"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cap"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="Sweeper" type="Node3D"]
+script = ExtResource("1_script")
+spin_speed = 1.6
+push_force = 11.0
+
+[node name="Bar" type="AnimatableBody3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+sync_to_physics = false
+
+[node name="HubShape" type="CollisionShape3D" parent="Bar"]
+shape = SubResource("CylinderShape3D_hub")
+
+[node name="HubMesh" type="MeshInstance3D" parent="Bar"]
+mesh = SubResource("CylinderMesh_hub")
+surface_material_override/0 = ExtResource("2_orange")
+
+[node name="ArmShape" type="CollisionShape3D" parent="Bar"]
+shape = SubResource("BoxShape3D_arm")
+
+[node name="ArmMesh" type="MeshInstance3D" parent="Bar"]
+mesh = SubResource("BoxMesh_arm")
+surface_material_override/0 = ExtResource("3_pink")
+
+[node name="CapShapeLeft" type="CollisionShape3D" parent="Bar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 0)
+shape = SubResource("BoxShape3D_cap")
+
+[node name="CapMeshLeft" type="MeshInstance3D" parent="Bar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 0)
+mesh = SubResource("BoxMesh_cap")
+surface_material_override/0 = ExtResource("2_orange")
+
+[node name="CapShapeRight" type="CollisionShape3D" parent="Bar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 0, 0)
+shape = SubResource("BoxShape3D_cap")
+
+[node name="CapMeshRight" type="MeshInstance3D" parent="Bar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 0, 0)
+mesh = SubResource("BoxMesh_cap")
+surface_material_override/0 = ExtResource("2_orange")
+
+[node name="PushArea" type="Area3D" parent="Bar"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="PushShape" type="CollisionShape3D" parent="Bar/PushArea"]
+shape = SubResource("BoxShape3D_push")

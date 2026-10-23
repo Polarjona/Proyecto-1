@@ -1,0 +1,20 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://shaders/toy.gdshader" id="1_toy"]
+[ext_resource type="Shader" path="res://shaders/outline.gdshader" id="2_outline"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
+shader = ExtResource("2_outline")
+shader_parameter/outline_color = Color(0.24, 0.06, 0.24, 1)
+shader_parameter/thickness = 0.016
+
+[resource]
+shader = ExtResource("1_toy")
+shader_parameter/base_color = Color(1, 0.45, 0.72, 1)
+shader_parameter/rim_color = Color(1, 0.88, 0.97, 1)
+shader_parameter/rim_strength = 1.15
+shader_parameter/rim_power = 2.2
+shader_parameter/emission_strength = 0.1
+shader_parameter/gloss = 0.55
+shader_parameter/gradient_amount = 0.2
+next_pass = SubResource("ShaderMaterial_outline")

@@ -12,8 +12,15 @@ Salidas:
     audio/sfx/checkpoint.wav
     audio/sfx/finish.wav
     audio/sfx/fall.wav
+    audio/sfx/dive.wav
+    audio/sfx/land.wav
+    audio/sfx/impact.wav
+    audio/sfx/coin.wav
+    audio/sfx/ui.wav
+    audio/sfx/countdown.wav
 
-Requiere ffmpeg para codificar la música a OGG Vorbis.
+Requiere ffmpeg para codificar la música a OGG Vorbis. Si no está
+instalado, los SFX se generan igualmente y se conserva la música actual.
 """
 
 import math
@@ -275,6 +282,74 @@ def sfx_fall():
     return out
 
 
+def sfx_dive():
+    """Whoosh corto con caída de tono para el dive."""
+    dur = 0.28
+    n = int(dur * SR)
+    out = _empty(n)
+    y = 0.0
+    phase = 0.0
+    for i in range(n):
+        t = i / n
+        fc = 2600.0 * math.exp(-4.0 * t) + 320.0
+        alpha = 1.0 - math.exp(-2.0 * math.pi * fc / SR)
+        y += alpha * (random.uniform(-1.0, 1.0) - y)
+        phase += (430.0 * math.exp(-3.0 * t) + 95.0) / SR
+        env = math.sin(math.pi * min(1.0, t * 1.2)) ** 0.6
+        out[i] = (y * 1.2 + math.sin(2.0 * math.pi * phase) * 0.25) * env
+    return out
+
+
+def sfx_land():
+    """Golpe sordo de aterrizaje."""
+    dur = 0.2
+    n = int(dur * SR)
+    out = _empty(n)
+    phase = 0.0
+    for i in range(n):
+        t = i / n
+        phase += (115.0 * math.exp(-3.2 * t) + 45.0) / SR
+        body = math.sin(2.0 * math.pi * phase) * math.exp(-9.0 * t)
+        noise = random.uniform(-1.0, 1.0) * math.exp(-26.0 * t) * 0.35
+        out[i] = (body + noise) * 0.9
+    return out
+
+
+def sfx_impact():
+    """Impacto seco con más cuerpo que el aterrizaje."""
+    dur = 0.24
+    n = int(dur * SR)
+    out = _empty(n)
+    phase = 0.0
+    for i in range(n):
+        t = i / n
+        phase += (90.0 * math.exp(-4.0 * t) + 38.0) / SR
+        body = math.sin(2.0 * math.pi * phase) * math.exp(-8.0 * t)
+        crack = random.uniform(-1.0, 1.0) * math.exp(-34.0 * t) * 0.55
+        out[i] = (body + crack) * 1.0
+    return out
+
+
+def sfx_coin():
+    dur = 0.45
+    out = _empty(int(dur * SR))
+    for k, name in enumerate(["E6", "B6"]):
+        mix(out, k * 0.07 * SR,
+            render_note("triangle", freq(name), 0.4, 0.5,
+                        attack=0.004, release=0.12, decay=0.35))
+    return out
+
+
+def sfx_ui():
+    return render_note("square", 760.0, 0.07, 0.5, duty=0.3,
+                       attack=0.002, release=0.02, decay=0.12)
+
+
+def sfx_countdown():
+    return render_note("sine", 880.0, 0.16, 0.6,
+                       attack=0.004, release=0.05, decay=0.18)
+
+
 # --------------------------------------------------------------------------
 # Música
 # --------------------------------------------------------------------------
@@ -376,10 +451,6 @@ def render_music():
 # --------------------------------------------------------------------------
 
 def main():
-    if shutil.which("ffmpeg") is None:
-        print("ERROR: se necesita ffmpeg para codificar background.ogg", file=sys.stderr)
-        return 1
-
     MUSIC_DIR.mkdir(parents=True, exist_ok=True)
     SFX_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -389,6 +460,17 @@ def main():
     write_wav(SFX_DIR / "checkpoint.wav", sfx_checkpoint(), peak=0.92)
     write_wav(SFX_DIR / "finish.wav", sfx_finish(), peak=0.95)
     write_wav(SFX_DIR / "fall.wav", sfx_fall(), peak=0.90)
+    write_wav(SFX_DIR / "dive.wav", sfx_dive(), peak=0.85)
+    write_wav(SFX_DIR / "land.wav", sfx_land(), peak=0.86)
+    write_wav(SFX_DIR / "impact.wav", sfx_impact(), peak=0.9)
+    write_wav(SFX_DIR / "coin.wav", sfx_coin(), peak=0.9)
+    write_wav(SFX_DIR / "ui.wav", sfx_ui(), peak=0.8)
+    write_wav(SFX_DIR / "countdown.wav", sfx_countdown(), peak=0.85)
+
+    if shutil.which("ffmpeg") is None:
+        print("Aviso: ffmpeg no disponible; se conserva la música existente.")
+        print("Los SFX se han regenerado correctamente.")
+        return 0
 
     print("Generando música (~%d s)..." % int(PHRASE_BARS * 4 * SPB))
     tmp = MUSIC_DIR / "_background_tmp.wav"

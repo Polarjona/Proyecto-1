@@ -1,0 +1,75 @@
+[gd_scene load_steps=9 format=3 uid="uid://bounce_pad_obs"]
+
+[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/purple.tres" id="2_purple"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="3_yellow"]
+[ext_resource type="Material" path="res://materials/lime.tres" id="4_lime"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(3, 1.6, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(3, 0.32, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_base"]
+size = Vector3(3, 0.12, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_top"]
+size = Vector3(2.6, 0.12, 2.6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_spring"]
+top_radius = 0.16
+bottom_radius = 0.2
+height = 0.16
+
+[node name="BouncePad" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+script = ExtResource("1_script")
+bounce_strength = 10.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="FloorShape" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Pad" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+mesh = SubResource("BoxMesh_base")
+surface_material_override/0 = ExtResource("2_purple")
+
+[node name="SpringA" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.19, -0.9)
+mesh = SubResource("CylinderMesh_spring")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="SpringB" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.19, -0.9)
+mesh = SubResource("CylinderMesh_spring")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="SpringC" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.19, 0.9)
+mesh = SubResource("CylinderMesh_spring")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="SpringD" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.19, 0.9)
+mesh = SubResource("CylinderMesh_spring")
+surface_material_override/0 = ExtResource("3_yellow")
+
+[node name="Top" type="MeshInstance3D" parent="Pad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
+mesh = SubResource("BoxMesh_top")
+surface_material_override/0 = ExtResource("4_lime")

@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/platform.gdshader" id="1_platform"]
+
+[resource]
+shader = ExtResource("1_platform")
+shader_parameter/base_color = Color(1, 0.38, 0.66, 1)
+shader_parameter/accent_color = Color(1, 0.82, 0.95, 1)
+shader_parameter/grout_color = Color(0.3, 0.06, 0.18, 1)

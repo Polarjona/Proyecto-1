@@ -1,22 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://m8h3qvxjkxmy"]
+[gd_scene load_steps=6 format=3 uid="uid://m8h3qvxjkxmy"]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
+[ext_resource type="Theme" path="res://ui/theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.09, 0.09, 0.16, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.35, 0.35, 0.55, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 24.0
-content_margin_top = 20.0
-content_margin_right = 24.0
-content_margin_bottom = 20.0
+[sub_resource type="Gradient" id="Gradient_bg"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.04, 0.05, 0.14, 1, 0.16, 0.11, 0.36, 1, 0.42, 0.18, 0.45, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
+gradient = SubResource("Gradient_bg")
+width = 8
+height = 256
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 1)
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -25,16 +22,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_main")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.15, 0.15, 0.35, 1)
+texture = SubResource("GradientTexture2D_bg")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -46,39 +46,132 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 48
+theme_override_colors/font_color = Color(1, 0.9, 0.32, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.05, 0.14, 1)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 72
 text = "STUMBLE GUYS"
 horizontal_alignment = 1
 
-[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "INICIAR"
+theme_override_colors/font_color = Color(0.72, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "CARRERA DE OBSTÁCULOS  ·  ITERACIÓN 3"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "CARRERA CLÁSICA"
+
+[node name="BotsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "CARRERA VS BOTS"
+
+[node name="TournamentButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "TORNEO"
 
 [node name="ControlsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 46)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "Controles"
 
-[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 46)
 layout_mode = 2
-text = "Crèdits"
+size_flags_horizontal = 4
+text = "Ajustes"
+
+[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Créditos"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(380, 46)
 layout_mode = 2
-text = "Sortir"
+size_flags_horizontal = 4
+text = "Salir"
 
 [node name="BestTimeLabel" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -40.0
-offset_right = 200.0
+offset_left = 24.0
+offset_top = -82.0
+offset_right = 440.0
+offset_bottom = -50.0
 grow_vertical = 0
-text = "Sin récord"
+theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "Sin récord todavía"
+
+[node name="MedalLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -48.0
+offset_right = 440.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Medalla de oro: 70.0 s"
+
+[node name="CoinsLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -440.0
+offset_top = -48.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.86, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "0 monedas   ·   0/3 coronas"
+horizontal_alignment = 2
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -26.0
+offset_right = 180.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.65, 0.7, 0.85, 0.8)
+theme_override_font_sizes/font_size = 14
+text = "Godot 4.7  ·  Prototipo"
 horizontal_alignment = 1
 
 [node name="ControlsPanel" type="PanelContainer" parent="."]
@@ -89,19 +182,21 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -280.0
+offset_top = -250.0
+offset_right = 280.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ControlsPanel"]
 layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 32
 text = "CONTROLES"
 horizontal_alignment = 1
 
@@ -110,19 +205,31 @@ layout_mode = 2
 
 [node name="MoveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Moure: W A S D o Fletxes"
+text = "Moverte:  W A S D  o  flechas"
 
 [node name="JumpLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Saltar: Espai"
+text = "Saltar:  Espacio  (mantén para saltar más alto)"
+
+[node name="DiveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Dive:  Shift  (te lanzas al suelo y deslizas)"
 
 [node name="PauseLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Pausar: Escape"
+text = "Pausa:  Escape  o  Start del mando"
+
+[node name="GoalLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Objetivo: sobrevive al circuito, recoge las 3 coronas y baja de 70 s para el oro."
+autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="ControlsPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-text = "Tornar"
+text = "Volver"
 
 [node name="CreditsPanel" type="PanelContainer" parent="."]
 visible = false
@@ -132,20 +239,22 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -280.0
+offset_top = -220.0
+offset_right = 280.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CreditsPanel"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
 [node name="Label" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-text = "CRÈDITS"
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 32
+text = "CRÉDITOS"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="CreditsPanel/VBoxContainer"]
@@ -153,16 +262,23 @@ layout_mode = 2
 
 [node name="ProjectLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Stumble Guys (Prototip)"
+text = "Stumble Guys (prototipo)"
 
 [node name="AuthorLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Autors: Pol Arjona i Yazan Issa"
+text = "Autores: Pol Arjona y Yazan Issa"
 
 [node name="EngineLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
 text = "Motor: Godot Engine 4.7"
 
-[node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
+[node name="AILabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Tornar"
+text = "Desarrollo asistido por IA (Freebuff)"
+
+[node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "Volver"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("3_settings")]

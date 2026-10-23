@@ -12,10 +12,21 @@ func _initialize() -> void:
 		"res://scenes/obstacles/pendulum.tscn",
 		"res://scenes/obstacles/spinning_platform.tscn",
 		"res://scenes/obstacles/wall.tscn",
+		"res://scenes/obstacles/bounce_pad.tscn",
+		"res://scenes/obstacles/sweeper.tscn",
+		"res://scenes/obstacles/moving_platform.tscn",
+		"res://scenes/obstacles/ball.tscn",
+		"res://scenes/obstacles/ball_dropper.tscn",
 		"res://scenes/race/checkpoint.tscn",
 		"res://scenes/race/finish_line.tscn",
 		"res://scenes/race/hud.tscn",
 		"res://scenes/race/kill_plane.tscn",
+		"res://scenes/race/bot_racer.tscn",
+		"res://scenes/obstacles/wind_tunnel.tscn",
+		"res://scenes/obstacles/launcher.tscn",
+		"res://scenes/obstacles/see_saw.tscn",
+		"res://scenes/pickups/crown.tscn",
+		"res://scenes/menu/settings_menu.tscn",
 	]
 	var failed := 0
 	for path in scenes:

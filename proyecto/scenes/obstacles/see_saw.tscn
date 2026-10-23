@@ -1,0 +1,48 @@
+[gd_scene load_steps=8 format=3 uid="uid://see_saw_obs"]
+
+[ext_resource type="Script" path="res://scripts/see_saw.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/orange.tres" id="2_orange"]
+[ext_resource type="Material" path="res://materials/lime.tres" id="3_lime"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_plank"]
+size = Vector3(2.2, 0.26, 3.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_plank"]
+size = Vector3(2.2, 0.26, 3.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cap"]
+size = Vector3(2.3, 0.12, 0.4)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hub"]
+top_radius = 0.22
+bottom_radius = 0.22
+height = 2.5
+radial_segments = 12
+
+[node name="SeeSaw" type="AnimatableBody3D"]
+collision_layer = 1
+collision_mask = 0
+sync_to_physics = true
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_plank")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_plank")
+surface_material_override/0 = ExtResource("2_orange")
+
+[node name="CapFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 1.55)
+mesh = SubResource("BoxMesh_cap")
+surface_material_override/0 = ExtResource("3_lime")
+
+[node name="CapBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.55)
+mesh = SubResource("BoxMesh_cap")
+surface_material_override/0 = ExtResource("3_lime")
+
+[node name="Hub" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_hub")
+surface_material_override/0 = ExtResource("3_lime")

@@ -1,131 +1,608 @@
-[gd_scene format=3 uid="uid://d2bv85jfb3tb2"]
+[gd_scene load_steps=53 format=3 uid="uid://d2bv85jfb3tb2"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="2_pendulum"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="3_spin"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="4_conveyor"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/wall.tscn" id="4_wall"]
-[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="5_checkpoint"]
-[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="6_finish"]
-[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="7_kill"]
-[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="8_hud"]
-[ext_resource type="Script" uid="uid://bwr6qldar7jt8" path="res://scripts/race_manager.gd" id="9_race"]
-[ext_resource type="Material" path="res://materials/blue.tres" id="10_blue"]
-[ext_resource type="PackedScene" uid="uid://dak2m3n4p5q" path="res://scenes/menu/pause_menu.tscn" id="10_pause"]
-[ext_resource type="Material" path="res://materials/lime.tres" id="11_lime"]
-[ext_resource type="Material" path="res://materials/pink.tres" id="12_pink"]
-[ext_resource type="Material" path="res://materials/yellow.tres" id="13_yellow"]
-[ext_resource type="Material" path="res://materials/orange.tres" id="14_orange"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="5_bouncepad"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="6_sweeper"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="7_moving"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="8_dropper"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="9_checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="10_finish"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="11_kill"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="12_hud"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="13_race"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="14_pause"]
+[ext_resource type="Material" path="res://materials/blue.tres" id="20_blue"]
+[ext_resource type="Material" path="res://materials/cyan.tres" id="21_cyan"]
+[ext_resource type="Material" path="res://materials/lime.tres" id="22_lime"]
+[ext_resource type="Material" path="res://materials/orange.tres" id="23_orange"]
+[ext_resource type="Material" path="res://materials/pink.tres" id="24_pink"]
+[ext_resource type="Material" path="res://materials/purple.tres" id="25_purple"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="26_yellow"]
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="30_post_shader"]
+[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="31_sky_shader"]
+[ext_resource type="Script" path="res://scripts/post_process.gd" id="32_post_script"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="33_crowd"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="34_wind"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="35_seesaw"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="36_launcher"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/crown.tscn" id="37_crown"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="38_director"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="39_bot"]
+[ext_resource type="Material" path="res://materials/platform_blue.tres" id="50_plat_blue"]
+[ext_resource type="Material" path="res://materials/platform_cyan.tres" id="51_plat_cyan"]
+[ext_resource type="Material" path="res://materials/platform_lime.tres" id="52_plat_lime"]
+[ext_resource type="Material" path="res://materials/platform_orange.tres" id="53_plat_orange"]
+[ext_resource type="Material" path="res://materials/platform_pink.tres" id="54_plat_pink"]
+[ext_resource type="Material" path="res://materials/platform_purple.tres" id="55_plat_purple"]
+[ext_resource type="Material" path="res://materials/platform_yellow.tres" id="56_plat_yellow"]
+[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="57_decor"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
+sky_top_color = Color(0.25, 0.5, 0.92, 1)
+sky_horizon_color = Color(0.78, 0.9, 1, 1)
+sky_curve = 0.12
+ground_bottom_color = Color(0.28, 0.34, 0.42, 1)
+ground_horizon_color = Color(0.78, 0.9, 1, 1)
+sun_angle_max = 20.0
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_main")
 
 [sub_resource type="Environment" id="Environment_main"]
-background_mode = 1
-background_color = Color(0.55, 0.82, 1, 1)
-ambient_light_source = 2
-ambient_light_color = Color(0.85, 0.9, 1, 1)
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_color = Color(0.8, 0.88, 1, 1)
 ambient_light_energy = 0.55
-tonemap_mode = 2
+tonemap_mode = 3
+tonemap_exposure = 1.1
+tonemap_white = 1.15
+ssao_enabled = true
+ssao_radius = 1.0
+ssao_intensity = 2.0
+ssil_enabled = true
+ssil_intensity = 0.7
+ssil_radius = 2.0
+glow_enabled = true
+glow_intensity = 1.0
+glow_strength = 1.05
+glow_bloom = 0.28
+glow_hdr_threshold = 0.85
+glow_blend_mode = 1
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.008
+volumetric_fog_anisotropy = 0.5
+volumetric_fog_length = 110.0
+volumetric_fog_sky_affect = 0.2
+adjustment_enabled = true
+adjustment_saturation = 1.16
+adjustment_contrast = 1.06
+adjustment_brightness = 1.02
 fog_enabled = true
-fog_light_color = Color(0.7, 0.85, 1, 1)
-fog_density = 0.0045
-fog_sky_affect = 0.4
+fog_light_color = Color(0.7, 0.84, 1, 1)
+fog_density = 0.0022
+fog_sky_affect = 0.25
 
-[node name="Main" type="Node3D" unique_id=425958718]
+[sub_resource type="BoxMesh" id="BoxMesh_pillar"]
+size = Vector3(0.6, 3.2, 0.6)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=965967833]
+[sub_resource type="BoxMesh" id="BoxMesh_beam"]
+size = Vector3(15, 0.6, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rail"]
+size = Vector3(0.3, 0.7, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_side"]
+size = Vector3(2.2, 2.2, 2.2)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
+top_radius = 0.5
+bottom_radius = 0.5
+height = 3.0
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="BoxMesh_tall"]
+size = Vector3(1, 6.5, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("30_post_shader")
+
+[sub_resource type="SphereMesh" id="SphereMesh_sky"]
+radius = 380.0
+height = 760.0
+radial_segments = 32
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("31_sky_shader")
+shader_parameter/top_color = Color(0.13, 0.39, 0.92, 1)
+shader_parameter/horizon_color = Color(0.86, 0.94, 1, 1)
+shader_parameter/ground_color = Color(0.5, 0.64, 0.88, 1)
+shader_parameter/cloud_color = Color(1, 1, 1, 1)
+shader_parameter/sun_color = Color(1, 0.95, 0.8, 1)
+shader_parameter/sun_direction = Vector3(0.5, 0.61, -0.61)
+shader_parameter/cloud_opacity = 0.6
+shader_parameter/cloud_scale = 2.2
+shader_parameter/cloud_speed = 0.035
+shader_parameter/sun_glow = 1.0
+shader_parameter/horizon_warmth = 0.4
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=62824939]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 8, 20, 10)
-light_color = Color(1, 0.97, 0.9, 1)
-light_energy = 1.15
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.35
+light_angular_distance = 1.0
 shadow_enabled = true
+shadow_blur = 1.4
+directional_shadow_max_distance = 200.0
 
-[node name="RaceManager" type="Node" parent="." unique_id=1374237760 groups=["race_manager"]]
-script = ExtResource("9_race")
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-32, 152, 0)
+light_color = Color(0.55, 0.7, 1, 1)
+light_energy = 0.4
+shadow_enabled = false
 
-[node name="HUD" parent="." unique_id=973765517 instance=ExtResource("8_hud")]
+[node name="SkyDome" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -100)
+mesh = SubResource("SphereMesh_sky")
+material_override = SubResource("ShaderMaterial_sky")
+cast_shadow = 0
 
-[node name="KillPlane" parent="." unique_id=949695989 instance=ExtResource("7_kill")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12, -20)
+[node name="RaceManager" type="Node" parent="." groups=["race_manager"]]
+script = ExtResource("13_race")
 
-[node name="Course" type="Node3D" parent="." unique_id=1909608578]
+[node name="HUD" parent="." instance=ExtResource("12_hud")]
 
-[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=1803425095]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+[node name="KillPlane" parent="." instance=ExtResource("11_kill")]
+transform = Transform3D(1.25, 0, 0, 0, 1, 0, 0, 0, 1.25, 0, -10, -100)
+
+[node name="Course" type="Node3D" parent="."]
+
+[node name="StartPlatform" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
 use_collision = true
-size = Vector3(10, 0.5, 10)
-material = ExtResource("10_blue")
+size = Vector3(14, 0.5, 12)
+material = ExtResource("50_plat_blue")
 
-[node name="Bridge1" type="CSGBox3D" parent="Course" unique_id=1548800455]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -8)
+[node name="SweeperHall" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -15.5)
 use_collision = true
-size = Vector3(4, 0.4, 6)
-material = ExtResource("11_lime")
+size = Vector3(9, 0.5, 18)
+material = ExtResource("51_plat_cyan")
 
-[node name="ConveyorPad" type="CSGBox3D" parent="Course" unique_id=608702011]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -14)
-use_collision = true
-size = Vector3(8, 0.4, 4)
-material = ExtResource("12_pink")
+[node name="Sweeper" parent="Course" instance=ExtResource("6_sweeper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10.5)
+spin_speed = 1.5
+push_force = 11.0
 
-[node name="Conveyor" parent="Course" unique_id=1492012609 instance=ExtResource("4_conveyor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15417077, -18)
+[node name="Sweeper2" parent="Course" instance=ExtResource("6_sweeper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -15.5)
+spin_speed = 1.9
+push_force = 12.0
+spin_direction = -1.0
 
-[node name="WallConveyorLeft" parent="Course" unique_id=1915096494 instance=ExtResource("4_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.8, -18)
+[node name="Sweeper3" parent="Course" instance=ExtResource("6_sweeper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -20.5)
+spin_speed = 2.3
+push_force = 12.0
 
-[node name="WallConveyorRight" parent="Course" unique_id=2089808590 instance=ExtResource("4_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.8, -18)
-
-[node name="MidPlatform" type="CSGBox3D" parent="Course" unique_id=285755978]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -26)
-use_collision = true
-size = Vector3(10, 0.5, 8)
-material = ExtResource("13_yellow")
-
-[node name="Pendulum" parent="Course" unique_id=1119292040 instance=ExtResource("2_pendulum")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -26)
-
-[node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=284888211]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -34)
-use_collision = true
-size = Vector3(3.5, 0.4, 8)
-material = ExtResource("14_orange")
-
-[node name="SpinApproach" type="CSGBox3D" parent="Course" unique_id=964559612]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -42)
-use_collision = true
-size = Vector3(6, 0.4, 4)
-material = ExtResource("10_blue")
-
-[node name="SpinningPlatform" parent="Course" unique_id=1301793895 instance=ExtResource("3_spin")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -50)
-
-[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=990132874]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -58)
-use_collision = true
-size = Vector3(10, 0.5, 8)
-material = ExtResource("11_lime")
-
-[node name="Checkpoint1" parent="Course" unique_id=188691385 instance=ExtResource("5_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.34414107, -0.3508153, -13.935536)
+[node name="Checkpoint1" parent="Course" instance=ExtResource("9_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
 checkpoint_name = "Checkpoint 1"
 
-[node name="Checkpoint2" parent="Course" unique_id=1337147248 instance=ExtResource("5_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -33)
+[node name="ConveyorHall" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -34.75)
+use_collision = true
+size = Vector3(12, 0.5, 14.5)
+material = ExtResource("54_plat_pink")
+
+[node name="ConveyorA1" parent="Course" instance=ExtResource("4_conveyor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -30.5)
+direction = Vector3(1, 0, 0)
+force = 8.0
+
+[node name="ConveyorA2" parent="Course" instance=ExtResource("4_conveyor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -30.5)
+direction = Vector3(1, 0, 0)
+force = 8.0
+
+[node name="ConveyorB1" parent="Course" instance=ExtResource("4_conveyor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -38.5)
+direction = Vector3(-1, 0, 0)
+force = 8.0
+
+[node name="ConveyorB2" parent="Course" instance=ExtResource("4_conveyor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -38.5)
+direction = Vector3(-1, 0, 0)
+force = 8.0
+
+[node name="Checkpoint2" parent="Course" instance=ExtResource("9_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -28.8)
 checkpoint_name = "Checkpoint 2"
 
-[node name="Checkpoint3" parent="Course" unique_id=1102791587 instance=ExtResource("5_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -48)
+[node name="SeeSaw" parent="Course" instance=ExtResource("35_seesaw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, -47)
+max_tilt = 0.42
+responsiveness = 3.2
+
+[node name="SeeSaw2" parent="Course" instance=ExtResource("35_seesaw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, -50.6)
+max_tilt = 0.42
+responsiveness = 3.2
+idle_sway = 0.06
+
+[node name="SeeSaw3" parent="Course" instance=ExtResource("35_seesaw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, -54.2)
+max_tilt = 0.42
+responsiveness = 3.2
+
+[node name="SeeSawLanding" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -62.5)
+use_collision = true
+size = Vector3(10, 0.5, 5)
+material = ExtResource("52_plat_lime")
+
+[node name="Checkpoint3" parent="Course" instance=ExtResource("9_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -63.5)
 checkpoint_name = "Checkpoint 3"
 
-[node name="FinishLine" parent="Course" unique_id=1882124661 instance=ExtResource("6_finish")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -60)
+[node name="BouncePad" parent="Course" instance=ExtResource("5_bouncepad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0, -62)
+bounce_strength = 10.5
 
-[node name="Player" parent="." unique_id=2127636636 instance=ExtResource("1_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 3)
-acceleration = 18.0
-friction = 9.0
-jump_velocity = 3.5
+[node name="CrownA" parent="Course" instance=ExtResource("37_crown")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 3.8, -62)
+crown_id = "crown_saws"
 
-[node name="PauseMenu" parent="." unique_id=2118945446 instance=ExtResource("10_pause")]
+[node name="PendulumBridge" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -78)
+use_collision = true
+size = Vector3(5, 0.5, 22)
+material = ExtResource("53_plat_orange")
+
+[node name="Pendulum" parent="Course" instance=ExtResource("2_pendulum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -71)
+max_angle = 1.1
+swing_speed = 0.0018
+push_force = 14.0
+phase_offset = 0.0
+
+[node name="Pendulum2" parent="Course" instance=ExtResource("2_pendulum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -76.5)
+max_angle = 1.1
+swing_speed = 0.0018
+push_force = 14.0
+phase_offset = 1.7
+
+[node name="Pendulum3" parent="Course" instance=ExtResource("2_pendulum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -82)
+max_angle = 1.1
+swing_speed = 0.0018
+push_force = 14.0
+phase_offset = 3.4
+
+[node name="Pendulum4" parent="Course" instance=ExtResource("2_pendulum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -86.5)
+max_angle = 1.1
+swing_speed = 0.0018
+push_force = 14.0
+phase_offset = 5.1
+
+[node name="SpinningPlatform" parent="Course" instance=ExtResource("3_spin")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -94)
+spin_speed = 1.5
+
+[node name="MovingPlatform" parent="Course" instance=ExtResource("7_moving")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -101.5)
+travel = Vector3(0, 0, -5)
+speed = 2.4
+pause_time = 0.5
+
+[node name="LandingA" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -112.5)
+use_collision = true
+size = Vector3(10, 0.5, 7)
+material = ExtResource("50_plat_blue")
+
+[node name="Checkpoint4" parent="Course" instance=ExtResource("9_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -114.5)
+checkpoint_name = "Checkpoint 4"
+
+[node name="MovingPlatform2" parent="Course" instance=ExtResource("7_moving")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -118.5)
+travel = Vector3(0, 0, -2)
+speed = 2.0
+pause_time = 0.4
+
+[node name="WindBridge" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -131.5)
+use_collision = true
+size = Vector3(4, 0.5, 17)
+material = ExtResource("55_plat_purple")
+
+[node name="WindTunnel" parent="Course" instance=ExtResource("34_wind")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -126)
+wind_direction = Vector3(1, 0, 0)
+strength = 5.0
+gust_amplitude = 1.8
+
+[node name="WindTunnel2" parent="Course" instance=ExtResource("34_wind")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -137)
+wind_direction = Vector3(-1, 0, 0)
+strength = 5.0
+gust_amplitude = 1.8
+
+[node name="CrownLedgeB" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.35, -131.5)
+use_collision = true
+size = Vector3(3, 0.5, 3)
+material = ExtResource("56_plat_yellow")
+
+[node name="BouncePadWind" parent="Course" instance=ExtResource("5_bouncepad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.6, -131.5)
+bounce_strength = 10.5
+
+[node name="CrownB" parent="Course" instance=ExtResource("37_crown")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 4.2, -131.5)
+crown_id = "crown_wind"
+
+[node name="Launcher" parent="Course" instance=ExtResource("36_launcher")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -139.2)
+launch_force = 9.0
+launch_up = 8.5
+cooldown = 2.0
+launch_direction = Vector3(0, 0, -1)
+
+[node name="CannonLanding" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -154)
+use_collision = true
+size = Vector3(12, 0.5, 14)
+material = ExtResource("51_plat_cyan")
+
+[node name="BallCorridor" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -171)
+use_collision = true
+size = Vector3(7, 0.5, 18)
+material = ExtResource("55_plat_purple")
+
+[node name="BallDropper" parent="Course" instance=ExtResource("8_dropper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -166)
+interval = 1.7
+drop_radius = 2.4
+max_balls = 7
+despawn_below_y = -2.0
+start_delay = 1.2
+
+[node name="BallDropper2" parent="Course" instance=ExtResource("8_dropper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -176)
+interval = 1.4
+drop_radius = 2.4
+max_balls = 7
+despawn_below_y = -2.0
+start_delay = 2.0
+
+[node name="WallBallLeftA" parent="Course" instance=ExtResource("4_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.75, -168)
+
+[node name="WallBallRightA" parent="Course" instance=ExtResource("4_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.75, -172.5)
+
+[node name="WallBallLeftB" parent="Course" instance=ExtResource("4_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.75, -177)
+
+[node name="Checkpoint5" parent="Course" instance=ExtResource("9_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -178.5)
+checkpoint_name = "Checkpoint 5"
+
+[node name="FinalRun" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -189)
+use_collision = true
+size = Vector3(9, 0.5, 14)
+material = ExtResource("53_plat_orange")
+
+[node name="Sweeper4" parent="Course" instance=ExtResource("6_sweeper")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -186)
+spin_speed = 2.4
+push_force = 12.5
+
+[node name="Pendulum5" parent="Course" instance=ExtResource("2_pendulum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, -192)
+max_angle = 1.25
+swing_speed = 0.0024
+push_force = 15.0
+phase_offset = 2.0
+
+[node name="WallFinalLeft" parent="Course" instance=ExtResource("4_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 1.75, -189)
+
+[node name="WallFinalRight" parent="Course" instance=ExtResource("4_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 1.75, -189)
+
+[node name="FinishPlatform" type="CSGBox3D" parent="Course"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -206)
+use_collision = true
+size = Vector3(14, 0.5, 16)
+material = ExtResource("52_plat_lime")
+
+[node name="BouncePadFinish" parent="Course" instance=ExtResource("5_bouncepad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 1, -201)
+bounce_strength = 10.5
+
+[node name="CrownC" parent="Course" instance=ExtResource("37_crown")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 5.6, -201)
+crown_id = "crown_finish"
+
+[node name="FinishLine" parent="Course" instance=ExtResource("10_finish")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -206)
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="StartGatePillarLeft" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.6, -3)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("25_purple")
+
+[node name="StartGatePillarRight" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.6, -3)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("25_purple")
+
+[node name="StartGateBeam" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -3)
+mesh = SubResource("BoxMesh_beam")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="StartRailLeft" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.15, 0.35, 2)
+mesh = SubResource("BoxMesh_rail")
+surface_material_override/0 = ExtResource("21_cyan")
+
+[node name="StartRailRight" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.15, 0.35, 2)
+mesh = SubResource("BoxMesh_rail")
+surface_material_override/0 = ExtResource("21_cyan")
+
+[node name="SweeperColumnLeft" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 1.5, -15.5)
+mesh = SubResource("CylinderMesh_column")
+surface_material_override/0 = ExtResource("23_orange")
+
+[node name="SweeperColumnRight" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 1.5, -15.5)
+mesh = SubResource("CylinderMesh_column")
+surface_material_override/0 = ExtResource("23_orange")
+
+[node name="BridgeColumnLeft" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.5, -78)
+mesh = SubResource("CylinderMesh_column")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="BridgeColumnRight" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1.5, -78)
+mesh = SubResource("CylinderMesh_column")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="SideBlockA" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.5, -30)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("25_purple")
+
+[node name="SideBlockB" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 2.5, -44)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("24_pink")
+
+[node name="SideBlockC" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1, -70)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("22_lime")
+
+[node name="SideBlockD" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 3.2, -95)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("20_blue")
+
+[node name="SideBlockE" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 2, -132)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("23_orange")
+
+[node name="SideBlockF" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 1.4, -168)
+mesh = SubResource("BoxMesh_side")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="DistantPillarLeftA" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -25)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("21_cyan")
+
+[node name="DistantPillarRightA" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -25)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("21_cyan")
+
+[node name="DistantPillarLeftB" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -70)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="DistantPillarRightB" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -70)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="DistantPillarLeftC" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -118)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="DistantPillarRightC" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -118)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("26_yellow")
+
+[node name="DistantPillarLeftD" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -166)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("24_pink")
+
+[node name="DistantPillarRightD" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -166)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("24_pink")
+
+[node name="DistantPillarLeftE" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -208)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("22_lime")
+
+[node name="DistantPillarRightE" type="MeshInstance3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -208)
+mesh = SubResource("BoxMesh_tall")
+surface_material_override/0 = ExtResource("22_lime")
+
+[node name="ArenaDecor" type="Node3D" parent="."]
+script = ExtResource("57_decor")
+
+[node name="Crowd" type="Node3D" parent="."]
+script = ExtResource("33_crowd")
+per_row = 60
+stand_offset = 17.0
+stand_length = 190.0
+stand_center_z = -105.0
+
+[node name="PostProcess" type="CanvasLayer" parent="."]
+layer = 0
+script = ExtResource("32_post_script")
+
+[node name="Rect" type="ColorRect" parent="PostProcess"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_post")
+
+[node name="RaceDirector" type="Node" parent="."]
+script = ExtResource("38_director")
+bot_scene = ExtResource("39_bot")
+finish_z = -205.0
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 5)
+acceleration = 22.0
+friction = 12.0
+jump_velocity = 5.0
+
+[node name="PauseMenu" parent="." instance=ExtResource("14_pause")]
