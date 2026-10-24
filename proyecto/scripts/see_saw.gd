@@ -1,17 +1,19 @@
 extends AnimatableBody3D
 
 ## Big seesaw bridge, Fall Guys style: a wide board balanced on a central
-## axle. It pitches towards whoever is standing on it, with a small roll to
-## the side, and returns level when nobody is on top.
+## axle. The board's long side runs along the axle (local X) so the visual
+## design and the real pitch axis match; it pitches towards whoever is
+## standing on it, with a small roll to the side, and returns level when
+## nobody is on top.
 
 @export var max_tilt: float = 0.3
 @export var max_roll: float = 0.05
 @export var responsiveness: float = 3.4
 @export var idle_sway: float = 0.0
-## Half-length of the board, measured from the pivot along local Z.
-@export var rider_range: float = 6.2
-## Half-width of the board, measured from the pivot along local X.
-@export var rider_width: float = 4.2
+## Half-length of the board along the travel direction (local Z).
+@export var rider_range: float = 5.0
+## Half-width of the board across the path (local X).
+@export var rider_width: float = 6.5
 ## How far above the pivot a body still counts as riding the board.
 @export var rider_height: float = 2.2
 

@@ -47,7 +47,7 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 ### Carrera y progresión
 
 - Carrera cronometrada con **cuenta atrás**, **splits por checkpoint** y comparación con el récord.
-- **Cinco checkpoints** con respawn y penalización (+2,5 s por caída).
+- **Cinco checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco.
 - **Medallas oro/plata/bronce** (70 s / 95 s / 130 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
 - **Perfil persistente** en `user://profile.json`: récord, medallas, monedas, coronas, estadísticas, ajustes y tutorial. Migra automáticamente el antiguo `user://best_time.save`.
 - **Tres coronas** coleccionables repartidas por el circuito, persistentes entre partidas.
@@ -64,16 +64,16 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 Un único circuito de **~220 m y 13 tramos** que usa todos los obstáculos del juego, con 5 checkpoints:
 
 1. **Salida** (plataforma azul) → salto de 2,5 m.
-2. **Sala de barras** (18 m) en una pasarela de solo 9 m: dos barras barren todo el ancho en sentidos opuestos, así que no hay hueco por los lados. El empuje ya no te lanza de un extremo al otro.
+2. **Sala de barras** (18 m) en una pasarela de solo 9 m: dos barras barren todo el ancho en sentidos opuestos, así que no hay hueco por los lados. La primera solo te empuja; **solo la segunda aturde**. El empuje ya no te lanza de un extremo al otro.
 3. **Cintas perpendiculares** (14,5 m): dos filas de cintas de 6 m de largo cruzadas al recorrido, que empujan hacia los bordes en sentidos opuestos; hay que cruzar en diagonal o te tiran al vacío.
-4. **Balancín gigante**: una única tabla de 8 × 13 m sobre el vacío que se inclina hacia donde estás, como en Fall Guys.
+4. **Balancín gigante**: una única tabla de 13 × 10 m sobre el vacío, girada 90° para que el eje visible y el eje real coincidan; se inclina hacia donde estás, como en Fall Guys.
 5. **Avenida de martillos** (22 m, puente de 5 m): cuatro péndulos desfasados.
 6. **Disco giratorio** y dos plataformas móviles seguidas; la primera está bajo una lluvia de pelotas.
 7. **Puente del viento** (4 m de ancho): dos túneles en sentidos opuestos y un trampolín para la corona.
 8. **Salto del cañón**: 9 m de vacío que solo cruza el cañón lanzador.
 9. **Rampa de pelotas**: el antiguo corredor es ahora una subida y bajada; los dos dispensadores sueltan bolas que ruedan pendiente abajo y caen por un hueco al final de la rampa.
 10. **Recta final**: barra giratoria, martillo, raíles y una cinta que empuja hacia atrás.
-11. **Meta** con trampolín y corona alta.
+11. **Meta elevada**: un trampolín obligatorio al final de la recta lanza al jugador a la plataforma de meta, 4 m más arriba; sin él no se llega. Arriba queda la corona alta.
 
 - **Tres coronas** con brillo, luz y partículas: sobre el trampolín de los balancines, en el puente del viento y sobre la meta.
 

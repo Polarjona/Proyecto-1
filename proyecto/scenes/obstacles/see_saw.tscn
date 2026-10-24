@@ -5,25 +5,25 @@
 [ext_resource type="Material" path="res://materials/lime.tres" id="3_lime"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_plank"]
-size = Vector3(8, 0.35, 13)
+size = Vector3(13, 0.35, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_plank"]
-size = Vector3(8, 0.35, 13)
+size = Vector3(13, 0.35, 10)
 
-[sub_resource type="BoxMesh" id="BoxMesh_cap"]
-size = Vector3(8.1, 0.08, 0.5)
+[sub_resource type="BoxMesh" id="BoxMesh_edge_x"]
+size = Vector3(13.1, 0.08, 0.35)
 
-[sub_resource type="BoxMesh" id="BoxMesh_rail"]
-size = Vector3(0.18, 0.12, 13)
+[sub_resource type="BoxMesh" id="BoxMesh_edge_z"]
+size = Vector3(0.35, 0.08, 10.1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_hub"]
 top_radius = 0.4
 bottom_radius = 0.4
-height = 7.6
+height = 12.4
 radial_segments = 16
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_board"]
-friction = 0.5
+friction = 0.45
 rough = true
 
 [node name="SeeSaw" type="AnimatableBody3D"]
@@ -32,9 +32,9 @@ collision_mask = 0
 sync_to_physics = true
 physics_material_override = SubResource("PhysicsMaterial_board")
 script = ExtResource("1_script")
-max_tilt = 0.18
-max_roll = 0.035
-responsiveness = 2.8
+max_tilt = 0.3
+max_roll = 0.05
+responsiveness = 3.4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_plank")
@@ -43,24 +43,24 @@ shape = SubResource("BoxShape3D_plank")
 mesh = SubResource("BoxMesh_plank")
 surface_material_override/0 = ExtResource("2_orange")
 
-[node name="CapFront" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 6.2)
-mesh = SubResource("BoxMesh_cap")
+[node name="EdgeFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 4.85)
+mesh = SubResource("BoxMesh_edge_x")
 surface_material_override/0 = ExtResource("3_lime")
 
-[node name="CapBack" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, -6.2)
-mesh = SubResource("BoxMesh_cap")
+[node name="EdgeBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, -4.85)
+mesh = SubResource("BoxMesh_edge_x")
 surface_material_override/0 = ExtResource("3_lime")
 
-[node name="RailLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.92, 0.2, 0)
-mesh = SubResource("BoxMesh_rail")
+[node name="EdgeLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35, 0.18, 0)
+mesh = SubResource("BoxMesh_edge_z")
 surface_material_override/0 = ExtResource("3_lime")
 
-[node name="RailRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.92, 0.2, 0)
-mesh = SubResource("BoxMesh_rail")
+[node name="EdgeRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.35, 0.18, 0)
+mesh = SubResource("BoxMesh_edge_z")
 surface_material_override/0 = ExtResource("3_lime")
 
 [node name="Hub" type="MeshInstance3D" parent="."]

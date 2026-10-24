@@ -4,7 +4,7 @@ extends Area3D
 @export var spawn_height_offset: float = 0.5
 
 @onready var spawn_marker: Marker3D = $SpawnMarker
-@onready var bar: MeshInstance3D = $Bar
+@onready var floor_band: MeshInstance3D = $FloorBand
 @onready var particles: CPUParticles3D = $Particles
 
 var _activated: bool = false
@@ -34,10 +34,10 @@ func _play_feedback() -> void:
 	AudioManager.play_sfx("checkpoint")
 	if particles:
 		particles.restart()
-	if bar:
+	if floor_band:
 		var tween := create_tween()
-		tween.tween_property(bar, "scale", Vector3(1.15, 1.7, 1.15), 0.12)
-		tween.tween_property(bar, "scale", Vector3.ONE, 0.2)
+		tween.tween_property(floor_band, "scale", Vector3(1.1, 1.0, 1.6), 0.12)
+		tween.tween_property(floor_band, "scale", Vector3.ONE, 0.22)
 
 
 func _get_race_manager() -> Node:

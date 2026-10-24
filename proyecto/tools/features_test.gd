@@ -86,6 +86,18 @@ func _run() -> void:
 	# --- 2. Decoracion del mapa -----------------------------------------
 	_check(game.get_node_or_null("Decor/StartGateBeam") != null, "Decoración: arco de salida")
 	_check(game.get_node_or_null("Decor/DistantPillarLeftA") != null, "Decoración: pilares de fondo")
+	_check(game.get_node_or_null("Decor/SweeperColumnLeft") == null
+		and game.get_node_or_null("Decor/BridgeColumnRight") == null,
+		"Se quitaron las columnas decorativas que no sostenían nada")
+
+	# --- 2b. El balancín coincide con su eje real -------------------------
+	var saw: Node3D = game.get_node("Course/SeeSaw")
+	var plank_mesh: BoxMesh = (saw.get_node("Mesh") as MeshInstance3D).mesh as BoxMesh
+	var plank_size: Vector3 = plank_mesh.size
+	_check(plank_size.x > plank_size.z and absf(plank_size.z - 10.0) < 0.1,
+		"El tablero del balancín gira 90° (%.1f × %.1f m)" % [plank_size.x, plank_size.z])
+	var hub_axis: Vector3 = (saw.get_node("Hub") as Node3D).global_transform.basis.y.normalized()
+	_check(absf(hub_axis.x) > 0.9, "El eje visible del balancín coincide con el eje de giro")
 	_check((game.get_node("WorldEnvironment").environment as Environment).sky != null,
 		"El entorno usa un cielo procedural")
 
@@ -115,6 +127,11 @@ func _run() -> void:
 	var sweeper3: Node3D = game.get_node("Course/Sweeper3")
 	_check(signf(sweeper.get_angle()) != signf(sweeper3.get_angle()),
 		"Las dos barras de la sala giran en sentidos opuestos")
+	var sweeper4: Node3D = game.get_node("Course/Sweeper4")
+	_check(sweeper.get("stuns") == false and sweeper4.get("stuns") == false,
+		"El primer y el último sweeper solo empujan, no aturden")
+	_check(sweeper3.get("stuns") == true,
+		"Solo el segundo sweeper aturde al jugador")
 	var sweeper_bar: AnimatableBody3D = sweeper.get_node("Bar")
 	_check(sweeper_bar.collision_layer == 0,
 		"La barra no bloquea físicamente al jugador (solo empuja)")
@@ -239,13 +256,47 @@ func _run() -> void:
 	_check(absf(landing_y - 1.0) < 0.1,
 		"Hay una plataforma de aterrizaje tras el hueco (y=%.2f)" % landing_y)
 
+	# --- 13b. Checkpoint sin arco, marca en el suelo ----------------------
+	var cp1: Node3D = checkpoints[0]
+	_check(cp1.get_node_or_null("Bar") == null and cp1.get_node_or_null("PostLeft") == null,
+		"El checkpoint ya no tiene arco")
+	_check(cp1.get_node_or_null("FloorBand") != null and cp1.get_node_or_null("FloorStripe") != null,
+		"El checkpoint se marca con una banda luminosa en el suelo")
+
+	# --- 13c. Plataforma giratoria decorada --------------------------------
+	var spinner: Node3D = game.get_node("Course/SpinningPlatform")
+	var spinner_details: Node3D = spinner.get_node_or_null("Details")
+	_check(spinner_details != null and spinner_details.get_node_or_null("Rim") != null,
+		"La plataforma giratoria tiene rayos, borde y eje visible")
+
+	# --- 13d. El trampolín final es parte del recorrido -------------------
+	var final_pad: Area3D = game.get_node_or_null("Course/BouncePadFinal")
+	_check(final_pad != null, "Hay un trampolín obligatorio antes de la meta")
+	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.2, -193.5)))
+	Input.action_press("move_forward")
+	var final_bounce := 0.0
+	for i in 24:
+		await physics_frame
+		final_bounce = maxf(final_bounce, player.velocity.y)
+	Input.action_release("move_forward")
+	_check(final_bounce >= 9.5,
+		"El trampolín final lanza al jugador hacia la meta elevada (vel.y máx = %.1f)" % final_bounce)
+	var finish_query := PhysicsRayQueryParameters3D.create(
+		Vector3(0.0, 8.0, -203.0), Vector3(0.0, 0.0, -203.0), 1)
+	var finish_hit := space.intersect_ray(finish_query)
+	var finish_y := -99.0
+	if not finish_hit.is_empty():
+		finish_y = (finish_hit["position"] as Vector3).y
+	_check(absf(finish_y - 4.0) < 0.15,
+		"La meta está elevada y solo se alcanza con el trampolín (y=%.2f)" % finish_y)
+
 	await _place_player(player, Vector3(0.0, 2.0, -112.0))
 	_check(absf(player.global_position.y - 0.6) < 0.2,
 		"Aterriza en la plataforma tras las plataformas móviles (y=%.2f)" % player.global_position.y)
 
-	await _place_player(player, Vector3(0.0, 2.0, -203.0))
-	_check(absf(player.global_position.y - 1.0) < 0.2,
-		"Aterriza en la plataforma de meta (y=%.2f)" % player.global_position.y)
+	await _place_player(player, Vector3(0.0, 5.0, -203.0))
+	_check(absf(player.global_position.y - 4.0) < 0.2,
+		"Aterriza en la plataforma de meta elevada (y=%.2f)" % player.global_position.y)
 
 	# --- 14. La plataforma móvil se puede cabalgar -----------------------
 	# La plataforma hace pausas en los extremos, así que se mide el recorrido

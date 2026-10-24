@@ -7,6 +7,8 @@ extends Node3D
 @export var push_force: float = 4.8
 ## Small hop so the hit reads, without launching the player across the hall.
 @export var push_lift: float = 1.2
+## When false the bar only shoves: no stun, no red flash, no hit-stop.
+@export var stuns: bool = true
 ## Flip to -1.0 to make the bar spin the other way.
 @export var spin_direction: float = 1.0
 
@@ -40,4 +42,8 @@ func _on_body_entered(body: Node3D) -> void:
 		push_dir = Vector3.RIGHT
 	else:
 		push_dir = push_dir.normalized()
-	body.apply_push(push_dir * push_force + Vector3.UP * push_lift)
+	var impulse := push_dir * push_force + Vector3.UP * push_lift
+	if not stuns and body.has_method("apply_push_soft"):
+		body.apply_push_soft(impulse)
+	else:
+		body.apply_push(impulse)

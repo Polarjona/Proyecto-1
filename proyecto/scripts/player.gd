@@ -539,6 +539,16 @@ func apply_push(force: Vector3) -> void:
 		AudioManager.play_sfx("impact", 0.2, -4.0)
 
 
+## Light shove (sweeper bar, bumper): keeps the knockback but never stuns.
+func apply_push_soft(force: Vector3) -> void:
+	_control_velocity.x += force.x
+	_control_velocity.z += force.z
+	velocity.y += force.y
+	if Vector2(force.x, force.z).length() > 2.0:
+		GameFeel.shake(0.5)
+		AudioManager.play_sfx("impact", 0.25, -6.0)
+
+
 ## Launch from a cannon/trampoline without the stun that `apply_push` adds.
 func launch(impulse: Vector3) -> void:
 	_control_velocity += Vector3(impulse.x, 0.0, impulse.z)

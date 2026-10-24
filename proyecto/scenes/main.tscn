@@ -93,12 +93,6 @@ size = Vector3(0.3, 0.7, 10)
 [sub_resource type="BoxMesh" id="BoxMesh_side"]
 size = Vector3(2.2, 2.2, 2.2)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
-top_radius = 0.5
-bottom_radius = 0.5
-height = 3.0
-radial_segments = 12
-
 [sub_resource type="BoxMesh" id="BoxMesh_tall"]
 size = Vector3(1, 6.5, 1)
 
@@ -177,12 +171,14 @@ material = ExtResource("51_plat_cyan")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10.5)
 spin_speed = 1.5
 push_force = 4.8
+stuns = false
 
 [node name="Sweeper3" parent="Course" instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -20.5)
 spin_speed = 2.3
 spin_direction = -1.0
 push_force = 5.2
+stuns = true
 
 [node name="Checkpoint1" parent="Course" instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
@@ -424,6 +420,7 @@ material = ExtResource("53_plat_orange")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -186)
 spin_speed = 2.4
 push_force = 5.6
+stuns = false
 
 [node name="FinalConveyor" parent="Course" instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83, -186)
@@ -443,22 +440,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 1.75, -189)
 [node name="WallFinalRight" parent="Course" instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 1.75, -189)
 
+[node name="BouncePadFinal" parent="Course" instance=ExtResource("5_bouncepad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -194)
+bounce_strength = 10.5
+
 [node name="FinishPlatform" type="CSGBox3D" parent="Course"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -206)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -206)
 use_collision = true
 size = Vector3(14, 0.5, 16)
 material = ExtResource("52_plat_lime")
 
 [node name="BouncePadFinish" parent="Course" instance=ExtResource("5_bouncepad")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 1, -201)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 4, -201)
 bounce_strength = 10.5
 
 [node name="CrownC" parent="Course" instance=ExtResource("37_crown")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 5.6, -201)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 8.6, -201)
 crown_id = "crown_finish"
 
 [node name="FinishLine" parent="Course" instance=ExtResource("10_finish")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -206)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -206)
 
 [node name="Decor" type="Node3D" parent="."]
 
@@ -486,26 +487,6 @@ surface_material_override/0 = ExtResource("21_cyan")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.15, 0.35, 2)
 mesh = SubResource("BoxMesh_rail")
 surface_material_override/0 = ExtResource("21_cyan")
-
-[node name="SweeperColumnLeft" type="MeshInstance3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 1.5, -15.5)
-mesh = SubResource("CylinderMesh_column")
-surface_material_override/0 = ExtResource("23_orange")
-
-[node name="SweeperColumnRight" type="MeshInstance3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 1.5, -15.5)
-mesh = SubResource("CylinderMesh_column")
-surface_material_override/0 = ExtResource("23_orange")
-
-[node name="BridgeColumnLeft" type="MeshInstance3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.5, -78)
-mesh = SubResource("CylinderMesh_column")
-surface_material_override/0 = ExtResource("26_yellow")
-
-[node name="BridgeColumnRight" type="MeshInstance3D" parent="Decor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1.5, -78)
-mesh = SubResource("CylinderMesh_column")
-surface_material_override/0 = ExtResource("26_yellow")
 
 [node name="SideBlockA" type="MeshInstance3D" parent="Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.5, -30)

@@ -1,6 +1,6 @@
 extends Area3D
 
-## Trampoline pad: launches the player straight up when they land on it.
+## Trampoline pad: launches players and bots straight up when they land on it.
 ## The pad squashes down and springs back for visual feedback.
 
 @export var bounce_strength: float = 10.5
@@ -8,7 +8,7 @@ extends Area3D
 
 @onready var pad: Node3D = $Pad
 
-var _cooldown_timer: float = 0.0
+var _cooldowns: Dictionary = {}
 
 
 func _ready() -> void:
@@ -17,14 +17,21 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _cooldown_timer > 0.0:
-		_cooldown_timer -= delta
+	for key in _cooldowns.keys():
+		var remaining: float = float(_cooldowns[key]) - delta
+		if remaining <= 0.0:
+			_cooldowns.erase(key)
+		else:
+			_cooldowns[key] = remaining
 
 
 func _on_body_entered(body: Node3D) -> void:
-	if _cooldown_timer > 0.0 or not body.is_in_group("player"):
+	if not (body.is_in_group("player") or body.is_in_group("bot")):
 		return
-	_cooldown_timer = cooldown
+	var id := body.get_instance_id()
+	if float(_cooldowns.get(id, 0.0)) > 0.0:
+		return
+	_cooldowns[id] = cooldown
 	if body.has_method("bounce"):
 		body.bounce(bounce_strength)
 	elif body is CharacterBody3D:

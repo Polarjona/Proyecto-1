@@ -19,7 +19,7 @@ const SECTIONS := [
 	{"name": "WindBridge", "center": Vector3(0.0, 0.6, -131.5), "size": Vector2(4.0, 17.0), "color": Color(0.88, 0.76, 1.0)},
 	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(0.7, 1.0, 1.0)},
 	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.9, 0.5)},
-	{"name": "Finish", "center": Vector3(0.0, 1.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(0.85, 1.0, 0.6)},
+	{"name": "Finish", "center": Vector3(0.0, 4.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(0.85, 1.0, 0.6)},
 ]
 
 const ISLAND_COLORS := [
@@ -266,7 +266,7 @@ func _build_arches() -> void:
 		{"z": -59.5, "width": 12.0, "height": 6.5, "y": 0.0, "color": Color(0.6, 1.0, 1.0)},
 		{"z": -107.5, "width": 10.0, "height": 6.0, "y": 0.6, "color": Color(0.85, 0.75, 1.0)},
 		{"z": -148.5, "width": 10.0, "height": 6.0, "y": 0.8, "color": Color(1.0, 0.82, 0.35)},
-		{"z": -197.0, "width": 13.0, "height": 7.0, "y": 1.0, "color": Color(0.8, 1.0, 0.55)},
+		{"z": -201.0, "width": 13.0, "height": 7.0, "y": 4.0, "color": Color(0.8, 1.0, 0.55)},
 	]
 	for i in arches.size():
 		var arch: Dictionary = arches[i]

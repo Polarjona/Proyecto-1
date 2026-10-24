@@ -45,7 +45,8 @@ const WAYPOINTS: Array[Vector3] = [
 	Vector3(0.0, 1.1, -177.0),
 	Vector3(0.0, 1.1, -186.0),
 	Vector3(0.0, 1.1, -194.0),
-	Vector3(0.0, 1.1, -206.0),
+	Vector3(0.0, 4.2, -206.0),
+	Vector3(0.0, 4.2, -209.0),
 ]
 
 ## Jump velocity to use when a waypoint is reached (key = waypoint index).
@@ -63,13 +64,12 @@ const JUMPS := {
 	17: 5.5,
 	20: 5.0,
 	23: 5.5,
-	25: 5.5,
 }
 
 @export var speed_min: float = 4.8
 @export var speed_max: float = 6.4
 @export var speed_scale: float = 1.0
-@export var finish_z: float = -205.0
+@export var finish_z: float = -209.0
 @export var respawn_below_y: float = -5.0
 @export var body_color: Color = Color(0.95, 0.4, 0.55)
 
@@ -291,6 +291,12 @@ func launch(impulse: Vector3) -> void:
 	_knockback += Vector3(impulse.x, 0.0, impulse.z)
 	velocity.y = maxf(velocity.y, impulse.y)
 	_stumble_time = maxf(_stumble_time, 0.2)
+
+
+## Light shove used by the first sweeper: no stumble, just knockback.
+func apply_push_soft(force: Vector3) -> void:
+	_knockback += Vector3(force.x, 0.0, force.z)
+	velocity.y = maxf(velocity.y, force.y)
 
 
 func add_external_velocity(velocity_delta: Vector3) -> void:
