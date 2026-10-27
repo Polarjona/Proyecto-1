@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Iteration 3 checks: new movement (dive), wind tunnel, launcher, see-saw,
-## profile/settings, crowns, new scenes and results UI. Headless integration.
+## profile/settings, new scenes and results UI. Headless integration.
 
 var _failures := 0
 
@@ -45,12 +45,37 @@ func _run() -> void:
 	_check(game.get_node_or_null("Course/WindTunnel") != null, "Túnel de viento en el mapa")
 	_check(game.get_node_or_null("Course/Sweeper2") == null, "El segundo sweeper ya no está en el mapa")
 	_check(game.get_node_or_null("Course/SeeSaw") != null, "Balancín en el mapa")
-	_check(game.get_node_or_null("Course/Launcher") != null, "Cañón en el mapa")
+	var launcher_model: Node3D = game.get_node_or_null("Course/Launcher")
+	_check(launcher_model != null, "Cañón en el mapa")
+	var muzzle: Node3D = launcher_model.get_node_or_null("Tube/Muzzle")
+	var bore: Node3D = launcher_model.get_node_or_null("Tube/Bore")
+	var muzzle_ring: Node3D = launcher_model.get_node_or_null("Ring")
+	_check(muzzle != null and bore != null and launcher_model.get_node_or_null("ArrowShaft") != null,
+		"El launcher tiene cañón, boca y flecha de dirección visibles")
+	_check(muzzle != null and bore != null and muzzle_ring != null
+		and muzzle.global_position.z < launcher_model.global_position.z
+		and bore.global_position.z < muzzle.global_position.z
+		and absf(muzzle_ring.global_position.z - muzzle.global_position.z) < 0.5,
+		"El cañón, boca y anillo apuntan hacia delante (-Z)")
 	_check(game.get_node_or_null("SkyDome") != null, "Cúpula de nubes procedural")
 	_check(game.get_node_or_null("Crowd") != null, "Multitud en gradas")
 	_check(game.get_node_or_null("PostProcess") != null, "Capa de postproceso")
 	_check(game.get_node_or_null("RaceDirector") != null, "Director de carrera")
-	_check(get_nodes_in_group("crowns").size() == 3, "Tres coronas en el mapa")
+	_check(get_nodes_in_group("crowns").is_empty(), "El sistema de coronas ya no existe")
+	var arch_pillar: MeshInstance3D = game.get_node_or_null("ArenaDecor/ArchPillarL_1")
+	var arch_bottom := -99.0
+	if arch_pillar != null:
+		arch_bottom = arch_pillar.global_position.y - (arch_pillar.mesh as BoxMesh).size.y * 0.5
+	_check(arch_pillar != null and absf(arch_bottom - 0.6) < 0.05
+		and absf(arch_pillar.global_position.z + 112.5) < 0.05,
+		"El arco de LandingA apoya sus pilares en la plataforma (base y=%.2f)" % arch_bottom)
+	var pendulum5: Node3D = game.get_node("Course/Pendulum5")
+	var beam5: Node3D = game.get_node_or_null("ArenaDecor/PendulumBeam_4")
+	var post5: Node3D = game.get_node_or_null("ArenaDecor/PendulumPost_4_L")
+	_check(beam5 != null and post5 != null
+		and absf(pendulum5.global_position.z - beam5.global_position.z) < 0.05
+		and absf(post5.global_position.x + 4.2) < 0.05,
+		"El péndulo 5 cuelga de un pórtico con soportes")
 
 	# --- Cámara y cara ----------------------------------------------------
 	_check(player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") != null,
@@ -105,8 +130,31 @@ func _run() -> void:
 		var reverse_arrows: Node3D = reverse.get_node("DirectionArrows")
 		_check(absf(absf(reverse_arrows.rotation.y) - PI) < 0.01,
 			"Las flechas apuntan en el sentido de la cinta inversa")
+		var final_conveyor: Area3D = game.get_node("Course/FinalConveyor")
+		_check(is_equal_approx(float(final_conveyor.get("arrow_span")) * 2.0, 4.0),
+			"Las flechas del conveyor final cubren justo su diseño de 4 m")
 
 	# --- Túnel de viento --------------------------------------------------
+	var wind1: Node3D = game.get_node("Course/WindTunnel")
+	var wind2: Node3D = game.get_node("Course/WindTunnel2")
+	var fan1: Node3D = wind1.get_node("Fan")
+	var fan2: Node3D = wind2.get_node("Fan")
+	var platform1: Node3D = wind1.get_node("FanPlatform")
+	var platform2: Node3D = wind2.get_node("FanPlatform")
+	var deck1: MeshInstance3D = platform1.get_node("Deck")
+	var deck2: MeshInstance3D = platform2.get_node("Deck")
+	var gap1 := absf(platform1.position.x) - (deck1.mesh as BoxMesh).size.x * 0.5 - 2.0
+	var gap2 := absf(platform2.position.x) - (deck2.mesh as BoxMesh).size.x * 0.5 - 2.0
+	_check(wind1.get_node_or_null("Banner") == null and wind2.get_node_or_null("Banner") == null,
+		"Se quitaron los banderines de viento")
+	_check(fan1.position.x * wind1.wind_direction.x < 0.0
+		and fan2.position.x * wind2.wind_direction.x < 0.0,
+		"Cada ventilador queda del lado de donde sopla el viento")
+	_check(absf(fan1.position.x - platform1.position.x) < 0.01
+		and absf(fan2.position.x - platform2.position.x) < 0.01,
+		"Cada ventilador se apoya en su propia plataforma")
+	_check(gap1 > 0.5 and gap2 > 0.5,
+		"Las plataformas de los ventiladores están separadas del puente (huecos %.2f y %.2f m)" % [gap1, gap2])
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.9, -126.0)))
 	for i in 15:
 		await physics_frame
@@ -124,14 +172,39 @@ func _run() -> void:
 
 	# --- Balancín ---------------------------------------------------------
 	var saw: AnimatableBody3D = game.get_node("Course/SeeSaw")
+	_check(player.max_speed <= 7.0, "El jugador corre a una velocidad contenida (%.1f m/s)" % player.max_speed)
 	_check(absf(saw.get_tilt()) < 0.02,
 		"El balancín queda horizontal cuando no hay nadie encima (%.3f rad)" % saw.get_tilt())
-	# Fuera del centro del balancín: justo en el pivote no se inclina.
-	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -48.0)))
-	for i in 24:
+	# En el centro de la tabla el peso queda equilibrado, como en uno real.
+	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -51.0)))
+	for i in 90:
 		await physics_frame
-	_check(absf(saw.get_tilt()) > 0.05,
-		"El balancín se inclina con fuerza hacia el jugador (%.2f rad)" % saw.get_tilt())
+	_check(absf(saw.get_tilt()) < 0.08,
+		"Un jugador centrado mantiene el balancín nivelado (%.2f rad)" % saw.get_tilt())
+	_check(float(saw.get("tip_threshold")) <= 0.03
+		and float(saw.get("responsiveness")) >= 5.0
+		and float(saw.get("slide_speed")) > 0.0,
+		"El balancín está configurado como super inestable y resbaladizo")
+	# Un desvío mínimo ya lo vuelca casi por completo. Se deja caer desde
+	# poca altura para que el peso cuente desde el primer frame.
+	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.4, -50.4)))
+	for i in 45:
+		await physics_frame
+	var tilt0: float = saw.get_tilt()
+	_check(absf(tilt0) > 0.2,
+		"Un desvío de 0,6 m ya hace volcar el balancín (%.2f rad)" % tilt0)
+	# La base del balancín queda por debajo de la tabla incluso al volcar:
+	# si asomara, se vería a través de la madera.
+	var base: Node3D = game.get_node_or_null("Course/SeeSawBase")
+	var base_top := -99.0
+	if base != null and base is CSGBox3D:
+		base_top = base.global_position.y + (base as CSGBox3D).size.y * 0.5
+	_check(base != null and base_top < -0.9,
+		"La base del balancín no asoma por encima de la tabla (%.2f m)" % base_top)
+	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -50.4)))
+	for i in 4:
+		await physics_frame
+	_check(player.velocity.length() < 2.0, "El jugador no hereda velocidad al recolocarse")
 
 	# --- HUD y resultados -------------------------------------------------
 	var hud: Node = game.get_node_or_null("HUD")

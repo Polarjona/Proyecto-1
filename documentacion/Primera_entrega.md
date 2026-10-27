@@ -1,6 +1,6 @@
 # Informe de Seguiment — Primera Entrega
 
-**Projecte:** Stumble Guys (Prototip)  
+**Projecte:** Tumble Rush  
 **Autors:** Pol Arjona i Yazan Issa
 **Motor seleccionat:** Godot Engine 4.7 (Forward Plus)  
 **Llenguatge:** GDScript  
@@ -15,7 +15,7 @@
 ### Fites Cobertes
 
 - **Fita 1 — Idea i Prototip: COMPLETADA**
-  - Definició de la proposta: carrera d'obstacles en 3D estil _Stumble Guys / Fall Guys_.
+  - Definició de la proposta: carrera d'obstacles en 3D estil _Fall Guys_.
   - Motor escollit: Godot Engine 4.7 amb física Jolt.
   - Creació del repositori Git amb estructura de carpetes correcta (`proyecto/`, `documentacion/`).
   - Escena principal de joc configurada amb il·luminació, entorn i curs complet.

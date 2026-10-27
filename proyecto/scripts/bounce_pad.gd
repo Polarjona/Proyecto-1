@@ -36,6 +36,7 @@ func _on_body_entered(body: Node3D) -> void:
 		body.bounce(bounce_strength)
 	elif body is CharacterBody3D:
 		(body as CharacterBody3D).velocity.y = bounce_strength
+	AudioManager.play_sfx_at("boing", pad.global_position, 0.08, -4.0)
 	_squash()
 
 

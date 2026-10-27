@@ -1,6 +1,6 @@
 # Informe de Seguimiento — Tercera Iteración
 
-**Proyecto:** Stumble Guys (Prototipo)
+**Proyecto:** Tumble Rush
 **Autores:** Pol Arjona e Yazan Issa
 **Motor:** Godot Engine 4.7.2 (Forward Plus, física Jolt)
 **Lenguaje:** GDScript
@@ -10,11 +10,11 @@
 
 ## 1. Objetivo de la iteración
 
-La segunda entrega dejó un curso de 85 m con seis zonas, checkpoints, HUD y un personaje procedural. La tercera iteración ataca los cuatro puntos que separaban al prototipo de un juego con sensación moderna:
+La segunda entrega dejó un curso de 85 m con seis zonas, checkpoints, HUD y un personaje procedural. La tercera iteración ataca los cuatro puntos que separaban al juego de un juego con sensación moderna:
 
 1. **Game feel**: que saltar, caer y recibir golpes se sienta justo y contundente.
 2. **Presentación**: cámara, postproceso, cielo, multitud y UI con identidad.
-3. **Contenido**: obstáculos nuevos, coronas y un circuito con decisiones.
+3. **Contenido**: obstáculos nuevos y un circuito con decisiones.
 4. **Meta y modos**: perfil persistente, medallas, resultados, bots y torneo.
 
 ---
@@ -44,8 +44,7 @@ La cámara mantiene un yaw fijo (no hay ratón) para que el control con WASD sig
 - **Splits** por checkpoint comparados con los del mejor tiempo guardado.
 - **Medallas**: oro ≤ 70 s, plata ≤ 95 s, bronce ≤ 130 s (reajustadas al circuito largo).
 - **Pantalla de resultados** con tiempo, récord, medalla, splits, monedas, caídas y botones de reintentar/menú/siguiente ronda.
-- **Perfil JSON** (`user://profile.json`, versión 1) con récord, splits, estadísticas, monedas, coronas, medallas, ajustes y tutorial. Importa el antiguo `user://best_time.save`.
-- **Coronas**: tres coleccionables persistentes con luz, giro y partículas.
+- **Perfil JSON** (`user://profile.json`, versión 1) con récord, splits, estadísticas, monedas, medallas, ajustes y tutorial. Importa el antiguo `user://best_time.save`.
 - **Ajustes**: volumen de música/SFX, intensidad de sacudida y pantalla completa; se aplican al instante y se guardan.
 - **Tutorial** de primera vez (se muestra solo si no se ha visto y no estamos en headless).
 
@@ -57,12 +56,11 @@ Los ajustes se aplican mediante los buses `Music` y `SFX` creados en runtime por
 
 | Elemento | Escena / script | Comportamiento |
 | --- | --- | --- |
-| Túnel de viento | `wind_tunnel.tscn` / `wind_tunnel.gd` | Empuje lateral continuo con rachas; líneas de aire y manga de viento. 2,6 m/s ± 1,2 en el puente inicial. |
-| Cañón lanzador | `launcher.tscn` / `launcher.gd` | Lanza al jugador (método `launch()`, sin aturdimiento) con cooldown y anillo pulsante. Atajo opcional en la plataforma central. |
-| Balancín | `see_saw.tscn` / `see_saw.gd` | `AnimatableBody3D` que se inclina hacia el lado del jugador (±0,42 rad). Tres seguidos forman el puente de balancines sobre el vacío. |
-| Coronas | `crown.tscn` / `crown.gd` | Tres coronas; al recogerlas se guardan en el perfil y se actualiza el HUD. |
+| Túnel de viento | `wind_tunnel.tscn` / `wind_tunnel.gd` | Empuje lateral continuo con rachas; ventilador 3D sobre una plataforma independiente, separada del puente por un hueco y orientada con el viento. |
+| Cañón lanzador | `launcher.tscn` / `launcher.gd` | Lanza al jugador (método `launch()`, sin aturdimiento) con cooldown, boca, culata y flechas de dirección. Atajo opcional en la plataforma central. |
+| Balancín | `see_saw.tscn` / `see_saw.gd` | `AnimatableBody3D` real: nivelado con el peso en el centro y vuelco completo hacia el lado con carga (±0,62 rad). Un único balancín cubre el tramo sobre el vacío. |
 
-La plataforma de aproximación a la giratoria se desplazó de `z = -40,5` a `z = -42,6` para abrir el hueco que ocupa el balancín. Las alturas de aterrizaje que valida `features_test` no cambian.
+La plataforma de aproximación a la giratoria se desplazó de `z = -40,5` a `z = -42,6` para abrir el hueco que ocupa el balancín. Las alturas del tramo de bolas se actualizaron con la rampa larga actual.
 
 ---
 
@@ -91,7 +89,7 @@ La plataforma de aproximación a la giratoria se desplazó de `z = -40,5` a `z =
 
 Nuevos autoloads, en orden de dependencia:
 
-1. `SaveManager` — perfil, ajustes, monedas, coronas, medallas.
+1. `SaveManager` — perfil, ajustes, monedas y medallas.
 2. `GameSession` — modo/ronda y bindings de mando.
 3. `GameFeel` — hitstop, slow motion, shake y flash.
 4. `AudioManager` — buses, música y pool de SFX.
@@ -100,29 +98,29 @@ Nuevos autoloads, en orden de dependencia:
 Contratos conservados para no romper la suite existente:
 
 - `RaceManager` sigue exponiendo `elapsed_time`, `is_running`, `is_finished`, `time_penalty`, `player`, `checkpoints_total`, `checkpoints_completed`, `register_checkpoint()`, `respawn_player()` y `finish_race()`.
-- El circuito se rehízo entero: 13 tramos y ~220 m, con 5 checkpoints y todos los obstáculos en uso (3 barras giratorias en pasarela estrecha, 4 cintas perpendiculares, 3 balancines, 4 péndulos, disco giratorio, 2 plataformas móviles, 2 túneles de viento, cañón, 2 dispensadores de pelotas y 6 muros).
-- Rutas estables que usan los tests: `Course/BouncePad`, `Course/Sweeper`, `Course/MovingPlatform`, `Course/MovingPlatform2`, `Course/BallDropper`, `Course/SpinningPlatform`, `Course/CrownA`, `Course/FinishLine`, `Decor/StartGateBeam` y `Decor/DistantPillarLeftA`.
+- El circuito se rehízo entero: 13 tramos y ~220 m, con 5 checkpoints y todos los obstáculos en uso (3 barras giratorias en pasarela estrecha, 4 cintas perpendiculares, 1 balancín, 4 péndulos, disco giratorio, 2 plataformas móviles, 2 túneles de viento, cañón, 3 dispensadores de pelotas y 6 muros).
+- Rutas estables que usan los tests: `Course/BouncePadFinal`, `Course/Sweeper`, `Course/MovingPlatform`, `Course/MovingPlatform2`, `Course/BallDropper`, `Course/SpinningPlatform`, `Course/FinishLine`, `Decor/StartGateBeam` y `Decor/DistantPillarLeftA`.
 - El HUD conserva `Root/TimeLabel`, `Root/CheckpointsLabel`, `Root/BestTimeLabel` y `Root/MessageLabel`.
 - El menú conserva `CenterContainer/VBoxContainer/StartButton`.
 
-Nuevos grupos: `bot`, `bots`, `crowns`, `race_director`, `wind_tunnels`, `launchers`, `see_saws`.
+Nuevos grupos: `bot`, `bots`, `race_director`, `wind_tunnels`, `launchers`, `see_saws`.
 
 ---
 
 ## 8. Verificación
 
-Se añadió `tools/iteration3_test.gd` (dive, viento, cañón, balancín, perfil/ajustes, medallas, coronas, cámara, HUD, tutorial y modos). La batería completa es:
+Se añadió `tools/iteration3_test.gd` (dive, viento, cañón, balancín, perfil/ajustes, medallas, cámara, HUD, tutorial y modos). La batería completa es:
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # 23 escenas
+godot --headless -s res://tools/check_scenes.gd       # 22 escenas
 godot --headless -s res://tools/smoke_test.gd
 godot --headless -s res://tools/flow_test.gd
 godot --headless -s res://tools/features_test.gd
 godot --headless -s res://tools/iteration3_test.gd
 ```
 
-**Estado de esta entrega:** todo el GDScript parsea con `gdparse` (gdtoolkit 4.5) y las 23 escenas pasan una validación estructural de recursos, jerarquía, referencias y `load_steps`. En el entorno de desarrollo usado para esta iteración **no había un binario de Godot disponible**, así que la suite headless queda pendiente de ejecutar en una máquina con Godot 4.7.2. No se debe dar por aprobada hasta correrla.
+**Estado de esta entrega:** la batería headless se ejecutó con Godot 4.7.2. Las 22 escenas cargan correctamente y `smoke_test`, `flow_test`, `features_test`, `iteration3_test` y `bots_test` terminan en **TODO OK**.
 
 ---
 
@@ -146,7 +144,7 @@ godot --headless -s res://tools/iteration3_test.gd
 - **Tip Toe, Door Dash y Hex-A-Gone**: los módulos de obstáculos están listos, pero no se integraron para no alterar la geometría validada.
 - **Localización ES/CA/EN**: la UI está en español; queda extraer cadenas a CSV.
 - **Rendimiento**: el curso sigue usando `CSGBox3D` en runtime. El siguiente paso es hornear mallas y colisión trimesh, añadir `LightmapGI`, LOD y occlusion culling.
-- **Tienda y cosméticos**: el perfil ya acumula monedas y coronas; falta la pantalla de desbloqueo y las piezas cosméticas.
+- **Tienda y cosméticos**: el perfil ya acumula monedas; falta la pantalla de desbloqueo y las piezas cosméticas.
 
 ---
 
@@ -156,7 +154,7 @@ En esta iteración la IA (Freebuff, de Codebuff) se utilizó para:
 
 - Diseñar el paquete de game feel (coyote, buffer, ápice, dive, herencia de plataforma) y la cámara con SpringArm.
 - Diseñar y escribir los shaders de postproceso y cielo, el tema de UI y la multitud con `MultiMesh`.
-- Implementar el perfil JSON con migración, los ajustes, las medallas, las coronas y la pantalla de resultados.
+- Implementar el perfil JSON con migración, los ajustes, las medallas y la pantalla de resultados.
 - Implementar el túnel de viento, el cañón, el balancín, los bots con waypoints y el director de carrera con clasificación.
 - Ampliar el generador de audio con seis SFX nuevos y crear el test de la iteración.
 

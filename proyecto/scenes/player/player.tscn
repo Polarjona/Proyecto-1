@@ -1,7 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://player_stumble"]
+[gd_scene load_steps=13 format=3 uid="uid://player_stumble"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://assets/characters/Rogue.glb" id="2_rogue"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.28
@@ -43,6 +42,21 @@ material = SubResource("StandardMaterial3D_dust")
 [sub_resource type="SphereShape3D" id="SphereShape3D_cam"]
 radius = 0.25
 
+[sub_resource type="CylinderMesh" id="CylinderMesh_marker"]
+top_radius = 0.0
+bottom_radius = 0.17
+height = 0.28
+radial_segments = 4
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker"]
+shading_mode = 0
+albedo_color = Color(1, 0.86, 0.25, 1)
+emission_enabled = true
+emission = Color(1, 0.72, 0.1, 1)
+emission_energy_multiplier = 2.6
+cull_mode = 2
+
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 5
@@ -57,8 +71,14 @@ shape = SubResource("CapsuleShape3D_body")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
-[node name="Model" parent="MeshInstance3D" instance=ExtResource("2_rogue")]
-transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+[node name="Marker" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.72, 0)
+
+[node name="Arrow" type="MeshInstance3D" parent="Marker"]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_marker")
+material_override = SubResource("StandardMaterial3D_marker")
+cast_shadow = 0
 
 [node name="Dizzy" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)

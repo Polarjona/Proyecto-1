@@ -35,6 +35,8 @@ var _headless: bool = false
 func _ready() -> void:
 	add_to_group("race_manager")
 	_headless = DisplayServer.get_name() == "headless"
+	# Durante la partida solo suenan los efectos y el viento.
+	AudioManager.stop_music(false)
 	best_time = SaveManager.best_time()
 	has_best_time = SaveManager.has_best()
 	# Wait one frame so checkpoints/player have entered their groups.
@@ -118,13 +120,24 @@ func respawn_player() -> void:
 	GameFeel.shake(2.5)
 
 
+## Puesto del jugador en la carrera con bots (1 = primero). 0 en clásico.
+func player_position() -> int:
+	if not GameSession.is_bot_race():
+		return 0
+	var director := get_tree().get_first_node_in_group("race_director")
+	if director == null or not director.has_method("player_position_now"):
+		return 0
+	return int(director.call("player_position_now"))
+
+
 func finish_race() -> void:
 	if is_finished:
 		return
 	is_finished = true
 	is_running = false
 	var medal := SaveManager.medal_for(elapsed_time)
-	var info := SaveManager.register_finish(elapsed_time, fall_count, splits.duplicate())
+	var position := player_position()
+	var info := SaveManager.register_finish(elapsed_time, fall_count, splits.duplicate(), position)
 	best_time = SaveManager.best_time()
 	has_best_time = SaveManager.has_best()
 	best_time_updated.emit(best_time)
@@ -141,7 +154,9 @@ func finish_race() -> void:
 		"medal": medal,
 		"medal_label": SaveManager.medal_label(medal),
 		"coins": int(info.get("coins", 0)),
+		"coins_breakdown": info.get("coins_breakdown", {}),
 		"coins_total": SaveManager.coins(),
+		"position": int(info.get("position", 0)),
 		"splits": splits.duplicate(),
 		"falls": fall_count,
 		"checkpoints": checkpoints_completed,

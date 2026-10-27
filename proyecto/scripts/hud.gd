@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-## HUD: cronómetro, récord, medalla, coronas, progreso, cuenta atrás,
-## ranking de bots, pantalla de resultados y tutorial de primera vez.
+## HUD: cronómetro, récord, medalla, progreso, cuenta atrás, ranking de
+## bots, pantalla de resultados y tutorial de primera vez.
 
 const START_Z := 5.0
 const FINISH_Z := -205.0
@@ -11,7 +11,6 @@ const FINISH_Z := -205.0
 @onready var checkpoints_label: Label = $Root/CheckpointsLabel
 @onready var best_time_label: Label = $Root/BestTimeLabel
 @onready var medal_label: Label = $Root/MedalLabel
-@onready var crowns_label: Label = $Root/CrownsLabel
 @onready var dive_label: Label = $Root/DiveLabel
 @onready var rank_label: Label = $Root/RankLabel
 @onready var progress_bar: ProgressBar = $Root/ProgressBar
@@ -23,6 +22,7 @@ const FINISH_Z := -205.0
 @onready var results_medal: Label = $Root/ResultsPanel/VBox/ResultsMedal
 @onready var results_rank: Label = $Root/ResultsPanel/VBox/ResultsRank
 @onready var results_coins: Label = $Root/ResultsPanel/VBox/ResultsCoins
+@onready var results_coin_breakdown: Label = $Root/ResultsPanel/VBox/ResultsCoinBreakdown
 @onready var retry_button: Button = $Root/ResultsPanel/VBox/Buttons/RetryButton
 @onready var next_round_button: Button = $Root/ResultsPanel/VBox/Buttons/NextRoundButton
 @onready var menu_button: Button = $Root/ResultsPanel/VBox/Buttons/MenuButton
@@ -52,7 +52,6 @@ func _ready() -> void:
 	menu_button.pressed.connect(_on_menu_pressed)
 	next_round_button.pressed.connect(_on_next_round_pressed)
 	tutorial_button.pressed.connect(_on_tutorial_closed)
-	SaveManager.crown_collected.connect(_on_crown_collected)
 
 	await get_tree().process_frame
 	_manager = get_tree().get_first_node_in_group("race_manager")
@@ -60,7 +59,6 @@ func _ready() -> void:
 	_player = get_tree().get_first_node_in_group("player") as Node3D
 	_connect_manager()
 	_connect_director()
-	_update_crowns(SaveManager.total_crowns())
 	if not _headless and not SaveManager.has_seen_tutorial():
 		tutorial_panel.show()
 
@@ -228,6 +226,10 @@ func _on_results_ready(data: Dictionary) -> void:
 	results_coins.text = "+%d monedas (total %d)   ·   %d caída(s)" % [
 		int(data.get("coins", 0)), int(data.get("coins_total", 0)), falls
 	]
+	if results_coin_breakdown != null:
+		var breakdown: Dictionary = data.get("coins_breakdown", {})
+		results_coin_breakdown.text = _coin_breakdown_text(breakdown)
+		results_coin_breakdown.visible = not results_coin_breakdown.text.is_empty()
 
 	var is_bot_race := GameSession.is_bot_race()
 	if is_bot_race:
@@ -249,10 +251,31 @@ func _on_results_ready(data: Dictionary) -> void:
 		results_rank.text = ""
 		next_round_button.visible = false
 
+	# La carrera termina: suena la fanfarria de meta mientras se lee el
+	# resultado. Cambiar de escena o reintentar la corta.
+	AudioManager.play_victory()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
 	tween.tween_property(results_panel, "modulate:a", 1.0, 0.3)
+
+
+## Desglose de la recompensa: "Base 10 · Tiempo 24 · Puesto 1º 40 · Medalla 40".
+func _coin_breakdown_text(breakdown: Dictionary) -> String:
+	if breakdown.is_empty():
+		return ""
+	var parts: Array[String] = ["Base %d" % int(breakdown.get("base", 0))]
+	var time_coins := int(breakdown.get("time", 0))
+	if time_coins > 0:
+		parts.append("Tiempo %d" % time_coins)
+	var place := int(breakdown.get("place", 0))
+	var place_coins := int(breakdown.get("position", 0))
+	if place > 0 and place_coins > 0:
+		parts.append("Puesto %dº %d" % [place, place_coins])
+	var medal_coins := int(breakdown.get("medal", 0))
+	if medal_coins > 0:
+		parts.append("Medalla %d" % medal_coins)
+	return "  ·  ".join(parts)
 
 
 func _medal_color(medal: String) -> Color:
@@ -265,20 +288,6 @@ func _medal_color(medal: String) -> Color:
 			return Color(0.95, 0.62, 0.35)
 		_:
 			return Color(0.75, 0.78, 0.85)
-
-
-func _update_crowns(_total: int) -> void:
-	var crowns := get_tree().get_nodes_in_group("crowns")
-	var total := crowns.size()
-	if total == 0:
-		total = 3
-	crowns_label.text = "Coronas %d/%d" % [SaveManager.total_crowns(), total]
-
-
-func _on_crown_collected(_total: int) -> void:
-	_update_crowns(_total)
-	message_label.text = "¡Corona!"
-	message_label.modulate = Color(1.0, 0.9, 0.35)
 
 
 func _on_tutorial_closed() -> void:

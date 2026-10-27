@@ -9,7 +9,7 @@ extends CanvasLayer
 @onready var music_value: Label = $Panel/VBox/MusicValue
 @onready var sfx_value: Label = $Panel/VBox/SfxValue
 @onready var shake_value: Label = $Panel/VBox/ShakeValue
-@onready var fullscreen_check: CheckButton = $Panel/VBox/FullscreenCheck
+@onready var fullscreen_check: Button = $Panel/VBox/FullscreenCheck
 @onready var back_button: Button = $Panel/VBox/BackButton
 
 
@@ -49,6 +49,7 @@ func _sync_from_settings() -> void:
 	sfx_slider.set_value_no_signal(float(SaveManager.get_setting("sfx", 0.9)))
 	shake_slider.set_value_no_signal(float(SaveManager.get_setting("shake", 1.0)))
 	fullscreen_check.set_pressed_no_signal(bool(SaveManager.get_setting("fullscreen", false)))
+	_update_fullscreen_label()
 	_update_labels()
 
 
@@ -75,3 +76,9 @@ func _on_shake_changed(value: float) -> void:
 
 func _on_fullscreen_toggled(pressed: bool) -> void:
 	SaveManager.set_setting("fullscreen", pressed)
+	_update_fullscreen_label()
+
+
+## El botón no lleva icono de check: el estado se lee en el propio texto.
+func _update_fullscreen_label() -> void:
+	fullscreen_check.text = "PANTALLA COMPLETA: %s" % ("SÍ" if fullscreen_check.button_pressed else "NO")

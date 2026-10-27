@@ -1,14 +1,21 @@
 # Personajes 3D
 
-Modelos descargados de **KayKit - Character Pack: Adventurers** de Kay Lousberg.
+Modelos descargados del pack **Kenney Blocky Characters 2.0**.
 
-- Licencia: **CC0** (ver `LICENSE_KayKit.txt`).
-- Autor: Kay Lousberg — https://kaylousberg.com
-- Repositorio: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0
-- Pack original: https://kaylousberg.itch.io/kaykit-adventurers
+- Licencia: **CC0** (ver `blocky/LICENSE_Kenney.txt`).
+- Autor: Kenney — https://kenney.nl
+- Pack original: https://kenney.nl/assets/blocky-characters
 
-Archivos usados:
+Archivos usados (en `blocky/`):
 
-- `Rogue.glb`: personaje del jugador.
-- `Knight.glb` y `Mage.glb`: bots de la carrera.
-- Las armas y capas se ocultan en runtime desde `player.gd` y `bot_racer.gd`.
+- `character-a.glb`: **Chispa**.
+- `character-c.glb`: **Uva**.
+- `character-e.glb`: **Robot**.
+- `character-g.glb`: **Tornillo**.
+- `character-m.glb`: **Jefe**.
+
+Los cinco comparten esqueleto y animaciones de nodo, así que el jugador y los
+bots usan el mismo código. La lista, los nombres, la altura objetivo y las
+rutas viven en `scripts/character_catalog.gd`; añadir otro modelo del pack es
+una entrada más. `CharacterCatalog.build_model` escala cada cuerpo a la misma
+altura para que ninguno tenga ventaja en la carrera.

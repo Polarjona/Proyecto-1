@@ -16,6 +16,7 @@ extends Node3D
 @onready var push_area: Area3D = $Bar/PushArea
 
 var _angle: float = 0.0
+var _whoosh_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -27,6 +28,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_angle += spin_speed * spin_direction * delta
 	bar.rotation.y = _angle
+	_whoosh_timer -= delta
+	if _whoosh_timer <= 0.0:
+		_whoosh_timer = 1.25
+		AudioManager.play_sfx_at("whoosh", bar.global_position, 0.2, -16.0)
 
 
 func get_angle() -> float:
@@ -43,7 +48,14 @@ func _on_body_entered(body: Node3D) -> void:
 	else:
 		push_dir = push_dir.normalized()
 	var impulse := push_dir * push_force + Vector3.UP * push_lift
-	if not stuns and body.has_method("apply_push_soft"):
+	if stuns:
+		if body.has_method("apply_push"):
+			body.apply_push(impulse)
+		# Sweepers must all stagger the same way, even the weakest bar whose
+		# knockback alone stays under the player's stun threshold.
+		if body.has_method("stun"):
+			body.stun()
+	elif body.has_method("apply_push_soft"):
 		body.apply_push_soft(impulse)
 	else:
 		body.apply_push(impulse)

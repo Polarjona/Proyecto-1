@@ -71,6 +71,12 @@ func _process(delta: float) -> void:
 		rank_updated.emit(rank, total_racers)
 
 
+## Puesto que consigue el jugador si cruza la meta ahora mismo. Lo consulta el
+## RaceManager antes de repartir las monedas.
+func player_position_now() -> int:
+	return _finish_order.size() + 1
+
+
 func _live_rank() -> int:
 	if _player_finished:
 		return player_rank

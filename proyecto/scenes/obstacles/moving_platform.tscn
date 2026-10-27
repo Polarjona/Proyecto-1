@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://moving_platform_obs"]
+[gd_scene load_steps=9 format=3 uid="uid://moving_platform_obs"]
 
 [ext_resource type="Script" path="res://scripts/moving_platform.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/cyan.tres" id="2_cyan"]
@@ -16,6 +16,9 @@ size = Vector3(0.2, 0.35, 4)
 [sub_resource type="BoxMesh" id="BoxMesh_marker"]
 size = Vector3(1.2, 0.06, 0.5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_rail"]
+size = Vector3(0.2, 0.45, 4)
+
 [node name="MovingPlatform" type="AnimatableBody3D"]
 collision_layer = 1
 collision_mask = 0
@@ -30,6 +33,14 @@ shape = SubResource("BoxShape3D_plat")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_plat")
 surface_material_override/0 = ExtResource("2_cyan")
+
+[node name="RailLeftShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 0.35, 0)
+shape = SubResource("BoxShape3D_rail")
+
+[node name="RailRightShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0.35, 0)
+shape = SubResource("BoxShape3D_rail")
 
 [node name="RailLeft" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 0.35, 0)

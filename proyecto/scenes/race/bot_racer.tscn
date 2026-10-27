@@ -1,8 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bot_racer"]
+[gd_scene load_steps=3 format=3 uid="uid://bot_racer"]
 
 [ext_resource type="Script" path="res://scripts/bot_racer.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/characters/Knight.glb" id="2_knight"]
-[ext_resource type="PackedScene" path="res://assets/characters/Mage.glb" id="3_mage"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bot"]
 radius = 0.28
@@ -21,10 +19,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_bot")
 
 [node name="Body" type="MeshInstance3D" parent="."]
-
-[node name="Knight" parent="Body" instance=ExtResource("2_knight")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
-
-[node name="Mage" parent="Body" instance=ExtResource("3_mage")]
-transform = Transform3D(0.46, 0, 0, 0, 0.46, 0, 0, 0, 0.46, 0, 0, 0)
-visible = false

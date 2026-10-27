@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://wind_tunnel_obs"]
+[gd_scene load_steps=20 format=3 uid="uid://wind_tunnel_obs"]
 
 [ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/cyan.tres" id="2_cyan"]
 [ext_resource type="Material" path="res://materials/orange.tres" id="3_orange"]
+[ext_resource type="Material" path="res://materials/purple.tres" id="4_purple"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="5_yellow"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wind"]
 size = Vector3(4.6, 2.8, 6.5)
@@ -18,17 +20,53 @@ emission_enabled = true
 emission = Color(0.5, 0.9, 1, 1)
 emission_energy_multiplier = 1.4
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_pole"]
-top_radius = 0.05
-bottom_radius = 0.06
-height = 2.4
-radial_segments = 8
+[sub_resource type="BoxMesh" id="BoxMesh_fan_deck"]
+size = Vector3(3.2, 0.4, 3.2)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_sock"]
-top_radius = 0.16
-bottom_radius = 0.07
-height = 0.9
+[sub_resource type="BoxShape3D" id="BoxShape3D_fan_deck"]
+size = Vector3(3.2, 0.4, 3.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fan_trim"]
+size = Vector3(3.3, 0.06, 3.3)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fan_support"]
+top_radius = 0.22
+bottom_radius = 0.34
+height = 10.0
 radial_segments = 10
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fan_base"]
+top_radius = 0.42
+bottom_radius = 0.48
+height = 0.14
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fan_stand"]
+top_radius = 0.07
+bottom_radius = 0.1
+height = 2.0
+radial_segments = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_housing"]
+inner_radius = 0.58
+outer_radius = 0.74
+rings = 24
+ring_segments = 12
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hub"]
+top_radius = 0.16
+bottom_radius = 0.16
+height = 0.34
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="BoxMesh_blade"]
+size = Vector3(0.07, 0.7, 0.24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grille_h"]
+size = Vector3(0.04, 0.07, 1.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grille_v"]
+size = Vector3(0.04, 1.28, 0.07)
 
 [node name="WindTunnel" type="Area3D"]
 collision_layer = 0
@@ -62,12 +100,111 @@ mesh = SubResource("BoxMesh_stream")
 material_override = SubResource("StandardMaterial3D_stream")
 cast_shadow = 0
 
-[node name="Pole" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 1.2, -3)
-mesh = SubResource("CylinderMesh_pole")
+[node name="FanPlatform" type="Node3D" parent="."]
+
+[node name="Deck" type="MeshInstance3D" parent="FanPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+mesh = SubResource("BoxMesh_fan_deck")
+surface_material_override/0 = ExtResource("4_purple")
+
+[node name="Trim" type="MeshInstance3D" parent="FanPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("BoxMesh_fan_trim")
+surface_material_override/0 = ExtResource("2_cyan")
+cast_shadow = 0
+
+[node name="Support" type="MeshInstance3D" parent="FanPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.4, 0)
+mesh = SubResource("CylinderMesh_fan_support")
+surface_material_override/0 = ExtResource("4_purple")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FanPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FanPlatform/StaticBody3D"]
+shape = SubResource("BoxShape3D_fan_deck")
+
+[node name="Fan" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Fan"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07, 0)
+mesh = SubResource("CylinderMesh_fan_base")
 surface_material_override/0 = ExtResource("2_cyan")
 
-[node name="Sock" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -2.2, 2.35, -3)
-mesh = SubResource("CylinderMesh_sock")
+[node name="Stand" type="MeshInstance3D" parent="Fan"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.07, 0)
+mesh = SubResource("CylinderMesh_fan_stand")
+surface_material_override/0 = ExtResource("4_purple")
+
+[node name="Housing" type="MeshInstance3D" parent="Fan"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("TorusMesh_housing")
+surface_material_override/0 = ExtResource("2_cyan")
+
+[node name="Grille" type="Node3D" parent="Fan"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 2.1, 0)
+
+[node name="BarH" type="MeshInstance3D" parent="Fan/Grille"]
+mesh = SubResource("BoxMesh_grille_h")
+surface_material_override/0 = ExtResource("5_yellow")
+cast_shadow = 0
+
+[node name="BarV" type="MeshInstance3D" parent="Fan/Grille"]
+mesh = SubResource("BoxMesh_grille_v")
+surface_material_override/0 = ExtResource("5_yellow")
+cast_shadow = 0
+
+[node name="BarDiag" type="MeshInstance3D" parent="Fan/Grille"]
+transform = Transform3D(1, 0, 0, 0, 0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0)
+mesh = SubResource("BoxMesh_grille_h")
+surface_material_override/0 = ExtResource("5_yellow")
+cast_shadow = 0
+
+[node name="Rotor" type="Node3D" parent="Fan"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+
+[node name="Hub" type="MeshInstance3D" parent="Fan/Rotor"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.02, 0, 0)
+mesh = SubResource("CylinderMesh_hub")
+surface_material_override/0 = ExtResource("5_yellow")
+
+[node name="Blade1" type="Node3D" parent="Fan/Rotor"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Fan/Rotor/Blade1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_blade")
+surface_material_override/0 = ExtResource("3_orange")
+
+[node name="Blade2" type="Node3D" parent="Fan/Rotor"]
+transform = Transform3D(1, 0, 0, 0, 0.309, 0.9511, 0, -0.9511, 0.309, 0, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Fan/Rotor/Blade2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_blade")
+surface_material_override/0 = ExtResource("3_orange")
+
+[node name="Blade3" type="Node3D" parent="Fan/Rotor"]
+transform = Transform3D(1, 0, 0, 0, -0.809, 0.5878, 0, -0.5878, -0.809, 0, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Fan/Rotor/Blade3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_blade")
+surface_material_override/0 = ExtResource("3_orange")
+
+[node name="Blade4" type="Node3D" parent="Fan/Rotor"]
+transform = Transform3D(1, 0, 0, 0, -0.809, -0.5878, 0, 0.5878, -0.809, 0, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Fan/Rotor/Blade4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_blade")
+surface_material_override/0 = ExtResource("3_orange")
+
+[node name="Blade5" type="Node3D" parent="Fan/Rotor"]
+transform = Transform3D(1, 0, 0, 0, 0.309, -0.9511, 0, 0.9511, 0.309, 0, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Fan/Rotor/Blade5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_blade")
 surface_material_override/0 = ExtResource("3_orange")

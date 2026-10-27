@@ -1,19 +1,384 @@
-[gd_scene load_steps=6 format=3 uid="uid://m8h3qvxjkxmy"]
+[gd_scene load_steps=31 format=3 uid="uid://m8h3qvxjkxmy"]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
-[ext_resource type="Theme" path="res://ui/theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
+[ext_resource type="FontFile" path="res://ui/fonts/Baloo2-Variable.ttf" id="4_font"]
+
+[sub_resource type="FontVariation" id="FontVariation_display"]
+base_font = ExtResource("4_font")
+variation_embolden = 0.5
+variation_opentype = {
+"wght": 800
+}
 
 [sub_resource type="Gradient" id="Gradient_bg"]
-offsets = PackedFloat32Array(0, 0.6, 1)
-colors = PackedColorArray(0.035, 0.043, 0.055, 1, 0.059, 0.074, 0.094, 1, 0.035, 0.043, 0.055, 1)
+offsets = PackedFloat32Array(0, 0.4, 0.72, 1)
+colors = PackedColorArray(1, 0.176, 0.608, 1, 0.765, 0.157, 1, 1, 0.427, 0.161, 1, 1, 0, 0.82, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
 gradient = SubResource("Gradient_bg")
-width = 8
-height = 256
-fill_from = Vector2(0, 0)
-fill_to = Vector2(0, 1)
+width = 512
+height = 512
+fill_from = Vector2(0.05, 0)
+fill_to = Vector2(0.95, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.831, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.894, 0.302, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.176, 0.608, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_disabled"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.353, 0.278, 0.451, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 0.45)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 0.7)
+shadow_size = 0
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sep"]
+color = Color(1, 1, 1, 0.35)
+thickness = 3
+
+[sub_resource type="Theme" id="Theme_sticker"]
+default_font = SubResource("FontVariation_display")
+default_font_size = 18
+Button/colors/font_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_disabled_color = Color(0.82, 0.8, 0.9, 0.85)
+Button/colors/font_focus_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 17
+Button/styles/disabled = SubResource("StyleBoxFlat_button_disabled")
+Button/styles/focus = SubResource("StyleBoxFlat_button_hover")
+Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
+Button/styles/normal = SubResource("StyleBoxFlat_button")
+Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+HSeparator/styles/separator = SubResource("StyleBoxLine_sep")
+Label/colors/font_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pill"]
+content_margin_left = 18.0
+content_margin_top = 7.0
+content_margin_right = 18.0
+content_margin_bottom = 5.0
+bg_color = Color(0, 0.898, 1, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 27
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 25
+skew = Vector2(0.07, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pill_hover"]
+content_margin_left = 18.0
+content_margin_top = 7.0
+content_margin_right = 18.0
+content_margin_bottom = 5.0
+bg_color = Color(0.435, 0.973, 1, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 27
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 25
+skew = Vector2(0.07, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
+content_margin_left = 22.0
+content_margin_top = 9.0
+content_margin_right = 22.0
+content_margin_bottom = 9.0
+bg_color = Color(1, 0.831, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 22
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 24
+skew = Vector2(-0.04, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+bg_color = Color(0.2, 0.063, 0.36, 0.97)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 22
+corner_radius_bottom_right = 34
+corner_radius_bottom_left = 26
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play"]
+bg_color = Color(1, 0.176, 0.608, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 34
+corner_radius_top_right = 26
+corner_radius_bottom_right = 38
+corner_radius_bottom_left = 28
+skew = Vector2(0.03, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 14)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_hover"]
+bg_color = Color(1, 0.361, 0.706, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 34
+corner_radius_top_right = 26
+corner_radius_bottom_right = 38
+corner_radius_bottom_left = 28
+skew = Vector2(0.03, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 15)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_pressed"]
+content_margin_top = 8.0
+bg_color = Color(0.851, 0.11, 0.51, 1)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(1, 0.859, 0.945, 1)
+corner_radius_top_left = 34
+corner_radius_top_right = 26
+corner_radius_bottom_right = 38
+corner_radius_bottom_left = 28
+skew = Vector2(0.03, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_classic"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.831, 0, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 20
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 22
+skew = Vector2(0.06, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_classic_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.894, 0.302, 1)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 20
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 22
+skew = Vector2(0.06, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tournament"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0.898, 1, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 28
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 32
+skew = Vector2(-0.06, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tournament_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.435, 0.973, 1, 1)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 28
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 32
+skew = Vector2(-0.06, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_bg"]
+bg_color = Color(0.145, 0.027, 0.243, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 10
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_fill"]
+bg_color = Color(1, 0.882, 0.302, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 10
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 12
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_character"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cushion"]
+top_radius = 1.02
+bottom_radius = 1.1
+height = 0.22
+radial_segments = 48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cushion"]
+albedo_color = Color(1, 0.24, 0.62, 1)
+metallic = 0.05
+roughness = 0.35
+emission_enabled = true
+emission = Color(1, 0.18, 0.55, 1)
+emission_energy_multiplier = 0.55
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_base"]
+top_radius = 1.1
+bottom_radius = 1.28
+height = 0.45
+radial_segments = 48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
+albedo_color = Color(0.1, 0.78, 1, 1)
+metallic = 0.05
+roughness = 0.4
+emission_enabled = true
+emission = Color(0, 0.7, 1, 1)
+emission_energy_multiplier = 0.5
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -22,7 +387,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_theme")
+theme = SubResource("Theme_sticker")
 script = ExtResource("1_main")
 
 [node name="Background" type="TextureRect" parent="."]
@@ -32,156 +397,365 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = SubResource("GradientTexture2D_bg")
 expand_mode = 1
 stretch_mode = 0
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="TopBar" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 92.0
+grow_horizontal = 2
+
+[node name="HBox" type="HBoxContainer" parent="TopBar"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 10.0
+offset_right = -32.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 18
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="Logo" type="VBoxContainer" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="TopBar/HBox/Logo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.102, 0, 0.169, 1)
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 6
+theme_override_font_sizes/font_size = 38
+text = "TUMBLE RUSH"
+
+[node name="Subtitle" type="Label" parent="TopBar/HBox/Logo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.102, 0, 0.169, 0.9)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 11
+text = "CARRERA DE OBSTÁCULOS · TEMPORADA 1"
+
+[node name="SpacerLeft" type="Control" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NavRow" type="HBoxContainer" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="CharacterButton" type="Button" parent="TopBar/HBox/NavRow"]
+custom_minimum_size = Vector2(108, 40)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
+theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+text = "PERSONAJE"
+
+[node name="SettingsButton" type="Button" parent="TopBar/HBox/NavRow"]
+custom_minimum_size = Vector2(98, 40)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
+theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+text = "AJUSTES"
+
+[node name="ControlsButton" type="Button" parent="TopBar/HBox/NavRow"]
+custom_minimum_size = Vector2(108, 40)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
+theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+text = "CONTROLES"
+
+[node name="CreditsButton" type="Button" parent="TopBar/HBox/NavRow"]
+custom_minimum_size = Vector2(98, 40)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
+theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+text = "CRÉDITOS"
+
+[node name="QuitButton" type="Button" parent="TopBar/HBox/NavRow"]
+custom_minimum_size = Vector2(86, 40)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(0.071, 0.231, 0.302, 0.7)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
+theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+text = "SALIR"
+
+[node name="SpacerRight" type="Control" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CoinsBadge" type="PanelContainer" parent="TopBar/HBox"]
+custom_minimum_size = Vector2(168, 44)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
+
+[node name="CoinsLabel" type="Label" parent="TopBar/HBox/CoinsBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.071, 0.231, 0.302, 1)
+theme_override_font_sizes/font_size = 16
+text = "0 monedas"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SeasonCard" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 40.0
+offset_top = 124.0
+offset_right = 376.0
+offset_bottom = 404.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="SeasonCard"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="AccentBar" type="ColorRect" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(40, 2)
+[node name="SeasonKicker" type="Label" parent="SeasonCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 4
-color = Color(0.4, 0.82, 0.9, 1)
-
-[node name="TitleSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 18)
-layout_mode = 2
-
-[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
-theme_override_font_sizes/font_size = 54
-text = "STUMBLE GUYS"
-horizontal_alignment = 1
-
-[node name="Subtitle" type="Label" parent="CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 0.9)
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
 theme_override_font_sizes/font_size = 12
-text = "CARRERA DE OBSTÁCULOS"
-horizontal_alignment = 1
+text = "TEMPORADA 1"
 
-[node name="MenuSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
+[node name="SeasonTitle" type="Label" parent="SeasonCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "PROGRESO AL ORO"
+
+[node name="ProgressSpacer" type="Control" parent="SeasonCard/VBox"]
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 42)
+[node name="LobbyProgress" type="ProgressBar" parent="SeasonCard/VBox"]
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-size_flags_horizontal = 4
-text = "Carrera clásica"
+theme_override_styles/background = SubResource("StyleBoxFlat_progress_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_progress_fill")
+value = 0.0
+show_percentage = false
 
-[node name="BotsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 42)
+[node name="LobbyProgressLabel" type="Label" parent="SeasonCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 4
-text = "Carrera vs bots"
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 13
+text = "Sin récord todavía"
+autowrap_mode = 2
 
-[node name="TournamentButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Torneo"
-
-[node name="GroupSpacer" type="Control" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 14)
+[node name="Separator" type="HSeparator" parent="SeasonCard/VBox"]
 layout_mode = 2
 
-[node name="SecondarySeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 1)
+[node name="BestTimeLabel" type="Label" parent="SeasonCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="SecondarySpacer" type="Control" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 8)
-layout_mode = 2
-
-[node name="ControlsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 15
-text = "Controles"
-
-[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 15
-text = "Ajustes"
-
-[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 15
-text = "Créditos"
-
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = "Salir"
-
-[node name="BestTimeLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -74.0
-offset_right = 440.0
-offset_bottom = -48.0
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.62, 0.68, 0.75, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
 text = "Sin récord todavía"
 
-[node name="MedalLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -46.0
-offset_right = 440.0
-offset_bottom = -24.0
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.45, 0.51, 0.58, 1)
-theme_override_font_sizes/font_size = 12
+[node name="MedalLabel" type="Label" parent="SeasonCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_font_sizes/font_size = 13
 text = "Medalla de oro: 70.0 s"
 
-[node name="CoinsLabel" type="Label" parent="."]
+[node name="SeasonHint" type="Label" parent="SeasonCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 0.72)
+theme_override_font_sizes/font_size = 11
+text = "Corre, gana monedas y desbloquea a los 5 corredores."
+autowrap_mode = 2
+vertical_alignment = 2
+
+[node name="LobbyStage" type="SubViewportContainer" parent="."]
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -235.0
+offset_top = -238.0
+offset_right = 235.0
+offset_bottom = 232.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="LobbyStage"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(470, 470)
+render_target_update_mode = 4
+msaa_3d = 2
+
+[node name="Stage" type="Node3D" parent="LobbyStage/SubViewport"]
+
+[node name="PedestalBase" type="MeshInstance3D" parent="LobbyStage/SubViewport/Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("CylinderMesh_base")
+material_override = SubResource("StandardMaterial3D_base")
+cast_shadow = 0
+
+[node name="Pedestal" type="MeshInstance3D" parent="LobbyStage/SubViewport/Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11, 0)
+mesh = SubResource("CylinderMesh_cushion")
+material_override = SubResource("StandardMaterial3D_cushion")
+cast_shadow = 0
+
+[node name="Camera3D" type="Camera3D" parent="LobbyStage/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 6.1)
+current = true
+fov = 34.0
+near = 0.05
+far = 20.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="LobbyStage/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.6
+shadow_enabled = true
+
+[node name="FillLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.6, 2.4)
+light_color = Color(0.72, 0.92, 1, 1)
+light_energy = 2.2
+omni_range = 7.0
+
+[node name="RimLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 2.0, -1.6)
+light_color = Color(1, 0.7, 0.74, 1)
+light_energy = 2.4
+omni_range = 7.0
+
+[node name="PlayerBadge" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -116.0
+offset_right = 376.0
+offset_bottom = -46.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
+
+[node name="HBox" type="HBoxContainer" parent="PlayerBadge"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Crown" type="Label" parent="PlayerBadge/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(1, 0.176, 0.608, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 30
+text = "★"
+
+[node name="VBox" type="VBoxContainer" parent="PlayerBadge/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="PlayerNameLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 1)
+theme_override_font_sizes/font_size = 19
+text = "Chispa"
+
+[node name="PlayerTagLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.66)
+theme_override_font_sizes/font_size = 10
+text = "TU CORREDOR"
+
+[node name="PlayHint" type="Label" parent="."]
+layout_mode = 1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -440.0
-offset_top = -46.0
-offset_right = -28.0
-offset_bottom = -24.0
+offset_left = -400.0
+offset_top = -164.0
+offset_right = -40.0
+offset_bottom = -140.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.45, 0.51, 0.58, 1)
-theme_override_font_sizes/font_size = 12
-text = "0 monedas   ·   0/3 coronas"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.102, 0, 0.169, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Carrera clásica o torneo con bots"
 horizontal_alignment = 2
+
+[node name="PlayButton" type="Button" parent="."]
+custom_minimum_size = Vector2(304, 88)
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -344.0
+offset_top = -132.0
+offset_right = -40.0
+offset_bottom = -44.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.055, 0.204, 0.27, 1)
+theme_override_constants/outline_size = 9
+theme_override_font_sizes/font_size = 46
+theme_override_styles/focus = SubResource("StyleBoxFlat_play_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_play_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_play")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_play_pressed")
+text = "JUGAR!"
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1
@@ -191,15 +765,461 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -180.0
-offset_top = -24.0
+offset_top = -26.0
 offset_right = 180.0
-offset_bottom = -4.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.32, 0.37, 0.43, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 0.62)
 theme_override_font_sizes/font_size = 11
-text = "Godot 4.7  ·  Prototipo"
+text = "Godot 4.7  ·  Temporada 1"
 horizontal_alignment = 1
+
+[node name="ModePanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -226.0
+offset_right = 340.0
+offset_bottom = 226.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="ModePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="ModePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ModeTitle" type="Label" parent="ModePanel/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "ELIGE MODO"
+vertical_alignment = 1
+
+[node name="HeaderSpacer" type="Control" parent="ModePanel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModeBackButton" type="Button" parent="ModePanel/VBox/Header"]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "VOLVER"
+
+[node name="Separator" type="HSeparator" parent="ModePanel/VBox"]
+layout_mode = 2
+
+[node name="ClassicCard" type="Button" parent="ModePanel/VBox"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_classic_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_classic_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_classic")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_classic")
+
+[node name="CardTitle" type="Label" parent="ModePanel/VBox/ClassicCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = -170.0
+offset_bottom = 54.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.102, 0, 0.169, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.9)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 28
+text = "CARRERA CLÁSICA"
+vertical_alignment = 1
+
+[node name="CardSub" type="Label" parent="ModePanel/VBox/ClassicCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -44.0
+offset_right = -170.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
+theme_override_font_sizes/font_size = 12
+text = "Todo el circuito contra el cronómetro. Persigue tu récord y las medallas."
+vertical_alignment = 1
+
+[node name="CardTag" type="Label" parent="ModePanel/VBox/ClassicCard"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 34.0
+offset_right = -24.0
+offset_bottom = 70.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.016, 0.478, 0.322, 1)
+theme_override_font_sizes/font_size = 15
+text = "SOLO"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_tournament_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tournament_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_tournament")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tournament")
+
+[node name="CardTitle" type="Label" parent="ModePanel/VBox/TournamentCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = -170.0
+offset_bottom = 54.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.102, 0, 0.169, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.9)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 28
+text = "MODO TORNEO"
+vertical_alignment = 1
+
+[node name="CardSub" type="Label" parent="ModePanel/VBox/TournamentCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -44.0
+offset_right = -170.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
+theme_override_font_sizes/font_size = 12
+text = "Rondas contra 7 bots. Clasifícate en el top 3 y sube de ronda."
+vertical_alignment = 1
+
+[node name="CardTag" type="Label" parent="ModePanel/VBox/TournamentCard"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 34.0
+offset_right = -24.0
+offset_bottom = 70.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.792, 0.267, 0.2, 1)
+theme_override_font_sizes/font_size = 15
+text = "+ BOTS"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ModeHint" type="Label" parent="ModePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 12
+text = "Cada modo guarda tu récord y reparte monedas según tiempo y puesto."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CharacterPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -470.0
+offset_top = -290.0
+offset_right = 470.0
+offset_bottom = 290.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="CharacterPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="CharacterPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PanelTitle" type="Label" parent="CharacterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "PERSONAJE"
+vertical_alignment = 1
+
+[node name="HeaderSpacer" type="Control" parent="CharacterPanel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PanelCoins" type="Label" parent="CharacterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_font_sizes/font_size = 17
+text = "0 monedas"
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="CharacterPanel/VBox/Header"]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "VOLVER"
+
+[node name="HSeparator" type="HSeparator" parent="CharacterPanel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="HBoxContainer" parent="CharacterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body"]
+custom_minimum_size = Vector2(352, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RogueRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RogueButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Chispa"
+alignment = 0
+
+[node name="RogueStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.016, 0.478, 0.322, 1)
+theme_override_font_sizes/font_size = 12
+text = "ELEGIDO"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HoodedRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HoodedButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Uva"
+alignment = 0
+
+[node name="HoodedStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
+theme_override_font_sizes/font_size = 12
+text = "100"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="KnightRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="KnightButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Robot"
+alignment = 0
+
+[node name="KnightStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
+theme_override_font_sizes/font_size = 12
+text = "200"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="MageRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MageButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Tornillo"
+alignment = 0
+
+[node name="MageStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
+theme_override_font_sizes/font_size = 12
+text = "300"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="BarbarianRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BarbarianButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Jefe"
+alignment = 0
+
+[node name="BarbarianStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
+theme_override_font_sizes/font_size = 12
+text = "500"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/Roster"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 12
+text = "Los personajes bloqueados se compran con monedas ganadas en carrera."
+autowrap_mode = 2
+
+[node name="PreviewBox" type="VBoxContainer" parent="CharacterPanel/VBox/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="CharacterPreview" type="SubViewportContainer" parent="CharacterPanel/VBox/Body/PreviewBox"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(460, 300)
+render_target_update_mode = 4
+msaa_3d = 2
+
+[node name="Stage" type="Node3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
+
+[node name="PedestalBase" type="MeshInstance3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("CylinderMesh_base")
+material_override = SubResource("StandardMaterial3D_base")
+cast_shadow = 0
+
+[node name="Pedestal" type="MeshInstance3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11, 0)
+mesh = SubResource("CylinderMesh_cushion")
+material_override = SubResource("StandardMaterial3D_cushion")
+cast_shadow = 0
+
+[node name="Camera3D" type="Camera3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 6.1)
+current = true
+fov = 32.0
+near = 0.05
+far = 20.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.6
+shadow_enabled = true
+
+[node name="FillLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.4, 2.4)
+light_color = Color(0.65, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 6.0
+
+[node name="RimLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.9, -1.6)
+light_color = Color(1, 0.68, 0.8, 1)
+light_energy = 2.6
+omni_range = 6.0
+
+[node name="SelectedCharacterLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_font_sizes/font_size = 23
+text = "Chispa"
+horizontal_alignment = 1
+
+[node name="PriceLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.82)
+theme_override_font_sizes/font_size = 13
+text = "Desbloqueada"
+horizontal_alignment = 1
+
+[node name="BuyButton" type="Button" parent="CharacterPanel/VBox/Body/PreviewBox"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "ELEGIDO"
 
 [node name="ControlsPanel" type="PanelContainer" parent="."]
 visible = false
@@ -215,6 +1235,7 @@ offset_right = 270.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ControlsPanel"]
 layout_mode = 2
@@ -222,8 +1243,10 @@ theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
 text = "CONTROLES"
 horizontal_alignment = 1
 
@@ -252,15 +1275,15 @@ text = "Pausa:  Escape  o  Start del mando"
 
 [node name="GoalLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 14
-text = "Objetivo: sobrevive al circuito, recoge las 3 coronas y baja de 70 s para el oro."
+text = "Objetivo: sobrevive al circuito y baja de 70 s para el oro."
 autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="ControlsPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-text = "Volver"
+text = "VOLVER"
 
 [node name="CreditsPanel" type="PanelContainer" parent="."]
 visible = false
@@ -276,6 +1299,7 @@ offset_right = 270.0
 offset_bottom = 190.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CreditsPanel"]
 layout_mode = 2
@@ -283,8 +1307,10 @@ theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
 text = "CRÉDITOS"
 horizontal_alignment = 1
 
@@ -294,7 +1320,7 @@ layout_mode = 2
 [node name="ProjectLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Stumble Guys (prototipo)"
+text = "Tumble Rush"
 
 [node name="AuthorLabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
@@ -308,14 +1334,14 @@ text = "Motor: Godot Engine 4.7"
 
 [node name="AILabel" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 14
 text = "Desarrollo asistido por IA (Freebuff)"
 autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-text = "Volver"
+text = "VOLVER"
 
 [node name="SettingsMenu" parent="." instance=ExtResource("3_settings")]

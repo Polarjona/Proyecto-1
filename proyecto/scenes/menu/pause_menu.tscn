@@ -1,8 +1,133 @@
-[gd_scene load_steps=4 format=3 uid="uid://c9k2m3n4p5q"]
+[gd_scene load_steps=10 format=3 uid="uid://c9k2m3n4p5q"]
 
 [ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_pause"]
-[ext_resource type="Theme" path="res://ui/theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
+[ext_resource type="FontFile" path="res://ui/fonts/Baloo2-Variable.ttf" id="4_font"]
+
+[sub_resource type="FontVariation" id="FontVariation_display"]
+base_font = ExtResource("4_font")
+variation_embolden = 0.5
+variation_opentype = {
+"wght": 800
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.831, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.894, 0.302, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 0.176, 0.608, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 24
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 22
+skew = Vector2(0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sep"]
+color = Color(1, 1, 1, 0.35)
+thickness = 3
+
+[sub_resource type="Theme" id="Theme_sticker"]
+default_font = SubResource("FontVariation_display")
+default_font_size = 18
+Button/colors/font_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_focus_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 17
+Button/styles/focus = SubResource("StyleBoxFlat_button_hover")
+Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
+Button/styles/normal = SubResource("StyleBoxFlat_button")
+Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+HSeparator/styles/separator = SubResource("StyleBoxLine_sep")
+Label/colors/font_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+bg_color = Color(0.2, 0.063, 0.36, 0.98)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 22
+corner_radius_bottom_right = 34
+corner_radius_bottom_left = 26
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_resume"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0.898, 1, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 28
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 26
+skew = Vector2(-0.05, 0)
+shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_size = 0
+shadow_offset = Vector2(0, 8)
 
 [node name="PauseMenu" type="CanvasLayer"]
 layer = 10
@@ -14,19 +139,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.02, 0.025, 0.035, 0.72)
+color = Color(0.071, 0, 0.11, 0.72)
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-theme = ExtResource("2_theme")
+theme = SubResource("Theme_sticker")
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -200.0
-offset_right = 180.0
-offset_bottom = 200.0
+offset_left = -200.0
+offset_top = -230.0
+offset_right = 200.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -36,8 +162,10 @@ theme_override_constants/separation = 10
 
 [node name="PausedLabel" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.82, 0.9, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 34
 text = "PAUSA"
 horizontal_alignment = 1
 
@@ -45,29 +173,37 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="ResumeButton" type="Button" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-text = "Continuar"
+theme_override_colors/font_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 19
+theme_override_styles/focus = SubResource("StyleBoxFlat_resume")
+theme_override_styles/hover = SubResource("StyleBoxFlat_resume")
+theme_override_styles/normal = SubResource("StyleBoxFlat_resume")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+text = "CONTINUAR"
 
 [node name="CheckpointButton" type="Button" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Reiniciar checkpoint"
+text = "REINICIAR CHECKPOINT"
 
 [node name="RestartButton" type="Button" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Reiniciar carrera"
+text = "REINICIAR CARRERA"
 
 [node name="SettingsButton" type="Button" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Ajustes"
+text = "AJUSTES"
 
 [node name="MainMenuButton" type="Button" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.61, 0.68, 1)
-text = "Menú principal"
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+text = "MENÚ PRINCIPAL"
 
 [node name="SettingsMenu" parent="." instance=ExtResource("3_settings")]

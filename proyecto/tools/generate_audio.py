@@ -7,8 +7,9 @@ libre de derechos y se puede regenerar en cualquier momento:
     python3 tools/generate_audio.py
 
 Salidas:
-    audio/music/background.ogg   (bucle de chiptune, ~55 s)
+    audio/music/menu_theme.wav   (tema alegre de menú, bucle de ~38 s)
     audio/sfx/jump.wav
+    audio/sfx/step.wav
     audio/sfx/checkpoint.wav
     audio/sfx/finish.wav
     audio/sfx/fall.wav
@@ -18,15 +19,18 @@ Salidas:
     audio/sfx/coin.wav
     audio/sfx/ui.wav
     audio/sfx/countdown.wav
+    audio/sfx/wind.wav           (bucle para el túnel de viento)
+    audio/sfx/cannon.wav
+    audio/sfx/creak.wav          (balancín)
+    audio/sfx/boing.wav          (trampolín)
+    audio/sfx/whoosh.wav         (martillos y barras)
 
-Requiere ffmpeg para codificar la música a OGG Vorbis. Si no está
-instalado, los SFX se generan igualmente y se conserva la música actual.
+La música se escribe directamente en WAV: no hace falta ffmpeg y el bucle
+queda garantizado al marcar `loop_mode` en Godot.
 """
 
 import math
 import random
-import shutil
-import subprocess
 import sys
 import wave
 from array import array
@@ -37,9 +41,9 @@ MUSIC_DIR = PROJECT_ROOT / "audio" / "music"
 SFX_DIR = PROJECT_ROOT / "audio" / "sfx"
 
 SR = 44100            # sample rate
-BPM = 140             # music tempo
+BPM = 150             # music tempo
 SPB = 60.0 / BPM      # seconds per beat
-PHRASE_BARS = 32      # 4 phrases of 8 bars -> ~55 s loop
+PHRASE_BARS = 24      # intro + A + B + A -> ~38 s loop
 
 SEED = 20260924       # hace reproducible el ruido (batería, whoosh)
 
@@ -350,99 +354,238 @@ def sfx_countdown():
                        attack=0.004, release=0.05, decay=0.18)
 
 
+def sfx_step():
+    """Pisada corta y seca; el pitch variable evita el efecto metralleta."""
+    dur = 0.11
+    n = int(dur * SR)
+    out = _empty(n)
+    phase = 0.0
+    for i in range(n):
+        t = i / n
+        phase += (150.0 * math.exp(-3.0 * t) + 62.0) / SR
+        body = math.sin(2.0 * math.pi * phase) * math.exp(-16.0 * t) * 0.85
+        click = random.uniform(-1.0, 1.0) * math.exp(-55.0 * t) * 0.45
+        out[i] = body + click
+    return out
+
+
+def sfx_wind():
+    """Ráfaga continua y bucle: ruido filtrado con dos LFO y un silbido."""
+    dur = 3.0
+    n = int(dur * SR)
+    out = _empty(n)
+    low = 0.0
+    band = 0.0
+    for i in range(n):
+        t = i / n
+        x = random.uniform(-1.0, 1.0)
+        # Dos capas de ruido filtrado: cuerpo grave y siseo agudo.
+        low += (x - low) * 0.012
+        band += (x - band) * 0.10
+        gust = 0.72 + 0.28 * math.sin(2.0 * math.pi * 2.0 * t)
+        flutter = 0.85 + 0.15 * math.sin(2.0 * math.pi * 5.0 * t + 0.7)
+        whistle_f = 520.0 + 70.0 * math.sin(2.0 * math.pi * 3.0 * t)
+        whistle = math.sin(2.0 * math.pi * whistle_f * i / SR) * 0.10
+        out[i] = (low * 2.3 + band * 0.55 + whistle) * gust * flutter * 0.85
+    fade_edges(out, ms=25.0)
+    return out
+
+
+def sfx_cannon():
+    """Cañonazo: golpe grave, soplo de pólvora y cola de retumbe."""
+    dur = 0.85
+    n = int(dur * SR)
+    out = _empty(n)
+    phase = 0.0
+    low = 0.0
+    for i in range(n):
+        t = i / n
+        phase += (120.0 * math.exp(-5.0 * t) + 32.0) / SR
+        boom = math.sin(2.0 * math.pi * phase) * math.exp(-7.0 * t)
+        x = random.uniform(-1.0, 1.0)
+        low += (x - low) * 0.05
+        blast = low * math.exp(-14.0 * t) * 2.1
+        rumble = low * math.exp(-3.0 * t) * 0.35
+        out[i] = boom * 1.1 + blast + rumble
+    return out
+
+
+def sfx_creak():
+    """Crujido de madera del balancín al volcar."""
+    dur = 0.55
+    n = int(dur * SR)
+    out = _empty(n)
+    phase = 0.0
+    low = 0.0
+    for i in range(n):
+        t = i / n
+        f = 210.0 + 60.0 * math.sin(2.0 * math.pi * 3.2 * t) + 90.0 * t
+        phase += f / SR
+        p = phase % 1.0
+        saw = 2.0 * p - 1.0
+        x = random.uniform(-1.0, 1.0)
+        low += (x - low) * 0.2
+        env = math.sin(math.pi * min(1.0, t * 1.1)) ** 0.6
+        out[i] = (saw * 0.32 + low * 0.5) * env
+    return out
+
+
+def sfx_boing():
+    """Trampolín: subida de tono con rebote elástico."""
+    dur = 0.55
+    n = int(dur * SR)
+    out = _empty(n)
+    for i in range(n):
+        t = i / n
+        f = 240.0 + 520.0 * math.sin(math.pi * min(1.0, t * 1.7)) - 120.0 * t
+        vibrato = 1.0 + 0.06 * math.sin(2.0 * math.pi * 18.0 * i / SR)
+        env = math.exp(-5.0 * t) * min(1.0, t / 0.01)
+        out[i] = math.sin(2.0 * math.pi * f * vibrato * i / SR) * env * 0.8
+    return out
+
+
+def sfx_whoosh():
+    """Paso de un objeto grande: ruido con banda que sube y baja."""
+    dur = 0.42
+    n = int(dur * SR)
+    out = _empty(n)
+    low = 0.0
+    band = 0.0
+    for i in range(n):
+        t = i / n
+        x = random.uniform(-1.0, 1.0)
+        low += (x - low) * (0.02 + 0.05 * math.sin(math.pi * t))
+        band += (x - band) * (0.12 + 0.22 * math.sin(math.pi * t))
+        env = math.sin(math.pi * t) ** 1.2
+        out[i] = (low * 1.2 + band * 0.9) * env
+    return out
+
+
 # --------------------------------------------------------------------------
 # Música
 # --------------------------------------------------------------------------
 
-# Un acorde por compás (ciclo de 8 compases).
+# Progresión de 24 compases: intro, A (8), B (8) y vuelta a A (4 + vuelta).
 CHORDS = [
-    ("C", ["C5", "E5", "G5"]),
-    ("G", ["G4", "B4", "D5"]),
-    ("A", ["A4", "C5", "E5"]),
-    ("F", ["F4", "A4", "C5"]),
-    ("C", ["C5", "E5", "G5"]),
-    ("G", ["G4", "B4", "D5"]),
-    ("F", ["F4", "A4", "C5"]),
-    ("G", ["G4", "B4", "D5"]),
+    ("C", ["C5", "E5", "G5"]), ("G", ["G4", "B4", "D5"]),
+    ("A", ["A4", "C5", "E5"]), ("F", ["F4", "A4", "C5"]),
+    ("C", ["C5", "E5", "G5"]), ("G", ["G4", "B4", "D5"]),
+    ("F", ["F4", "A4", "C5"]), ("G", ["G4", "B4", "D5"]),
+    ("F", ["F4", "A4", "C5"]), ("G", ["G4", "B4", "D5"]),
+    ("E", ["E4", "G4", "B4"]), ("A", ["A4", "C5", "E5"]),
+    ("F", ["F4", "A4", "C5"]), ("G", ["G4", "B4", "D5"]),
+    ("C", ["C5", "E5", "G5"]), ("C", ["C5", "E5", "G5"]),
+    ("C", ["C5", "E5", "G5"]), ("G", ["G4", "B4", "D5"]),
+    ("A", ["A4", "C5", "E5"]), ("F", ["F4", "A4", "C5"]),
+    ("C", ["C5", "E5", "G5"]), ("G", ["G4", "B4", "D5"]),
+    ("F", ["F4", "A4", "C5"]), ("G", ["G4", "B4", "D5"]),
 ]
-BASS_ROOTS = ["C2", "G2", "A2", "F2", "C2", "G2", "F2", "G2"]
+BASS_ROOTS = ["C2", "G2", "A2", "F2", "C2", "G2", "F2", "G2",
+              "F2", "G2", "E2", "A2", "F2", "G2", "C2", "C2",
+              "C2", "G2", "A2", "F2", "C2", "G2", "F2", "G2"]
 
-# Patrón de bajo en corcheas (beat, grado).
-BASS_PATTERN = [(0.0, 0), (0.5, 0), (1.0, 1), (1.5, 0),
-                (2.0, 0), (2.5, 0), (3.0, 1), (3.5, 2)]
-BASS_SHIFT = {0: 0, 1: 7, 2: 12}  # raíz, quinta, octava
+# Patrón funky de bajo en corcheas con contratiempos (beat, semitonos).
+BASS_PATTERN = [(0.0, 0), (0.75, 0), (1.5, 7), (2.0, 0),
+                (2.75, 12), (3.5, 7)]
 
 # Melodías: por compás, lista de (beat, nota, duración en beats).
 MELODY_A = [
-    [(0.0, "E5", 0.5), (0.5, "G5", 0.5), (1.0, "C6", 1.0), (2.0, "G5", 0.5), (2.5, "E5", 0.5), (3.0, "G5", 1.0)],
-    [(0.0, "D5", 0.5), (0.5, "G5", 0.5), (1.0, "B5", 1.0), (2.0, "G5", 0.5), (2.5, "D5", 0.5), (3.0, "B4", 1.0)],
-    [(0.0, "A4", 0.5), (0.5, "C5", 0.5), (1.0, "E5", 1.0), (2.0, "C5", 0.5), (2.5, "A4", 0.5), (3.0, "E5", 1.0)],
-    [(0.0, "F4", 0.5), (0.5, "A4", 0.5), (1.0, "C5", 1.0), (2.0, "F5", 1.0), (3.0, "E5", 1.0)],
-    [(0.0, "E5", 0.5), (0.5, "G5", 0.5), (1.0, "C6", 1.0), (2.0, "B5", 0.5), (2.5, "A5", 0.5), (3.0, "G5", 1.0)],
-    [(0.0, "D5", 0.5), (0.5, "G5", 0.5), (1.0, "B5", 1.0), (2.0, "D6", 1.0), (3.0, "B5", 1.0)],
-    [(0.0, "C5", 0.5), (0.5, "F5", 0.5), (1.0, "A5", 2.0), (3.0, "G5", 1.0)],
-    [(0.0, "B4", 0.5), (0.5, "D5", 0.5), (1.0, "G5", 1.0), (2.0, "G5", 0.5), (2.5, "F5", 0.5), (3.0, "E5", 0.5), (3.5, "D5", 0.5)],
+    [(0.0, "G4", 0.5), (0.5, "C5", 0.5), (1.0, "E5", 0.5), (1.5, "G5", 0.5), (2.0, "E5", 0.5), (2.5, "C5", 0.5), (3.0, "D5", 0.5), (3.5, "E5", 0.5)],
+    [(0.0, "D5", 1.0), (1.0, "B4", 0.5), (1.5, "D5", 0.5), (2.0, "G5", 1.0), (3.0, "F5", 0.5), (3.5, "D5", 0.5)],
+    [(0.0, "C5", 0.5), (0.5, "E5", 0.5), (1.0, "A5", 1.0), (2.0, "G5", 0.5), (2.5, "E5", 0.5), (3.0, "C5", 0.5), (3.5, "A4", 0.5)],
+    [(0.0, "F4", 0.5), (0.5, "A4", 0.5), (1.0, "C5", 0.5), (1.5, "F5", 0.5), (2.0, "A5", 1.0), (3.0, "G5", 0.5), (3.5, "F5", 0.5)],
+    [(0.0, "E5", 0.5), (0.5, "G5", 0.5), (1.0, "C6", 1.0), (2.0, "B5", 0.5), (2.5, "G5", 0.5), (3.0, "E5", 1.0)],
+    [(0.0, "D5", 0.5), (0.5, "G5", 0.5), (1.0, "B5", 1.0), (2.0, "A5", 0.5), (2.5, "G5", 0.5), (3.0, "D5", 1.0)],
+    [(0.0, "C5", 0.5), (0.5, "F5", 0.5), (1.0, "A5", 1.0), (2.0, "G5", 0.5), (2.5, "F5", 0.5), (3.0, "E5", 0.5), (3.5, "D5", 0.5)],
+    [(0.0, "B4", 0.5), (0.5, "D5", 0.5), (1.0, "G5", 1.5), (2.5, "F5", 0.5), (3.0, "D5", 0.5), (3.5, "B4", 0.5)],
 ]
 MELODY_B = [
-    [(0.0, "C6", 1.0), (1.0, "G5", 0.5), (1.5, "E5", 0.5), (2.0, "C6", 1.0), (3.0, "E6", 1.0)],
-    [(0.0, "B5", 1.0), (1.0, "G5", 0.5), (1.5, "D5", 0.5), (2.0, "B5", 1.0), (3.0, "D6", 1.0)],
-    [(0.0, "E5", 1.0), (1.0, "C5", 0.5), (1.5, "A4", 0.5), (2.0, "E5", 1.0), (3.0, "A5", 1.0)],
-    [(0.0, "A5", 1.0), (1.0, "F5", 0.5), (1.5, "C5", 0.5), (2.0, "A5", 1.0), (3.0, "F5", 0.5), (3.5, "G5", 0.5)],
-    [(0.0, "C6", 0.5), (0.5, "B5", 0.5), (1.0, "A5", 0.5), (1.5, "G5", 0.5), (2.0, "E5", 2.0)],
-    [(0.0, "D6", 0.5), (0.5, "B5", 0.5), (1.0, "G5", 0.5), (1.5, "D5", 0.5), (2.0, "B5", 2.0)],
-    [(0.0, "F5", 0.5), (0.5, "A5", 0.5), (1.0, "C6", 1.0), (2.0, "A5", 0.5), (2.5, "F5", 0.5), (3.0, "C5", 1.0)],
-    [(0.0, "G5", 1.0), (1.0, "B5", 1.0), (2.0, "D6", 1.0), (3.0, "G5", 1.0)],
+    [(0.0, "A5", 0.5), (0.5, "C6", 0.5), (1.0, "A5", 0.5), (1.5, "F5", 0.5), (2.0, "C5", 1.0), (3.0, "F5", 0.5), (3.5, "A5", 0.5)],
+    [(0.0, "B5", 0.5), (0.5, "D6", 0.5), (1.0, "B5", 0.5), (1.5, "G5", 0.5), (2.0, "D5", 1.0), (3.0, "G5", 0.5), (3.5, "B5", 0.5)],
+    [(0.0, "G5", 0.5), (0.5, "B5", 0.5), (1.0, "E6", 1.0), (2.0, "D6", 0.5), (2.5, "B5", 0.5), (3.0, "G5", 1.0)],
+    [(0.0, "A4", 0.5), (0.5, "C5", 0.5), (1.0, "E5", 1.0), (2.0, "A5", 1.0), (3.0, "G5", 0.5), (3.5, "E5", 0.5)],
+    [(0.0, "F5", 0.5), (0.5, "A5", 0.5), (1.0, "C6", 0.5), (1.5, "A5", 0.5), (2.0, "F5", 1.0), (3.0, "E5", 0.5), (3.5, "D5", 0.5)],
+    [(0.0, "G5", 0.5), (0.5, "B5", 0.5), (1.0, "D6", 0.5), (1.5, "B5", 0.5), (2.0, "G5", 1.0), (3.0, "F5", 0.5), (3.5, "D5", 0.5)],
+    [(0.0, "C6", 1.0), (1.0, "G5", 0.5), (1.5, "E5", 0.5), (2.0, "C5", 1.0), (3.0, "E5", 1.0)],
+    [(0.0, "G5", 0.5), (0.5, "E5", 0.5), (1.0, "C6", 2.0)],
 ]
 
+# 0..7 = A, 8..15 = B, 16..23 = vuelta a A.
 STRUCTURE = ["A", "A", "B", "A"]
 
+# Un acorde de paso para el "boing" de la vuelta.
+BOING_NOTES = ["C6", "B5", "A5", "G5", "F5", "E5", "D5", "C5"]
 
-def render_music():
+
+def render_menu_theme():
+    """Tema de menú: alegre, saltarín y con aire de carrera de obstáculos."""
     random.seed(SEED)
     n = int(PHRASE_BARS * 4 * SPB * SR)
     out = _empty(n)
     kick, snare = drum_kick(), drum_snare()
     hat, hat_soft = drum_hat(0.05), drum_hat(0.03)
+    shaker = drum_hat(0.025)
 
     for bar in range(PHRASE_BARS):
         bar_start = bar * 4 * SPB * SR
-        section = STRUCTURE[(bar // 8) % len(STRUCTURE)]
+        section = STRUCTURE[bar // 8]
         idx = bar % 8
-        triad = CHORDS[idx][1]
-
-        # Melodía
+        triad = CHORDS[bar][1]
         melody = MELODY_A if section == "A" else MELODY_B
+
+        # Melodía principal: square brillante y staccato.
         for beat, name, beats in melody[idx]:
-            amp = 0.30 if section == "A" else 0.28
+            amp = 0.27 if section == "A" else 0.25
             mix(out, bar_start + beat * SPB * SR,
-                render_note("square", freq(name), beats * SPB * 0.92, amp,
-                            duty=0.28, attack=0.006, release=0.05, detune=0.25,
-                            vib=0.004, vib_hz=6.0))
+                render_note("square", freq(name), beats * SPB * 0.82, amp,
+                            duty=0.32, attack=0.005, release=0.035,
+                            vib=0.0 if beats < 0.75 else 0.004,
+                            detune=0.22))
+            # Silbato una octava arriba en la sección B.
+            if section == "B" and beats >= 0.5:
+                mix(out, bar_start + beat * SPB * SR,
+                    render_note("sine", freq(name) * 2.0, beats * SPB * 0.7, 0.09,
+                                attack=0.006, release=0.04))
 
-        # Bajo
-        for beat, degree in BASS_PATTERN:
-            note = transpose(BASS_ROOTS[idx], BASS_SHIFT[degree])
+        # Bajo saltarín.
+        for beat, semis in BASS_PATTERN:
+            note = transpose(BASS_ROOTS[bar], semis)
             mix(out, bar_start + beat * SPB * SR,
-                render_note("triangle", freq(note), SPB * 0.42, 0.34,
-                            attack=0.004, release=0.03, decay=0.22))
+                render_note("triangle", freq(note), SPB * 0.30, 0.36,
+                            attack=0.004, release=0.025, decay=0.26))
 
-        # Acordes (stabs en los tiempos 1 y 3)
-        for beat in (0.0, 2.0):
+        # Stabs de acorde en los contratiempos, al estilo de una banda de ska.
+        for beat in (0.5, 1.5, 2.5, 3.5):
             for voice in triad:
                 mix(out, bar_start + beat * SPB * SR,
-                    render_note("triangle", freq(voice), SPB * 1.7, 0.075,
-                                attack=0.02, release=0.25, decay=0.9))
+                    render_note("triangle", freq(voice), SPB * 0.22, 0.05,
+                                attack=0.008, release=0.05, decay=0.5))
 
-        # Batería
-        for beat in (0.0, 2.0):
+        # Batería bailable.
+        for beat in (0.0, 1.5, 2.0, 3.25):
             mix(out, bar_start + beat * SPB * SR, kick)
         for beat in (1.0, 3.0):
             mix(out, bar_start + beat * SPB * SR, snare)
         for eighth in range(8):
-            seg = hat if eighth % 2 == 0 else hat_soft
-            mix(out, bar_start + eighth * 0.5 * SPB * SR, seg)
+            # Swing suave: los contratios llegan un pelín tarde.
+            offset = 0.055 if eighth % 2 == 1 else 0.0
+            seg = hat if eighth % 4 == 0 else hat_soft
+            mix(out, bar_start + (eighth * 0.5 + offset) * SPB * SR, seg)
+            mix(out, bar_start + (eighth * 0.5 + offset) * SPB * SR, shaker)
 
-    fade_edges(out, ms=2.0)  # bucle sin clicks en los extremos
+        # Plato al empezar cada bloque.
+        if bar in (0, 8, 16):
+            mix(out, bar_start, hat_soft)
+            mix(out, bar_start, drum_hat(0.18))
+
+    # Redoble de entrada y "boing" de silbato en la última vuelta.
+    bar_start = 16 * 4 * SPB * SR
+    for i, name in enumerate(BOING_NOTES):
+        mix(out, bar_start + (0.25 * i) * SPB * SR,
+            render_note("sine", freq(name), SPB * 0.28, 0.10,
+                        attack=0.004, release=0.04, vib=0.01, vib_hz=12.0))
+
+    fade_edges(out, ms=3.0)  # bucle sin clicks en los extremos
     return out
 
 
@@ -457,6 +600,7 @@ def main():
     print("Generando SFX...")
     random.seed(SEED)
     write_wav(SFX_DIR / "jump.wav", sfx_jump(), peak=0.92)
+    write_wav(SFX_DIR / "step.wav", sfx_step(), peak=0.75)
     write_wav(SFX_DIR / "checkpoint.wav", sfx_checkpoint(), peak=0.92)
     write_wav(SFX_DIR / "finish.wav", sfx_finish(), peak=0.95)
     write_wav(SFX_DIR / "fall.wav", sfx_fall(), peak=0.90)
@@ -466,27 +610,15 @@ def main():
     write_wav(SFX_DIR / "coin.wav", sfx_coin(), peak=0.9)
     write_wav(SFX_DIR / "ui.wav", sfx_ui(), peak=0.8)
     write_wav(SFX_DIR / "countdown.wav", sfx_countdown(), peak=0.85)
-
-    if shutil.which("ffmpeg") is None:
-        print("Aviso: ffmpeg no disponible; se conserva la música existente.")
-        print("Los SFX se han regenerado correctamente.")
-        return 0
+    write_wav(SFX_DIR / "wind.wav", sfx_wind(), peak=0.75)
+    write_wav(SFX_DIR / "cannon.wav", sfx_cannon(), peak=0.95)
+    write_wav(SFX_DIR / "creak.wav", sfx_creak(), peak=0.80)
+    write_wav(SFX_DIR / "boing.wav", sfx_boing(), peak=0.85)
+    write_wav(SFX_DIR / "whoosh.wav", sfx_whoosh(), peak=0.75)
 
     print("Generando música (~%d s)..." % int(PHRASE_BARS * 4 * SPB))
-    tmp = MUSIC_DIR / "_background_tmp.wav"
-    write_wav(tmp, render_music(), peak=0.88)
-    ogg = MUSIC_DIR / "background.ogg"
-    # `-fflags +bitexact` en la salida fija el número de serie de las páginas
-    # Ogg, de modo que el .ogg resultante es byte a byte reproducible.
-    subprocess.run(
-        ["ffmpeg", "-y", "-loglevel", "error", "-i", str(tmp),
-         "-c:a", "libvorbis", "-q:a", "5", "-ac", "1",
-         "-fflags", "+bitexact", str(ogg)],
-        check=True,
-    )
-    tmp.unlink()
-    print("  %-42s %5.2f s" % (ogg.relative_to(PROJECT_ROOT),
-                               PHRASE_BARS * 4 * SPB))
+    theme = MUSIC_DIR / "menu_theme.wav"
+    write_wav(theme, render_menu_theme(), peak=0.86)
     print("Listo. Abre el proyecto en Godot para que importe los archivos.")
     return 0
 

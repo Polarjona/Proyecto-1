@@ -25,7 +25,6 @@ func _initialize() -> void:
 		"res://scenes/obstacles/wind_tunnel.tscn",
 		"res://scenes/obstacles/launcher.tscn",
 		"res://scenes/obstacles/see_saw.tscn",
-		"res://scenes/pickups/crown.tscn",
 		"res://scenes/menu/settings_menu.tscn",
 	]
 	var failed := 0

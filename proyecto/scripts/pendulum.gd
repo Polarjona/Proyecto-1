@@ -10,14 +10,22 @@ extends Node3D
 @onready var hammer: AnimatableBody3D = $Hammer
 @onready var push_area: Area3D = $Hammer/PushArea
 
+var _whoosh_timer: float = 0.0
+
 
 func _ready() -> void:
+	add_to_group("pendulums")
 	push_area.body_entered.connect(_on_body_entered)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var t := Time.get_ticks_msec() * swing_speed + phase_offset
 	hammer.rotation.z = sin(t) * max_angle
+	# Siseo del martillo al pasar: posicional, solo se nota cerca.
+	_whoosh_timer -= delta
+	if _whoosh_timer <= 0.0:
+		_whoosh_timer = 1.0
+		AudioManager.play_sfx_at("whoosh", hammer.global_position, 0.18, -15.0)
 
 
 func _on_body_entered(body: Node3D) -> void:

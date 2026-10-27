@@ -1,6 +1,6 @@
-# Banco de ideas — de prototipo a juego "perfecto"
+# Banco de ideas — de la primera versión al juego "perfecto"
 
-**Proyecto:** Stumble Guys (Godot 4.7, Forward+, Jolt, GDScript)
+**Proyecto:** Tumble Rush (Godot 4.7, Forward+, Jolt, GDScript)
 **Fecha:** Octubre 2026
 **Cómo usar este documento:** cada idea tiene un **ID**. Responde con la lista de IDs que quieres aplicar (por ejemplo `M3, M7, G2, G9, P1`) y se implementan en ese orden. Las etiquetas de coste son orientativas: **S** ≈ media sesión, **M** ≈ una sesión larga, **L** ≈ varias sesiones.
 
@@ -12,9 +12,9 @@
 
 - `scripts/player.gd` (555 líneas): inercia, coyote time, jump buffer, salto variable, apex hang, dive/prone, herencia de momento de plataformas, stun por impacto, animación procedural, cámara SpringArm con FOV kick y shake.
 - `scripts/race_manager.gd`: cronómetro, checkpoints, splits vs. récord, penalización por caída, medallas, persistencia.
-- `scripts/save_manager.gd`: perfil JSON versionado, ajustes, monedas, coronas, medallas, migración de saves antiguos.
+- `scripts/save_manager.gd`: perfil JSON versionado, ajustes, monedas, medallas, migración de saves antiguos.
 - `scripts/race_director.gd` + `bot_racer.gd`: bots con waypoints, clasificación en vivo, cualificación por rondas.
-- 12 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud, 4 suites de test headless.
+- 12 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud, 5 suites de test headless.
 
 **Los cinco techos actuales** (esto es lo que impide el "x100"):
 
@@ -72,19 +72,19 @@ Los modos están ordenados por **relación diversión/esfuerzo** en este proyect
 | **M21** | **Hex-a-Gone / Suelo que cae** | Suelo de hexágonos que desaparecen al pisarlos; último en pie | Reutiliza el sistema de tiles; tremendo en 3D con cámara cenital | L |
 | **M22** | **Tail Tag / Pilla-pilla** | Uno lleva una cola; si te pillan, la pierdes; sobrevive con cola al final | Usa M1/M2 y el `apply_push` existente | M |
 | **M23** | **Jump Club / Roll Out** | Plataforma giratoria con barra que hay que saltar; el que cae, fuera | Ya existen `sweeper` y `spinning_platform` | S |
-| **M24** | **Tip Toe / Suelo falso** | Camino de tiles donde algunos son falsos; hay que memorizar la ruta | Reutiliza `crown`/`checkpoint` y una matriz de tiles | M |
+| **M24** | **Tip Toe / Suelo falso** | Camino de tiles donde algunos son falsos; hay que memorizar la ruta | Reutiliza `checkpoint` y una matriz de tiles | M |
 | **M25** | **Block Party / Muro que barre** | Muros que empujan hacia el vacío por franjas; hay que colocarse en el hueco | Ya existe `wall.tscn`, solo falta el patrón | S |
 | **M26** | **Egg Scramble / Roba huevos** | Dos equipos recogen huevos de un nido central | Necesita equipos + agarre | L |
 | **M27** | **Fall Ball / Fútbol con muñecos** | Dos equipos, pelota gigante, porterías | Muy divertido, pero exige física de equipo estable | L |
-| **M28** | **Final: corona** | 3-5 clasificados, carrera corta final; el ganador se lleva la corona | Cierra el torneo con tensión máxima | M |
+| **M28** | **Final: trofeo** | 3-5 clasificados, carrera corta final; el ganador se lleva el trofeo | Cierra el torneo con tensión máxima | M |
 | **M29** | **Modo práctica / contrarreloj** | Sin bots, sin muerte, splits y ghosts | Ideal para aprender el circuito y para los tests | S |
-| **M30** | **Torneo real de 4-5 rondas** | Eliminación progresiva, mapa distinto por ronda, 1 final | Es lo que convierte "un prototipo" en "un juego" | L |
+| **M30** | **Torneo real de 4-5 rondas** | Eliminación progresiva, mapa distinto por ronda, 1 final | Es lo que convierte "una demo" en "un juego" | L |
 | **M31** | **Eventos aleatorios de ronda** (*mutators*) | "Gravedad baja", "todos resbalan", "lluvia de bolas", "sin saltar" | Rejugabilidad casi gratis, gran gancho para clips | M |
 | **M32** | **Modo espectador / bots de relleno** | Si caes, ves a los demás terminar con cámara libre | Evita el "he perdido, cierro el juego" | S |
 | **M33** | **Replay del fantasma del récord** | Grabar posiciones cada 0,1 s y reproducir un personaje translúcido | Objetivo personal claro, muy motivador | M |
 | **M34** | **Split-screen local 2-4** | `SubViewport` + cámara por jugador | El proyecto ya tiene input por jugador a medias; gran valor social sin red | L |
 | **M35** | **Multijugador online (ENet / Steam)** | Servidor autoritativo, interpolación, predicción | El mayor salto de valor, pero es un proyecto en sí mismo | L |
-| **M36** | **Desafíos diarios/semanales** | "Termina sin caer", "recoge 3 coronas", "gana una ronda" | Retención diaria con muy poco contenido nuevo | M |
+| **M36** | **Desafíos diarios/semanales** | "Termina sin caer", "recoge 3 monedas", "gana una ronda" | Retención diaria con muy poco contenido nuevo | M |
 
 ---
 
@@ -139,9 +139,9 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **M71** | **Tienda con monedas** | Ya hay monedas en `save_manager.gd`; falta una pantalla que gaste. | M |
 | **M72** | **Cosméticos: sombreros, colores, patrones, bailes, sonidos de muerte** | Cargados desde un `.tres` de catálogo; se ven también en bots. | L |
 | **M73** | **Bailes / emotes en la meta** | 4 animaciones procedurales y un botón; al terminar, el personaje baila. | S |
-| **M74** | **Logros y estadísticas** | "Sin caer", "10 coronas", "sub-40 s"; pantalla de perfil con gráfico de tiempos. | M |
+| **M74** | **Logros y estadísticas** | "Sin caer", "10 monedas", "sub-40 s"; pantalla de perfil con gráfico de tiempos. | M |
 | **M75** | **Récords por circuito y por modo** | Hoy el récord es global; separar por mapa y por modo. | S |
-| **M76** | **Árbol de insignias / rangos** | Bronce→Plata→Oro→Corona según medallas acumuladas, visible en el menú. | S |
+| **M76** | **Árbol de insignias / rangos** | Bronce→Plata→Oro→Leyenda según medallas acumuladas, visible en el menú. | S |
 | **M77** | **Pantalla de resultados "de verdad"** | Podio, confeti, tiempo, medalla, posición, XP ganado, botón "siguiente ronda" con cuenta atrás. | S |
 | **M78** | **Contadores de sesión** | "Llevas 3 victorias seguidas", racha diaria. | S |
 
@@ -181,7 +181,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 |----|------|---------|-------|
 | **G17** | **Impacto de golpe legible** | Hitstop corto (ya existe `GameFeel`), *flash* blanco de 2 frames en el muñeco, anillo de ondas y partículas de estrellas. | S |
 | **G18** | **Partículas por superficie** | Polvo seco en el barro, chispas en metal, confeti en la meta, hojas en zonas verdes. | M |
-| **G19** | **Confeti y fuegos artificiales de victoria** | Ampliar `finish_line.tscn`: confeti continuo + fuegos artificiales + lluvia de coronas. | S |
+| **G19** | **Confeti y fuegos artificiales de victoria** | Ampliar `finish_line.tscn`: confeti continuo + fuegos artificiales + lluvia de monedas. | S |
 | **G20** | **Destrucción de props** | Cajas y barriles que se rompen con `RigidBody3D` + fragmentos; puro espectáculo. | M |
 | **G21** | **Cámaras de muerte y de meta** | Al caer, cámara que sigue al muñeco 1 s; al ganar, órbita lenta alrededor del personaje. | M |
 | **G22** | **Motion trails en el dive** | Rastro de estela + líneas de velocidad en los bordes (ya hay `speed` en el shader de postproceso). | S |
@@ -193,7 +193,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 |----|------|---------|-------|
 | **G24** | **Tema de UI completo** | Ya existe `ui/theme.tres`: añadir tipografía redondeada, iconos propios, estados *hover/pressed/disabled*, `StyleBox` con borde grueso y sombra. | S |
 | **G25** | **Animaciones de UI** | `Tween` en botones (escala 1.05, rebote), paneles que entran con *overshoot*, contadores que cuentan hacia arriba. | S |
-| **G26** | **HUD más limpio y con jerarquía** | Tiempo grande y centrado, récord pequeño, posición a la izquierda, coronas con icono, barra de progreso con avatares de los rivales. | M |
+| **G26** | **HUD más limpio y con jerarquía** | Tiempo grande y centrado, récord pequeño, posición a la izquierda, monedas con icono, barra de progreso con avatares de los rivales. | M |
 | **G27** | **Menú principal como escena viva** | El personaje del jugador en 3D girando en el menú con su cosmético equipado; fondo animado. | M |
 | **G28** | **Pantalla de carga / transición con logo** | Ya hay `TransitionManager`: añadir logo animado, *tips* y barra. | S |
 | **G29** | **Subtítulos y avisos accesibles** | Texto para sonidos clave ("¡Te han empujado!") y avisos de peligro con icono. | S |
@@ -222,8 +222,8 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **P3** | **Editor interno de niveles** | Colocar piezas con teclado/ratón y guardar JSON: multiplica el contenido sin escribir escenas a mano. | L |
 | **P4** | **Cuatro circuitos temáticos** | "Ciudad" (azoteas), "Fábrica" (cintas y prensas), "Hielo" (resbaladizo), "Jungla" (lodo y lianas), cada uno con paleta y obstáculos propios. | L |
 | **P5** | **Curvas de dificultad** | Cada circuito con 3 tramos: enseñanza (1 obstáculo), combinación (2), examen (3 juntos). | S |
-| **P6** | **Atajos con riesgo** | Rutas alternativas más cortas y más peligrosas (cuerda floja, saltos sobre vacío) recompensadas con coronas. | M |
-| **P7** | **Secretos** | 1 corona escondida por nivel fuera de la ruta principal. | S |
+| **P6** | **Atajos con riesgo** | Rutas alternativas más cortas y más peligrosas (cuerda floja, saltos sobre vacío) recompensadas con monedas. | M |
+| **P7** | **Secretos** | 1 moneda escondida por nivel fuera de la ruta principal. | S |
 | **P8** | **Zonas de descanso** | Plataformas seguras entre tramos: dan respiro y sirven de checkpoint natural. | S |
 
 ---
@@ -238,7 +238,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **T4** | **Object pooling** | Bolas, partículas y confeti reutilizados en vez de instanciar/destruir. | S |
 | **T5** | **Precompilación de shaders** | Evitar el tirón del primer obstáculo que aparece (`shader_compile` en carga). | S |
 | **T6** | **Tests de escena obligatorios** | Ampliar `tools/check_scenes.gd` + `iteration3_test.gd`: cada obstáculo nuevo debe tener un test headless que verifique su señal. | S |
-| **T7** | **CI con Godot headless** | GitHub Action que importa el proyecto y corre las 4 suites en cada push. | M |
+| **T7** | **CI con Godot headless** | GitHub Action que importa el proyecto y corre las 5 suites en cada push. | M |
 | **T8** | **Instrumentación de rendimiento** | Medir tiempo de frame en el circuito completo y fijar presupuesto (< 8 ms de CPU). | S |
 | **T9** | **Desacoplar con señales y grupos** | Menos `get_node` directos entre sistemas; estados de juego en una máquina de estados (`GameState`). | M |
 | **T10** | **Modo "sin UI / capturas"** | Tecla F12 que oculta HUD y sube calidad para hacer capturas de prensa. | S |
@@ -268,7 +268,7 @@ Si quieres el máximo "x100" por esfuerzo, estos son los caminos que yo elegirí
 
 ### Paquete A — "Se siente como un juego de verdad" (10-12 h de trabajo)
 `M1` agarre · `M2` empujón · `M7` choque entre jugadores · `M4` ragdoll · `G2` toon · `G9` postproceso · `G5` niebla/rayos · `G12` gelatina · `G17` impacto · `A2` variación SFX · `G24` tema UI · `M77` resultados con podio
-→ El juego pasa de "prototipo bonito" a "clip que apetece compartir".
+→ El juego pasa de "demo bonita" a "clip que apetece compartir".
 
 ### Paquete B — "Hay un juego, no un nivel" (15-20 h)
 `P1` formato de nivel · `P2` kit modular · `M30` torneo de 4 rondas · `M33` fantasma · `M21`/`M23`/`M25` tres modos · `M60`/`M64`/`M65` IA por nivel · `M70`/`M76` progresión
@@ -282,7 +282,7 @@ Si quieres el máximo "x100" por esfuerzo, estos son los caminos que yo elegirí
 
 ## 13. Qué NO haría (y por qué)
 
-- **Multijugador online como primer paso** (`M35`): sin niveles ni modos, el online solo multiplica un prototipo vacío. Va después del paquete B.
+- **Multijugador online como primer paso** (`M35`): sin niveles ni modos, el online solo multiplica una demo vacía. Va después del paquete B.
 - **Rig completo antes que el *juice*** (`G11`): la animación procedural actual ya es simpática; el retorno se dispara antes con shaders y partículas.
 - **Editor de niveles interno** (`P3`): solo tiene sentido cuando existan `P1` y `P2`; antes es una herramienta para hacer contenido que aún no existe.
 - **Física de equipo compleja** (`M27`): Fall Ball exige un `RigidBody` de pelota muy estable; es el modo que más bugs arrastra por diversión obtenida.

@@ -6,7 +6,7 @@
 [ext_resource type="Material" path="res://materials/lime.tres" id="4_lime"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
-size = Vector3(3, 1.6, 3)
+size = Vector3(4.2, 1.8, 3.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(3, 0.32, 3)

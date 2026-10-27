@@ -23,18 +23,23 @@ height = 12.4
 radial_segments = 16
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_board"]
-friction = 0.45
-rough = true
+friction = 0.05
+rough = false
 
 [node name="SeeSaw" type="AnimatableBody3D"]
 collision_layer = 1
 collision_mask = 0
-sync_to_physics = true
+sync_to_physics = false
 physics_material_override = SubResource("PhysicsMaterial_board")
 script = ExtResource("1_script")
-max_tilt = 0.3
-max_roll = 0.05
-responsiveness = 3.4
+max_tilt = 0.5
+max_roll = 0.16
+responsiveness = 6.0
+tip_threshold = 0.02
+roll_gain = 2.5
+instability = 0.02
+slide_threshold = 0.35
+slide_speed = 4.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_plank")

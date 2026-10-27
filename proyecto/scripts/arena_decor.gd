@@ -262,10 +262,12 @@ func _build_distant_mountains() -> void:
 
 
 func _build_arches() -> void:
+	# Every arch stands entirely on a platform: the two that used to float in
+	# the gaps before SeeSawLanding and LandingA were moved onto those slabs.
 	var arches := [
-		{"z": -59.5, "width": 12.0, "height": 6.5, "y": 0.0, "color": Color(0.6, 1.0, 1.0)},
-		{"z": -107.5, "width": 10.0, "height": 6.0, "y": 0.6, "color": Color(0.85, 0.75, 1.0)},
-		{"z": -148.5, "width": 10.0, "height": 6.0, "y": 0.8, "color": Color(1.0, 0.82, 0.35)},
+		{"z": -62.5, "width": 8.5, "height": 6.5, "y": 0.0, "color": Color(0.6, 1.0, 1.0)},
+		{"z": -112.5, "width": 9.0, "height": 6.0, "y": 0.6, "color": Color(0.85, 0.75, 1.0)},
+		{"z": -148.5, "width": 10.0, "height": 6.0, "y": 1.0, "color": Color(1.0, 0.82, 0.35)},
 		{"z": -201.0, "width": 13.0, "height": 7.0, "y": 4.0, "color": Color(0.8, 1.0, 0.55)},
 	]
 	for i in arches.size():
@@ -304,6 +306,20 @@ func _build_pendulum_frames() -> void:
 	# Longitudinal rails tie the four gantries together.
 	for side in [-1.0, 1.0]:
 		_box(Vector3(0.34, 0.34, 22.8), Vector3(side * 4.2, 5.35, -78.75), metal, "PendulumRail_%s" % ("L" if side < 0.0 else "R"))
+
+	# The final pendulum sits on the raised last straight, so its gantry is
+	# taller and reaches down through FinalRun instead of floating above it.
+	var final_z := -192.0
+	var final_beam_y := 6.35
+	for side in [-1.0, 1.0]:
+		var x: float = side * 4.2
+		_box(Vector3(0.42, 13.5, 0.42), Vector3(x, 0.35, final_z), metal,
+			"PendulumPost_4_%s" % ("L" if side < 0.0 else "R"))
+		_box(Vector3(0.7, 0.2, 0.7), Vector3(x, final_beam_y, final_z), glow,
+			"PendulumFoot_4_%s" % ("L" if side < 0.0 else "R"))
+	_box(Vector3(8.9, 0.42, 0.42), Vector3(0.0, final_beam_y, final_z), metal, "PendulumBeam_4")
+	_box(Vector3(7.6, 0.08, 0.14), Vector3(0.0, final_beam_y - 0.26, final_z), glow, "PendulumGlow_4")
+	_box(Vector3(0.7, 0.55, 0.7), Vector3(0.0, final_beam_y - 0.15, final_z), metal, "PendulumMount_4")
 
 
 func _build_light_towers() -> void:

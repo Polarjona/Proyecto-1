@@ -1,6 +1,6 @@
 # Informe de Seguiment — Segona Iteració
 
-**Projecte:** Stumble Guys (Prototip)
+**Projecte:** Tumble Rush
 **Autors:** Pol Arjona i Yazan Issa
 **Motor:** Godot Engine 4.7.2 (Forward Plus, física Jolt)
 **Llenguatge:** GDScript

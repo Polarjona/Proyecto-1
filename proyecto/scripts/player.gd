@@ -5,7 +5,7 @@ extends CharacterBody3D
 ## third-person camera with FOV kick and shake.
 
 @export_group("Movement")
-@export var max_speed: float = 8.0
+@export var max_speed: float = 6.5
 @export var acceleration: float = 28.0
 @export var friction: float = 18.0
 @export var jump_velocity: float = 7.5
@@ -61,13 +61,17 @@ extends CharacterBody3D
 
 ## Set by a bot driver (future split-screen / network input).
 @export var is_bot: bool = false
+## Id del personaje que se está usando (expuesto para tests y HUD).
+var character_id: String = ""
 
 ## While true the player keeps standing: no walk, jump or dive input.
 var input_locked: bool = false
 
 @onready var mesh: MeshInstance3D = $MeshInstance3D
-@onready var model: Node3D = $MeshInstance3D/Model
-@onready var anim: AnimationPlayer = $MeshInstance3D/Model/AnimationPlayer
+## El modelo 3D se instancia en runtime según el personaje elegido en el menú.
+var model: Node3D
+var anim: AnimationPlayer
+@onready var marker: Node3D = $Marker
 @onready var dizzy: Node3D = $Dizzy
 @onready var shadow: MeshInstance3D = $Shadow
 @onready var dust: CPUParticles3D = $Dust
@@ -90,6 +94,9 @@ var _jump_cut_available: bool = false
 var _stun_timer: float = 0.0
 var _shadow_material: StandardMaterial3D
 var _dust_burst_timer: float = 0.0
+var _marker_base_y: float = 0.0
+var _step_timer: float = 0.0
+var _step_side: float = 1.0
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
@@ -98,6 +105,10 @@ var _dive_cooldown_timer: float = 0.0
 var _fall_speed: float = 0.0
 var _impact_speed: float = 0.0
 var _wish_dir: Vector3 = Vector3.ZERO
+## After a teleport, one zero-velocity slide with platform inheritance off
+## clears the floor reference from the previous spot. Otherwise a respawn
+## while leaving a spinning platform can inherit a huge tangential velocity.
+var _clear_platform_on_next_frame: bool = false
 
 ## Bot input mirror (world-space).
 var _bot_wish: Vector3 = Vector3.ZERO
@@ -119,9 +130,13 @@ func _ready() -> void:
 	spring_arm.add_excluded_object(get_rid())
 	camera.fov = camera_fov_base
 	_mesh_base_y = mesh.position.y
-	_hide_accessories()
+	_setup_character()
 	_setup_animations()
 	_play_animation("idle", 0.0)
+	if marker:
+		_marker_base_y = marker.position.y
+		# La flecha FIFA solo marca al jugador, nunca a los bots.
+		marker.visible = not is_bot
 	if shadow and shadow.material_override is StandardMaterial3D:
 		_shadow_material = (shadow.material_override as StandardMaterial3D).duplicate()
 		shadow.material_override = _shadow_material
@@ -129,13 +144,16 @@ func _ready() -> void:
 		dizzy.visible = false
 
 
-## The downloaded adventurer carries weapons. The race is unarmed, so those
-## prop meshes stay hidden.
-func _hide_accessories() -> void:
-	for part in ["2H_Staff", "1H_Wand", "Spellbook", "Spellbook_open", "1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield", "Spike_Shield", "1H_Sword", "2H_Sword", "Knife_Offhand", "1H_Crossbow", "2H_Crossbow", "Knife", "Throwable", "Rogue_Cape", "Mage_Cape", "Knight_Cape"]:
-		var node := model.find_child(part, true, false)
-		if node is Node3D:
-			(node as Node3D).visible = false
+## Instancia el personaje elegido en el menú (o uno aleatorio si este cuerpo
+## lo conduce un bot). El catálogo también oculta armas y capas.
+func _setup_character() -> void:
+	character_id = CharacterCatalog.random_id() if is_bot else SaveManager.character_id()
+	model = CharacterCatalog.build_model(character_id, "Model")
+	if model == null:
+		push_warning("Player: no se pudo cargar el personaje '%s'" % character_id)
+		return
+	mesh.add_child(model)
+	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
 
 
 ## Locomotion clips loop; one-shots (landing, hit) play once.
@@ -161,6 +179,13 @@ func set_input_locked(locked: bool) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _clear_platform_on_next_frame:
+		_clear_platform_on_next_frame = false
+		var saved_layers := platform_floor_layers
+		platform_floor_layers = 0
+		velocity = Vector3.ZERO
+		move_and_slide()
+		platform_floor_layers = saved_layers
 	_tick_timers(delta)
 	_apply_gravity(delta)
 	_handle_jump()
@@ -182,6 +207,40 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 	_update_shadow()
 	_update_animation(delta, was_on_floor)
+	_update_footsteps(delta)
+	_update_marker(delta)
+
+
+## Pisadas sincronizadas con la velocidad: suenan al correr, no al quedarse
+## quieto ni en el aire.
+func _update_footsteps(delta: float) -> void:
+	if is_bot:
+		return
+	if not is_on_floor() or _stun_timer > 0.0 or _prone_timer > 0.0:
+		_step_timer = 0.0
+		return
+	var speed := Vector3(velocity.x, 0.0, velocity.z).length()
+	if speed < 0.9:
+		_step_timer = 0.0
+		return
+	_step_timer -= delta
+	if _step_timer > 0.0:
+		return
+	_step_timer = clampf(0.5 - speed * 0.035, 0.24, 0.44)
+	_step_side = -_step_side
+	var volume := -8.5 if _step_side > 0.0 else -10.0
+	AudioManager.play_sfx("step", 0.16, volume)
+
+
+## Flecha sobre la cabeza, estilo FIFA: gira, flota y late un poco.
+func _update_marker(delta: float) -> void:
+	if marker == null or not marker.visible:
+		return
+	marker.rotate_y(delta * 1.9)
+	var speed_ratio := clampf(Vector3(velocity.x, 0.0, velocity.z).length() / maxf(max_speed, 0.01), 0.0, 1.0)
+	marker.position.y = _marker_base_y + sin(Time.get_ticks_msec() * 0.004) * 0.055 + speed_ratio * 0.06
+	var pulse := 1.0 + sin(Time.get_ticks_msec() * 0.006) * 0.06
+	marker.scale = Vector3(pulse, pulse, pulse)
 
 
 func _tick_timers(delta: float) -> void:
@@ -417,7 +476,7 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		new_state = "jump"
 	elif _land_squash_timer > 0.0:
 		new_state = "land"
-	elif horizontal_speed > 6.0:
+	elif horizontal_speed > 4.8:
 		new_state = "run"
 	elif horizontal_speed > 0.8:
 		new_state = "walk"
@@ -555,7 +614,6 @@ func launch(impulse: Vector3) -> void:
 	velocity.y = maxf(velocity.y, impulse.y)
 	_prone_timer = 0.0
 	_jump_cut_available = false
-	AudioManager.play_sfx("jump", 0.06)
 	GameFeel.shake(2.0)
 
 
@@ -565,7 +623,6 @@ func bounce(strength: float) -> void:
 	_jump_cut_available = false
 	_land_squash_timer = 0.0
 	_prone_timer = 0.0
-	AudioManager.play_sfx("jump", 0.05)
 
 
 ## Make the player stagger for `duration` seconds (default: stun_time).
@@ -624,6 +681,7 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	if dizzy:
 		dizzy.visible = false
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)
+	_clear_platform_on_next_frame = true
 
 
 func get_spawn_transform() -> Transform3D:

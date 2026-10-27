@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="Stumble Guys"
-config/description="Prototipo de carrera caótica estilo Stumble Guys"
+config/name="Tumble Rush"
+config/description="Carrera caótica de obstáculos: corre, cae y vuelve a levantarte"
 run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"

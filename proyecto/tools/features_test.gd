@@ -23,6 +23,10 @@ func _check(condition: bool, label: String) -> void:
 ## Respawns the player at a clean transform and waits until they stand on a floor.
 func _place_player(player: CharacterBody3D, at: Vector3) -> void:
 	player.respawn_at(Transform3D(Basis.IDENTITY, at))
+	# `physics_frame` is emitted before `_physics_process`, so wait two frames
+	# or the stale `is_on_floor()` from the previous spot reads as a landing.
+	await physics_frame
+	await physics_frame
 	for i in 120:
 		await physics_frame
 		if player.is_on_floor():
@@ -68,16 +72,31 @@ func _run() -> void:
 	_check(checkpoints.size() == 5, "Siguen existiendo 5 checkpoints (encontrados: %d)" % checkpoints.size())
 
 	# --- 1. Nuevos obstaculos presentes en el mapa ----------------------
-	var pad: Area3D = game.get_node_or_null("Course/BouncePad")
+	var pad: Area3D = game.get_node_or_null("Course/BouncePadFinal")
 	var sweeper: Node3D = game.get_node_or_null("Course/Sweeper")
 	var mover: AnimatableBody3D = game.get_node_or_null("Course/MovingPlatform")
 	var dropper: Node3D = game.get_node_or_null("Course/BallDropper")
-	_check(pad != null, "Trampolín presente en el mapa")
+	_check(pad != null, "Solo queda el trampolín obligatorio final")
+	_check(game.get_node_or_null("Course/BouncePad") == null
+		and game.get_node_or_null("Course/BouncePadWind") == null
+		and game.get_node_or_null("Course/BouncePadFinish") == null,
+		"Se quitaron los trampolines opcionales")
 	_check(sweeper != null, "Barra giratoria presente en el mapa")
 	_check(mover != null, "Plataforma móvil presente en el mapa")
 	_check(dropper != null, "Dispensador de pelotas presente en el mapa")
 	_check(game.get_node_or_null("Course/FinalConveyor") != null, "Combo final: cinta bajo el sweeper")
-	_check(game.get_node_or_null("Course/BallDropperMoving") != null, "Combo: pelotas sobre la plataforma móvil")
+	_check(game.get_node_or_null("Course/ConveyorC") != null,
+		"La plataforma del cañón tiene una cinta lateral adicional")
+	_check(game.get_node_or_null("Course/MovingPlatform/BallDropperMoving") != null,
+		"Combo: pelotas sobre la plataforma móvil, montadas en ella")
+	_check(get_nodes_in_group("bounce_pads").size() == 1,
+		"Solo queda un trampolín en todo el mapa (%d)" % get_nodes_in_group("bounce_pads").size())
+	_check(get_nodes_in_group("crowns").is_empty()
+		and game.get_node_or_null("Course/CrownA") == null
+		and game.get_node_or_null("Course/CrownB") == null
+		and game.get_node_or_null("Course/CrownC") == null
+		and game.get_node_or_null("Course/CrownLedgeB") == null,
+		"El sistema de coronas y las repisas CrownLedge ya no existen")
 	if pad == null or sweeper == null or mover == null or dropper == null:
 		print("RESULT: %d fallos (faltan obstáculos)" % _failures)
 		quit(1)
@@ -90,6 +109,26 @@ func _run() -> void:
 		and game.get_node_or_null("Decor/BridgeColumnRight") == null,
 		"Se quitaron las columnas decorativas que no sostenían nada")
 
+	# --- 1b. Los soportes de los dispensadores llegan al suelo ------------
+	await physics_frame
+	var support_space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	for path in ["Course/BallDropper", "Course/BallDropper2", "Course/MovingPlatform/BallDropperMoving"]:
+		var machine: Node3D = game.get_node_or_null(path)
+		var leg: MeshInstance3D = machine.get_node_or_null("ColumnLeft") if machine else null
+		if leg == null:
+			_check(false, "%s tiene patas de soporte" % path)
+			continue
+		var leg_top: Vector3 = leg.global_position + Vector3.UP * 3.0 * leg.scale.y
+		var leg_bottom: Vector3 = leg.global_position - Vector3.UP * 3.0 * leg.scale.y
+		var support_query := PhysicsRayQueryParameters3D.create(
+			leg_top, leg_top + Vector3.DOWN * 30.0, 1)
+		var support_hit := support_space.intersect_ray(support_query)
+		var floor_y := -99.0
+		if not support_hit.is_empty():
+			floor_y = (support_hit["position"] as Vector3).y
+		_check(absf(leg_bottom.y - floor_y) < 0.15,
+			"%s no flota: pata a %.2f m y suelo a %.2f m" % [path, leg_bottom.y, floor_y])
+
 	# --- 2b. El balancín coincide con su eje real -------------------------
 	var saw: Node3D = game.get_node("Course/SeeSaw")
 	var plank_mesh: BoxMesh = (saw.get_node("Mesh") as MeshInstance3D).mesh as BoxMesh
@@ -101,14 +140,7 @@ func _run() -> void:
 	_check((game.get_node("WorldEnvironment").environment as Environment).sky != null,
 		"El entorno usa un cielo procedural")
 
-	# --- 3. El trampolín alcanza la repisa de la corona -----------------
-	var crown_a: Node3D = game.get_node("Course/CrownA")
-	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-	var reach: float = pad.bounce_strength * pad.bounce_strength / (2.0 * gravity * player.gravity_scale)
-	_check(reach > crown_a.global_position.y + 0.5,
-		"El trampolín alcanza la corona elevada (alcance %.2f m, corona %.2f m)" % [reach, crown_a.global_position.y])
-
-	# --- 4. El trampolín lanza al jugador -------------------------------
+	# --- 4. El trampolín final lanza al jugador -------------------------
 	# Se deja caer desde arriba para no quedarse rebotando durante el asentado.
 	await _place_player_briefly(player, pad.global_position + Vector3(0.0, 3.0, 0.0), 5)
 	var max_up := 0.0
@@ -128,10 +160,15 @@ func _run() -> void:
 	_check(signf(sweeper.get_angle()) != signf(sweeper3.get_angle()),
 		"Las dos barras de la sala giran en sentidos opuestos")
 	var sweeper4: Node3D = game.get_node("Course/Sweeper4")
-	_check(sweeper.get("stuns") == false and sweeper4.get("stuns") == false,
-		"El primer y el último sweeper solo empujan, no aturden")
-	_check(sweeper3.get("stuns") == true,
-		"Solo el segundo sweeper aturde al jugador")
+	_check(sweeper.get("stuns") == true and sweeper3.get("stuns") == true
+		and sweeper4.get("stuns") == true,
+		"Los tres sweepers están configurados para aturdir")
+	for path in ["Course/Sweeper", "Course/Sweeper3", "Course/Sweeper4"]:
+		var sw: Node3D = game.get_node(path)
+		player.respawn_at(Transform3D(Basis.IDENTITY, sw.global_position + Vector3(0.0, 1.4, 2.0)))
+		sw.call("_on_body_entered", player)
+		_check(player.is_stunned(), "%s aturde al jugador" % path)
+	await _place_player(player, Vector3(0.0, 0.6, 0.0))
 	var sweeper_bar: AnimatableBody3D = sweeper.get_node("Bar")
 	_check(sweeper_bar.collision_layer == 0,
 		"La barra no bloquea físicamente al jugador (solo empuja)")
@@ -190,9 +227,10 @@ func _run() -> void:
 		quit(1)
 		return
 
-	await _place_player(player, Vector3(0.0, 0.6, 0.0))
+	await _place_player(player, Vector3(0.0, 0.6, 5.0))
 	Input.action_press("move_forward")
-	for i in 30:
+	# Give the landing squash time to end without running off the start slab.
+	for i in 45:
 		await physics_frame
 	var clip: String = anim.current_animation
 	_check(clip == "Walking_A" or clip == "Running_A",
@@ -212,7 +250,7 @@ func _run() -> void:
 	# Se apaga el dispensador para que las pelotas no empujen al jugador fuera
 	# del punto de aterrizaje y falseen la medición.
 	var dropper2: Node3D = game.get_node_or_null("Course/BallDropper2")
-	var dropper_moving: Node3D = game.get_node_or_null("Course/BallDropperMoving")
+	var dropper_moving: Node3D = game.get_node_or_null("Course/MovingPlatform/BallDropperMoving")
 	dropper.set_physics_process(false)
 	for child in dropper.get_children():
 		if child is RigidBody3D:
@@ -237,24 +275,58 @@ func _run() -> void:
 	_check(absf(player.global_position.y) < 0.15,
 		"Aterriza en la plataforma giratoria (y=%.2f)" % player.global_position.y)
 
-	await _place_player(player, Vector3(0.0, 3.5, -171.0))
-	_check(absf(player.global_position.y - 2.2) < 0.3,
-		"Aterriza en la cima de la rampa de pelotas (y=%.2f)" % player.global_position.y)
+	await _place_player(player, Vector3(0.0, 5.5, -176.0))
+	_check(absf(player.global_position.y - 3.8) < 0.3,
+		"Aterriza en la cima de la rampa larga (y=%.2f)" % player.global_position.y)
 
-	# El segundo dispensador queda al borde de un hueco: las bolas ruedan y caen.
+	# La bajada empalma con la plataforma de meta del tramo de bolas.
 	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
-	var gap_query := PhysicsRayQueryParameters3D.create(
-		Vector3(0.0, 3.0, -179.0), Vector3(0.0, -2.0, -179.0), 1)
-	var gap_hit := space.intersect_ray(gap_query)
-	_check(gap_hit.is_empty(), "Hay un hueco tras el segundo dispensador para que caigan las bolas")
+	var descent_query := PhysicsRayQueryParameters3D.create(
+		Vector3(0.0, 5.0, -179.0), Vector3(0.0, -2.0, -179.0), 1)
+	var descent_hit := space.intersect_ray(descent_query)
+	var descent_y := -99.0
+	if not descent_hit.is_empty():
+		descent_y = (descent_hit["position"] as Vector3).y
+	_check(descent_y > 1.8 and descent_y < 2.8,
+		"La rampa baja con fuerza hacia la plataforma (y=%.2f)" % descent_y)
 	var landing_query := PhysicsRayQueryParameters3D.create(
-		Vector3(0.0, 3.0, -181.0), Vector3(0.0, -2.0, -181.0), 1)
+		Vector3(0.0, 4.0, -181.0), Vector3(0.0, -2.0, -181.0), 1)
 	var landing_hit := space.intersect_ray(landing_query)
 	var landing_y := -99.0
 	if not landing_hit.is_empty():
 		landing_y = (landing_hit["position"] as Vector3).y
-	_check(absf(landing_y - 1.0) < 0.1,
-		"Hay una plataforma de aterrizaje tras el hueco (y=%.2f)" % landing_y)
+	_check(absf(landing_y - 1.0) < 0.12,
+		"La bajada termina en la plataforma de aterrizaje (y=%.2f)" % landing_y)
+
+	# Una bola suelta en la meseta debe rodar fuera, no quedarse dormida.
+	var top_ball: RigidBody3D = (load("res://scenes/obstacles/ball.tscn") as PackedScene).instantiate()
+	game.add_child(top_ball)
+	top_ball.global_position = Vector3(2.5, 4.6, -175.75)
+	top_ball.linear_velocity = Vector3.ZERO
+	var ball_start_x := top_ball.global_position.x
+	for i in 100:
+		await physics_frame
+	var ball_moved := absf(top_ball.global_position.x - ball_start_x)
+	_check(ball_moved > 0.4 or top_ball.global_position.y < 3.0,
+		"Las bolas ruedan fuera de BallRampTop (desvío %.2f m, y %.2f)" % [ball_moved, top_ball.global_position.y])
+	top_ball.queue_free()
+	await physics_frame
+
+	# Los muros del tramo de bolas deben quedar apoyados en la rampa, no flotando.
+	for path in ["Course/WallBallLeftA", "Course/WallBallRightA", "Course/WallBallLeftB"]:
+		var wall: Node3D = game.get_node(path)
+		# Centro de la cara inferior del muro, ya inclinado con la rampa.
+		var wall_bottom_point: Vector3 = wall.global_position - wall.global_transform.basis.y * 0.75
+		var probe: Vector3 = wall_bottom_point + Vector3(0.8, 0.0, 0.0)
+		var wall_query := PhysicsRayQueryParameters3D.create(
+			Vector3(probe.x, wall_bottom_point.y + 4.0, probe.z),
+			Vector3(probe.x, wall_bottom_point.y - 4.0, probe.z), 1)
+		var wall_hit := space.intersect_ray(wall_query)
+		var ramp_y := -99.0
+		if not wall_hit.is_empty():
+			ramp_y = (wall_hit["position"] as Vector3).y
+		_check(absf(wall_bottom_point.y - ramp_y) < 0.08,
+			"%s queda a ras de la rampa (base %.2f m, suelo %.2f m)" % [path, wall_bottom_point.y, ramp_y])
 
 	# --- 13b. Checkpoint sin arco, marca en el suelo ----------------------
 	var cp1: Node3D = checkpoints[0]
@@ -270,8 +342,7 @@ func _run() -> void:
 		"La plataforma giratoria tiene rayos, borde y eje visible")
 
 	# --- 13d. El trampolín final es parte del recorrido -------------------
-	var final_pad: Area3D = game.get_node_or_null("Course/BouncePadFinal")
-	_check(final_pad != null, "Hay un trampolín obligatorio antes de la meta")
+	_check(pad != null, "Hay un trampolín obligatorio antes de la meta")
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.2, -193.5)))
 	Input.action_press("move_forward")
 	var final_bounce := 0.0

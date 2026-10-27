@@ -26,7 +26,10 @@ func _run() -> void:
 	current_scene = menu
 	await process_frame
 	await process_frame
-	var start_button: Button = menu.get_node("CenterContainer/VBoxContainer/StartButton")
+	var play_button: Button = menu.get_node("PlayButton")
+	play_button.pressed.emit()
+	await process_frame
+	var start_button: Button = menu.get_node("ModePanel/VBox/ClassicCard")
 	start_button.pressed.emit()
 	await create_timer(1.5).timeout  # el fade dura 0.4 s
 

@@ -29,20 +29,42 @@ func _physics_process(delta: float) -> void:
 		var pulse := 1.0 + sin(_time * 4.0) * 0.07
 		ring.scale = Vector3(pulse, 1.0, pulse)
 
+	# A racer can be standing inside the trigger when the cooldown ends
+	# (bots queue here). `body_entered` will not fire again in that case, so
+	# check the overlapping bodies once the cannon is ready.
+	if _cooldown_timer <= 0.0:
+		for body in get_overlapping_bodies():
+			if _can_launch(body):
+				_launch(body)
+				break
+
+
+## True when the cannon can fire again; bots use it to queue instead of
+## running into the gap while the cooldown is active.
+func is_ready() -> bool:
+	return _cooldown_timer <= 0.0
+
 
 func _on_body_entered(body: Node3D) -> void:
 	if _cooldown_timer > 0.0:
 		return
-	if not body.is_in_group("player") and not (affects_bots and body.is_in_group("bot")):
-		return
+	if _can_launch(body):
+		_launch(body)
+
+
+func _can_launch(body: Node3D) -> bool:
+	return body.is_in_group("player") or (affects_bots and body.is_in_group("bot"))
+
+
+func _launch(body: Node3D) -> void:
 	_cooldown_timer = cooldown
 	var impulse := global_transform.basis * (launch_direction * launch_force + Vector3.UP * launch_up)
 	if body.has_method("launch"):
 		body.launch(impulse)
 	elif body is CharacterBody3D:
 		(body as CharacterBody3D).velocity += impulse
-	AudioManager.play_sfx("jump", 0.03)
-	GameFeel.shake(1.5)
+	AudioManager.play_sfx_at("cannon", global_position, 0.05, -2.0)
+	GameFeel.shake(2.2)
 	_squash()
 
 
