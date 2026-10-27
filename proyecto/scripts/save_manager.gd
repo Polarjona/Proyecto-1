@@ -217,8 +217,14 @@ func set_setting(key: String, value: Variant) -> void:
 
 func apply_settings() -> void:
 	var settings: Dictionary = data.get("settings", _default_data()["settings"])
-	_apply_bus_volume("Music", float(settings.get("music", 0.75)))
+	var music_linear := float(settings.get("music", 0.75))
+	_apply_bus_volume("Music", music_linear)
 	_apply_bus_volume("SFX", float(settings.get("sfx", 0.9)))
+	# La fanfarria de meta tiene bus propio, pero el ajuste de música decide si
+	# suena música o no: a cero, también se silencia.
+	var victory_index := AudioServer.get_bus_index("Victory")
+	if victory_index >= 0:
+		AudioServer.set_bus_mute(victory_index, music_linear <= 0.001)
 	if DisplayServer.get_name() == "headless":
 		return
 	var fullscreen := bool(settings.get("fullscreen", false))
