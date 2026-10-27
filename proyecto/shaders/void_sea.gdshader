@@ -29,11 +29,11 @@ void fragment() {
 	float h = clamp(wave_amplitude * 0.5 + 0.5, 0.0, 1.0);
 	vec3 col = mix(deep_color, mid_color, smoothstep(0.12, 0.78, h));
 	float crest = smoothstep(0.74, 1.0, h);
-	col = mix(col, foam_color, crest * 0.5);
+	col = mix(col, foam_color, crest * 0.35);
 
 	float bands = sin(world_position.x * 0.16 + world_position.z * 0.11 + TIME * 0.55) * 0.5 + 0.5;
 	col += foam_color * pow(bands, 6.0) * 0.03;
 
 	ALBEDO = col;
-	EMISSION = foam_color * crest * 0.1 + mid_color * 0.03;
+	EMISSION = foam_color * crest * 0.06 + mid_color * 0.02;
 }

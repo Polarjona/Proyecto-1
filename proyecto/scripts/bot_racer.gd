@@ -70,6 +70,10 @@ const LANE_HALF_WIDTH: Array[float] = [
 @export var speed_scale: float = 1.0
 @export var finish_z: float = -209.0
 @export var respawn_below_y: float = -5.0
+## Ruta opcional por nivel. Si está vacía se usa la tabla WAYPOINTS de abajo
+## (el circuito original), para no romper tests ni previews sueltas.
+@export var waypoints: PackedVector3Array = PackedVector3Array()
+@export var lane_widths: PackedFloat32Array = PackedFloat32Array()
 @export var body_color: Color = Color(0.95, 0.4, 0.55)
 @export var jump_velocity: float = 6.2
 @export var look_ahead: float = 1.8
@@ -99,6 +103,9 @@ var character_id: String = ""
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
 var _anim: AnimationPlayer
+## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
+var _path: Array[Vector3] = []
+var _path_widths: Array[float] = []
 
 @onready var body: MeshInstance3D = $Body
 
@@ -112,6 +119,7 @@ func _ready() -> void:
 	# pendulum heads are most dangerous. The sign gives each bot a side.
 	_lane = randf_range(0.55, 1.0) * (-1.0 if randf() < 0.5 else 1.0)
 	_stumble_cooldown = randf_range(6.0, 12.0)
+	_cache_path()
 	_setup_model()
 
 
@@ -243,15 +251,41 @@ func _near_cannon() -> bool:
 	return false
 
 
+## Copia la ruta del nivel una sola vez. Si no hay LevelInfo con waypoints,
+## usa la tabla histórica de main.tscn.
+func _cache_path() -> void:
+	_path.clear()
+	_path_widths.clear()
+	if waypoints.is_empty():
+		return
+	for point in waypoints:
+		_path.append(point)
+	for width in lane_widths:
+		_path_widths.append(width)
+
+
+func _path_points() -> Array:
+	return _path if not _path.is_empty() else WAYPOINTS
+
+
+func _path_lane_width(index: int) -> float:
+	if _path_widths.is_empty():
+		if _path.is_empty():
+			return LANE_HALF_WIDTH[mini(index, LANE_HALF_WIDTH.size() - 1)]
+		return 1.5
+	return _path_widths[mini(index, _path_widths.size() - 1)]
+
+
 func _target_position() -> Vector3:
-	var index := mini(_index, WAYPOINTS.size() - 1)
-	var width: float = LANE_HALF_WIDTH[index]
-	return WAYPOINTS[index] + Vector3(_lane * width, 0.0, 0.0)
+	var points := _path_points()
+	var index := mini(_index, points.size() - 1)
+	var width := _path_lane_width(index)
+	return (points[index] as Vector3) + Vector3(_lane * width, 0.0, 0.0)
 
 
 func _advance_waypoint() -> void:
 	_index += 1
-	if _index >= WAYPOINTS.size():
+	if _index >= _path_points().size():
 		_finish()
 		return
 	_best_distance = 9999.0
@@ -314,7 +348,7 @@ func _avoidance() -> Vector3:
 		var urgency := 1.0 - clampf(Vector2(delta.x, delta.z).length() / 5.0, 0.0, 1.0)
 		avoid.x += side * (0.8 + urgency * 1.6)
 
-	var corridor: float = LANE_HALF_WIDTH[mini(_index, WAYPOINTS.size() - 1)]
+	var corridor := _path_lane_width(mini(_index, _path_points().size() - 1))
 	if absf(global_position.x) > corridor + 0.8:
 		avoid.x += -signf(global_position.x) * 2.0
 
@@ -528,6 +562,10 @@ func get_lane() -> float:
 
 func get_waypoint_index() -> int:
 	return _index
+
+
+func get_waypoint_count() -> int:
+	return _path_points().size()
 
 
 ## Number of times the watchdog had to put the bot back on the course.

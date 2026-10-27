@@ -10,28 +10,47 @@ const SEA_SHADER: Shader = preload("res://shaders/void_sea.gdshader")
 
 ## Top surface of every walkable slab in `main.tscn` (center + size).
 const SECTIONS := [
-	{"name": "Start", "center": Vector3(0.0, 0.0, 2.0), "size": Vector2(14.0, 12.0), "color": Color(0.62, 0.9, 1.0)},
-	{"name": "SweeperHall", "center": Vector3(0.0, 0.0, -15.5), "size": Vector2(9.0, 18.0), "color": Color(0.7, 1.0, 1.0)},
-	{"name": "ConveyorHall", "center": Vector3(0.0, 0.0, -34.75), "size": Vector2(12.0, 14.5), "color": Color(1.0, 0.82, 0.95)},
-	{"name": "SeeSawLanding", "center": Vector3(0.0, 0.0, -62.5), "size": Vector2(10.0, 5.0), "color": Color(0.85, 1.0, 0.6)},
-	{"name": "PendulumBridge", "center": Vector3(0.0, 0.0, -78.0), "size": Vector2(5.0, 22.0), "color": Color(1.0, 0.9, 0.5)},
-	{"name": "LandingA", "center": Vector3(0.0, 0.6, -112.5), "size": Vector2(10.0, 7.0), "color": Color(0.62, 0.9, 1.0)},
-	{"name": "WindBridge", "center": Vector3(0.0, 0.6, -131.5), "size": Vector2(4.0, 17.0), "color": Color(0.88, 0.76, 1.0)},
-	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(0.7, 1.0, 1.0)},
-	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.9, 0.5)},
-	{"name": "Finish", "center": Vector3(0.0, 4.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(0.85, 1.0, 0.6)},
+	{"name": "Start", "center": Vector3(0.0, 0.0, 2.0), "size": Vector2(14.0, 12.0), "color": Color(1.0, 0.8, 0.2)},
+	{"name": "SweeperHall", "center": Vector3(0.0, 0.0, -15.5), "size": Vector2(9.0, 18.0), "color": Color(1.0, 0.8, 0.2)},
+	{"name": "ConveyorHall", "center": Vector3(0.0, 0.0, -34.75), "size": Vector2(12.0, 14.5), "color": Color(1.0, 0.84, 0.3)},
+	{"name": "SeeSawLanding", "center": Vector3(0.0, 0.0, -62.5), "size": Vector2(10.0, 5.0), "color": Color(1.0, 0.8, 0.2)},
+	{"name": "PendulumBridge", "center": Vector3(0.0, 0.0, -78.0), "size": Vector2(5.0, 22.0), "color": Color(1.0, 0.84, 0.26)},
+	{"name": "LandingA", "center": Vector3(0.0, 0.6, -112.5), "size": Vector2(10.0, 7.0), "color": Color(1.0, 0.8, 0.2)},
+	{"name": "WindBridge", "center": Vector3(0.0, 0.6, -131.5), "size": Vector2(4.0, 17.0), "color": Color(1.0, 0.76, 0.24)},
+	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(1.0, 0.82, 0.24)},
+	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.78, 0.18)},
+	{"name": "Finish", "center": Vector3(0.0, 4.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(1.0, 0.86, 0.28)},
 ]
 
 const ISLAND_COLORS := [
-	Color(0.35, 0.82, 0.42),
-	Color(0.95, 0.62, 0.28),
-	Color(0.32, 0.68, 0.95),
-	Color(0.92, 0.45, 0.65),
-	Color(0.58, 0.45, 0.92),
+	Color(0.98, 0.42, 0.7),
+	Color(1.0, 0.78, 0.2),
+	Color(0.32, 0.62, 1.0),
+	Color(1.0, 0.55, 0.34),
+	Color(0.62, 0.48, 1.0),
 ]
 
-const ROCK_COLOR := Color(0.24, 0.26, 0.48)
-const DISTANT_COLOR := Color(0.46, 0.58, 0.82)
+const ROCK_COLOR := Color(0.2, 0.26, 0.55)
+const DISTANT_COLOR := Color(0.52, 0.64, 0.92)
+
+## Los mapas nuevos pueden sobrescribir estos datos desde su escena para
+## reutilizar todo el set-dressing con su propia paleta. Si se dejan vacios,
+## arena_decor usa la tabla SECTIONS y los colores por defecto (main.tscn).
+@export var section_centers: PackedVector3Array = PackedVector3Array()
+@export var section_sizes: PackedVector2Array = PackedVector2Array()
+@export var section_colors: PackedColorArray = PackedColorArray()
+@export var sea_deep: Color = Color(0.1, 0.22, 0.52)
+@export var sea_mid: Color = Color(0.3, 0.5, 0.86)
+@export var sea_foam: Color = Color(0.78, 0.88, 1.0)
+@export var island_palette: PackedColorArray = PackedColorArray()
+@export var rock_color: Color = ROCK_COLOR
+@export var distant_color: Color = DISTANT_COLOR
+## Los adornos con posiciones fijas (arcos, marcos de péndulo y torres) son
+## del circuito original; los mapas nuevos construyen los suyos y apagan
+## estos para que no aparezcan flotando en el vacio.
+@export var build_arches: bool = true
+@export var build_pendulum_frames: bool = true
+@export var build_light_towers: bool = true
 
 var _rng := RandomNumberGenerator.new()
 var _toy_cache: Dictionary = {}
@@ -43,9 +62,12 @@ func _ready() -> void:
 	_build_platform_edges()
 	_build_islands()
 	_build_distant_mountains()
-	_build_arches()
-	_build_pendulum_frames()
-	_build_light_towers()
+	if build_arches:
+		_build_arches()
+	if build_pendulum_frames:
+		_build_pendulum_frames()
+	if build_light_towers:
+		_build_light_towers()
 	_build_ambient_sparks()
 
 
@@ -169,9 +191,9 @@ func _omni_light(position: Vector3, color: Color, energy: float, light_range: fl
 func _build_cloud_sea() -> void:
 	var material := ShaderMaterial.new()
 	material.shader = SEA_SHADER
-	material.set_shader_parameter("deep_color", Color(0.1, 0.22, 0.52))
-	material.set_shader_parameter("mid_color", Color(0.3, 0.5, 0.86))
-	material.set_shader_parameter("foam_color", Color(0.76, 0.86, 1.0))
+	material.set_shader_parameter("deep_color", sea_deep)
+	material.set_shader_parameter("mid_color", sea_mid)
+	material.set_shader_parameter("foam_color", sea_foam)
 	material.set_shader_parameter("wave_height", 1.3)
 	material.set_shader_parameter("wave_scale", 0.065)
 	material.set_shader_parameter("flow_speed", 0.4)
@@ -191,9 +213,23 @@ func _build_cloud_sea() -> void:
 
 
 func _build_platform_edges() -> void:
-	var support_material := _toy_material(ROCK_COLOR, 0.6, 0.02)
+	var support_material := _toy_material(rock_color, 0.6, 0.02)
 
-	for section in SECTIONS:
+	var sections: Array = SECTIONS
+	if not section_centers.is_empty() and section_centers.size() == section_sizes.size():
+		sections = []
+		for i in section_centers.size():
+			var color := Color(1.0, 0.8, 0.2)
+			if i < section_colors.size():
+				color = section_colors[i]
+			sections.append({
+				"name": "Section%d" % i,
+				"center": section_centers[i],
+				"size": section_sizes[i],
+				"color": color,
+			})
+
+	for section in sections:
 		var section_name: String = section["name"]
 		var center: Vector3 = section["center"]
 		var size: Vector2 = section["size"]
@@ -230,7 +266,12 @@ func _build_islands() -> void:
 		var top_y := _rng.randf_range(-9.0, -2.0)
 		var radius := _rng.randf_range(3.0, 6.5)
 		var rock_height := _rng.randf_range(2.5, 4.5)
-		var color: Color = ISLAND_COLORS[_rng.randi() % ISLAND_COLORS.size()]
+		var palette: Array = ISLAND_COLORS
+		if not island_palette.is_empty():
+			palette = []
+			for entry in island_palette:
+				palette.append(entry)
+		var color: Color = palette[_rng.randi() % palette.size()]
 
 		_cylinder(radius * 0.92, radius * 0.42, rock_height, Vector3(x, top_y - rock_height * 0.5, z), _toy_material(ROCK_COLOR, 0.55, 0.02), "IslandRock_%d" % i, 9)
 		_sphere(radius, radius * 0.5, Vector3(x, top_y + 0.05, z), _toy_material(color, 0.7, 0.09), "IslandTop_%d" % i, Vector3(1.0, 1.0, 1.0))
@@ -250,25 +291,25 @@ func _build_islands() -> void:
 
 
 func _build_distant_mountains() -> void:
-	for i in 14:
-		var angle := TAU * float(i) / 14.0 + _rng.randf_range(-0.12, 0.12)
-		var distance := _rng.randf_range(190.0, 280.0)
+	for i in 12:
+		var angle := TAU * float(i) / 12.0 + _rng.randf_range(-0.12, 0.12)
+		var distance := _rng.randf_range(210.0, 300.0)
 		var x := cos(angle) * distance
 		var z := -100.0 + sin(angle) * distance
-		var height := _rng.randf_range(55.0, 120.0)
-		var bottom := _rng.randf_range(28.0, 62.0)
-		var shade := DISTANT_COLOR.lerp(Color(0.86, 0.9, 1.0), _rng.randf_range(0.0, 0.55))
-		_cylinder(0.0, bottom, height, Vector3(x, -38.0 + height * 0.5, z), _flat_material(shade, 0.03), "Mountain_%d" % i, 7, Vector3(0.0, _rng.randf_range(0.0, 360.0), 0.0))
+		var height := _rng.randf_range(40.0, 84.0)
+		var bottom := _rng.randf_range(22.0, 48.0)
+		var shade := distant_color.lerp(Color(1.0, 0.95, 0.98), _rng.randf_range(0.0, 0.22))
+		_cylinder(0.0, bottom, height, Vector3(x, -38.0 + height * 0.5, z), _flat_material(shade.darkened(0.04), 0.0), "Mountain_%d" % i, 7, Vector3(0.0, _rng.randf_range(0.0, 360.0), 0.0))
 
 
 func _build_arches() -> void:
 	# Every arch stands entirely on a platform: the two that used to float in
 	# the gaps before SeeSawLanding and LandingA were moved onto those slabs.
 	var arches := [
-		{"z": -62.5, "width": 8.5, "height": 6.5, "y": 0.0, "color": Color(0.6, 1.0, 1.0)},
-		{"z": -112.5, "width": 9.0, "height": 6.0, "y": 0.6, "color": Color(0.85, 0.75, 1.0)},
-		{"z": -148.5, "width": 10.0, "height": 6.0, "y": 1.0, "color": Color(1.0, 0.82, 0.35)},
-		{"z": -201.0, "width": 13.0, "height": 7.0, "y": 4.0, "color": Color(0.8, 1.0, 0.55)},
+		{"z": -62.5, "width": 8.5, "height": 6.5, "y": 0.0, "color": Color(1.0, 0.82, 0.2)},
+		{"z": -112.5, "width": 9.0, "height": 6.0, "y": 0.6, "color": Color(1.0, 0.7, 0.86)},
+		{"z": -148.5, "width": 10.0, "height": 6.0, "y": 1.0, "color": Color(1.0, 0.82, 0.2)},
+		{"z": -201.0, "width": 13.0, "height": 7.0, "y": 4.0, "color": Color(1.0, 0.86, 0.3)},
 	]
 	for i in arches.size():
 		var arch: Dictionary = arches[i]
@@ -290,8 +331,8 @@ func _build_arches() -> void:
 ## Steel gantries over the pendulum bridge: the hammers hang from these
 ## beams instead of floating in the air.
 func _build_pendulum_frames() -> void:
-	var metal := _toy_material(Color(0.3, 0.33, 0.52), 0.55, 0.02)
-	var glow := _glow_material(Color(1.0, 0.84, 0.38), 1.0)
+	var metal := _toy_material(Color(0.18, 0.28, 0.62), 0.55, 0.02)
+	var glow := _glow_material(Color(1.0, 0.8, 0.2), 1.2)
 	var pendulum_z := [-71.0, -76.5, -82.0, -86.5]
 	for i in pendulum_z.size():
 		var z: float = pendulum_z[i]
@@ -331,7 +372,7 @@ func _build_light_towers() -> void:
 		{"x": -21.5, "z": -176.0, "color": Color(0.85, 0.75, 1.0)},
 		{"x": 21.5, "z": -176.0, "color": Color(0.75, 1.0, 0.65)},
 	]
-	var metal := _toy_material(Color(0.28, 0.3, 0.52), 0.55, 0.02)
+	var metal := _toy_material(Color(0.2, 0.28, 0.6), 0.55, 0.02)
 	for i in towers.size():
 		var tower: Dictionary = towers[i]
 		var x: float = tower["x"]

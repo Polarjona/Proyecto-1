@@ -25,6 +25,7 @@ var _player_finished: bool = false
 var _manager: Node
 var _player: Node3D
 var _rank_timer: float = 0.0
+var _level_info: LevelInfo
 
 
 func _ready() -> void:
@@ -36,6 +37,11 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_manager = get_tree().get_first_node_in_group("race_manager")
 	_player = get_tree().get_first_node_in_group("player") as Node3D
+	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
+	if _level_info != null:
+		start_z = _level_info.start_z
+		finish_z = _level_info.finish_z
+		course_length = _level_info.course_length
 	bot_count = GameSession.bot_count
 	qualifiers = GameSession.qualifiers
 	total_racers = bot_count + 1
@@ -52,6 +58,13 @@ func _spawn_bots() -> void:
 		if bot == null:
 			continue
 		bot.set("speed_scale", GameSession.bot_speed_scale())
+		# El mismo bot recorre los tres circuitos: la ruta y la meta viven en
+		# LevelInfo. Sin ruta (main.tscn) conserva su tabla por defecto.
+		if _level_info != null:
+			bot.set("finish_z", finish_z)
+			if _level_info.has_bot_path():
+				bot.set("waypoints", _level_info.waypoints)
+				bot.set("lane_widths", _level_info.lane_widths)
 		add_child(bot)
 		var x := -4.0 + fmod(float(i) * 2.2, 8.0)
 		var z := 1.4 + float(i % 3) * 1.1

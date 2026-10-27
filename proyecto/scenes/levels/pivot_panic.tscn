@@ -1,0 +1,1013 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="1_j4fst"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="2_kqegx"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="3_iktbs"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="4_7qlls"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="5_mvdh0"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="6_ktb5v"]
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_7efdw"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="8_xlk4i"]
+[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="9_enwmy"]
+[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="10_4qgwr"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="11_dyuaf"]
+[ext_resource type="Script" path="res://scripts/see_saw.gd" id="12_adysp"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="13_a0tca"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="14_ql8s7"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="15_uvwl7"]
+[ext_resource type="Script" path="res://scripts/pendulum.gd" id="16_kj5g3"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="17_exgf1"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="18_emj5v"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="19_05qmx"]
+[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="20_cuqjs"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="21_63tlq"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="22_jtk60"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="23_gn2xh"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="24_dtjqq"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="25_jbwuc"]
+[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="26_hsh0m"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="27_3dq23"]
+[ext_resource type="Script" path="res://scripts/finish_line.gd" id="28_l5elo"]
+[ext_resource type="Material" path="res://materials/pivot_gold.tres" id="29_gexil"]
+[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="30_78n0q"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="31_m4tw7"]
+[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="32_rfquw"]
+[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="33_iuuw5"]
+[ext_resource type="PackedScene" path="res://assets/props/beach_ball.glb" id="34_ptik4"]
+[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="35_w18al"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="36_3vd2i"]
+[ext_resource type="Script" path="res://scripts/post_process.gd" id="37_6inby"]
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="38_w1lnx"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="39_lcc6i"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="40_xsl5g"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="41_x6yqx"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="42_7ly5u"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="43_qpheb"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="44_cn7k2"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m73vf"]
+sky_top_color = Color(0.18, 0.24, 0.84, 1)
+sky_horizon_color = Color(0.98, 0.84, 0.72, 1)
+sky_curve = 0.18
+ground_bottom_color = Color(0.45, 0.2, 0.48, 1)
+ground_horizon_color = Color(0.98, 0.84, 0.72, 1)
+ground_curve = 0.12
+sun_angle_max = 18.0
+sun_curve = 0.08
+
+[sub_resource type="Sky" id="Sky_dq1y6"]
+sky_material = SubResource("ProceduralSkyMaterial_m73vf")
+
+[sub_resource type="Environment" id="Environment_r7yd2"]
+background_mode = 2
+sky = SubResource("Sky_dq1y6")
+ambient_light_source = 3
+ambient_light_color = Color(1, 0.82, 0.9, 1)
+ambient_light_energy = 0.66
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_exposure = 0.92
+ssao_enabled = true
+ssao_radius = 1.4
+ssao_intensity = 1.8
+glow_enabled = true
+glow_bloom = 0.02
+glow_blend_mode = 0
+glow_hdr_threshold = 1.3
+fog_enabled = true
+fog_light_color = Color(0.95, 0.68, 0.8, 1)
+fog_density = 0.0014
+fog_sky_affect = 0.25
+adjustment_enabled = true
+adjustment_contrast = 1.04
+adjustment_saturation = 1.14
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rdlkg"]
+render_priority = 0
+shader = ExtResource("1_j4fst")
+shader_parameter/top_color = Color(0.18, 0.24, 0.84, 1)
+shader_parameter/horizon_color = Color(0.98, 0.84, 0.72, 1)
+shader_parameter/ground_color = Color(0.45, 0.2, 0.48, 1)
+shader_parameter/cloud_color = Color(1, 0.94, 0.9, 1)
+shader_parameter/sun_color = Color(1, 0.88, 0.64, 1)
+shader_parameter/sun_direction = Vector3(0.5014059, 0.6217433, -0.60168713)
+shader_parameter/cloud_opacity = 0.5
+shader_parameter/cloud_scale = 2.8
+shader_parameter/cloud_speed = null
+shader_parameter/sun_size = null
+shader_parameter/sun_glow = 1.0
+shader_parameter/horizon_warmth = null
+
+[sub_resource type="SphereMesh" id="SphereMesh_bkhlm"]
+radius = 380.0
+height = 760.0
+radial_segments = 48
+rings = 24
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_board"]
+friction = 0.05
+
+[sub_resource type="BoxMesh" id="BoxMesh_ds42t"]
+size = Vector3(0.7, 6.8, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3j56m"]
+size = Vector3(0.7, 6.8, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tkw0d"]
+size = Vector3(16.8, 0.6, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_r8oqe"]
+inner_radius = 2.88
+outer_radius = 3.52
+rings = 28
+ring_segments = 10
+
+[sub_resource type="BoxMesh" id="BoxMesh_hu0nd"]
+size = Vector3(1.1, 2.4, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fiuox"]
+size = Vector3(1.1, 2.4, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ji8th"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tmiyk"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dcrwq"]
+size = Vector3(0.18, 0.18, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rnexs"]
+size = Vector3(0.18, 0.18, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_v70cd"]
+size = Vector3(0.18, 0.18, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yommd"]
+size = Vector3(0.18, 0.18, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8uxrs"]
+size = Vector3(0.18, 0.18, 5.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hvvbu"]
+size = Vector3(0.18, 0.18, 5.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y3h7p"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ikal3"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1hncq"]
+size = Vector3(0.9, 1.8, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_33sf2"]
+size = Vector3(0.9, 1.8, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7lfp3"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cfdwx"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_864aa"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bdshi"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_soa48"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nu1d8"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ygn75"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dlfxg"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ainwf"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h87u5"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4mvgk"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r6pau"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_n6vf1"]
+size = Vector3(0.6, 7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cbodt"]
+size = Vector3(0.6, 7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ovrpa"]
+size = Vector3(12.8, 0.55, 0.8)
+
+[sub_resource type="TorusMesh" id="TorusMesh_v0vhv"]
+inner_radius = 3.1
+outer_radius = 3.55
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_qxwrg"]
+radius = 0.7
+height = 1.4
+radial_segments = 20
+rings = 10
+
+[sub_resource type="BoxMesh" id="BoxMesh_fqo58"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rla8a"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m30pr"]
+size = Vector3(7, 0.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e5rif"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0a55b"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wc5h2"]
+size = Vector3(7, 0.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0j3gi"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ov2to"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xaem6"]
+size = Vector3(7, 0.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wry0j"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5qekg"]
+size = Vector3(0.35, 6.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x4gcl"]
+size = Vector3(7, 0.4, 0.45)
+
+[sub_resource type="TorusMesh" id="TorusMesh_hnbuy"]
+inner_radius = 2.1
+outer_radius = 2.4
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_bb8c5"]
+radius = 1.1
+height = 2.2
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_ciajv"]
+radius = 1.0
+height = 2.0
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_ef0cu"]
+radius = 0.9
+height = 1.8
+radial_segments = 20
+rings = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_5qjrc"]
+inner_radius = 2.5
+outer_radius = 2.85
+rings = 28
+ring_segments = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_dtlte"]
+inner_radius = 2.2
+outer_radius = 2.55
+rings = 28
+ring_segments = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_h80n2"]
+inner_radius = 3.3
+outer_radius = 3.8
+rings = 28
+ring_segments = 10
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c1i6m"]
+shader = ExtResource("38_w1lnx")
+shader_parameter/aberration = null
+shader_parameter/vignette = 0.3
+shader_parameter/grain = null
+shader_parameter/speed = null
+shader_parameter/stun = null
+shader_parameter/flash_amount = null
+shader_parameter/saturation = 1.14
+shader_parameter/contrast = 1.06
+shader_parameter/dithering = null
+shader_parameter/flash_color = null
+
+[node name="PivotPanic" type="Node3D" unique_id=1698611276]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=711531614]
+environment = SubResource("Environment_r7yd2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=336281696]
+transform = Transform3D(0.9135454, -0.28254303, 0.29258186, 0, 0.7193398, 0.6946584, -0.40673664, -0.634602, 0.65714955, 0, 0, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 0.98
+light_angular_distance = 0.6
+shadow_enabled = true
+shadow_blur = 1.4
+directional_shadow_max_distance = 220.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=2042392865]
+transform = Transform3D(-0.9702957, 0.1209609, -0.20951042, 0, 0.8660254, 0.5, 0.2419218, 0.48514786, -0.84030074, 0, 0, 0)
+light_color = Color(0.65, 0.6, 1, 1)
+light_energy = 0.45
+
+[node name="SkyDome" type="MeshInstance3D" parent="." unique_id=2029080597]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -70)
+material_override = SubResource("ShaderMaterial_rdlkg")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_bkhlm")
+
+[node name="LevelInfo" type="Node" parent="." unique_id=276065769]
+script = ExtResource("2_kqegx")
+level_id = "pivot_panic"
+display_name = "Pivot Panic"
+round_index = 3
+finish_z = -145.0
+course_length = 150.0
+gold_time = 62.0
+silver_time = 84.0
+bronze_time = 112.0
+waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -5, 0, 0.2, -10, 0, 0.2, -14, 0, 0.2, -19, 0, 0.2, -24, 0, 0.2, -27, 0, 0.2, -30, 0, 0.2, -34, 0, 0.2, -37, 0, 0.2, -40, 0, 0.2, -43, 0, 0.2, -46, 0, 0.2, -50, 0, 0.2, -55, 0, 0.2, -60, 0, 0.2, -64, 0, 0.2, -68, 0, 0.2, -72, 0, 0.2, -75, 0, 0.2, -78, 0, 0.2, -81, 0, 0.2, -84, 0, 0.2, -87, 0, 0.2, -91, 0, 0.2, -97, 0, 0.2, -103, 0, 0.2, -106, 0, 0.2, -115, 0, 0.2, -120, 0, 0.2, -126, 0, 0.2, -130, 0, 0.2, -134, 0, 0.2, -137, 0, 4.2, -141, 0, 4.2, -145, 0, 4.2, -148)
+lane_widths = PackedFloat32Array(3, 2, 1.4, 1.4, 2.2, 1.6, 1.2, 1.2, 1.2, 1, 1, 2, 1.8, 1.2, 1, 1, 1, 1.6, 2, 1.6, 1.2, 1.2, 1.2, 1.6, 1, 0.8, 0.8, 1, 2, 2, 1.4, 1.2, 1, 1.2, 1.5, 1.8, 2)
+
+[node name="RaceManager" type="Node" parent="." unique_id=1385853886]
+script = ExtResource("3_iktbs")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=432339746 instance=ExtResource("4_7qlls")]
+layer = 3
+script = ExtResource("5_mvdh0")
+
+[node name="KillPlane" type="Area3D" parent="." unique_id=525275531 instance=ExtResource("6_ktb5v")]
+transform = Transform3D(1.6, 0, 0, 0, 1, 0, 0, 0, 1.6, 0, -10, -70)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("7_7efdw")
+
+[node name="Course" type="Node3D" parent="." unique_id=1358579004]
+
+[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=1068940755]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = ExtResource("8_xlk4i")
+
+[node name="SweeperBridge" type="CSGBox3D" parent="Course" unique_id=1105214285]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -10)
+use_collision = true
+size = Vector3(6, 0.5, 10)
+material = ExtResource("8_xlk4i")
+
+[node name="SafeOne" type="CSGBox3D" parent="Course" unique_id=5828157]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -19)
+use_collision = true
+size = Vector3(10, 0.5, 6)
+material = ExtResource("9_enwmy")
+
+[node name="SeeSawBase" type="CSGBox3D" parent="Course" unique_id=470313487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, -30)
+use_collision = true
+size = Vector3(1.4, 2.4, 1.4)
+material = ExtResource("10_4qgwr")
+
+[node name="SeeSaw" type="AnimatableBody3D" parent="Course" unique_id=1743249171 instance=ExtResource("11_dyuaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, -30)
+collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_board")
+sync_to_physics = false
+script = ExtResource("12_adysp")
+slide_speed = 4.2
+
+[node name="SeeSawRamp" type="CSGBox3D" parent="Course" unique_id=2020054597]
+transform = Transform3D(1, 0, 0, 0, 0.909744, -0.41516966, 0, 0.41516966, 0.909744, 0, -1.5275, -37.25)
+use_collision = true
+size = Vector3(10, 0.5, 6.264)
+material = ExtResource("9_enwmy")
+
+[node name="SeeSawLanding" type="CSGBox3D" parent="Course" unique_id=114479570]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -42.95)
+use_collision = true
+size = Vector3(10, 0.5, 5.9)
+material = ExtResource("8_xlk4i")
+
+[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=530626191 instance=ExtResource("13_a0tca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -43.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_ql8s7")
+checkpoint_name = "Checkpoint 2"
+
+[node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=944651373]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -55)
+use_collision = true
+size = Vector3(5, 0.5, 20)
+material = ExtResource("9_enwmy")
+
+[node name="PendulumA" type="Node3D" parent="Course" unique_id=544828132 instance=ExtResource("15_uvwl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -49)
+script = ExtResource("16_kj5g3")
+max_angle = 1.05
+swing_speed = 0.0021
+push_force = 12.0
+
+[node name="PendulumB" type="Node3D" parent="Course" unique_id=2108953983 instance=ExtResource("15_uvwl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -54)
+script = ExtResource("16_kj5g3")
+max_angle = 1.05
+swing_speed = 0.0021
+push_force = 12.0
+phase_offset = 1.57
+
+[node name="PendulumC" type="Node3D" parent="Course" unique_id=1387270123 instance=ExtResource("15_uvwl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -59)
+script = ExtResource("16_kj5g3")
+swing_speed = 0.0024
+push_force = 12.0
+phase_offset = 0.8
+
+[node name="PendulumD" type="Node3D" parent="Course" unique_id=1225656764 instance=ExtResource("15_uvwl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -64)
+script = ExtResource("16_kj5g3")
+swing_speed = 0.0024
+push_force = 12.0
+phase_offset = 2.4
+
+[node name="SafeTwo" type="CSGBox3D" parent="Course" unique_id=691809580]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -70)
+use_collision = true
+size = Vector3(10, 0.5, 6)
+material = ExtResource("8_xlk4i")
+
+[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=2004003591 instance=ExtResource("13_a0tca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -70)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_ql8s7")
+checkpoint_name = "Checkpoint 3"
+
+[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=265241898 instance=ExtResource("17_exgf1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -75)
+collision_mask = 0
+script = ExtResource("18_emj5v")
+speed = 2.2
+pause_time = 0.4
+
+[node name="MovingLanding" type="CSGBox3D" parent="Course" unique_id=1736877966]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -86)
+use_collision = true
+size = Vector3(10, 0.5, 8)
+material = ExtResource("9_enwmy")
+
+[node name="Checkpoint4" type="Area3D" parent="Course" unique_id=685187384 instance=ExtResource("13_a0tca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -86)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_ql8s7")
+checkpoint_name = "Checkpoint 4"
+
+[node name="WindBridge" type="CSGBox3D" parent="Course" unique_id=1052854629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -98)
+use_collision = true
+size = Vector3(4, 0.5, 16)
+material = ExtResource("8_xlk4i")
+
+[node name="WindTunnelA" type="Area3D" parent="Course" unique_id=2054991666 instance=ExtResource("19_05qmx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -94)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("20_cuqjs")
+strength = 5.4
+gust_amplitude = 1.9
+
+[node name="WindTunnelB" type="Area3D" parent="Course" unique_id=702284120 instance=ExtResource("19_05qmx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -102)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("20_cuqjs")
+wind_direction = Vector3(-1, 0, 0)
+strength = 5.4
+gust_amplitude = 1.9
+
+[node name="Launcher" type="Area3D" parent="Course" unique_id=1635264974 instance=ExtResource("21_63tlq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -105)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("22_jtk60")
+launch_force = 10.0
+launch_up = 7.8
+cooldown = 2.0
+
+[node name="CannonLanding" type="CSGBox3D" parent="Course" unique_id=745420004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -118)
+use_collision = true
+size = Vector3(12, 0.5, 12)
+material = ExtResource("9_enwmy")
+
+[node name="Checkpoint5" type="Area3D" parent="Course" unique_id=1940193502 instance=ExtResource("13_a0tca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -120)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_ql8s7")
+checkpoint_name = "Checkpoint 5"
+
+[node name="FinalRun" type="CSGBox3D" parent="Course" unique_id=1627644908]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -130)
+use_collision = true
+size = Vector3(10, 0.5, 14)
+material = ExtResource("8_xlk4i")
+
+[node name="SweeperFinal" type="Node3D" parent="Course" unique_id=232566261 instance=ExtResource("23_gn2xh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -127)
+script = ExtResource("24_dtjqq")
+spin_speed = 2.6
+push_force = 7.0
+
+[node name="PendulumFinal" type="Node3D" parent="Course" unique_id=606965197 instance=ExtResource("15_uvwl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, -133)
+script = ExtResource("16_kj5g3")
+max_angle = 1.0
+swing_speed = 0.0025
+push_force = 12.0
+phase_offset = 0.4
+
+[node name="BouncePadFinal" type="Area3D" parent="Course" unique_id=96978488 instance=ExtResource("25_jbwuc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -137)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("26_hsh0m")
+
+[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=1348168210]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -145)
+use_collision = true
+size = Vector3(14, 0.5, 14)
+material = ExtResource("9_enwmy")
+
+[node name="FinishLine" type="Area3D" parent="Course" unique_id=971940095 instance=ExtResource("27_3dq23")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -145)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("28_l5elo")
+
+[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=487418925 instance=ExtResource("13_a0tca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_ql8s7")
+checkpoint_name = "Checkpoint 1"
+
+[node name="SweeperStart" type="Node3D" parent="Course" unique_id=1618236418 instance=ExtResource("23_gn2xh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10)
+script = ExtResource("24_dtjqq")
+spin_speed = 2.2
+push_force = 6.5
+
+[node name="Decor" type="Node3D" parent="." unique_id=1609110290]
+
+[node name="StartGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1572163814]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3.4, -2.5)
+material_override = ExtResource("10_4qgwr")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ds42t")
+
+[node name="StartGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=1960668648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.4, -2.5)
+material_override = ExtResource("10_4qgwr")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_3j56m")
+
+[node name="StartGateBeam" type="MeshInstance3D" parent="Decor" unique_id=1103919605]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.8, -2.5)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_tkw0d")
+
+[node name="StartGateRing" type="MeshInstance3D" parent="Decor" unique_id=1102476441]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4.216, -2.5)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_r8oqe")
+
+[node name="StartGateLabel" type="Label3D" parent="Decor" unique_id=118275942]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.6, -2.5)
+pixel_size = 0.0045
+modulate = Color(1, 0.92, 0.55, 1)
+outline_modulate = Color(0.06, 0.05, 0.14, 1)
+text = "PIVOT PANIC"
+font_size = 230
+outline_size = 34
+
+[node name="StartWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1479947732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1.2, 2)
+material_override = ExtResource("30_78n0q")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_hu0nd")
+
+[node name="StartWallRight" type="MeshInstance3D" parent="Decor" unique_id=634562773]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1.2, 2)
+material_override = ExtResource("30_78n0q")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_fiuox")
+
+[node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=927613651]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0.55, 2)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ji8th")
+
+[node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=262173584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0.55, 2)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_tmiyk")
+
+[node name="BridgeRailLeft" type="MeshInstance3D" parent="Decor" unique_id=302280308]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.55, -10)
+material_override = ExtResource("31_m4tw7")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dcrwq")
+
+[node name="BridgeRailRight" type="MeshInstance3D" parent="Decor" unique_id=1126506819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.55, -10)
+material_override = ExtResource("31_m4tw7")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rnexs")
+
+[node name="SafeOneRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1613593238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -19)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_v70cd")
+
+[node name="SafeOneRailRight" type="MeshInstance3D" parent="Decor" unique_id=1174932903]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -19)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_yommd")
+
+[node name="LandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1165699764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -43)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_8uxrs")
+
+[node name="LandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=1694327418]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -43)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_hvvbu")
+
+[node name="PendulumRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1979334644]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.55, -55)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_y3h7p")
+
+[node name="PendulumRailRight" type="MeshInstance3D" parent="Decor" unique_id=358699239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.55, -55)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ikal3")
+
+[node name="SafeTwoWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1641915879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.9, -70)
+material_override = ExtResource("30_78n0q")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_1hncq")
+
+[node name="SafeTwoWallRight" type="MeshInstance3D" parent="Decor" unique_id=108179822]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.9, -70)
+material_override = ExtResource("30_78n0q")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_33sf2")
+
+[node name="LandingRailLeftB" type="MeshInstance3D" parent="Decor" unique_id=652288468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -86)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_7lfp3")
+
+[node name="LandingRailRightB" type="MeshInstance3D" parent="Decor" unique_id=2008435203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -86)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cfdwx")
+
+[node name="WindRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1990351775]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.75, -98)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_864aa")
+
+[node name="WindRailRight" type="MeshInstance3D" parent="Decor" unique_id=1098042715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.75, -98)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_bdshi")
+
+[node name="FinalRailLeft" type="MeshInstance3D" parent="Decor" unique_id=511908735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.55, -130)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_soa48")
+
+[node name="FinalRailRight" type="MeshInstance3D" parent="Decor" unique_id=506950265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 1.55, -130)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_nu1d8")
+
+[node name="FinishRailLeft" type="MeshInstance3D" parent="Decor" unique_id=2068553262]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1, 4.55, -145)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ygn75")
+
+[node name="FinishRailRight" type="MeshInstance3D" parent="Decor" unique_id=2137377300]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1, 4.55, -145)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dlfxg")
+
+[node name="HazardFinal0" type="MeshInstance3D" parent="Decor" unique_id=2046273888]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -125)
+material_override = ExtResource("32_rfquw")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ainwf")
+
+[node name="HazardFinal1" type="MeshInstance3D" parent="Decor" unique_id=231299892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -128)
+material_override = ExtResource("32_rfquw")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_h87u5")
+
+[node name="HazardFinal2" type="MeshInstance3D" parent="Decor" unique_id=682866093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -131)
+material_override = ExtResource("32_rfquw")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_4mvgk")
+
+[node name="HazardFinal3" type="MeshInstance3D" parent="Decor" unique_id=704287887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -134)
+material_override = ExtResource("32_rfquw")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_r6pau")
+
+[node name="PivotPostLeft" type="MeshInstance3D" parent="Decor" unique_id=483548081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1, 3.5, -30)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_n6vf1")
+
+[node name="PivotPostRight" type="MeshInstance3D" parent="Decor" unique_id=78862961]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 3.5, -30)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cbodt")
+
+[node name="PivotBeam" type="MeshInstance3D" parent="Decor" unique_id=2082807139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -30)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ovrpa")
+
+[node name="PivotRing" type="MeshInstance3D" parent="Decor" unique_id=607730862]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 3.6, -30)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_v0vhv")
+
+[node name="PivotBall" type="MeshInstance3D" parent="Decor" unique_id=1670203631]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.8, -30)
+material_override = ExtResource("33_iuuw5")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_qxwrg")
+
+[node name="PendFramePostLeft0" type="MeshInstance3D" parent="Decor" unique_id=859312306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -49)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_fqo58")
+
+[node name="PendFramePostRight0" type="MeshInstance3D" parent="Decor" unique_id=718605015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -49)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rla8a")
+
+[node name="PendFrameBeam0" type="MeshInstance3D" parent="Decor" unique_id=767679937]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -49)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_m30pr")
+
+[node name="PendFramePostLeft1" type="MeshInstance3D" parent="Decor" unique_id=1067961856]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -54)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_e5rif")
+
+[node name="PendFramePostRight1" type="MeshInstance3D" parent="Decor" unique_id=969570511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -54)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_0a55b")
+
+[node name="PendFrameBeam1" type="MeshInstance3D" parent="Decor" unique_id=492449250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -54)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_wc5h2")
+
+[node name="PendFramePostLeft2" type="MeshInstance3D" parent="Decor" unique_id=2026430394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -59)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_0j3gi")
+
+[node name="PendFramePostRight2" type="MeshInstance3D" parent="Decor" unique_id=1078104198]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -59)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ov2to")
+
+[node name="PendFrameBeam2" type="MeshInstance3D" parent="Decor" unique_id=929419989]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -59)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_xaem6")
+
+[node name="PendFramePostLeft3" type="MeshInstance3D" parent="Decor" unique_id=1378301780]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -64)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_wry0j")
+
+[node name="PendFramePostRight3" type="MeshInstance3D" parent="Decor" unique_id=1983030014]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -64)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_5qekg")
+
+[node name="PendFrameBeam3" type="MeshInstance3D" parent="Decor" unique_id=1083250963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -64)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_x4gcl")
+
+[node name="PendFrameRing" type="MeshInstance3D" parent="Decor" unique_id=12191754]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 6.5, -55)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_hnbuy")
+
+[node name="PinkBallA" type="MeshInstance3D" parent="Decor" unique_id=1292455454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -18)
+material_override = ExtResource("31_m4tw7")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_bb8c5")
+
+[node name="PinkBallB" type="MeshInstance3D" parent="Decor" unique_id=628014525]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, -43)
+material_override = ExtResource("10_4qgwr")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ciajv")
+
+[node name="PinkBallC" type="MeshInstance3D" parent="Decor" unique_id=900862026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.4, 1, -86)
+material_override = ExtResource("33_iuuw5")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ef0cu")
+
+[node name="LandingRing" type="MeshInstance3D" parent="Decor" unique_id=1119478570]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4.6, -43)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_5qjrc")
+
+[node name="LauncherRing" type="MeshInstance3D" parent="Decor" unique_id=213555680]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 2.1, -105)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_dtlte")
+
+[node name="FinishRing" type="MeshInstance3D" parent="Decor" unique_id=63335872]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 8.4, -145)
+material_override = ExtResource("29_gexil")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_h80n2")
+
+[node name="BeachBallA" type="Node3D" parent="Decor" unique_id=453168752 instance=ExtResource("34_ptik4")]
+transform = Transform3D(1.409539, 0, 0.5130302, 0, 1.5, 0, -0.5130302, 0, 1.409539, -7.8, 1, -19)
+
+[node name="BeachBallB" type="Node3D" parent="Decor" unique_id=541187381 instance=ExtResource("34_ptik4")]
+transform = Transform3D(0.8917738, 0, -0.80295676, 0, 1.2, 0, 0.80295676, 0, 0.8917738, 7.6, 1, -86)
+
+[node name="BeachBallC" type="Node3D" parent="Decor" unique_id=1901493647 instance=ExtResource("34_ptik4")]
+transform = Transform3D(3.187823, 0, 0.27889836, 0, 3.2, 0, -0.27889836, 0, 3.187823, -10, -4, -62)
+
+[node name="CourseLight1" type="OmniLight3D" parent="Decor" unique_id=897893985]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -30)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 18.0
+
+[node name="CourseLight2" type="OmniLight3D" parent="Decor" unique_id=1654802025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -55)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 18.0
+
+[node name="CourseLight3" type="OmniLight3D" parent="Decor" unique_id=1760579186]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -98)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 18.0
+
+[node name="CourseLight4" type="OmniLight3D" parent="Decor" unique_id=869735594]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -145)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 18.0
+
+[node name="ArenaDecor" type="Node3D" parent="." unique_id=695933022]
+script = ExtResource("35_w18al")
+section_centers = PackedVector3Array(0, 0, 2, 0, 0, -10, 0, 0, -19, 0, 0, -43, 0, 0, -55, 0, 0, -70, 0, 0, -86, 0, 0.2, -98, 0, 1, -118, 0, 1, -130, 0, 4, -145)
+section_sizes = PackedVector2Array(14, 12, 6, 10, 10, 6, 10, 5.9, 5, 20, 10, 6, 10, 8, 4, 16, 12, 12, 10, 14, 14, 14)
+section_colors = PackedColorArray(1, 0.8, 0.2, 1, 1, 0.45, 0.75, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1)
+sea_deep = Color(0.22, 0.03, 0.3, 1)
+sea_mid = Color(0.68, 0.18, 0.52, 1)
+sea_foam = Color(1, 0.78, 0.92, 1)
+island_palette = PackedColorArray(1, 0.4, 0.7, 1, 1, 0.8, 0.25, 1, 0.36, 0.55, 1, 1, 0.55, 1, 0.45, 1, 0.85, 0.45, 1, 1)
+rock_color = Color(0.28, 0.1, 0.38, 1)
+distant_color = Color(0.78, 0.46, 0.86, 1)
+build_arches = false
+build_pendulum_frames = false
+build_light_towers = false
+
+[node name="Crowd" type="Node3D" parent="." unique_id=1266904713]
+script = ExtResource("36_3vd2i")
+per_row = 50
+stand_offset = 17.0
+stand_length = 120.0
+stand_center_z = -72.0
+
+[node name="PostProcess" type="CanvasLayer" parent="." unique_id=421851731]
+script = ExtResource("37_6inby")
+
+[node name="Rect" type="ColorRect" parent="PostProcess" unique_id=180871082]
+material = SubResource("ShaderMaterial_c1i6m")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="RaceDirector" type="Node" parent="." unique_id=1786054043]
+script = ExtResource("39_lcc6i")
+bot_scene = ExtResource("40_xsl5g")
+finish_z = -145.0
+course_length = 150.0
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=316537514 instance=ExtResource("41_x6yqx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4)
+collision_layer = 2
+collision_mask = 5
+floor_stop_on_slope = false
+floor_max_angle = 0.9
+floor_snap_length = 0.35
+script = ExtResource("42_7ly5u")
+
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1012782657 instance=ExtResource("43_qpheb")]
+layer = 10
+script = ExtResource("44_cn7k2")

@@ -10,6 +10,8 @@ La iteración 5 ordena la experiencia: el menú se queda con **dos modos** (carr
 
 La iteración 6 convierte el menú en un **lobby estilo Fall Guys** con acabado de **pegatina 3D**: fondo de **degradado neón** (magenta → violeta → cian) sin líneas, paneles violeta con **borde blanco grueso** y **sombra sólida** desplazada (sin desenfoque), botones **inclinados** con esquinas asimétricas, tipografía redondeada **Baloo 2 ExtraBold** con contornos y un **JUGAR!** magenta enorme que **se hunde** al pulsarlo. El corredor equipado gira en 3D sobre su peana magenta, y el lobby incluye tarjeta de **temporada con progreso al oro** e insignia de monedas. El juego es **Tumble Rush** (el perfil anterior se migra solo) y al cruzar la meta suena una **canción de victoria** sobre la pantalla de resultados.
 
+La temporada de torneo añade **tres circuitos completos**: **Pivot Push** retematizado en azul real, magenta y oro, **Spin Go Round** en cian y naranja, y **Pivot Panic** en magenta y oro. Cada ronda tiene su propio récord, sus medallas, sus checkpoints y una ruta de bots. Pivot Push estrena un balancín; Spin Go Round mezcla barridos, plataforma móvil, disco giratorio y lluvia de bolas; Pivot Panic encadena balancín, péndulos, viento, cañón y trampolín final. Los detalles están en `documentacion/Torneo_tres_circuitos.md`.
+
 ## Cómo ejecutar
 
 1. Abre Godot 4.7 e importa la carpeta `proyecto/` (el archivo `project.godot`).
@@ -61,8 +63,8 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 ### Carrera y progresión
 
 - Carrera cronometrada con **cuenta atrás**, **splits por checkpoint** y comparación con el récord.
-- **Cinco checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco.
-- **Medallas oro/plata/bronce** (70 s / 95 s / 130 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
+- **Checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco. Pivot Push y Pivot Panic tienen 5; Spin Go Round tiene 3.
+- **Medallas oro/plata/bronce por circuito** (Pivot Push 70/95/130 s, Spin Go Round 42/58/78 s, Pivot Panic 62/84/112 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
 - **Monedas según tiempo y puesto**: 10 de base + medalla (40/25/10) + 1 por cada 2,5 s por debajo del tiempo de bronce (máx. 40) + puesto en los modos con bots (1º 40, 2º 25, 3º 15, resto 5). El resultado muestra el desglose.
 - **Perfil persistente** en `user://profile.json`: récord, medallas, monedas, estadísticas, ajustes y tutorial. Migra automáticamente el antiguo `user://best_time.save` y el perfil de las carpetas de datos de versiones anteriores.
 - **Tutorial** de primera vez y **menú de pausa** con reinicio desde checkpoint, reinicio de carrera y ajustes.
@@ -70,23 +72,17 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 ### Modos
 
 - **Carrera clásica**: contrarreloj y récord personal.
-- **Torneo con bots**: 7 bots recorren el circuito, hay ranking en vivo y clasifican los 3 primeros; al clasificarse, el panel de resultados ofrece "Siguiente ronda", con más bots, bots más rápidos y menos plazas cada ronda.
+- **Torneo con bots**: 7 bots recorren el circuito, hay ranking en vivo y clasifican los 3 primeros; al clasificarse, el panel de resultados ofrece "Siguiente ronda", con más bots, bots más rápidos y menos plazas cada ronda. El torneo tiene **tres rondas** (Pivot Push → Spin Go Round → Pivot Panic) y termina en la final.
 
 ### Contenido y obstáculos
 
-Un único circuito de **~220 m y 13 tramos** que usa todos los obstáculos del juego, con 5 checkpoints:
+**Pivot Push** (~211 m, 5 checkpoints) conserva los 13 tramos originales y añade un **balancín** entre las cintas y los martillos: la tabla de 13 × 10 m se nivela con el peso en el centro y vuelca hacia el lado cargado; la punta baja conecta con una rampa y un landing practicables. La paleta pasa a azul real, magenta, rosa claro y oro.
 
-1. **Salida** (plataforma azul) → salto de 2,5 m.
-2. **Sala de barras** (18 m) en una pasarela de solo 9 m: dos barras barren todo el ancho en sentidos opuestos, así que no hay hueco por los lados. **Las dos aturden por igual**, con el mismo tiempo de recuperación. El empuje ya no te lanza de un extremo al otro.
-3. **Cintas perpendiculares** (14,5 m): dos filas de cintas de 6 m de largo cruzadas al recorrido, que empujan hacia los bordes en sentidos opuestos; hay que cruzar en diagonal o te tiran al vacío.
-4. **Balancín gigante**: una única tabla de 13 × 10 m sobre el vacío, girada 90° para que el eje visible y el eje real coincidan; como uno real, se mantiene nivelado si estás en el centro y vuelca hacia el lado con peso, así que hay que cruzar con decisión. La tabla volcada desliza a jugador y bots, y la punta baja desemboca en una **rampa** que sube hasta la plataforma de llegada, así que el tramo se puede completar.
-5. **Avenida de martillos** (22 m, puente de 5 m): cuatro péndulos desfasados.
-6. **Disco giratorio** y dos plataformas móviles seguidas; la primera está bajo una lluvia de pelotas.
-7. **Puente del viento** (4 m de ancho): dos túneles en sentidos opuestos, cada uno con su ventilador sobre una plataforma independiente separada del puente y orientado hacia donde sopla el viento.
-8. **Salto del cañón**: 9 m de vacío que solo cruza el cañón lanzador.
-9. **Rampa de pelotas**: una subida larga y empinada bajo dos dispensadores; hay que trepar esquivando las bolas que caen, que ruedan fuera de la meseta, y luego bajar la pendiente hasta la plataforma.
-10. **Recta final**: barra giratoria, martillo, raíles y una cinta que empuja hacia atrás.
-11. **Meta elevada**: el único trampolín del circuito, al final de la recta, lanza al jugador a la plataforma de meta, 4 m más arriba; sin él no se llega. La meta es un **pórtico limpio**: dos torres, un dintel, un cartel a cuadros con «META», una franja de suelo, focos y tres cañones de confeti.
+**Spin Go Round** (~85 m, 3 checkpoints) es la ronda corta: arena de barridos, pasarela con **plataforma móvil**, tramo de **peonzas** con disco giratorio y lluvia de bolas, y meta con arco a cuadros. Usa cian, azul, naranja, magenta y lima.
+
+**Pivot Panic** (~150 m, 5 checkpoints) es la final: barrido de entrada, **balancín** bajo un gran bastidor dorado, avenida de **cuatro péndulos**, plataforma móvil, **puente del viento** con dos túneles opuestos, **cañón** sobre el vacío y recta final con barrido, péndulo y **trampolín** que sube a la meta 4 m. Usa magenta intenso, rosa, azul real y oro.
+
+Las tres escenas comparten `LevelInfo` (id, ronda, récord, medallas y ruta de bots) y se pueden regenerar con `tools/build_levels.gd`. El atrezo incluye una **pelota de playa CC-BY** de Poly Pizza en los dos circuitos nuevos.
 
 ### Arte y presentación
 
@@ -104,12 +100,14 @@ Un único circuito de **~220 m y 13 tramos** que usa todos los obstáculos del j
 ```
 proyecto/
 ├── audio/                  # Tema del menú, canción de victoria y 16 SFX
-├── assets/characters/      # 5 skins GLB animadas (Kenney, Quaternius) + licencias
+├── assets/characters/      # Modelos GLB CC0 de Kenney + licencia
+├── assets/props/           # Pelota de playa CC-BY de Poly Pizza + licencia
 ├── materials/              # Materiales toy/platform (shaders) por color
 ├── shaders/                # postproceso, cielo, toon, plataformas y mar
 ├── ui/                     # tema compartido y tipografía Baloo 2 (OFL)
 ├── scenes/
-│   ├── main.tscn           # curso + jugador + HUD + pausa + postproceso
+│   ├── main.tscn           # Pivot Push (ronda 1) + jugador + HUD + pausa
+│   ├── levels/             # Spin Go Round y Pivot Panic (rondas 2 y 3)
 │   ├── menu/               # menú principal, pausa y ajustes
 │   ├── obstacles/          # 12 obstáculos interactivos
 │   ├── player/player.tscn  # bean con cara, guantes, botas y gorro
@@ -117,28 +115,28 @@ proyecto/
 │   └── ui/                 # (reservada para UI adicional)
 ├── exports/                # Builds generados (excluido de Git)
 ├── scripts/                # Un script por responsabilidad + autoloads
-└── tools/                  # Tests headless y generador de audio
+└── tools/                  # Tests headless, generador de audio y de niveles
 ```
 
 ## Verificación
 
-Los tests headless recorren escenas, arranque, flujo completo y las novedades de las iteraciones 3, 4 y 5:
+Los tests headless recorren escenas, arranque, flujo completo, las novedades de las iteraciones 3 a 5 y los tres circuitos del torneo:
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # 22/22 escenas OK
+godot --headless -s res://tools/check_scenes.gd       # 24/24 escenas OK
 godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
 godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
 godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
 godot --headless -s res://tools/iteration3_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/bots_test.gd         # 7/7 terminan (rescates variables)
-godot --headless -s res://tools/probe_catalog.gd      # catálogo: escala y clips de cada skin
-godot --path . tools/audio_probe.tscn                # niveles reales de menú y fanfarria
+godot --headless -s res://tools/levels_test.gd        # RESULT: TODO OK (tres circuitos)
+godot --headless -s res://tools/levels_bots_test.gd   # bots terminan Spin y Pivot Panic
+godot --headless -s res://tools/bots_test.gd         # 7/7 terminan (avisos conocidos)
 ```
 
-`iteration3_test.gd` comprueba dive, túnel de viento, cañón, balancín, perfil/ajustes, medallas, cámara, HUD de resultados, tutorial y los modos con bots. `iteration4_test.gd` verifica el catálogo de personajes, el selector y la vista previa del menú, la flecha del jugador, los skins aleatorios de los bots, los SFX nuevos, que la música se apaga en carrera, la holgura de la base del balancín y las piezas de la meta. `iteration5_test.gd` valida el **lobby** (nombre, JUGAR, tarjetas de modo sin solapes, escaparate 3D con el personaje entero, tarjeta de temporada, fondo de degradado neón, botones pegatina con inclinación y sombra sólida, hundimiento al pulsar y tipografía propia), la **canción de victoria**, ambos modos, el desbloqueo de personajes con monedas, la flecha única, el respawn de los cinco checkpoints, el cruce real del balancín a su landing y que la tabla volcada empuja a los bots. `bots_test.gd` simula el circuito completo con siete bots y verifica que se reparten en carriles, avanzan y terminan la carrera; su presupuesto de rescates es muy estricto, así que una caída puntual de más en el tramo de plataformas puede marcar ese único aviso aunque los siete crucen la meta.
+`iteration3_test.gd` comprueba dive, túnel de viento, cañón, balancín, perfil/ajustes, medallas, cámara, HUD de resultados, tutorial y los modos con bots. `iteration4_test.gd` verifica el catálogo de personajes, el selector y la vista previa del menú, la flecha del jugador, los skins aleatorios de los bots, los SFX nuevos, que la música se apaga en carrera, la holgura de la base del balancín y las piezas de la meta. `iteration5_test.gd` valida el **lobby**, la **canción de victoria**, ambos modos, el desbloqueo de personajes, la flecha única, el respawn, el cruce del balancín a su landing y que la tabla volcada empuja a los bots. `levels_test.gd` carga los tres circuitos, comprueba `LevelInfo`, checkpoints, meta, plataformas, obstáculos propios, decoración y el flujo de rondas. `levels_bots_test.gd` recorre Spin Go Round y Pivot Panic con un bot. `bots_test.gd` simula Pivot Push con siete bots y verifica que se reparten, avanzan y terminan; conserva dos avisos conocidos: el primer waypoint se consume al arrancar y el presupuesto de rescates es más estricto que el juego (en la última ejecución, máximo 4).
 
 > Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar las escenas y los WAV nuevos. Ejecutar sin esa caché puede hacer que `ResourceLoader.exists()` no encuentre los SFX recién generados (el juego sigue funcionando, simplemente sin ese sonido).
 
@@ -170,11 +168,15 @@ Genera el tema alegre del menú (`menu_theme.wav`, 38 s en bucle) y 16 SFX: salt
 - `documentacion/Primera_entrega.md` — Informe de la primera entrega.
 - `documentacion/Segunda_iteracio.md` — Mapa e interacción ampliados y mejoras de física/gráficos.
 - `documentacion/Tercera_iteracio.md` — Game feel, cámara, arte, perfil, contenido y modos con bots.
+- `documentacion/Torneo_tres_circuitos.md` — Los tres circuitos del torneo, paletas, rutas, récords, verificación y créditos de las referencias.
 
 ## Créditos
 
 - Autores: **Pol Arjona** e **Yazan Issa**
 - Motor: [Godot Engine](https://godotengine.org) 4.7
+- Personajes 3D: [Kenney Blocky Characters 2.0](https://kenney.nl/assets/blocky-characters) de Kenney, licencia **CC0** (ver `proyecto/assets/characters/blocky/LICENSE_Kenney.txt`).
+- Pelota de playa: [beach ball](https://poly.pizza/m/4IwPTeOmq6c) de **the_ normalgamer**, licencia **CC-BY 3.0** (ver `proyecto/assets/props/README.md`).
+- Referencias de mapa: [Pivot Push](https://sketchfab.com/3d-models/stumble-guys-pivot-push-map-c7abc0bdd0a8490d9f1e9c805e3c05cd) y [Spin Go Round](https://sketchfab.com/3d-models/stumble-guys-spin-go-round-map-71224cc13db44948b91b8bb43c635d5c) de **amogusstrikesback2**, **CC-BY 4.0**; usadas solo como referencia de composición y color, sin redistribuir sus mallas.
 - Personajes 3D:
   - [Kenney Mini Characters](https://kenney.nl/assets/mini-characters) de Kenney, licencia **CC0** (ver `proyecto/assets/characters/mini/LICENSE_Kenney.txt`).
   - Mascotas animadas de [Quaternius](https://quaternius.com) vía [Poly Pizza](https://poly.pizza), licencia **CC0** (ver `proyecto/assets/characters/mascots/LICENSE_Quaternius.txt`).

@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://d2bv85jfb3tb2"]
+[gd_scene load_steps=54 format=3 uid="uid://d2bv85jfb3tb2"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="2_pendulum"]
@@ -15,13 +15,13 @@
 [ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="12_hud"]
 [ext_resource type="Script" path="res://scripts/race_manager.gd" id="13_race"]
 [ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="14_pause"]
-[ext_resource type="Material" path="res://materials/blue.tres" id="20_blue"]
-[ext_resource type="Material" path="res://materials/cyan.tres" id="21_cyan"]
-[ext_resource type="Material" path="res://materials/lime.tres" id="22_lime"]
-[ext_resource type="Material" path="res://materials/orange.tres" id="23_orange"]
-[ext_resource type="Material" path="res://materials/pink.tres" id="24_pink"]
-[ext_resource type="Material" path="res://materials/purple.tres" id="25_purple"]
-[ext_resource type="Material" path="res://materials/yellow.tres" id="26_yellow"]
+[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="20_blue"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="21_cyan"]
+[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="22_lime"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="23_orange"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="24_pink"]
+[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="25_purple"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="26_yellow"]
 [ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="30_post_shader"]
 [ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="31_sky_shader"]
 [ext_resource type="Script" path="res://scripts/post_process.gd" id="32_post_script"]
@@ -31,14 +31,15 @@
 [ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="36_launcher"]
 [ext_resource type="Script" path="res://scripts/race_director.gd" id="38_director"]
 [ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="39_bot"]
-[ext_resource type="Material" path="res://materials/platform_blue.tres" id="50_plat_blue"]
-[ext_resource type="Material" path="res://materials/platform_cyan.tres" id="51_plat_cyan"]
-[ext_resource type="Material" path="res://materials/platform_lime.tres" id="52_plat_lime"]
-[ext_resource type="Material" path="res://materials/platform_orange.tres" id="53_plat_orange"]
-[ext_resource type="Material" path="res://materials/platform_pink.tres" id="54_plat_pink"]
-[ext_resource type="Material" path="res://materials/platform_purple.tres" id="55_plat_purple"]
-[ext_resource type="Material" path="res://materials/platform_yellow.tres" id="56_plat_yellow"]
+[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="50_plat_blue"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="51_plat_cyan"]
+[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="52_plat_lime"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="53_plat_orange"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="54_plat_pink"]
+[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="55_plat_purple"]
+[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="56_plat_yellow"]
 [ext_resource type="Script" path="res://scripts/arena_decor.gd" id="57_decor"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="58_levelinfo"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 sky_top_color = Color(0.25, 0.5, 0.92, 1)
@@ -143,6 +144,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -100)
 mesh = SubResource("SphereMesh_sky")
 material_override = SubResource("ShaderMaterial_sky")
 cast_shadow = 0
+
+[node name="LevelInfo" type="Node" parent="." groups=["level_info"]]
+script = ExtResource("58_levelinfo")
+level_id = "pivot_push"
+display_name = "Pivot Push"
+round_index = 1
+start_z = 5.0
+finish_z = -206.0
+course_length = 211.0
+gold_time = 70.0
+silver_time = 95.0
+bronze_time = 130.0
+waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -4, 0, 0.2, -12, 0, 0.2, -20, 0, 0.2, -25, 0, 0.2, -33, 0, 0.2, -41, 0, 0.13, -47, 0, 0.13, -50.6, 0, 0.13, -55, 0, 0.2, -62, 0, 0.2, -70, 0, 0.2, -80, 0, 0.2, -88, 0, 0.2, -94, 0, 0.14, -97.5, 0, 0.14, -101, 0, 0.7, -112, 0, 0.7, -115.5, 0, 0.7, -119, 0, 0.7, -126, 0, 0.7, -139.5, 0, 1.1, -152, 0, 1.1, -160, 0, 2.2, -168, 0, 3.4, -177, 0, 1.1, -186, 0, 1.1, -190, 0, 1.1, -194, 0, 4.2, -206, 0, 4.2, -209)
+lane_widths = PackedFloat32Array(3.2, 3.2, 2, 2, 1.5, 2.4, 2, 1.6, 0.4, 1.6, 2.2, 0.5, 0.4, 0.5, 1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6)
 
 [node name="RaceManager" type="Node" parent="." groups=["race_manager"]]
 script = ExtResource("13_race")

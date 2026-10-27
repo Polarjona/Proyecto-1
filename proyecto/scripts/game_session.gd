@@ -5,10 +5,20 @@ extends Node
 
 signal mode_changed(mode: String)
 
+## Los tres circuitos del torneo, en orden de ronda. El primero es tambien el
+## circuito de la carrera clasica y del modo de practica con bots.
+const LEVELS := [
+	"res://scenes/main.tscn",
+	"res://scenes/levels/spin_go_round.tscn",
+	"res://scenes/levels/pivot_panic.tscn",
+]
+const TOTAL_ROUNDS := 3
+
 var mode: String = "classic"
 var round: int = 1
 var bot_count: int = 7
 var qualifiers: int = 3
+var level_path: String = LEVELS[0]
 
 
 func _ready() -> void:
@@ -18,6 +28,7 @@ func _ready() -> void:
 func start_classic() -> void:
 	mode = "classic"
 	round = 1
+	level_path = LEVELS[0]
 	mode_changed.emit(mode)
 
 
@@ -26,6 +37,7 @@ func start_bots(tournament: bool = false) -> void:
 	round = 1
 	bot_count = 7
 	qualifiers = 3
+	level_path = LEVELS[0]
 	mode_changed.emit(mode)
 
 
@@ -37,11 +49,24 @@ func is_tournament() -> bool:
 	return mode == "tournament"
 
 
+## Pasa a la siguiente ronda del torneo. No hace nada si ya estaba en la
+## final: el torneo tiene tres circuitos y termina ahi.
 func advance_round() -> void:
+	if round >= TOTAL_ROUNDS:
+		return
 	round += 1
 	bot_count = mini(bot_count + 1, 11)
 	qualifiers = maxi(1, 3 - int((round - 1) / 2))
+	level_path = LEVELS[clampi(round - 1, 0, LEVELS.size() - 1)]
 	mode_changed.emit(mode)
+
+
+func is_final_round() -> bool:
+	return is_tournament() and round >= TOTAL_ROUNDS
+
+
+func total_rounds() -> int:
+	return TOTAL_ROUNDS
 
 
 func reset() -> void:
@@ -49,6 +74,7 @@ func reset() -> void:
 	round = 1
 	bot_count = 7
 	qualifiers = 3
+	level_path = LEVELS[0]
 
 
 ## Velocidad relativa de los bots según la ronda del torneo.
