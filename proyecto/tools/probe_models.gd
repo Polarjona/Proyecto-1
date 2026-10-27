@@ -1,27 +1,34 @@
 extends SceneTree
 
-func _initialize() -> void:
-	_run()
+## Vuelca los clips y el tamaño de los modelos nuevos para saber cómo
+## renombrarlos antes de meterlos en el catálogo.
 
-func _run() -> void:
-	for c in ["a", "c", "e", "g", "m"]:
-		var holder := Node3D.new()
-		root.add_child(holder)
-		var scene := load("res://assets/characters/blocky/character-%s.glb" % c) as PackedScene
-		var model := scene.instantiate() as Node3D
-		holder.add_child(model)
-		await process_frame
-		var box := AABB()
-		var first := true
-		for mesh in model.find_children("*", "MeshInstance3D", true, false):
-			var inst := mesh as MeshInstance3D
-			if inst.mesh == null:
-				continue
-			var b: AABB = inst.global_transform * inst.get_aabb()
-			box = b if first else box.merge(b)
-			first = false
-		var ap := model.find_child("AnimationPlayer", true, false) as AnimationPlayer
-		print("character-%s  aabb=%s  anim=%s" % [c, box, ap.get_animation_list() if ap else []])
-		holder.queue_free()
-		await process_frame
+const PATHS := [
+	"res://assets/characters/mini/character-female-b.glb",
+	"res://assets/characters/mini/character-female-d.glb",
+	"res://assets/characters/mini/character-male-f.glb",
+	"res://assets/characters/mascots/bunny.glb",
+	"res://assets/characters/mascots/robot.glb",
+]
+
+
+func _initialize() -> void:
+	for path: String in PATHS:
+		print("=== ", path)
+		if not ResourceLoader.exists(path):
+			print("   MISSING")
+			continue
+		var scene := load(path) as PackedScene
+		if scene == null:
+			print("   NO SCENE")
+			continue
+		var node := scene.instantiate() as Node3D
+		var anim := node.find_child("AnimationPlayer", true, false) as AnimationPlayer
+		if anim == null:
+			print("   sin AnimationPlayer")
+		else:
+			var names := anim.get_animation_list()
+			print("   clips (%d): %s" % [names.size(), str(names)])
+		print("   nodes: %s" % str(node.find_children("*", "MeshInstance3D", true, false).map(func(n): return n.name)))
+		node.free()
 	quit(0)

@@ -4,74 +4,56 @@ extends RefCounted
 ## Catálogo único de personajes. Lo usan el jugador, los bots y el menú, así
 ## que añadir un modelo nuevo es una sola entrada aquí.
 ##
-## Los cinco modelos vienen del pack CC0 *Kenney Blocky Characters 2.0*:
-## cuerpos de bloque con cabeza grande, colores planos y animaciones de nodo
-## (idle, walk, sprint, emote...), mucho más cerca del tono juguete del juego.
-## `build_model` las renombra a los clips que esperan jugador y bots.
+## Todos los cuerpos son GLB **animados** (con esqueleto y clips) y con licencia
+## libre: *Kenney Mini Characters* (CC0) y las mascotas de Quaternius (CC0).
+## `build_model` escala cada cuerpo a su altura objetivo y renombra los clips
+## que esperan jugador y bots.
 ##
-## `price` es lo que cuesta desbloquearlo en el menú Personaje. Chispa es
-## gratis: todo el mundo empieza jugando con ella.
+## `price` es lo que cuesta desbloquearlo en el menú Personaje. Coco es gratis:
+## todo el mundo empieza jugando con él.
 
 const CHARACTERS := [
 	{
-		"id": "rogue",
-		"name": "Chispa",
-		"scene": "res://assets/characters/blocky/character-a.glb",
+		"id": "coco",
+		"name": "Coco",
+		"scene": "res://assets/characters/mini/character-male-f.glb",
 		"target_height": 1.7,
-		"color": Color(0.45, 0.95, 0.6),
+		"color": Color(0.96, 0.6, 0.36),
 		"price": 0,
 	},
 	{
-		"id": "rogue_hooded",
-		"name": "Uva",
-		"scene": "res://assets/characters/blocky/character-c.glb",
+		"id": "menta",
+		"name": "Menta",
+		"scene": "res://assets/characters/mini/character-female-d.glb",
 		"target_height": 1.7,
-		"color": Color(0.7, 0.55, 1.0),
-		"price": 100,
+		"color": Color(0.46, 0.9, 0.74),
+		"price": 400,
 	},
 	{
-		"id": "knight",
-		"name": "Robot",
-		"scene": "res://assets/characters/blocky/character-e.glb",
+		"id": "nube",
+		"name": "Nube",
+		"scene": "res://assets/characters/mini/character-female-b.glb",
 		"target_height": 1.7,
-		"color": Color(0.55, 0.82, 0.92),
-		"price": 200,
+		"color": Color(0.62, 0.76, 1.0),
+		"price": 800,
 	},
 	{
-		"id": "mage",
-		"name": "Tornillo",
-		"scene": "res://assets/characters/blocky/character-g.glb",
+		"id": "mochi",
+		"name": "Mochi",
+		"scene": "res://assets/characters/mascots/bunny.glb",
 		"target_height": 1.7,
-		"color": Color(1.0, 0.62, 0.35),
-		"price": 300,
+		"color": Color(0.4, 0.72, 1.0),
+		"price": 1200,
 	},
 	{
-		"id": "barbarian",
-		"name": "Jefe",
-		"scene": "res://assets/characters/blocky/character-m.glb",
+		"id": "turbo",
+		"name": "Turbo",
+		"scene": "res://assets/characters/mascots/robot.glb",
 		"target_height": 1.7,
-		"color": Color(0.95, 0.82, 0.45),
-		"price": 500,
+		"color": Color(1.0, 0.82, 0.32),
+		"price": 1600,
 	},
 ]
-
-## Armas, escudos y capas: la carrera es sin armas, así que esos props
-## se ocultan nada más instanciar el modelo.
-const ACCESSORY_PARTS := [
-	"2H_Staff", "1H_Wand", "Spellbook", "Spellbook_open",
-	"1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield",
-	"Spike_Shield", "1H_Sword", "2H_Sword", "Knife_Offhand", "1H_Crossbow",
-	"2H_Crossbow", "Knife", "Throwable", "Rogue_Cape", "Mage_Cape",
-	"Knight_Cape", "Barbarian_Cape", "1H_Axe_Offhand", "1H_Axe", "2H_Axe",
-	"Mug", "Barbarian_Round_Shield", "Quiver", "Arrow", "Smokebomb", "Dagger",
-]
-
-const ACCESSORY_KEYWORDS := [
-	"Cape", "Sword", "Shield", "Staff", "Wand", "Spellbook", "Crossbow",
-	"Knife", "Throwable", "Axe", "Mug", "Quiver", "Arrow", "Smokebomb",
-	"Dagger",
-]
-
 
 static func default_id() -> String:
 	return String(CHARACTERS[0]["id"])
@@ -130,21 +112,23 @@ static func free_ids() -> Array[String]:
 	return result
 
 
-## Clips que esperan el jugador y los bots, emparejados con los del pack.
+## Clips que esperan el jugador y los bots, con los nombres que usan los
+## distintos packs. El primero que exista en el modelo gana; la búsqueda
+## también acepta el último tramo del nombre ("CharacterArmature|Run").
 const CLIP_ALIASES := {
-	"Idle": "idle",
-	"Walking_A": "walk",
-	"Running_A": "sprint",
-	"Jump_Idle": "idle",
-	"Jump_Land": "idle",
-	"Lie_Idle": "sit",
-	"Hit_A": "emote-no",
-	"Cheer": "emote-yes",
+	"Idle": ["Idle", "idle"],
+	"Walking_A": ["Walking_A", "walk", "Walk", "Walking"],
+	"Running_A": ["Running_A", "sprint", "Sprint", "Run", "Running"],
+	"Jump_Idle": ["Jump_Idle", "jump", "Jump", "idle"],
+	"Jump_Land": ["Jump_Land", "fall", "Fall", "idle"],
+	"Lie_Idle": ["Lie_Idle", "sit", "Sit", "Sitting", "Duck"],
+	"Hit_A": ["Hit_A", "emote-no", "No", "HitReact"],
+	"Cheer": ["Cheer", "emote-yes", "Yes", "Dance", "ThumbsUp"],
 }
 
 
-## Instancia el modelo pedido, lo escala y le quita las armas. Devuelve null
-## si el .glb no está importado (el juego sigue funcionando sin personaje).
+## Instancia el modelo pedido y lo escala a su altura objetivo. Devuelve
+## null si el .glb no está importado (el juego sigue funcionando sin personaje).
 static func build_model(id: String, node_name: String = "Model") -> Node3D:
 	var entry := by_id(id)
 	var path := String(entry.get("scene", ""))
@@ -166,7 +150,6 @@ static func build_model(id: String, node_name: String = "Model") -> Node3D:
 		model.position.y = -bounds.position.y * factor
 	else:
 		model.scale = Vector3.ONE * float(entry.get("scale", 0.55))
-	hide_accessories(model)
 	_prepare_animations(model)
 	return model
 
@@ -197,8 +180,8 @@ static func _prepare_animations(model: Node3D) -> void:
 	for alias: String in CLIP_ALIASES:
 		if anim.has_animation(alias):
 			continue
-		var source := String(CLIP_ALIASES[alias])
-		if not anim.has_animation(source):
+		var source := _find_clip(anim, CLIP_ALIASES[alias])
+		if source.is_empty():
 			continue
 		var clip := anim.get_animation(source).duplicate() as Animation
 		if clip == null:
@@ -211,15 +194,23 @@ static func _prepare_animations(model: Node3D) -> void:
 		library.add_animation(alias, clip)
 
 
-static func hide_accessories(model: Node3D) -> void:
-	for part in ACCESSORY_PARTS:
-		var node := model.find_child(part, true, false)
-		if node is Node3D:
-			(node as Node3D).visible = false
-	# Red de seguridad para modelos futuros del mismo pack.
-	for child in model.find_children("*", "Node3D", true, false):
-		var node_name := String(child.name)
-		for keyword in ACCESSORY_KEYWORDS:
-			if node_name.contains(keyword):
-				(child as Node3D).visible = false
-				break
+## Nombre real del clip que corresponde a un alias. Acepta el nombre exacto,
+## el último tramo tras "|" o ":" y el sufijo tras un guion bajo
+## ("Robot_Walking" para "Walking").
+static func _find_clip(anim: AnimationPlayer, candidates: Array) -> String:
+	for candidate in candidates:
+		var exact := String(candidate)
+		if anim.has_animation(exact):
+			return exact
+	var clips := anim.get_animation_list()
+	for candidate in candidates:
+		var wanted := String(candidate).to_lower()
+		for clip_name: StringName in clips:
+			var name := String(clip_name)
+			var parts := name.split("|")
+			var last := String(parts[parts.size() - 1])
+			parts = last.split(":")
+			last = String(parts[parts.size() - 1]).to_lower()
+			if last == wanted or last.ends_with("_" + wanted):
+				return name
+	return ""

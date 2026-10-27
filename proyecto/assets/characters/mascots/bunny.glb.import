@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://m4nfev2kt7i7"
-path="res://.godot/imported/character-c.glb-2b11cb484c151bd5e1e90c554bdce547.scn"
+uid="uid://dwldkfwp66xf1"
+path="res://.godot/imported/bunny.glb-46406d596f8a43fd6ff9abb050df82fe.scn"
 
 [deps]
 
-source_file="res://assets/characters/blocky/character-c.glb"
-dest_files=["res://.godot/imported/character-c.glb-2b11cb484c151bd5e1e90c554bdce547.scn"]
+source_file="res://assets/characters/mascots/bunny.glb"
+dest_files=["res://.godot/imported/bunny.glb-46406d596f8a43fd6ff9abb050df82fe.scn"]
 
 [params]
 
