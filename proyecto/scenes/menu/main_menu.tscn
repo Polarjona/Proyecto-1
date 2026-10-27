@@ -924,7 +924,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Rondas contra 7 bots. Clasifícate en el top 3 y sube de ronda."
+text = "3 rondas, 3 circuitos. Clasifícate en el top 3 y llega a la final."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/TournamentCard"]
@@ -940,7 +940,7 @@ grow_horizontal = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.792, 0.267, 0.2, 1)
 theme_override_font_sizes/font_size = 15
-text = "+ BOTS"
+text = "3 RONDAS"
 horizontal_alignment = 2
 vertical_alignment = 1
 

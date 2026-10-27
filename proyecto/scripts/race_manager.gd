@@ -29,6 +29,13 @@ var checkpoints_total: int = 0
 var splits: Array[float] = []
 var fall_count: int = 0
 
+## Identidad y tiempos del circuito cargado. Se rellenan desde LevelInfo.
+var level_id: String = ""
+var level_name: String = ""
+var gold_time: float = 70.0
+var silver_time: float = 95.0
+var bronze_time: float = 130.0
+
 var _headless: bool = false
 
 
@@ -37,10 +44,17 @@ func _ready() -> void:
 	_headless = DisplayServer.get_name() == "headless"
 	# Durante la partida solo suenan los efectos y el viento.
 	AudioManager.stop_music(false)
-	best_time = SaveManager.best_time()
-	has_best_time = SaveManager.has_best()
 	# Wait one frame so checkpoints/player have entered their groups.
 	await get_tree().process_frame
+	var info := get_tree().get_first_node_in_group("level_info") as LevelInfo
+	if info != null:
+		level_id = info.level_id
+		level_name = info.display_name
+		gold_time = info.gold_time
+		silver_time = info.silver_time
+		bronze_time = info.bronze_time
+	best_time = SaveManager.best_time(level_id)
+	has_best_time = SaveManager.has_best(level_id)
 	_count_checkpoints()
 	player = get_tree().get_first_node_in_group("player") as CharacterBody3D
 	if player and player.has_method("get_spawn_transform"):
@@ -95,7 +109,7 @@ func register_checkpoint(checkpoint_transform: Transform3D, checkpoint_name: Str
 	last_checkpoint = checkpoint_transform
 	has_checkpoint = true
 	var split_time := elapsed_time
-	var reference := SaveManager.best_splits()
+	var reference := SaveManager.best_splits(level_id)
 	var delta := 0.0
 	if checkpoints_completed < reference.size():
 		delta = split_time - float(reference[checkpoints_completed])
@@ -135,11 +149,12 @@ func finish_race() -> void:
 		return
 	is_finished = true
 	is_running = false
-	var medal := SaveManager.medal_for(elapsed_time)
+	var medal := SaveManager.medal_for_values(elapsed_time, gold_time, silver_time, bronze_time)
 	var position := player_position()
-	var info := SaveManager.register_finish(elapsed_time, fall_count, splits.duplicate(), position)
-	best_time = SaveManager.best_time()
-	has_best_time = SaveManager.has_best()
+	var info := SaveManager.register_finish(elapsed_time, fall_count, splits.duplicate(), position,
+		level_id, gold_time, silver_time, bronze_time)
+	best_time = SaveManager.best_time(level_id)
+	has_best_time = SaveManager.has_best(level_id)
 	best_time_updated.emit(best_time)
 	finished.emit(elapsed_time)
 
@@ -163,6 +178,13 @@ func finish_race() -> void:
 		"total_checkpoints": checkpoints_total,
 		"mode": GameSession.mode,
 		"round": GameSession.round,
+		"total_rounds": GameSession.total_rounds(),
+		"final_round": GameSession.is_final_round(),
+		"level_id": level_id,
+		"level_name": level_name,
+		"gold_time": gold_time,
+		"silver_time": silver_time,
+		"bronze_time": bronze_time,
 	}
 	results_ready.emit(data)
 

@@ -136,13 +136,13 @@ func _on_play_pressed() -> void:
 func _on_classic_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
 	GameSession.start_classic()
-	TransitionManager.change_scene("res://scenes/main.tscn")
+	TransitionManager.change_scene(GameSession.level_path)
 
 
 func _on_tournament_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
 	GameSession.start_bots(true)
-	TransitionManager.change_scene("res://scenes/main.tscn")
+	TransitionManager.change_scene(GameSession.level_path)
 
 
 # --- Paneles ----------------------------------------------------------------

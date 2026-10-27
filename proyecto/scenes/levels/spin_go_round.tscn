@@ -1,0 +1,817 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="1_dvmcx"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="2_6akiy"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="3_56nts"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="4_ysl3y"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="5_khb8f"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="6_dwh5h"]
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_0edlh"]
+[ext_resource type="Material" path="res://materials/spin_floor.tres" id="8_2gg5p"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="9_6i5wa"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="10_qwa8m"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="11_301wn"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="12_tb7im"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="13_xtstc"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="14_k4d68"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="15_nev1h"]
+[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="16_01mv5"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="17_dlmms"]
+[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="18_c7pg1"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="19_v2nxx"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="20_tqcck"]
+[ext_resource type="Script" path="res://scripts/finish_line.gd" id="21_ap8ja"]
+[ext_resource type="Material" path="res://materials/spin_blue.tres" id="22_x8udf"]
+[ext_resource type="Material" path="res://materials/spin_gold.tres" id="23_rer47"]
+[ext_resource type="Material" path="res://materials/spin_wall.tres" id="24_d4sc3"]
+[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="25_1as4r"]
+[ext_resource type="Material" path="res://materials/spin_magenta.tres" id="26_usbvw"]
+[ext_resource type="Material" path="res://materials/spin_lime.tres" id="27_wiifv"]
+[ext_resource type="Material" path="res://materials/spin_orange.tres" id="28_d3wis"]
+[ext_resource type="PackedScene" path="res://assets/props/beach_ball.glb" id="29_spx5w"]
+[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="30_2vkww"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="31_nk14x"]
+[ext_resource type="Script" path="res://scripts/post_process.gd" id="32_tj45v"]
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="33_w0o6m"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="34_eww7q"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="35_lqiwg"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="36_auvfn"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="37_2s8pn"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="38_g2hfb"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="39_j6dl8"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ll74p"]
+sky_top_color = Color(0.02, 0.3, 0.9, 1)
+sky_horizon_color = Color(0.35, 0.72, 0.98, 1)
+sky_curve = 0.18
+ground_bottom_color = Color(0.05, 0.25, 0.55, 1)
+ground_horizon_color = Color(0.35, 0.72, 0.98, 1)
+ground_curve = 0.12
+sun_angle_max = 18.0
+sun_curve = 0.08
+
+[sub_resource type="Sky" id="Sky_3gte6"]
+sky_material = SubResource("ProceduralSkyMaterial_ll74p")
+
+[sub_resource type="Environment" id="Environment_jpwso"]
+background_mode = 2
+sky = SubResource("Sky_3gte6")
+ambient_light_source = 3
+ambient_light_color = Color(0.68, 0.88, 1, 1)
+ambient_light_energy = 0.62
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_exposure = 0.9
+ssao_enabled = true
+ssao_radius = 1.4
+ssao_intensity = 1.8
+glow_enabled = true
+glow_bloom = 0.02
+glow_blend_mode = 0
+glow_hdr_threshold = 1.3
+fog_enabled = true
+fog_light_color = Color(0.62, 0.88, 1, 1)
+fog_density = 0.0016
+fog_sky_affect = 0.25
+adjustment_enabled = true
+adjustment_contrast = 1.04
+adjustment_saturation = 1.28
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fotnj"]
+render_priority = 0
+shader = ExtResource("1_dvmcx")
+shader_parameter/top_color = Color(0.02, 0.3, 0.9, 1)
+shader_parameter/horizon_color = Color(0.35, 0.72, 0.98, 1)
+shader_parameter/ground_color = Color(0.05, 0.25, 0.55, 1)
+shader_parameter/cloud_color = Color(0.95, 1, 1, 1)
+shader_parameter/sun_color = Color(1, 0.95, 0.78, 1)
+shader_parameter/sun_direction = Vector3(0.5014059, 0.6217433, -0.60168713)
+shader_parameter/cloud_opacity = 0.45
+shader_parameter/cloud_scale = 2.2
+shader_parameter/cloud_speed = null
+shader_parameter/sun_size = null
+shader_parameter/sun_glow = 0.9
+shader_parameter/horizon_warmth = null
+
+[sub_resource type="SphereMesh" id="SphereMesh_fmg0x"]
+radius = 380.0
+height = 760.0
+radial_segments = 48
+rings = 24
+
+[sub_resource type="BoxMesh" id="BoxMesh_txq8x"]
+size = Vector3(0.7, 6.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5a3nc"]
+size = Vector3(0.7, 6.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2kvne"]
+size = Vector3(18.8, 0.6, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_gxc61"]
+inner_radius = 3.24
+outer_radius = 3.96
+rings = 28
+ring_segments = 10
+
+[sub_resource type="BoxMesh" id="BoxMesh_hbxf0"]
+size = Vector3(1.2, 2.6, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ysu2q"]
+size = Vector3(1.2, 2.6, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dqpaq"]
+size = Vector3(1.4, 0.2, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ahgq6"]
+size = Vector3(1.4, 0.2, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_66o0e"]
+size = Vector3(1, 2, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xwct6"]
+size = Vector3(1, 2, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ebpka"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0gjcs"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_34nqs"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qgcpv"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1bqwb"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g12gc"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_prbdu"]
+size = Vector3(0.9, 2, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2iltp"]
+size = Vector3(0.9, 2, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3iclf"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kh0v0"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ssg2c"]
+size = Vector3(12.5, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kciwl"]
+size = Vector3(12.5, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_axy0x"]
+size = Vector3(12.5, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dsjsx"]
+size = Vector3(12.5, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_aurt1"]
+size = Vector3(12.5, 0.02, 0.55)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_eex22"]
+top_radius = 0.096
+bottom_radius = 1.5
+height = 2.16
+radial_segments = 20
+rings = 2
+
+[sub_resource type="TorusMesh" id="TorusMesh_wwov4"]
+inner_radius = 1.38
+outer_radius = 1.704
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_7aaa7"]
+radius = 0.624
+height = 1.248
+radial_segments = 20
+rings = 10
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qvteh"]
+top_radius = 0.08
+bottom_radius = 1.25
+height = 1.8
+radial_segments = 20
+rings = 2
+
+[sub_resource type="TorusMesh" id="TorusMesh_0yb44"]
+inner_radius = 1.15
+outer_radius = 1.42
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_2gtk5"]
+radius = 0.52
+height = 1.04
+radial_segments = 20
+rings = 10
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1x1x2"]
+top_radius = 0.072
+bottom_radius = 1.125
+height = 1.62
+radial_segments = 20
+rings = 2
+
+[sub_resource type="TorusMesh" id="TorusMesh_kx0j1"]
+inner_radius = 1.035
+outer_radius = 1.278
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_ta2jx"]
+radius = 0.468
+height = 0.936
+radial_segments = 20
+rings = 10
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rw5kn"]
+top_radius = 0.064
+bottom_radius = 1.0
+height = 1.44
+radial_segments = 20
+rings = 2
+
+[sub_resource type="TorusMesh" id="TorusMesh_oc0wd"]
+inner_radius = 0.92
+outer_radius = 1.136
+rings = 28
+ring_segments = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_yw1c5"]
+radius = 0.416
+height = 0.832
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_vfc17"]
+radius = 1.0
+height = 2.0
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_4bt8w"]
+radius = 0.85
+height = 1.7
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_atrc6"]
+radius = 1.0
+height = 2.0
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereMesh" id="SphereMesh_oiapk"]
+radius = 0.85
+height = 1.7
+radial_segments = 20
+rings = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_p0um3"]
+inner_radius = 3.2
+outer_radius = 3.65
+rings = 28
+ring_segments = 10
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gtel1"]
+shader = ExtResource("33_w0o6m")
+shader_parameter/aberration = null
+shader_parameter/vignette = 0.3
+shader_parameter/grain = null
+shader_parameter/speed = null
+shader_parameter/stun = null
+shader_parameter/flash_amount = null
+shader_parameter/saturation = 1.28
+shader_parameter/contrast = 1.06
+shader_parameter/dithering = null
+shader_parameter/flash_color = null
+
+[node name="SpinGoRound" type="Node3D" unique_id=540645911]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1597994167]
+environment = SubResource("Environment_jpwso")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=269404690]
+transform = Transform3D(0.88294756, 0.33770958, -0.32612237, 0, 0.6946584, 0.7193398, 0.46947157, -0.6351393, 0.61334693, 0, 0, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_angular_distance = 0.6
+shadow_enabled = true
+shadow_blur = 1.4
+directional_shadow_max_distance = 220.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=1966614754]
+transform = Transform3D(-0.7880108, -0.30783072, 0.53317845, 0, 0.8660254, 0.5, -0.61566144, 0.3940054, -0.68243736, 0, 0, 0)
+light_color = Color(0.45, 0.75, 1, 1)
+light_energy = 0.45
+
+[node name="SkyDome" type="MeshInstance3D" parent="." unique_id=1610915919]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -70)
+material_override = SubResource("ShaderMaterial_fotnj")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_fmg0x")
+
+[node name="LevelInfo" type="Node" parent="." unique_id=2081496831]
+script = ExtResource("2_6akiy")
+level_id = "spin_go_round"
+display_name = "Spin Go Round"
+round_index = 2
+finish_z = -80.0
+course_length = 85.0
+gold_time = 42.0
+silver_time = 58.0
+bronze_time = 78.0
+waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -5, 0, 0.2, -9, 0, 0.2, -14, 0, 0.2, -20, 0, 0.2, -25, 0, 0.2, -28, 0, 0.2, -31, 0, 0.2, -34.5, 0, 0.2, -37, 0, 0.2, -40, 0, 0.2, -44, 0, 0.2, -47, 0, 0.2, -50, 0, 0.2, -54, 0, 0.2, -59, 0, 0.2, -63, 0, 0.2, -67, 0, 0.2, -70, 0, 0.2, -73, 0, 0.2, -77, 0, 0.2, -80, 0, 0.2, -84)
+lane_widths = PackedFloat32Array(3.5, 3, 2.4, 2.6, 2.6, 2.2, 1.8, 2, 1.4, 1.2, 1.2, 1.4, 1.8, 2.2, 2.2, 1.8, 1.6, 1.8, 2, 2, 2.2, 2.6, 2.6)
+
+[node name="RaceManager" type="Node" parent="." unique_id=361904349]
+script = ExtResource("3_56nts")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1123635694 instance=ExtResource("4_ysl3y")]
+layer = 3
+script = ExtResource("5_khb8f")
+
+[node name="KillPlane" type="Area3D" parent="." unique_id=1427215220 instance=ExtResource("6_dwh5h")]
+transform = Transform3D(1.6, 0, 0, 0, 1, 0, 0, 0, 1.6, 0, -10, -42)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("7_0edlh")
+
+[node name="Course" type="Node3D" parent="." unique_id=463996465]
+
+[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=1290950932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
+use_collision = true
+size = Vector3(16, 0.5, 12)
+material = ExtResource("8_2gg5p")
+
+[node name="SpinArena" type="CSGBox3D" parent="Course" unique_id=209977179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -16)
+use_collision = true
+size = Vector3(24, 0.5, 22)
+material = ExtResource("8_2gg5p")
+
+[node name="SpinBridge" type="CSGBox3D" parent="Course" unique_id=1612214224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -31)
+use_collision = true
+size = Vector3(8, 0.5, 8)
+material = ExtResource("8_2gg5p")
+
+[node name="SpinLanding" type="CSGBox3D" parent="Course" unique_id=1012551276]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -49)
+use_collision = true
+size = Vector3(10, 0.5, 8)
+material = ExtResource("8_2gg5p")
+
+[node name="SpinRow" type="CSGBox3D" parent="Course" unique_id=201772535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -61)
+use_collision = true
+size = Vector3(14, 0.5, 14)
+material = ExtResource("8_2gg5p")
+
+[node name="SpinSafe" type="CSGBox3D" parent="Course" unique_id=1477274805]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -72)
+use_collision = true
+size = Vector3(10, 0.5, 6)
+material = ExtResource("8_2gg5p")
+
+[node name="FinishApproach" type="CSGBox3D" parent="Course" unique_id=398259239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -71)
+use_collision = true
+size = Vector3(8, 0.5, 4.2)
+material = ExtResource("8_2gg5p")
+
+[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=510405214]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -80)
+use_collision = true
+size = Vector3(16, 0.5, 14)
+material = ExtResource("8_2gg5p")
+
+[node name="SweeperA" type="Node3D" parent="Course" unique_id=933854711 instance=ExtResource("9_6i5wa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -11)
+script = ExtResource("10_qwa8m")
+spin_speed = 2.0
+push_force = 6.0
+
+[node name="SweeperB" type="Node3D" parent="Course" unique_id=203072824 instance=ExtResource("9_6i5wa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -21)
+script = ExtResource("10_qwa8m")
+spin_speed = 2.5
+push_force = 6.4
+spin_direction = -1.0
+
+[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=1142475410 instance=ExtResource("11_301wn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -28)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("12_tb7im")
+checkpoint_name = "Checkpoint 1"
+
+[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=493094169 instance=ExtResource("13_xtstc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -38)
+collision_mask = 0
+script = ExtResource("14_k4d68")
+speed = 2.2
+pause_time = 0.4
+
+[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=770583081 instance=ExtResource("11_301wn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -49)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("12_tb7im")
+checkpoint_name = "Checkpoint 2"
+
+[node name="SweeperC" type="Node3D" parent="Course" unique_id=1600720744 instance=ExtResource("9_6i5wa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -57)
+script = ExtResource("10_qwa8m")
+spin_speed = 2.8
+push_force = 6.8
+
+[node name="Centrifuge" type="AnimatableBody3D" parent="Course" unique_id=21949532 instance=ExtResource("15_nev1h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -63)
+collision_mask = 0
+script = ExtResource("16_01mv5")
+spin_speed = 1.8
+
+[node name="BallRain" type="Node3D" parent="Course" unique_id=774173073 instance=ExtResource("17_dlmms")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -61)
+script = ExtResource("18_c7pg1")
+ball_scene = ExtResource("19_v2nxx")
+interval = 2.3
+drop_radius = 3.6
+max_balls = 5
+start_delay = 2.0
+column_spread = 1.8
+
+[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=1989151123 instance=ExtResource("11_301wn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -72)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("12_tb7im")
+checkpoint_name = "Checkpoint 3"
+
+[node name="FinishLine" type="Area3D" parent="Course" unique_id=51168999 instance=ExtResource("20_tqcck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -80)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("21_ap8ja")
+
+[node name="Decor" type="Node3D" parent="." unique_id=1948354145]
+
+[node name="StartGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1554995876]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 3.2, -2.5)
+material_override = ExtResource("22_x8udf")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_txq8x")
+
+[node name="StartGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=1401624260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.2, -2.5)
+material_override = ExtResource("22_x8udf")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_5a3nc")
+
+[node name="StartGateBeam" type="MeshInstance3D" parent="Decor" unique_id=1435053428]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -2.5)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_2kvne")
+
+[node name="StartGateRing" type="MeshInstance3D" parent="Decor" unique_id=704229932]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 3.968, -2.5)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_gxc61")
+
+[node name="StartGateLabel" type="Label3D" parent="Decor" unique_id=101934454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, -2.5)
+pixel_size = 0.0045
+modulate = Color(1, 0.92, 0.55, 1)
+outline_modulate = Color(0.06, 0.05, 0.14, 1)
+text = "SPIN GO ROUND"
+font_size = 230
+outline_size = 34
+
+[node name="ArenaWallLeft" type="MeshInstance3D" parent="Decor" unique_id=159802736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 1.3, -16)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_hbxf0")
+
+[node name="ArenaWallRight" type="MeshInstance3D" parent="Decor" unique_id=677759057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2, 1.3, -16)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ysu2q")
+
+[node name="ArenaTrimLeft" type="MeshInstance3D" parent="Decor" unique_id=1884872732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.65, -16)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dqpaq")
+
+[node name="ArenaTrimRight" type="MeshInstance3D" parent="Decor" unique_id=762351196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2, 2.65, -16)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ahgq6")
+
+[node name="StartWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1166719464]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.2, 1, 2)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_66o0e")
+
+[node name="StartWallRight" type="MeshInstance3D" parent="Decor" unique_id=2036388356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 1, 2)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_xwct6")
+
+[node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=45996796]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.55, 2)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ebpka")
+
+[node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=304584485]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.55, 2)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_0gjcs")
+
+[node name="BridgeRailLeft" type="MeshInstance3D" parent="Decor" unique_id=692596778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0.55, -31)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_34nqs")
+
+[node name="BridgeRailRight" type="MeshInstance3D" parent="Decor" unique_id=553728170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0.55, -31)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_qgcpv")
+
+[node name="LandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=2075221324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -49)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_1bqwb")
+
+[node name="LandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=414640665]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -49)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_g12gc")
+
+[node name="SpinRowWallLeft" type="MeshInstance3D" parent="Decor" unique_id=304682506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1, -61)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_prbdu")
+
+[node name="SpinRowWallRight" type="MeshInstance3D" parent="Decor" unique_id=998059279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1, -61)
+material_override = ExtResource("24_d4sc3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_2iltp")
+
+[node name="FinishRailLeft" type="MeshInstance3D" parent="Decor" unique_id=578956289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.1, 0.55, -80)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_3iclf")
+
+[node name="FinishRailRight" type="MeshInstance3D" parent="Decor" unique_id=166463852]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 0.55, -80)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_kh0v0")
+
+[node name="HazardA0" type="MeshInstance3D" parent="Decor" unique_id=965030192]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -55)
+material_override = ExtResource("25_1as4r")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ssg2c")
+
+[node name="HazardA1" type="MeshInstance3D" parent="Decor" unique_id=543330620]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -58)
+material_override = ExtResource("25_1as4r")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_kciwl")
+
+[node name="HazardA2" type="MeshInstance3D" parent="Decor" unique_id=1810653031]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -61)
+material_override = ExtResource("25_1as4r")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_axy0x")
+
+[node name="HazardA3" type="MeshInstance3D" parent="Decor" unique_id=842051674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -64)
+material_override = ExtResource("25_1as4r")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dsjsx")
+
+[node name="HazardA4" type="MeshInstance3D" parent="Decor" unique_id=152897808]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -67)
+material_override = ExtResource("25_1as4r")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_aurt1")
+
+[node name="TopLeftCone" type="MeshInstance3D" parent="Decor" unique_id=1080646810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.6, 1.08, -12)
+material_override = ExtResource("26_usbvw")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_eex22")
+
+[node name="TopLeftRing" type="MeshInstance3D" parent="Decor" unique_id=733858717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.6, 0.66, -12)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_wwov4")
+
+[node name="TopLeftBola" type="MeshInstance3D" parent="Decor" unique_id=393787490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.6, 2.4, -12)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_7aaa7")
+
+[node name="TopRightCone" type="MeshInstance3D" parent="Decor" unique_id=1919944608]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 0.9, -20)
+material_override = ExtResource("27_wiifv")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_qvteh")
+
+[node name="TopRightRing" type="MeshInstance3D" parent="Decor" unique_id=1413763629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 0.55, -20)
+material_override = ExtResource("28_d3wis")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_0yb44")
+
+[node name="TopRightBola" type="MeshInstance3D" parent="Decor" unique_id=618898635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 2, -20)
+material_override = ExtResource("28_d3wis")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_2gtk5")
+
+[node name="TopSpinLeftCone" type="MeshInstance3D" parent="Decor" unique_id=298732575]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0.81, -61)
+material_override = ExtResource("28_d3wis")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_1x1x2")
+
+[node name="TopSpinLeftRing" type="MeshInstance3D" parent="Decor" unique_id=315052548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0.495, -61)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_kx0j1")
+
+[node name="TopSpinLeftBola" type="MeshInstance3D" parent="Decor" unique_id=503129251]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 1.8, -61)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ta2jx")
+
+[node name="TopSpinRightCone" type="MeshInstance3D" parent="Decor" unique_id=1251455120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0.72, -66)
+material_override = ExtResource("26_usbvw")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_rw5kn")
+
+[node name="TopSpinRightRing" type="MeshInstance3D" parent="Decor" unique_id=981752493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0.44, -66)
+material_override = ExtResource("27_wiifv")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_oc0wd")
+
+[node name="TopSpinRightBola" type="MeshInstance3D" parent="Decor" unique_id=1443370340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 1.6, -66)
+material_override = ExtResource("27_wiifv")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_yw1c5")
+
+[node name="BallLeftA" type="MeshInstance3D" parent="Decor" unique_id=14731322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 1, -7)
+material_override = ExtResource("26_usbvw")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_vfc17")
+
+[node name="BallLeftB" type="MeshInstance3D" parent="Decor" unique_id=1431863928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 2.8, -7)
+material_override = ExtResource("27_wiifv")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_4bt8w")
+
+[node name="BallRightA" type="MeshInstance3D" parent="Decor" unique_id=440015832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 1, -24)
+material_override = ExtResource("28_d3wis")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_atrc6")
+
+[node name="BallRightB" type="MeshInstance3D" parent="Decor" unique_id=1553384529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 2.8, -24)
+material_override = ExtResource("22_x8udf")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_oiapk")
+
+[node name="FinishRing" type="MeshInstance3D" parent="Decor" unique_id=1789498070]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 5.2, -88)
+material_override = ExtResource("23_rer47")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_p0um3")
+
+[node name="BeachBallA" type="Node3D" parent="Decor" unique_id=453168752 instance=ExtResource("29_spx5w")]
+transform = Transform3D(1.9021131, 0, 0.618034, 0, 2, 0, -0.618034, 0, 1.9021131, -9.2, 1, -9)
+
+[node name="BeachBallB" type="Node3D" parent="Decor" unique_id=64247486 instance=ExtResource("29_spx5w")]
+transform = Transform3D(1.228728, 0, -0.8603647, 0, 1.5, 0, 0.8603647, 0, 1.228728, 9.4, 1, -23)
+
+[node name="BeachBallC" type="Node3D" parent="Decor" unique_id=1137853969 instance=ExtResource("29_spx5w")]
+transform = Transform3D(0.91772234, 0, 1.3106433, 0, 1.6, 0, -1.3106433, 0, 0.91772234, 8.8, 1, -78)
+
+[node name="BeachBallD" type="Node3D" parent="Decor" unique_id=93126578 instance=ExtResource("29_spx5w")]
+transform = Transform3D(3.939231, 0, 0.6945927, 0, 4, 0, -0.6945927, 0, 3.939231, -20, -5, -45)
+
+[node name="CourseLight1" type="OmniLight3D" parent="Decor" unique_id=1597835506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -16)
+light_color = Color(0.55, 0.95, 1, 1)
+light_energy = 1.4
+omni_range = 18.0
+
+[node name="CourseLight2" type="OmniLight3D" parent="Decor" unique_id=1566617889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -61)
+light_color = Color(0.55, 0.95, 1, 1)
+light_energy = 1.4
+omni_range = 18.0
+
+[node name="CourseLight3" type="OmniLight3D" parent="Decor" unique_id=2056881229]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -80)
+light_color = Color(0.55, 0.95, 1, 1)
+light_energy = 1.4
+omni_range = 18.0
+
+[node name="ArenaDecor" type="Node3D" parent="." unique_id=965394997]
+script = ExtResource("30_2vkww")
+section_centers = PackedVector3Array(0, 0, 2, 0, 0, -16, 0, 0, -31, 0, 0, -49, 0, 0, -61, 0, 0, -72, 0, 0, -80)
+section_sizes = PackedVector2Array(16, 12, 24, 22, 8, 8, 10, 8, 14, 14, 10, 6, 16, 14)
+section_colors = PackedColorArray(1, 0.8, 0.2, 1, 0.2, 0.9, 1, 1, 1, 0.6, 0.2, 1, 0.2, 0.9, 1, 1, 1, 0.45, 0.8, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1)
+sea_deep = Color(0.02, 0.14, 0.4, 1)
+sea_mid = Color(0.1, 0.5, 0.8, 1)
+sea_foam = Color(0.72, 0.95, 1, 1)
+island_palette = PackedColorArray(0.15, 0.7, 1, 1, 1, 0.6, 0.2, 1, 1, 0.36, 0.68, 1, 0.55, 1, 0.4, 1, 0.2, 0.9, 0.9, 1)
+rock_color = Color(0.08, 0.18, 0.42, 1)
+distant_color = Color(0.42, 0.72, 0.96, 1)
+build_arches = false
+build_pendulum_frames = false
+build_light_towers = false
+
+[node name="Crowd" type="Node3D" parent="." unique_id=309338957]
+script = ExtResource("31_nk14x")
+per_row = 50
+stand_offset = 18.0
+stand_length = 110.0
+stand_center_z = -40.0
+
+[node name="PostProcess" type="CanvasLayer" parent="." unique_id=1583548710]
+script = ExtResource("32_tj45v")
+
+[node name="Rect" type="ColorRect" parent="PostProcess" unique_id=1374062063]
+material = SubResource("ShaderMaterial_gtel1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="RaceDirector" type="Node" parent="." unique_id=198862624]
+script = ExtResource("34_eww7q")
+bot_scene = ExtResource("35_lqiwg")
+finish_z = -80.0
+course_length = 85.0
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1232167268 instance=ExtResource("36_auvfn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4)
+collision_layer = 2
+collision_mask = 5
+floor_stop_on_slope = false
+floor_max_angle = 0.9
+floor_snap_length = 0.35
+script = ExtResource("37_2s8pn")
+
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=726628155 instance=ExtResource("38_g2hfb")]
+layer = 10
+script = ExtResource("39_j6dl8")

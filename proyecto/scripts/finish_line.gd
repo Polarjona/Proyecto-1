@@ -27,11 +27,11 @@ func _process(delta: float) -> void:
 	_time += delta
 	var pulse := 0.85 + sin(_time * 2.0) * 0.15
 	if glow != null:
-		glow.light_energy = 1.9 * pulse
+		glow.light_energy = 1.2 * pulse
 	if spot_left != null:
-		spot_left.light_energy = 5.0 * pulse
+		spot_left.light_energy = 2.2 * pulse
 	if spot_right != null:
-		spot_right.light_energy = 5.0 * pulse
+		spot_right.light_energy = 2.2 * pulse
 
 
 func _on_body_entered(body: Node3D) -> void:

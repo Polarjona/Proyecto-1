@@ -5,6 +5,8 @@ extends SceneTree
 func _initialize() -> void:
 	var scenes := [
 		"res://scenes/main.tscn",
+		"res://scenes/levels/spin_go_round.tscn",
+		"res://scenes/levels/pivot_panic.tscn",
 		"res://scenes/menu/main_menu.tscn",
 		"res://scenes/menu/pause_menu.tscn",
 		"res://scenes/player/player.tscn",

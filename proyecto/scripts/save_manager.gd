@@ -14,7 +14,7 @@ const LEGACY_BEST_PATH := "user://best_time.save"
 ## Carpetas de datos que usaba el juego antes de llamarse Tumble Rush.
 ## Se prueban en orden: primero el nombre inmediatamente anterior.
 const LEGACY_APP_DIRS := ["Trompicón", "Stumble Guys"]
-const PROFILE_VERSION := 1
+const PROFILE_VERSION := 2
 
 const MEDAL_GOLD := 70.0
 const MEDAL_SILVER := 95.0
@@ -111,6 +111,8 @@ func _default_data() -> Dictionary:
 		"best_time": 0.0,
 		"has_best": false,
 		"best_splits": [],
+		"best_times": {},
+		"best_splits_by_level": {},
 		"races": 0,
 		"finishes": 0,
 		"falls": 0,
@@ -161,6 +163,21 @@ func _repair_types() -> void:
 	data["version"] = PROFILE_VERSION
 	if not data.get("best_splits") is Array:
 		data["best_splits"] = []
+	if not data.get("best_times") is Dictionary:
+		data["best_times"] = {}
+	if not data.get("best_splits_by_level") is Dictionary:
+		data["best_splits_by_level"] = {}
+	var best_times: Dictionary = data["best_times"]
+	var splits_by_level: Dictionary = data["best_splits_by_level"]
+	for key: Variant in best_times.keys():
+		best_times[key] = float(best_times[key])
+	# Perfiles anteriores a los tres circuitos: el record global pasa a ser el
+	# del circuito original, sin perderlo.
+	if bool(data.get("has_best", false)) and not best_times.has("pivot_push"):
+		best_times["pivot_push"] = float(data.get("best_time", 0.0))
+		splits_by_level["pivot_push"] = data.get("best_splits", []).duplicate()
+	data["best_times"] = best_times
+	data["best_splits_by_level"] = splits_by_level
 	if not data.get("medals") is Dictionary:
 		data["medals"] = {"gold": 0, "silver": 0, "bronze": 0}
 	if not data.get("settings") is Dictionary:
@@ -239,31 +256,49 @@ func _apply_bus_volume(bus_name: String, linear: float) -> void:
 
 # --- Progreso --------------------------------------------------------------
 
-func best_time() -> float:
-	return float(data.get("best_time", 0.0))
+## Record del circuito. Sin argumento devuelve el record "clasico" del menu
+## (que sigue siendo el de Pivot Push, el primer circuito).
+func best_time(level_id: String = "") -> float:
+	if level_id.is_empty():
+		return float(data.get("best_time", 0.0))
+	var best_times: Dictionary = data.get("best_times", {})
+	return float(best_times.get(level_id, 0.0))
 
 
-func has_best() -> bool:
-	return bool(data.get("has_best", false))
+func has_best(level_id: String = "") -> bool:
+	if level_id.is_empty():
+		return bool(data.get("has_best", false))
+	var best_times: Dictionary = data.get("best_times", {})
+	return best_times.has(level_id)
 
 
-func is_better(time: float) -> bool:
-	return not has_best() or time < best_time()
+func is_better(time: float, level_id: String = "") -> bool:
+	return not has_best(level_id) or time < best_time(level_id)
 
 
-func best_splits() -> Array:
-	var splits: Variant = data.get("best_splits", [])
+func best_splits(level_id: String = "") -> Array:
+	if level_id.is_empty():
+		var legacy: Variant = data.get("best_splits", [])
+		return legacy if legacy is Array else []
+	var splits_by_level: Dictionary = data.get("best_splits_by_level", {})
+	var splits: Variant = splits_by_level.get(level_id, [])
 	return splits if splits is Array else []
 
 
 func medal_for(time: float) -> String:
+	return medal_for_values(time, MEDAL_GOLD, MEDAL_SILVER, MEDAL_BRONZE)
+
+
+## Medallas con los tiempos de un circuito concreto (los mapas cortos no
+## pueden usar los 70/95/130 del circuito largo).
+func medal_for_values(time: float, gold: float, silver: float, bronze: float) -> String:
 	if time <= 0.0:
 		return "none"
-	if time <= MEDAL_GOLD:
+	if time <= gold:
 		return "gold"
-	if time <= MEDAL_SILVER:
+	if time <= silver:
 		return "silver"
-	if time <= MEDAL_BRONZE:
+	if time <= bronze:
 		return "bronze"
 	return "none"
 
@@ -302,7 +337,7 @@ func register_fall() -> void:
 
 ## Monedas de una carrera: tiempo (cuanto mejor que el bronce, más), medalla
 ## y puesto en la clasificación (0 = sin bots, no paga puesto).
-func coin_reward(time: float, medal: String, position: int = 0) -> Dictionary:
+func coin_reward(time: float, medal: String, position: int = 0, bronze_time: float = MEDAL_BRONZE) -> Dictionary:
 	var medal_coins := 0
 	match medal:
 		"gold":
@@ -313,7 +348,7 @@ func coin_reward(time: float, medal: String, position: int = 0) -> Dictionary:
 			medal_coins = COIN_MEDAL_BRONZE
 	var time_coins := 0
 	if time > 0.0:
-		time_coins = clampi(int(floor((MEDAL_BRONZE - time) / COIN_TIME_STEP)), 0, COIN_TIME_CAP)
+		time_coins = clampi(int(floor((bronze_time - time) / COIN_TIME_STEP)), 0, COIN_TIME_CAP)
 	var place_coins := 0
 	if position > 0:
 		place_coins = int(COIN_PLACE.get(position, COIN_PLACE_OTHER))
@@ -328,33 +363,54 @@ func coin_reward(time: float, medal: String, position: int = 0) -> Dictionary:
 
 
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
-func register_finish(time: float, falls: int, splits: Array, position: int = 0) -> Dictionary:
+## `level_id` separa los records de los tres circuitos; los tiempos de medalla
+## y la moneda por tiempo se calculan con los del nivel.
+func register_finish(time: float, falls: int, splits: Array, position: int = 0,
+		level_id: String = "", gold: float = MEDAL_GOLD,
+		silver: float = MEDAL_SILVER, bronze: float = MEDAL_BRONZE) -> Dictionary:
+	var medal := medal_for_values(time, gold, silver, bronze)
 	var info := {
 		"time": time,
 		"new_best": false,
-		"medal": medal_for(time),
+		"medal": medal,
 		"coins": 0,
 		"coins_breakdown": {},
 	}
-	if is_better(time):
-		data["best_time"] = time
-		data["has_best"] = true
-		data["best_splits"] = splits.duplicate()
-		info["new_best"] = true
+	if level_id.is_empty():
+		if is_better(time):
+			data["best_time"] = time
+			data["has_best"] = true
+			data["best_splits"] = splits.duplicate()
+			info["new_best"] = true
+	else:
+		var best_times: Dictionary = data.get("best_times", {})
+		var splits_by_level: Dictionary = data.get("best_splits_by_level", {})
+		var previous := float(best_times.get(level_id, 0.0))
+		if not best_times.has(level_id) or time < previous:
+			best_times[level_id] = time
+			splits_by_level[level_id] = splits.duplicate()
+			info["new_best"] = true
+		data["best_times"] = best_times
+		data["best_splits_by_level"] = splits_by_level
+		# El circuito original mantiene tambien el record clasico del menu.
+		if level_id == "pivot_push" and is_better(time):
+			data["best_time"] = time
+			data["has_best"] = true
+			data["best_splits"] = splits.duplicate()
 
 	var medals: Dictionary = data.get("medals", {})
-	var medal := String(info["medal"])
 	if medal != "none":
 		medals[medal] = int(medals.get(medal, 0)) + 1
 		if int(medals[medal]) == 1:
 			medal_unlocked.emit(medal)
 	data["medals"] = medals
 
-	var reward := coin_reward(time, medal, position)
+	var reward := coin_reward(time, medal, position, bronze)
 	data["coins"] = int(data.get("coins", 0)) + int(reward["total"])
 	info["coins"] = int(reward["total"])
 	info["coins_breakdown"] = reward
 	info["position"] = position
+	info["best"] = best_time(level_id)
 	data["finishes"] = int(data.get("finishes", 0)) + 1
 	if falls == 0:
 		data["stats"]["best_falls"] = int(data.get("stats", {}).get("best_falls", 0)) + 1

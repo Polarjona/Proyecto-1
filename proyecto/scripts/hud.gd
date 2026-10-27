@@ -32,6 +32,9 @@ const FINISH_Z := -205.0
 var _manager: Node
 var _director: Node
 var _player: Node3D
+var _level_info: LevelInfo
+var _start_z: float = START_Z
+var _finish_z: float = FINISH_Z
 var _results_shown: bool = false
 var _qualified: bool = true
 var _headless: bool = false
@@ -57,6 +60,11 @@ func _ready() -> void:
 	_manager = get_tree().get_first_node_in_group("race_manager")
 	_director = get_tree().get_first_node_in_group("race_director")
 	_player = get_tree().get_first_node_in_group("player") as Node3D
+	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
+	if _level_info != null:
+		_start_z = _level_info.start_z
+		_finish_z = _level_info.finish_z
+		medal_label.text = "Oro ≤ %.1f s" % _level_info.gold_time
 	_connect_manager()
 	_connect_director()
 	if not _headless and not SaveManager.has_seen_tutorial():
@@ -68,7 +76,8 @@ func _process(_delta: float) -> void:
 		_player = get_tree().get_first_node_in_group("player") as Node3D
 		if _player == null:
 			return
-	var progress := clampf((START_Z - _player.global_position.z) / (START_Z - FINISH_Z), 0.0, 1.0)
+	var span := maxf(_start_z - _finish_z, 0.01)
+	var progress := clampf((_start_z - _player.global_position.z) / span, 0.0, 1.0)
 	progress_bar.value = progress * 100.0
 	_update_dive()
 
@@ -192,16 +201,24 @@ func _on_countdown_tick(value: int) -> void:
 
 
 func _on_rank_updated(rank: int, total: int) -> void:
-	rank_label.text = "Puesto %d/%d" % [rank, total]
+	if GameSession.is_tournament():
+		rank_label.text = "Ronda %d/%d · Puesto %d/%d" % [
+			GameSession.round, GameSession.total_rounds(), rank, total]
+	else:
+		rank_label.text = "Puesto %d/%d" % [rank, total]
 
 
 func _on_qualification_result(qualified: bool, rank: int, qualifiers: int) -> void:
 	_qualified = qualified
-	if _director and "total_racers" in _director:
-		_on_rank_updated(rank, int(_director.total_racers))
-	rank_label.text = "Puesto %d/%d  ·  %s" % [rank, int(_director.total_racers if _director else 0), "CLASIFICADO" if qualified else "ELIMINADO"]
+	var total := int(_director.total_racers if _director else 0)
+	if GameSession.is_tournament():
+		rank_label.text = "Ronda %d/%d · Puesto %d/%d  ·  %s" % [
+			GameSession.round, GameSession.total_rounds(), rank, total,
+			"CLASIFICADO" if qualified else "ELIMINADO"]
+	else:
+		rank_label.text = "Puesto %d/%d  ·  %s" % [rank, total, "CLASIFICADO" if qualified else "ELIMINADO"]
 	if results_rank:
-		results_rank.text = "Puesto %d de %d · clasifican %d" % [rank, int(_director.total_racers if _director else 0), qualifiers]
+		results_rank.text = "Puesto %d de %d · clasifican %d" % [rank, total, qualifiers]
 
 
 func _on_results_ready(data: Dictionary) -> void:
@@ -232,19 +249,32 @@ func _on_results_ready(data: Dictionary) -> void:
 		results_coin_breakdown.visible = not results_coin_breakdown.text.is_empty()
 
 	var is_bot_race := GameSession.is_bot_race()
+	var final_round := bool(data.get("final_round", false))
+	var round_number := int(data.get("round", GameSession.round))
+	var total_rounds := int(data.get("total_rounds", GameSession.total_rounds()))
 	if is_bot_race:
 		var rank := 0
 		var total := 0
 		if _director:
 			rank = int(_director.get("player_rank"))
 			total = int(_director.get("total_racers"))
-		results_title.text = "¡META!" if _qualified else "¡ELIMINADO!"
-		results_title.modulate = Color(1, 0.92, 0.4) if _qualified else Color(1, 0.45, 0.45)
-		if rank > 0 and total > 0:
-			results_rank.text = "Puesto %d de %d · %s" % [rank, total, "CLASIFICADO" if _qualified else "ELIMINADO"]
+		if final_round and _qualified:
+			results_title.text = "¡CAMPEÓN!"
+			results_title.modulate = Color(1, 0.9, 0.3)
+		elif _qualified:
+			results_title.text = "¡META!"
+			results_title.modulate = Color(1, 0.92, 0.4)
 		else:
-			results_rank.text = "Clasificado" if _qualified else "Eliminado"
-		next_round_button.visible = GameSession.is_tournament() and _qualified
+			results_title.text = "¡ELIMINADO!"
+			results_title.modulate = Color(1, 0.45, 0.45)
+		var state := "CLASIFICADO" if _qualified else "ELIMINADO"
+		if final_round and _qualified:
+			state = "CAMPEÓN DEL TORNEO"
+		if rank > 0 and total > 0:
+			results_rank.text = "Ronda %d/%d · Puesto %d de %d · %s" % [round_number, total_rounds, rank, total, state]
+		else:
+			results_rank.text = "Ronda %d/%d · %s" % [round_number, total_rounds, state]
+		next_round_button.visible = GameSession.is_tournament() and _qualified and not final_round
 	else:
 		results_title.text = "¡META!"
 		results_title.modulate = Color(1, 0.92, 0.4)
@@ -306,7 +336,7 @@ func _on_next_round_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
 	get_tree().paused = false
 	GameSession.advance_round()
-	TransitionManager.change_scene("res://scenes/main.tscn")
+	TransitionManager.change_scene(GameSession.level_path)
 
 
 func _on_menu_pressed() -> void:
