@@ -6,7 +6,7 @@ La iteración 3 convierte la primera versión en un juego con sensación moderna
 
 La iteración 4 añade **cinco personajes seleccionables** (con vista previa 3D y skins aleatorios para los bots), una **flecha estilo FIFA** sobre el jugador, **pasos y saltos con sonido** para todos los corredores, **sonidos de obstáculos** (viento, cañón, balancín, trampolín y martillos), una **canción nueva que solo suena en el menú**, un **arco de meta** nuevo con confeti y un **icono de juego** propio.
 
-La iteración 5 ordena la experiencia: el menú se queda con **dos modos** (carrera clásica y torneo con bots) y un **submenú Personaje** donde Chispa empieza desbloqueada y los otros cuatro se compran con monedas. Las **monedas se reparten según el tiempo y el puesto**, la vista previa enseña al personaje entero, la meta pasa a ser un **pórtico limpio**, la flecha del jugador deja de estar duplicada, el respawn del pasillo de cintas cae sobre plataforma firme, el balancín desemboca en una **rampa pisable** hacia su landing y la tabla volcada **desliza a los bots igual que al jugador**.
+La iteración 5 ordena la experiencia: el menú se queda con **dos modos** (carrera clásica y torneo con bots) y un **submenú Personaje** donde el corredor de serie empieza desbloqueado y el resto se compra con monedas. Las **monedas se reparten según el tiempo y el puesto**, la vista previa enseña al personaje entero, la meta pasa a ser un **pórtico limpio**, la flecha del jugador deja de estar duplicada, el respawn del pasillo de cintas cae sobre plataforma firme, el balancín desemboca en una **rampa pisable** hacia su landing y la tabla volcada **desliza a los bots igual que al jugador**.
 
 La iteración 6 convierte el menú en un **lobby estilo Fall Guys** con acabado de **pegatina 3D**: fondo de **degradado neón** (magenta → violeta → cian) sin líneas, paneles violeta con **borde blanco grueso** y **sombra sólida** desplazada (sin desenfoque), botones **inclinados** con esquinas asimétricas, tipografía redondeada **Baloo 2 ExtraBold** con contornos y un **JUGAR!** magenta enorme que **se hunde** al pulsarlo. El corredor equipado gira en 3D sobre su peana magenta, y el lobby incluye tarjeta de **temporada con progreso al oro** e insignia de monedas. El juego es **Tumble Rush** (el perfil anterior se migra solo) y al cruzar la meta suena una **canción de victoria** sobre la pantalla de resultados.
 
@@ -43,10 +43,10 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 
 ### Personajes
 
-- **Cinco corredores CC0 de Kenney**: Chispa, Uva, Robot, Tornillo y Jefe, con animaciones de idle, caminar, correr, salto, aterrizaje y caída.
+- **Cinco skins, todas animadas**: Coco, Menta y Nube (Kenney Mini, CC0) y Mochi y Turbo (mascotas de Quaternius, CC0). Todas traen idle, caminar, correr, salto, aterrizaje y caída: no queda ningún cuerpo tieso, sin esqueleto.
 - **Submenú Personaje** con una tarjeta por corredor, **vista previa 3D** girando con el personaje entero en cuadro y el estado de cada uno (elegido, libre o su precio).
-- **Desbloqueos con monedas**: **Chispa** es gratis y los otros cuatro cuestan 100, 200, 300 y 500 monedas; la compra se guarda en el perfil y el personaje equipado se usa en la siguiente carrera. Un personaje bloqueado no se puede equipar.
-- **Bots con personaje aleatorio** entre los cinco, así que cada carrera tiene una panda distinta.
+- **Desbloqueos con monedas**: **Coco** es gratis y los demás cuestan 400, 800, 1200 y 1600 monedas; la compra se guarda en el perfil y el personaje equipado se usa en la siguiente carrera. Un personaje bloqueado no se puede equipar.
+- **Bots con personaje aleatorio** entre todo el catálogo, así que cada carrera tiene una panda distinta.
 - **Flecha dorada única sobre la cabeza del jugador** (gira y flota) para distinguirlo de los bots, como en FIFA.
 
 ### Movimiento y cámara
@@ -89,7 +89,7 @@ Las tres escenas comparten `LevelInfo` (id, ronda, récord, medallas y ruta de b
 - **Shaders propios**: toon de bandas + rim + brillo de globo (`toy.gdshader`) en obstáculos y multitud; suelos con rejilla, vetas y barrido de energía (`platform.gdshader`); mar de nubes animado bajo el circuito (`void_sea.gdshader`).
 - **Postproceso** en tiempo real: viñeta, grano, aberración cromática, *split-toning* frío/cálido, desenfoque radial al correr, líneas de velocidad, dithering, tinte de aturdimiento y flash de impacto.
 - **Cielo procedural** con sol, halo cálido y **dos capas de nubes** a distinta velocidad; niebla volumétrica, SSAO, SSIL, bloom y ajuste de color.
-- **Personajes 3D descargados**: los cinco modelos de **Kenney Blocky Characters 2.0** (CC0) comparten esqueleto y animaciones de nodo de idle, caminar, correr, salto, aterrizaje y caída. El jugador usa el que elige en el menú; los bots reciben uno al azar y todos se escalan a la misma altura. Ver `assets/characters/README.md`.
+- **Personajes 3D descargados**: dos packs libres (Kenney Mini Characters y las mascotas de Quaternius) y todos los cuerpos son GLB con esqueleto. El catálogo renombra los clips de idle, caminar, correr, salto, aterrizaje y caída al vuelo, el jugador usa el que elige en el menú, los bots reciben uno al azar y todos se escalan a la misma altura. Ver `assets/characters/README.md`.
 - **Escenografía procedural** alrededor del circuito: mar de nubes, islas flotantes con cristales y árboles, arcos de neón, torres de luz, montañas lejanas, anillos de estadio, chispas ambientales, bordes luminosos y soportes en cada plataforma.
 - **Multitud** en gradas laterales con `MultiMeshInstance3D`: cuerpos y cabezas pastel con el shader toon, más guirnaldas luminosas en las gradas.
 - **UI pegatina 3D en el lobby y los menús**: degradado neón de fondo (magenta, violeta y cian), paneles violeta con borde blanco de 6 px y sombra sólida de 10 px sin desenfoque, botones amarillos y cian **inclinados** (`skew`) con esquinas asimétricas, y tipografía **Baloo 2 ExtraBold** con contornos oscuros o blancos. El estado pulsado reduce la sombra y baja el texto para que el botón parezca un bloque físico. El HUD de carrera conserva el tema oscuro para no tapar el juego.
@@ -177,5 +177,8 @@ Genera el tema alegre del menú (`menu_theme.wav`, 38 s en bucle) y 16 SFX: salt
 - Personajes 3D: [Kenney Blocky Characters 2.0](https://kenney.nl/assets/blocky-characters) de Kenney, licencia **CC0** (ver `proyecto/assets/characters/blocky/LICENSE_Kenney.txt`).
 - Pelota de playa: [beach ball](https://poly.pizza/m/4IwPTeOmq6c) de **the_ normalgamer**, licencia **CC-BY 3.0** (ver `proyecto/assets/props/README.md`).
 - Referencias de mapa: [Pivot Push](https://sketchfab.com/3d-models/stumble-guys-pivot-push-map-c7abc0bdd0a8490d9f1e9c805e3c05cd) y [Spin Go Round](https://sketchfab.com/3d-models/stumble-guys-spin-go-round-map-71224cc13db44948b91b8bb43c635d5c) de **amogusstrikesback2**, **CC-BY 4.0**; usadas solo como referencia de composición y color, sin redistribuir sus mallas.
+- Personajes 3D:
+  - [Kenney Mini Characters](https://kenney.nl/assets/mini-characters) de Kenney, licencia **CC0** (ver `proyecto/assets/characters/mini/LICENSE_Kenney.txt`).
+  - Mascotas animadas de [Quaternius](https://quaternius.com) vía [Poly Pizza](https://poly.pizza), licencia **CC0** (ver `proyecto/assets/characters/mascots/LICENSE_Quaternius.txt`).
 - Tipografía: [Baloo 2](https://fonts.google.com/specimen/Baloo+2) de Ek Type, licencia **SIL OFL 1.1** (ver `proyecto/ui/fonts/OFL-Baloo2.txt`).
 - IA usada en el desarrollo (ver informe en `documentacion/`).

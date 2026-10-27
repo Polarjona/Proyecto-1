@@ -45,7 +45,15 @@ func _run() -> void:
 	for lane in lanes:
 		distinct_lanes[lane] = true
 	_check(distinct_lanes.size() >= 4, "Los bots eligen carriles distintos (%d)" % distinct_lanes.size())
-	_check(int(bots[0].call("get_waypoint_index")) == 0, "Los bots empiezan en el primer waypoint")
+	# Los bots arrancan en la plataforma de salida, no repartidos por el
+	# circuito. Se mira la zona y no el waypoint exacto: con la escena cargando,
+	# el primer frame de física ya ha dado algún paso cuando el test mira.
+	var at_start := 0
+	for bot in bots:
+		if bot.global_position.z > 0.0:
+			at_start += 1
+	_check(at_start == bots.size(),
+		"Los 7 bots empiezan en la plataforma de salida (%d)" % at_start)
 
 	var start_positions: Array[Vector3] = []
 	for bot in bots:

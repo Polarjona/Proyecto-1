@@ -702,7 +702,7 @@ theme_override_constants/separation = 0
 layout_mode = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 1)
 theme_override_font_sizes/font_size = 19
-text = "Chispa"
+text = "Coco"
 
 [node name="PlayerTagLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
 layout_mode = 2
@@ -1010,132 +1010,138 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body"]
+[node name="RosterScroll" type="ScrollContainer" parent="CharacterPanel/VBox/Body"]
 custom_minimum_size = Vector2(352, 0)
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="RogueRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="RogueButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
-custom_minimum_size = Vector2(0, 54)
+[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll"]
+custom_minimum_size = Vector2(352, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-toggle_mode = true
-button_pressed = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Chispa"
-alignment = 0
+theme_override_constants/separation = 8
 
-[node name="RogueStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.016, 0.478, 0.322, 1)
-theme_override_font_sizes/font_size = 12
-text = "ELEGIDO"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="HoodedRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="CocoRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HoodedButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
+[node name="CocoButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_character")
 theme_override_font_sizes/font_size = 17
-text = "Uva"
+text = "Coco"
 alignment = 0
 
-[node name="HoodedStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
+[node name="CocoStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow"]
 custom_minimum_size = Vector2(104, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
 theme_override_font_sizes/font_size = 12
-text = "100"
+text = "LIBRE"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="KnightRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="MentaRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="KnightButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
+[node name="MentaButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_character")
 theme_override_font_sizes/font_size = 17
-text = "Robot"
+text = "Menta"
 alignment = 0
 
-[node name="KnightStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
+[node name="MentaStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow"]
 custom_minimum_size = Vector2(104, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
 theme_override_font_sizes/font_size = 12
-text = "200"
+text = "400"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="MageRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="NubeRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="MageButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
+[node name="NubeButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_character")
 theme_override_font_sizes/font_size = 17
-text = "Tornillo"
+text = "Nube"
 alignment = 0
 
-[node name="MageStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
+[node name="NubeStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow"]
 custom_minimum_size = Vector2(104, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
 theme_override_font_sizes/font_size = 12
-text = "300"
+text = "800"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="BarbarianRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="MochiRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BarbarianButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
+[node name="MochiButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_character")
 theme_override_font_sizes/font_size = 17
-text = "Jefe"
+text = "Mochi"
 alignment = 0
 
-[node name="BarbarianStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
+[node name="MochiStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow"]
 custom_minimum_size = Vector2(104, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
 theme_override_font_sizes/font_size = 12
-text = "500"
+text = "1200"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="TurboRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TurboButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("ButtonGroup_character")
+theme_override_font_sizes/font_size = 17
+text = "Turbo"
+alignment = 0
+
+[node name="TurboStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow"]
+custom_minimum_size = Vector2(104, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
+theme_override_font_sizes/font_size = 12
+text = "1600"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
 theme_override_font_sizes/font_size = 12
@@ -1205,7 +1211,7 @@ omni_range = 6.0
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
 theme_override_font_sizes/font_size = 23
-text = "Chispa"
+text = "Coco"
 horizontal_alignment = 1
 
 [node name="PriceLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]

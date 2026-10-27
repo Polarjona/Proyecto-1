@@ -36,18 +36,18 @@ extends Control
 @onready var price_label: Label = $CharacterPanel/VBox/Body/PreviewBox/PriceLabel
 @onready var buy_button: Button = $CharacterPanel/VBox/Body/PreviewBox/BuyButton
 @onready var character_buttons: Array[Button] = [
-	$CharacterPanel/VBox/Body/Roster/RogueRow/RogueButton,
-	$CharacterPanel/VBox/Body/Roster/HoodedRow/HoodedButton,
-	$CharacterPanel/VBox/Body/Roster/KnightRow/KnightButton,
-	$CharacterPanel/VBox/Body/Roster/MageRow/MageButton,
-	$CharacterPanel/VBox/Body/Roster/BarbarianRow/BarbarianButton,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow/CocoButton,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow/MentaButton,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow/NubeButton,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow/MochiButton,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow/TurboButton,
 ]
 @onready var character_status: Array[Label] = [
-	$CharacterPanel/VBox/Body/Roster/RogueRow/RogueStatus,
-	$CharacterPanel/VBox/Body/Roster/HoodedRow/HoodedStatus,
-	$CharacterPanel/VBox/Body/Roster/KnightRow/KnightStatus,
-	$CharacterPanel/VBox/Body/Roster/MageRow/MageStatus,
-	$CharacterPanel/VBox/Body/Roster/BarbarianRow/BarbarianStatus,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow/CocoStatus,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow/MentaStatus,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow/NubeStatus,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow/MochiStatus,
+	$CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow/TurboStatus,
 ]
 
 ## Personaje que se está mirando en el panel (puede seguir bloqueado).

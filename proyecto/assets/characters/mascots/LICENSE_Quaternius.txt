@@ -1,0 +1,11 @@
+Mascot characters (bunny.glb, robot.glb)
+
+- Author: Quaternius — https://quaternius.com
+- License: CC0 / Public Domain (as published on Poly Pizza).
+- Source: https://poly.pizza/m/kKtL4zvS3n (Animated Platformer Character)
+          https://poly.pizza/m/QCm7qe9uNJ (Animated Robot)
+- The files are the original GLB exports, unmodified.
+
+Quaternius releases his 3D packs as CC0, so they can be used, modified and
+redistributed in this project. Crediting him is not required, but it is done
+anyway in the repository README.

@@ -4,6 +4,11 @@ extends SceneTree
 ## jugador, bots con skins aleatorios, audio nuevo, música solo en el menú y
 ## el arco de meta nuevo. Todo headless.
 
+## Fila del roster del personaje gratis con el que arranca un perfil nuevo y
+## carpeta de la que sale su modelo.
+const STARTER_ROW := "Coco"
+const STARTER_DIR := "res://assets/characters/mini/"
+
 var _failures := 0
 var _audio: Node
 var _save: Node
@@ -62,7 +67,7 @@ func _run() -> void:
 	current_scene = menu
 	await process_frame
 	await process_frame
-	_check(menu.get_node_or_null("CharacterPanel/VBox/Body/Roster/RogueRow/RogueButton") != null,
+	_check(menu.get_node_or_null("CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [STARTER_ROW, STARTER_ROW]) != null,
 		"El submenú de personaje incluye el selector")
 	_check(menu.get_node_or_null(
 		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage") != null,
@@ -73,11 +78,12 @@ func _run() -> void:
 		and (music_stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_FORWARD,
 		"El tema del menú está en bucle")
 
-	var rogue_button: Button = menu.get_node(
-		"CharacterPanel/VBox/Body/Roster/RogueRow/RogueButton")
-	rogue_button.pressed.emit()
+	var starter_button: Button = menu.get_node(
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [STARTER_ROW, STARTER_ROW])
+	starter_button.pressed.emit()
 	await process_frame
-	_check(String(_save.call("character_id")) == "rogue", "Elegir personaje se guarda en el perfil")
+	_check(String(_save.call("character_id")) == CharacterCatalog.default_id(),
+		"Elegir personaje se guarda en el perfil")
 	var stage: Node3D = menu.get_node(
 		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage")
 	var preview_model: Node3D = stage.get_node_or_null("PreviewModel")
@@ -98,11 +104,11 @@ func _run() -> void:
 	var player: CharacterBody3D = get_first_node_in_group("player")
 	_check(player != null, "Jugador presente en la carrera")
 	if player != null:
-		_check(String(player.get("character_id")) == "rogue",
+		_check(String(player.get("character_id")) == CharacterCatalog.default_id(),
 			"El jugador usa el personaje elegido (%s)" % String(player.get("character_id")))
 		var model: Node3D = player.get_node_or_null("MeshInstance3D/Model")
 		_check(model != null
-			and String(CharacterCatalog.by_id("rogue")["scene"]).begins_with("res://assets/characters/blocky/")
+			and String(CharacterCatalog.by_id(CharacterCatalog.default_id())["scene"]).begins_with(STARTER_DIR)
 			and model.find_child("AnimationPlayer", true, false) != null,
 			"El modelo cargado es el del personaje elegido")
 		_check(player.get_node_or_null("MeshInstance3D/Model/AnimationPlayer") != null,
