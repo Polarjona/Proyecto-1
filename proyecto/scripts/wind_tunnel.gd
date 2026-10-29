@@ -54,7 +54,11 @@ func _physics_process(delta: float) -> void:
 	for body in _bodies:
 		if not is_instance_valid(body):
 			continue
-		if body.has_method("add_external_velocity"):
+		# Los bots tienen su propio canal para poder inclinarse hacia el viento;
+		# el jugador y cualquier otro cuerpo lo reciben entero.
+		if body.has_method("add_wind_velocity"):
+			body.call("add_wind_velocity", push)
+		elif body.has_method("add_external_velocity"):
 			body.add_external_velocity(push)
 		elif body is CharacterBody3D:
 			(body as CharacterBody3D).velocity += push

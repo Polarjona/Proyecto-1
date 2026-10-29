@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://m8h3qvxjkxmy"]
+[gd_scene load_steps=30 format=3 uid="uid://m8h3qvxjkxmy"]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
@@ -350,8 +350,6 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 12
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_character"]
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_cushion"]
 top_radius = 1.02
 bottom_radius = 1.1
@@ -379,6 +377,8 @@ roughness = 0.4
 emission_enabled = true
 emission = Color(0, 0.7, 1, 1)
 emission_energy_multiplier = 0.5
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_levels"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -702,7 +702,7 @@ theme_override_constants/separation = 0
 layout_mode = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 1)
 theme_override_font_sizes/font_size = 19
-text = "Coco"
+text = "Chef"
 
 [node name="PlayerTagLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
 layout_mode = 2
@@ -784,9 +784,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = -226.0
+offset_top = -262.0
 offset_right = 340.0
-offset_bottom = 226.0
+offset_bottom = 262.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -863,7 +863,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Todo el circuito contra el cronómetro. Persigue tu récord y las medallas."
+text = "Los tres circuitos, contra el cronómetro. Persigue tu récord y las medallas."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/ClassicCard"]
@@ -882,6 +882,51 @@ theme_override_font_sizes/font_size = 15
 text = "SOLO"
 horizontal_alignment = 2
 vertical_alignment = 1
+
+[node name="LevelPicker" type="VBoxContainer" parent="ModePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LevelLabel" type="Label" parent="ModePanel/VBox/LevelPicker"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_font_sizes/font_size = 13
+text = "CIRCUITO DE LA CARRERA CLÁSICA"
+
+[node name="LevelRow" type="HBoxContainer" parent="ModePanel/VBox/LevelPicker"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Level1" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+button_pressed = true
+theme_override_font_sizes/font_size = 15
+text = "Pivot Push"
+
+[node name="Level2" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Spin Go Round"
+
+[node name="Level3" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Pivot Panic"
 
 [node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
@@ -948,7 +993,7 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 12
-text = "Cada modo guarda tu récord y reparte monedas según tiempo y puesto."
+text = "El torneo recorre los tres circuitos en orden. Cada modo guarda su récord y reparte monedas."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -1021,121 +1066,6 @@ custom_minimum_size = Vector2(352, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
-
-[node name="CocoRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="CocoButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Coco"
-alignment = 0
-
-[node name="CocoStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "LIBRE"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="MentaRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="MentaButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Menta"
-alignment = 0
-
-[node name="MentaStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "400"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="NubeRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="NubeButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Nube"
-alignment = 0
-
-[node name="NubeStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "800"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="MochiRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="MochiButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Mochi"
-alignment = 0
-
-[node name="MochiStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "1200"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="TurboRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="TurboButton" type="Button" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Turbo"
-alignment = 0
-
-[node name="TurboStatus" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "1600"
-horizontal_alignment = 2
-vertical_alignment = 1
 
 [node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
@@ -1211,7 +1141,7 @@ omni_range = 6.0
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
 theme_override_font_sizes/font_size = 23
-text = "Coco"
+text = "Chef"
 horizontal_alignment = 1
 
 [node name="PriceLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
@@ -1268,11 +1198,6 @@ text = "Moverte:  W A S D  o  flechas"
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Saltar:  Espacio  (mantén para saltar más alto)"
-
-[node name="DiveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "Dive:  Shift  (lanzamiento corto y deslizamiento)"
 
 [node name="PauseLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2

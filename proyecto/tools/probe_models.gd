@@ -4,11 +4,8 @@ extends SceneTree
 ## renombrarlos antes de meterlos en el catálogo.
 
 const PATHS := [
-	"res://assets/characters/mini/character-female-b.glb",
-	"res://assets/characters/mini/character-female-d.glb",
-	"res://assets/characters/mini/character-male-f.glb",
-	"res://assets/characters/mascots/bunny.glb",
-	"res://assets/characters/mascots/robot.glb",
+	"res://assets/characters/ultimate/chef_male.glb",
+	"res://assets/characters/ultimate/chef_female.glb",
 ]
 
 

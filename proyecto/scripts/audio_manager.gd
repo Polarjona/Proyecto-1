@@ -21,7 +21,6 @@ const SFX_PATHS := {
 	"checkpoint": "res://audio/sfx/checkpoint.wav",
 	"finish": "res://audio/sfx/finish.wav",
 	"fall": "res://audio/sfx/fall.wav",
-	"dive": "res://audio/sfx/dive.wav",
 	"land": "res://audio/sfx/land.wav",
 	"impact": "res://audio/sfx/impact.wav",
 	"coin": "res://audio/sfx/coin.wav",

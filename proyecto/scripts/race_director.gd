@@ -66,8 +66,12 @@ func _spawn_bots() -> void:
 				bot.set("waypoints", _level_info.waypoints)
 				bot.set("lane_widths", _level_info.lane_widths)
 		add_child(bot)
-		var x := -4.0 + fmod(float(i) * 2.2, 8.0)
-		var z := 1.4 + float(i % 3) * 1.1
+		# Parrilla de salida ancha: cuatro columnas de 3 m y filas cada 2,2 m.
+		# Con ocho corredores la piña del pistoletazo ya no se ve apelmazada.
+		var column := i % 4
+		var row := floori(float(i) / 4.0)
+		var x := -4.5 + float(column) * 3.0
+		var z := 0.8 + float(row) * 2.2
 		bot.global_position = Vector3(x, 1.0, z)
 		if bot.has_signal("finished"):
 			bot.connect("finished", Callable(self, "_on_bot_finished"))

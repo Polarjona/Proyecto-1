@@ -11,7 +11,6 @@ const FINISH_Z := -205.0
 @onready var checkpoints_label: Label = $Root/CheckpointsLabel
 @onready var best_time_label: Label = $Root/BestTimeLabel
 @onready var medal_label: Label = $Root/MedalLabel
-@onready var dive_label: Label = $Root/DiveLabel
 @onready var rank_label: Label = $Root/RankLabel
 @onready var progress_bar: ProgressBar = $Root/ProgressBar
 @onready var countdown_label: Label = $Root/CountdownLabel
@@ -79,20 +78,6 @@ func _process(_delta: float) -> void:
 	var span := maxf(_start_z - _finish_z, 0.01)
 	var progress := clampf((_start_z - _player.global_position.z) / span, 0.0, 1.0)
 	progress_bar.value = progress * 100.0
-	_update_dive()
-
-
-## Shows the dive cooldown so the player knows when the slide is ready again.
-func _update_dive() -> void:
-	if not _player.has_method("dive_cooldown_remaining"):
-		return
-	var remaining := float(_player.call("dive_cooldown_remaining"))
-	if remaining > 0.05:
-		dive_label.text = "Deslizar en %.1f s" % remaining
-		dive_label.modulate = Color(1.0, 1.0, 1.0, 0.5)
-	else:
-		dive_label.text = "Deslizar listo"
-		dive_label.modulate = Color(0.7, 1.0, 0.75, 0.95)
 
 
 func _connect_manager() -> void:

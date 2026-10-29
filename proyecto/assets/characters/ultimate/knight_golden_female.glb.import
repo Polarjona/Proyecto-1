@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dwaweuyjalkqa"
-path="res://.godot/imported/character-male-f.glb-72a3bb8e217f597b9beb4aaeb94bd5de.scn"
+uid="uid://ds7jp66ur50pq"
+path="res://.godot/imported/knight_golden_female.glb-063b6cadb2f2487772276d17712a0302.scn"
 
 [deps]
 
-source_file="res://assets/characters/mini/character-male-f.glb"
-dest_files=["res://.godot/imported/character-male-f.glb-72a3bb8e217f597b9beb4aaeb94bd5de.scn"]
+source_file="res://assets/characters/ultimate/knight_golden_female.glb"
+dest_files=["res://.godot/imported/knight_golden_female.glb-063b6cadb2f2487772276d17712a0302.scn"]
 
 [params]
 

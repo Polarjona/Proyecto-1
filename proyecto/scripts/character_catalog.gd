@@ -5,55 +5,118 @@ extends RefCounted
 ## que añadir un modelo nuevo es una sola entrada aquí.
 ##
 ## Todos los cuerpos son GLB **animados** (con esqueleto y clips) y con licencia
-## libre: *Kenney Mini Characters* (CC0) y las mascotas de Quaternius (CC0).
-## `build_model` escala cada cuerpo a su altura objetivo y renombra los clips
-## que esperan jugador y bots.
+## libre: *Ultimate Animated Character Pack* de Quaternius (CC0).
+## `build_model` escala cada cuerpo a su altura objetivo (`CHARACTER_HEIGHT`) y
+## renombra los clips que esperan jugador y bots.
 ##
-## `price` es lo que cuesta desbloquearlo en el menú Personaje. Coco es gratis:
-## todo el mundo empieza jugando con él.
+## Cada personaje trae **dos cuerpos** (masculino y femenino) que cuentan como
+## uno solo: se desbloquea una vez, se elige una vez y ocupa una fila del menú.
+## El jugador corre siempre con el mismo cuerpo durante la sesión
+## (`session_variant`) y los bots se reparten entre los dos, así que la parrilla
+## de salida enseña las dos versiones del mismo personaje.
+##
+## `price` es lo que cuesta desbloquearlo en el menú Personaje. El primero es
+## gratis: todo el mundo empieza jugando con él.
+##
+## Los corredores son compactos (~1,25 m, escala de juguete) para que las
+## plataformas de los circuitos parezcan grandes y se lean bien de un vistazo.
+## Al cambiar `CHARACTER_HEIGHT` hay que ajustar en la misma proporción la
+## cápsula del jugador y de los bots (`player.tscn`, `bot_racer.tscn`) y la
+## cámara (valores por defecto de `player.gd`).
+
+## Altura, en metros, a la que se escala cualquier cuerpo del catálogo.
+const CHARACTER_HEIGHT := 1.25
+
+## Acabado de plástico de juguete compartido por todos los cuerpos. El shader
+## toma el color plano de cada superficie y le añade brillo y borde cartoon,
+## para que los personajes casen con los circuitos.
+const CHARACTER_SHADER := preload("res://shaders/character.gdshader")
+
+## Carpeta de los cuerpos del pack.
+const MODEL_DIR := "res://assets/characters/ultimate/"
 
 const CHARACTERS := [
 	{
-		"id": "coco",
-		"name": "Coco",
-		"scene": "res://assets/characters/mini/character-male-f.glb",
-		"target_height": 1.7,
-		"color": Color(0.96, 0.6, 0.36),
+		"id": "chef",
+		"name": "Chef",
+		"variants": [MODEL_DIR + "chef_male.glb", MODEL_DIR + "chef_female.glb"],
+		"color": Color(0.98, 0.93, 0.88),
 		"price": 0,
 	},
 	{
-		"id": "menta",
-		"name": "Menta",
-		"scene": "res://assets/characters/mini/character-female-d.glb",
-		"target_height": 1.7,
-		"color": Color(0.46, 0.9, 0.74),
+		"id": "worker",
+		"name": "Obrero",
+		"variants": [MODEL_DIR + "worker_male.glb", MODEL_DIR + "worker_female.glb"],
+		"color": Color(1.0, 0.78, 0.36),
+		"price": 200,
+	},
+	{
+		"id": "cowboy",
+		"name": "Cowboy",
+		"variants": [MODEL_DIR + "cowboy_male.glb", MODEL_DIR + "cowboy_female.glb"],
+		"color": Color(0.93, 0.66, 0.42),
+		"price": 300,
+	},
+	{
+		"id": "ninja",
+		"name": "Ninja",
+		"variants": [MODEL_DIR + "ninja_male.glb", MODEL_DIR + "ninja_female.glb"],
+		"color": Color(0.55, 0.62, 0.72),
 		"price": 400,
 	},
 	{
-		"id": "nube",
-		"name": "Nube",
-		"scene": "res://assets/characters/mini/character-female-b.glb",
-		"target_height": 1.7,
-		"color": Color(0.62, 0.76, 1.0),
+		"id": "pirate",
+		"name": "Pirata",
+		"variants": [MODEL_DIR + "pirate_male.glb", MODEL_DIR + "pirate_female.glb"],
+		"color": Color(0.86, 0.32, 0.32),
+		"price": 500,
+	},
+	{
+		"id": "vikingo",
+		"name": "Vikingo",
+		"variants": [MODEL_DIR + "viking_male.glb", MODEL_DIR + "viking_female.glb"],
+		"color": Color(0.62, 0.78, 1.0),
+		"price": 600,
+	},
+	{
+		"id": "kimono",
+		"name": "Kimono",
+		"variants": [MODEL_DIR + "kimono_male.glb", MODEL_DIR + "kimono_female.glb"],
+		"color": Color(0.96, 0.55, 0.78),
+		"price": 700,
+	},
+	{
+		"id": "soldado",
+		"name": "Soldado",
+		"variants": [MODEL_DIR + "soldier_male.glb", MODEL_DIR + "soldier_female.glb"],
+		"color": Color(0.58, 0.74, 0.45),
 		"price": 800,
 	},
 	{
-		"id": "mochi",
-		"name": "Mochi",
-		"scene": "res://assets/characters/mascots/bunny.glb",
-		"target_height": 1.7,
-		"color": Color(0.4, 0.72, 1.0),
-		"price": 1200,
+		"id": "ejecutivo",
+		"name": "Ejecutivo",
+		"variants": [MODEL_DIR + "suit_male.glb", MODEL_DIR + "suit_female.glb"],
+		"color": Color(0.72, 0.74, 0.86),
+		"price": 900,
 	},
 	{
-		"id": "turbo",
-		"name": "Turbo",
-		"scene": "res://assets/characters/mascots/robot.glb",
-		"target_height": 1.7,
-		"color": Color(1.0, 0.82, 0.32),
-		"price": 1600,
+		"id": "caballero",
+		"name": "Caballero",
+		"variants": [MODEL_DIR + "knight_golden_male.glb", MODEL_DIR + "knight_golden_female.glb"],
+		"color": Color(1.0, 0.84, 0.35),
+		"price": 1000,
 	},
 ]
+
+## Cuerpo que se le ha asignado al jugador en esta sesión, por personaje. El
+## índice se sortea la primera vez que se pide y se queda fijo hasta cerrar el
+## juego: el cuerpo del corredor no cambia a mitad de carrera.
+static var _session_variants: Dictionary = {}
+
+## Generador propio para elegir cuerpo. Va aparte del global (`randi()`) para no
+## mover la secuencia aleatoria de los bots, que está calibrada con una semilla
+## fija en las pruebas.
+static var _variant_rng: RandomNumberGenerator = null
 
 static func default_id() -> String:
 	return String(CHARACTERS[0]["id"])
@@ -112,26 +175,44 @@ static func free_ids() -> Array[String]:
 	return result
 
 
-## Clips que esperan el jugador y los bots, con los nombres que usan los
-## distintos packs. El primero que exista en el modelo gana; la búsqueda
-## también acepta el último tramo del nombre ("CharacterArmature|Run").
-const CLIP_ALIASES := {
-	"Idle": ["Idle", "idle"],
-	"Walking_A": ["Walking_A", "walk", "Walk", "Walking"],
-	"Running_A": ["Running_A", "sprint", "Sprint", "Run", "Running"],
-	"Jump_Idle": ["Jump_Idle", "jump", "Jump", "idle"],
-	"Jump_Land": ["Jump_Land", "fall", "Fall", "idle"],
-	"Lie_Idle": ["Lie_Idle", "sit", "Sit", "Sitting", "Duck"],
-	"Hit_A": ["Hit_A", "emote-no", "No", "HitReact"],
-	"Cheer": ["Cheer", "emote-yes", "Yes", "Dance", "ThumbsUp"],
-}
+## Rutas de los cuerpos del personaje (masculino y femenino).
+static func variant_paths(id: String) -> Array:
+	var paths: Array = by_id(id).get("variants", [])
+	if paths.is_empty():
+		var single := String(by_id(id).get("scene", ""))
+		if not single.is_empty():
+			paths = [single]
+	return paths
 
 
-## Instancia el modelo pedido y lo escala a su altura objetivo. Devuelve
-## null si el .glb no está importado (el juego sigue funcionando sin personaje).
-static func build_model(id: String, node_name: String = "Model") -> Node3D:
+static func variant_count(id: String) -> int:
+	return maxi(variant_paths(id).size(), 1)
+
+
+## Cuerpo con el que corre el jugador en esta sesión. Se sortea una sola vez
+## por personaje para que el escaparate del menú y la carrera enseñen el mismo.
+static func session_variant(id: String) -> int:
+	if _session_variants.has(id):
+		return int(_session_variants[id])
+	if _variant_rng == null:
+		_variant_rng = RandomNumberGenerator.new()
+		_variant_rng.randomize()
+	var picked := _variant_rng.randi_range(0, variant_count(id) - 1)
+	_session_variants[id] = picked
+	return picked
+
+
+## Instancia el modelo pedido y lo escala a su altura objetivo. `variant` es el
+## índice del cuerpo (-1 = el del jugador en esta sesión). Devuelve null si el
+## .glb no está importado (el juego sigue funcionando sin personaje).
+static func build_model(id: String, node_name: String = "Model", variant: int = -1) -> Node3D:
 	var entry := by_id(id)
-	var path := String(entry.get("scene", ""))
+	var paths := variant_paths(id)
+	if paths.is_empty():
+		push_warning("CharacterCatalog: '%s' no tiene modelos" % id)
+		return null
+	var index := posmod(session_variant(id) if variant < 0 else variant, paths.size())
+	var path := String(paths[index])
 	if path.is_empty() or not ResourceLoader.exists(path):
 		push_warning("CharacterCatalog: missing model '%s'" % path)
 		return null
@@ -142,7 +223,7 @@ static func build_model(id: String, node_name: String = "Model") -> Node3D:
 	if model == null:
 		return null
 	model.name = node_name
-	var target_height := float(entry.get("target_height", 0.0))
+	var target_height := float(entry.get("target_height", CHARACTER_HEIGHT))
 	if target_height > 0.0:
 		var bounds := _model_bounds(model)
 		var factor := target_height / maxf(bounds.size.y, 0.01)
@@ -151,7 +232,45 @@ static func build_model(id: String, node_name: String = "Model") -> Node3D:
 	else:
 		model.scale = Vector3.ONE * float(entry.get("scale", 0.55))
 	_prepare_animations(model)
+	_apply_plastic_look(model)
+	_add_rig(model)
 	return model
+
+
+## Sustituye el material plano del GLB por el plástico del juego, por instancia
+## (las mallas se comparten entre cuerpos, así que no se toca el recurso).
+static func _apply_plastic_look(model: Node3D) -> void:
+	for node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := node as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		for surface in mesh_instance.mesh.get_surface_count():
+			var source := mesh_instance.mesh.surface_get_material(surface)
+			var color := Color.WHITE
+			if source is BaseMaterial3D:
+				color = (source as BaseMaterial3D).albedo_color
+			elif source is ShaderMaterial:
+				continue
+			var material := ShaderMaterial.new()
+			material.shader = CHARACTER_SHADER
+			material.set_shader_parameter("albedo_color", color)
+			mesh_instance.set_surface_override_material(surface, material)
+
+
+## Capa de animación procedural (carrera inclinada, salto recogido, aterrizaje).
+static func _add_rig(model: Node3D) -> void:
+	for node in model.find_children("*", "Skeleton3D", true, false):
+		var rig := CharacterRig.new()
+		rig.name = "Rig"
+		(node as Skeleton3D).add_child(rig)
+		return
+
+
+## Rig del modelo (o null si el cuerpo no trae esqueleto).
+static func rig_of(model: Node3D) -> CharacterRig:
+	if model == null:
+		return null
+	return model.find_child("Rig", true, false) as CharacterRig
 
 
 ## AABB del modelo en su espacio local (sin depender de estar en el árbol).
@@ -170,6 +289,25 @@ static func _model_bounds(node: Node3D, base: Transform3D = Transform3D.IDENTITY
 				box = child_box if first else box.merge(child_box)
 				first = false
 	return box
+
+
+## Clips que esperan el jugador y los bots, con los nombres que usa el pack. El
+## primero que exista en el modelo gana; la búsqueda también acepta el último
+## tramo del nombre ("CharacterArmature|Walk").
+##
+## El pack no trae clip de carrera ni de salto: la carrera reutiliza el andar
+## acelerado y el aire congela una zancada de la carrera. El rig procedural
+## (`character_rig.gd`) añade la inclinación de esprint y la pose de salto.
+const CLIP_ALIASES := {
+	"Idle": ["Idle"],
+	"Walking_A": ["Walk", "Walking"],
+	"Running_A": ["Run", "Running", "Walk"],
+	"Jump_Idle": ["Jump", "Jump_Idle", "Idle"],
+	"Jump_Land": ["Land", "Jump_Land", "Idle"],
+	"Lie_Idle": ["Defeat", "Lie_Idle", "SitDown"],
+	"Hit_A": ["RecieveHit", "Hit_A"],
+	"Cheer": ["Victory", "Cheer"],
+}
 
 
 ## Añade los alias de animación que faltan duplicando el clip original.

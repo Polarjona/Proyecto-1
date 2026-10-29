@@ -58,12 +58,27 @@ const WAYPOINTS: Array[Vector3] = [
 	Vector3(0.0, 4.2, -209.0),
 ]
 
+## Parte del empuje lateral que un bot compensa inclinándose hacia el viento.
+## 0 = vuela con la ráfaga, 1 = la anula por completo.
+const WIND_LEAN := 0.6
+
+## Intentos que hace un bot en un mismo tramo antes de que se le empuje al
+## punto siguiente. La carrera nunca se queda colgada por un bot al que se le
+## atraganta una sección, pero el empujón es el último recurso: lo normal es
+## que una caída cueste el tramo, como le cuesta al jugador.
+const MAX_RETRIES := 2
+
 ## Maximum lateral distance from the centre line at each waypoint. Narrow
 ## bridges get almost none, open halls get room for the pack to spread.
 const LANE_HALF_WIDTH: Array[float] = [
 	3.2, 3.2, 2.0, 2.0, 1.5, 2.4, 2.0, 1.6, 0.4, 1.6, 2.2, 0.5, 0.4, 0.5,
 	1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6,
 ]
+
+## El pack solo trae el clip de andar: se acelera para que lea como esprint.
+const RUN_CLIP_SPEED := 2.4
+## Fotograma del andar que se congela en el aire (el pack no trae salto).
+const JUMP_POSE_TIME := 0.42
 
 @export var speed_min: float = 4.8
 @export var speed_max: float = 6.4
@@ -95,6 +110,12 @@ var _progress_time: float = 0.0
 var _sweeper_commits: Dictionary = {}
 var _pendulum_commits: Dictionary = {}
 var _rescue_count: int = 0
+## Caídas al vacío y tramos perdidos por ellas (expuesto para tests).
+var _fall_count: int = 0
+## Veces que un tramo se le ha atragantado y ha habido que empujarlo.
+var _shortcut_count: int = 0
+## Intentos seguidos en el tramo actual, sin alcanzar el checkpoint siguiente.
+var _retries: int = 0
 var _was_on_floor: bool = true
 var _step_timer: float = 0.0
 ## Personaje aleatorio asignado al bot (expuesto para tests).
@@ -103,6 +124,8 @@ var character_id: String = ""
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
 var _anim: AnimationPlayer
+## Capa procedural de animación (inclinación al correr, salto recogido).
+var _rig: CharacterRig
 ## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
 var _path: Array[Vector3] = []
 var _path_widths: Array[float] = []
@@ -123,19 +146,25 @@ func _ready() -> void:
 	_setup_model()
 
 
-## Elige un personaje al azar del catálogo (los cinco del pack), lo instancia
-## con su escala y esconde las armas. Cada bot tiene su propio AnimationPlayer.
+## Elige un personaje al azar del catálogo y uno de sus dos cuerpos, lo
+## instancia con su escala. Cada bot tiene su propio AnimationPlayer.
 func _setup_model() -> void:
 	# `randf()` (y no `randi()`) para no cambiar la secuencia aleatoria que ya
 	# usan los carriles, las velocidades y los tropiezos de los bots.
 	var index := mini(int(randf() * float(CharacterCatalog.CHARACTERS.size())), CharacterCatalog.CHARACTERS.size() - 1)
 	character_id = String(CharacterCatalog.CHARACTERS[index]["id"])
-	var model := CharacterCatalog.build_model(character_id, "Model")
+	# El cuerpo se sortea con un generador aparte para no mover la secuencia
+	# aleatoria de los carriles, las velocidades y los tropiezos.
+	var body_rng := RandomNumberGenerator.new()
+	body_rng.randomize()
+	var variant := body_rng.randi_range(0, CharacterCatalog.variant_count(character_id) - 1)
+	var model := CharacterCatalog.build_model(character_id, "Model", variant)
 	if model == null:
 		return
 	model.scale *= randf_range(0.95, 1.05)
 	body.add_child(model)
 	_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	_rig = CharacterCatalog.rig_of(model)
 	if _anim:
 		for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Cheer", "Jump_Land"]:
 			var clip := _anim.get_animation(clip_name)
@@ -145,21 +174,37 @@ func _setup_model() -> void:
 
 
 func _play_anim(clip: String, blend: float = 0.15) -> void:
-	if _anim == null or _anim.current_animation == clip:
+	if _anim == null:
 		return
-	_anim.play(clip, blend)
-	_anim.speed_scale = 1.2 if clip == "Running_A" else 1.0
+	if _anim.current_animation != clip:
+		_anim.play(clip, blend)
+	_anim.speed_scale = RUN_CLIP_SPEED if clip == "Running_A" else 1.0
+
+
+## En el aire se congela una zancada de la carrera: el pack no trae salto y el
+## idle de pie dejaba al bot tieso. El rig le suma la pose recogida.
+func _play_air_pose(blend: float = 0.1) -> void:
+	if _anim != null:
+		if _anim.current_animation != "Running_A":
+			_anim.play("Running_A", blend)
+		_anim.seek(JUMP_POSE_TIME, true)
+		_anim.speed_scale = 0.0
+	if _rig:
+		_rig.set_state("jump")
 
 
 func _update_animation(walking: bool) -> void:
+	if not is_on_floor():
+		_play_air_pose()
+		return
 	var clip := "Idle"
 	if _stumble_time > 0.0:
 		clip = "Hit_A"
-	elif not is_on_floor():
-		clip = "Jump_Idle"
 	elif walking:
 		clip = "Running_A"
 	_play_anim(clip)
+	if _rig:
+		_rig.set_state("stun" if _stumble_time > 0.0 else ("run" if walking else "idle"))
 
 
 func _physics_process(delta: float) -> void:
@@ -168,7 +213,7 @@ func _physics_process(delta: float) -> void:
 	if _waiting_for_start and not _wait_for_start(delta):
 		return
 	if global_position.y < respawn_below_y:
-		_rescue()
+		_rescue(true)
 
 	_jump_cooldown = maxf(0.0, _jump_cooldown - delta)
 	_jump_request = maxf(0.0, _jump_request - delta)
@@ -212,7 +257,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 		_jump_request = 0.0
 		_jump_cooldown = 0.45
-		_play_anim("Jump_Idle", 0.08)
+		_play_air_pose(0.08)
 		AudioManager.play_sfx_at("jump", global_position, 0.14, -11.0)
 
 	move_and_slide()
@@ -290,6 +335,9 @@ func _advance_waypoint() -> void:
 		return
 	_best_distance = 9999.0
 	_progress_time = 0.0
+	# Checkpoint nuevo: el tramo queda cerrado y el bot vuelve a tener todos
+	# sus intentos para el siguiente.
+	_retries = 0
 
 
 func _tick_stumble(delta: float) -> void:
@@ -381,17 +429,6 @@ func _should_hold() -> bool:
 		if not riding and delta.z < -1.2 and progress > 0.15:
 			return true
 
-	# Queue before the cannon while it is on cooldown; otherwise six bots
-	# would follow the first one straight into the gap.
-	for launcher in get_tree().get_nodes_in_group("launchers"):
-		if not (launcher is Node3D) or not is_instance_valid(launcher):
-			continue
-		var delta: Vector3 = (launcher as Node3D).global_position - global_position
-		if delta.z > -0.5 or delta.z < -3.5:
-			continue
-		if not bool((launcher as Node3D).call("is_ready")):
-			return true
-
 	for sweeper in get_tree().get_nodes_in_group("sweepers"):
 		if not (sweeper is Node3D) or not is_instance_valid(sweeper):
 			continue
@@ -470,15 +507,34 @@ func _tick_progress(delta: float, distance: float, holding: bool) -> void:
 		_best_distance = distance
 		_progress_time = 0.0
 	elif _progress_time > 6.0:
-		_rescue()
+		_rescue(false)
 		_progress_time = 0.0
 
 
-func _rescue() -> void:
+## Último checkpoint que el bot ya pisó: el waypoint anterior al que persigue.
+## Si todavía no ha llegado a ninguno es el primero, que está en la salida.
+func _checkpoint_index() -> int:
+	return clampi(_index - 1, 0, _path_points().size() - 1)
+
+
+## Devuelve al bot al último checkpoint que alcanzó, nunca al siguiente: una
+## caída cuesta el tramo entero, igual que al jugador. Solo si el tramo se le
+## atraganta (`MAX_RETRIES` intentos) se le empuja al punto siguiente, para que
+## la carrera no se quede colgada con un bot que nunca aprende a pasarlo.
+func _rescue(from_fall: bool) -> void:
 	_rescue_count += 1
-	print("BOT RESCUE id=%d from=%s wp=%d" % [get_instance_id(), global_position, _index])
-	var target := _target_position()
-	global_position = target + Vector3(randf_range(-0.5, 0.5), 0.7, 0.0)
+	if from_fall:
+		_fall_count += 1
+	_retries += 1
+	var point := _checkpoint_index()
+	if _retries >= MAX_RETRIES:
+		_shortcut_count += 1
+		_retries = 0
+		point = mini(point + 1, _path_points().size() - 1)
+	print("BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d" % [
+		get_instance_id(), global_position, _index, point])
+	var target: Vector3 = _path_points()[point]
+	global_position = target + Vector3(0.0, 0.7, 0.0)
 	velocity = Vector3.ZERO
 	_knockback = Vector3.ZERO
 	_external = Vector3.ZERO
@@ -496,6 +552,8 @@ func _finish() -> void:
 	velocity = Vector3.ZERO
 	set_physics_process(false)
 	_play_anim("Cheer", 0.2)
+	if _rig:
+		_rig.set_state("idle")
 	var elapsed := float(Time.get_ticks_msec() - _start_ms) / 1000.0
 	finished.emit(self, elapsed)
 
@@ -529,11 +587,18 @@ func apply_push_soft(force: Vector3) -> void:
 	velocity.y = maxf(velocity.y, force.y)
 
 
+## Empujes externos que van enteros (el balancín, por ejemplo): el bot recibe
+## el mismo deslizamiento que el jugador.
 func add_external_velocity(velocity_delta: Vector3) -> void:
-	# Bots resist wind and belts a little so their path stays viable. Lateral
-	# wind is ignored: they have no dedicated wind compensation and would be
-	# blown off the narrow bridge every single time.
-	_external += Vector3(0.0, velocity_delta.y, velocity_delta.z) * 0.4
+	_external += velocity_delta
+
+
+## El viento entra por su propio canal para que el bot pueda inclinarse hacia
+## él: recibe el empuje entero y devuelve `WIND_LEAN` con su velocidad, igual
+## que un jugador que empuja el stick a contraviento. Con el resto del empuje
+## sigue siendo arrastrado de lado y puede acabar tirándose del puente.
+func add_wind_velocity(push: Vector3) -> void:
+	_external += push + Vector3(-push.x, 0.0, -push.z) * WIND_LEAN
 
 
 ## Deslizamiento del balancín: se aplica entero, como al jugador, para que la
@@ -549,10 +614,6 @@ func add_belt_velocity(belt: Vector3) -> void:
 
 func is_stunned() -> bool:
 	return _stumble_time > 0.0
-
-
-func is_prone() -> bool:
-	return false
 
 
 ## Exposed for diagnostics/tests.
@@ -571,3 +632,13 @@ func get_waypoint_count() -> int:
 ## Number of times the watchdog had to put the bot back on the course.
 func get_rescue_count() -> int:
 	return _rescue_count
+
+
+## Caídas al vacío del bot.
+func get_fall_count() -> int:
+	return _fall_count
+
+
+## Veces que ha habido que empujarlo hacia delante (último recurso).
+func get_shortcut_count() -> int:
+	return _shortcut_count

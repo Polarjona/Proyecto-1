@@ -20,6 +20,12 @@ func _check(condition: bool, label: String) -> void:
 
 
 func _run() -> void:
+	# El circuito de la carrera clásica se recuerda en el perfil: se deja el
+	# primero para que la prueba no dependa de la última partida.
+	var save: Node = root.get_node("SaveManager")
+	save.call("set_setting", "classic_level", 0)
+	root.get_node("GameSession").set("classic_level", 0)
+
 	# --- 1. Menú principal -> botón INICIAR -------------------------------
 	var menu: Node = (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate()
 	root.add_child(menu)

@@ -114,11 +114,11 @@ size = Vector3(0.7, 6.8, 0.9)
 size = Vector3(0.7, 6.8, 0.9)
 
 [sub_resource type="BoxMesh" id="BoxMesh_tkw0d"]
-size = Vector3(16.8, 0.6, 1)
+size = Vector3(19.8, 0.6, 1)
 
 [sub_resource type="TorusMesh" id="TorusMesh_r8oqe"]
-inner_radius = 2.88
-outer_radius = 3.52
+inner_radius = 3.42
+outer_radius = 4.18
 rings = 28
 ring_segments = 10
 
@@ -367,9 +367,9 @@ script = ExtResource("7_7efdw")
 [node name="Course" type="Node3D" parent="." unique_id=1358579004]
 
 [node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=1068940755]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 1.5)
 use_collision = true
-size = Vector3(14, 0.5, 12)
+size = Vector3(17, 0.5, 13)
 material = ExtResource("8_xlk4i")
 
 [node name="SweeperBridge" type="CSGBox3D" parent="Course" unique_id=1105214285]
@@ -594,13 +594,13 @@ push_force = 6.5
 [node name="Decor" type="Node3D" parent="." unique_id=1609110290]
 
 [node name="StartGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1572163814]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3.4, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3.4, -2.5)
 material_override = ExtResource("10_4qgwr")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ds42t")
 
 [node name="StartGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=1960668648]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.4, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3.4, -2.5)
 material_override = ExtResource("10_4qgwr")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_3j56m")
@@ -627,25 +627,25 @@ font_size = 230
 outline_size = 34
 
 [node name="StartWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1479947732]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1.2, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 1.2, 2)
 material_override = ExtResource("30_78n0q")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_hu0nd")
 
 [node name="StartWallRight" type="MeshInstance3D" parent="Decor" unique_id=634562773]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 1.2, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, 1.2, 2)
 material_override = ExtResource("30_78n0q")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_fiuox")
 
 [node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=927613651]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0.55, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.55, 2)
 material_override = ExtResource("29_gexil")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ji8th")
 
 [node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=262173584]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0.55, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.55, 2)
 material_override = ExtResource("29_gexil")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_tmiyk")
@@ -961,8 +961,8 @@ omni_range = 18.0
 
 [node name="ArenaDecor" type="Node3D" parent="." unique_id=695933022]
 script = ExtResource("35_w18al")
-section_centers = PackedVector3Array(0, 0, 2, 0, 0, -10, 0, 0, -19, 0, 0, -43, 0, 0, -55, 0, 0, -70, 0, 0, -86, 0, 0.2, -98, 0, 1, -118, 0, 1, -130, 0, 4, -145)
-section_sizes = PackedVector2Array(14, 12, 6, 10, 10, 6, 10, 5.9, 5, 20, 10, 6, 10, 8, 4, 16, 12, 12, 10, 14, 14, 14)
+section_centers = PackedVector3Array(0, 0, 1.5, 0, 0, -10, 0, 0, -19, 0, 0, -43, 0, 0, -55, 0, 0, -70, 0, 0, -86, 0, 0.2, -98, 0, 1, -118, 0, 1, -130, 0, 4, -145)
+section_sizes = PackedVector2Array(17, 13, 6, 10, 10, 6, 10, 5.9, 5, 20, 10, 6, 10, 8, 4, 16, 12, 12, 10, 14, 14, 14)
 section_colors = PackedColorArray(1, 0.8, 0.2, 1, 1, 0.45, 0.75, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1)
 sea_deep = Color(0.22, 0.03, 0.3, 1)
 sea_mid = Color(0.68, 0.18, 0.52, 1)
