@@ -530,7 +530,7 @@ func _build_spin_go_round() -> void:
 	_add_kill_plane(root, -42.0)
 
 	var course := _group(root, "Course")
-	_slab(course, root, "StartPlatform", 0.0, 2.0, 16.0, 12.0, 0.0, MAT_SPIN_FLOOR)
+	_slab(course, root, "StartPlatform", 0.0, 1.5, 19.0, 13.0, 0.0, MAT_SPIN_FLOOR)
 	_slab(course, root, "SpinArena", 0.0, -16.0, 24.0, 22.0, 0.0, MAT_SPIN_FLOOR)
 	_slab(course, root, "SpinBridge", 0.0, -31.0, 8.0, 8.0, 0.0, MAT_SPIN_FLOOR)
 	_slab(course, root, "SpinLanding", 0.0, -49.0, 10.0, 8.0, 0.0, MAT_SPIN_FLOOR)
@@ -570,7 +570,7 @@ func _build_spin_go_round() -> void:
 	_obstacle(course, root, "FinishLine", FINISH_SCENE, Vector3(0.0, 0.0, -80.0))
 
 	var decor := _group(root, "Decor")
-	_arch(decor, root, "StartGate", -2.5, 0.0, 18.0, 6.4, MAT_SPIN_BLUE,
+	_arch(decor, root, "StartGate", -2.5, 0.0, 21.0, 6.4, MAT_SPIN_BLUE,
 		MAT_SPIN_GOLD, "SPIN GO ROUND")
 	# Muros azules del estadio y pasamanos dorados.
 	_mesh_box(decor, root, "ArenaWallLeft", Vector3(-12.2, 1.3, -16.0),
@@ -581,12 +581,12 @@ func _build_spin_go_round() -> void:
 		Vector3(1.4, 0.2, 22.0), MAT_SPIN_GOLD)
 	_mesh_box(decor, root, "ArenaTrimRight", Vector3(12.2, 2.65, -16.0),
 		Vector3(1.4, 0.2, 22.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "StartWallLeft", Vector3(-8.2, 1.0, 2.0),
+	_mesh_box(decor, root, "StartWallLeft", Vector3(-9.6, 1.0, 2.0),
 		Vector3(1.0, 2.0, 12.0), MAT_SPIN_WALL)
-	_mesh_box(decor, root, "StartWallRight", Vector3(8.2, 1.0, 2.0),
+	_mesh_box(decor, root, "StartWallRight", Vector3(9.6, 1.0, 2.0),
 		Vector3(1.0, 2.0, 12.0), MAT_SPIN_WALL)
-	_rail(decor, root, "StartRailLeft", -7.5, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
-	_rail(decor, root, "StartRailRight", 7.5, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
+	_rail(decor, root, "StartRailLeft", -9.0, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
+	_rail(decor, root, "StartRailRight", 9.0, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "BridgeRailLeft", -4.1, -31.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "BridgeRailRight", 4.1, -31.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "LandingRailLeft", -5.1, -49.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
@@ -629,13 +629,13 @@ func _build_spin_go_round() -> void:
 
 	_arena_decor(root, {
 		"section_centers": PackedVector3Array([
-			Vector3(0.0, 0.0, 2.0), Vector3(0.0, 0.0, -16.0),
+			Vector3(0.0, 0.0, 1.5), Vector3(0.0, 0.0, -16.0),
 			Vector3(0.0, 0.0, -31.0), Vector3(0.0, 0.0, -49.0),
 			Vector3(0.0, 0.0, -61.0), Vector3(0.0, 0.0, -72.0),
 			Vector3(0.0, 0.0, -80.0),
 		]),
 		"section_sizes": PackedVector2Array([
-			Vector2(16.0, 12.0), Vector2(24.0, 22.0), Vector2(8.0, 8.0),
+			Vector2(19.0, 13.0), Vector2(24.0, 22.0), Vector2(8.0, 8.0),
 			Vector2(10.0, 8.0), Vector2(14.0, 14.0), Vector2(10.0, 6.0),
 			Vector2(16.0, 14.0),
 		]),
@@ -732,7 +732,7 @@ func _build_pivot_panic() -> void:
 	_add_kill_plane(root, -70.0)
 
 	var course := _group(root, "Course")
-	_slab(course, root, "StartPlatform", 0.0, 2.0, 14.0, 12.0, 0.0, MAT_PIVOT_FLOOR)
+	_slab(course, root, "StartPlatform", 0.0, 1.5, 17.0, 13.0, 0.0, MAT_PIVOT_FLOOR)
 	_slab(course, root, "SweeperBridge", 0.0, -10.0, 6.0, 10.0, 0.0, MAT_PIVOT_FLOOR)
 	_slab(course, root, "SafeOne", 0.0, -19.0, 10.0, 6.0, 0.0, MAT_PIVOT_FLOOR_ALT)
 	_platform(course, root, "SeeSawBase", Vector3(0.0, -2.15, -30.0),
@@ -822,14 +822,14 @@ func _build_pivot_panic() -> void:
 	})
 
 	var decor := _group(root, "Decor")
-	_arch(decor, root, "StartGate", -2.5, 0.0, 16.0, 6.8, MAT_PIVOT_BLUE,
+	_arch(decor, root, "StartGate", -2.5, 0.0, 19.0, 6.8, MAT_PIVOT_BLUE,
 		MAT_PIVOT_GOLD, "PIVOT PANIC")
-	_mesh_box(decor, root, "StartWallLeft", Vector3(-7.2, 1.2, 2.0),
+	_mesh_box(decor, root, "StartWallLeft", Vector3(-8.6, 1.2, 2.0),
 		Vector3(1.1, 2.4, 12.0), MAT_PIVOT_WALL)
-	_mesh_box(decor, root, "StartWallRight", Vector3(7.2, 1.2, 2.0),
+	_mesh_box(decor, root, "StartWallRight", Vector3(8.6, 1.2, 2.0),
 		Vector3(1.1, 2.4, 12.0), MAT_PIVOT_WALL)
-	_rail(decor, root, "StartRailLeft", -6.5, 2.0, 11.0, 0.0, MAT_PIVOT_GOLD, true)
-	_rail(decor, root, "StartRailRight", 6.5, 2.0, 11.0, 0.0, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "StartRailLeft", -8.0, 2.0, 11.0, 0.0, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "StartRailRight", 8.0, 2.0, 11.0, 0.0, MAT_PIVOT_GOLD, true)
 	_rail(decor, root, "BridgeRailLeft", -3.1, -10.0, 10.0, 0.0, MAT_PIVOT_RAIL, true)
 	_rail(decor, root, "BridgeRailRight", 3.1, -10.0, 10.0, 0.0, MAT_PIVOT_RAIL, true)
 	_rail(decor, root, "SafeOneRailLeft", -5.1, -19.0, 6.0, 0.0, MAT_PIVOT_GOLD, true)
@@ -895,7 +895,7 @@ func _build_pivot_panic() -> void:
 
 	_arena_decor(root, {
 		"section_centers": PackedVector3Array([
-			Vector3(0.0, 0.0, 2.0), Vector3(0.0, 0.0, -10.0),
+			Vector3(0.0, 0.0, 1.5), Vector3(0.0, 0.0, -10.0),
 			Vector3(0.0, 0.0, -19.0), Vector3(0.0, 0.0, -43.0),
 			Vector3(0.0, 0.0, -55.0), Vector3(0.0, 0.0, -70.0),
 			Vector3(0.0, 0.0, -86.0), Vector3(0.0, 0.2, -98.0),
@@ -903,7 +903,7 @@ func _build_pivot_panic() -> void:
 			Vector3(0.0, 4.0, -145.0),
 		]),
 		"section_sizes": PackedVector2Array([
-			Vector2(14.0, 12.0), Vector2(6.0, 10.0), Vector2(10.0, 6.0),
+			Vector2(17.0, 13.0), Vector2(6.0, 10.0), Vector2(10.0, 6.0),
 			Vector2(10.0, 5.9), Vector2(5.0, 20.0), Vector2(10.0, 6.0),
 			Vector2(10.0, 8.0), Vector2(4.0, 16.0), Vector2(12.0, 12.0),
 			Vector2(10.0, 14.0), Vector2(14.0, 14.0),

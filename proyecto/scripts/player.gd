@@ -25,10 +25,12 @@ extends CharacterBody3D
 @export var platform_jump_cap: float = 6.0
 
 @export_group("Camera")
-@export var camera_distance: float = 4.7
+## Un poco más lejos que antes: el corredor es más alto y así se ve más mapa
+## alrededor de la parrilla de salida.
+@export var camera_distance: float = 5.6
 ## Altura del pivote sobre los pies. Va con la estatura del catálogo
 ## (`CharacterCatalog.CHARACTER_HEIGHT`): la cámara mira al cuerpo del corredor.
-@export var camera_height: float = 0.95
+@export var camera_height: float = 1.12
 ## Downward pitch of the camera, in degrees. Negative looks down.
 @export var camera_pitch: float = -15.0
 @export var camera_lerp: float = 7.0
@@ -36,7 +38,7 @@ extends CharacterBody3D
 ## drag the camera along the floor.
 @export var camera_height_lerp: float = 5.0
 ## Minimum distance between the pivot and the ground below it.
-@export var camera_min_clearance: float = 0.75
+@export var camera_min_clearance: float = 0.85
 @export var camera_look_ahead: float = 0.12
 @export var camera_fov_base: float = 55.0
 @export var camera_fov_max: float = 70.0
@@ -51,6 +53,12 @@ extends CharacterBody3D
 @export var shadow_max_distance: float = 8.0
 @export var dust_speed_threshold: float = 3.0
 
+@export_group("Animation")
+## El pack solo trae el clip de andar: se acelera para que lea como esprint.
+@export var run_clip_speed: float = 2.4
+## Fotograma del andar que se congela en el aire (el pack no trae salto).
+@export var jump_pose_time: float = 0.42
+
 ## Set by a bot driver (future split-screen / network input).
 @export var is_bot: bool = false
 ## Id del personaje que se está usando (expuesto para tests y HUD).
@@ -63,6 +71,9 @@ var input_locked: bool = false
 ## El modelo 3D se instancia en runtime según el personaje elegido en el menú.
 var model: Node3D
 var anim: AnimationPlayer
+## Capa procedural sobre el clip: inclinación de esprint, salto recogido y
+## aterrizaje con flexión.
+var rig: CharacterRig
 @onready var marker: Node3D = $Marker
 @onready var dizzy: Node3D = $Dizzy
 @onready var shadow: MeshInstance3D = $Shadow
@@ -123,6 +134,8 @@ func _ready() -> void:
 	_setup_character()
 	_setup_animations()
 	_play_animation("idle", 0.0)
+	if rig:
+		rig.set_state(_anim_state)
 	if marker:
 		_marker_base_y = marker.position.y
 		# La flecha FIFA solo marca al jugador, nunca a los bots.
@@ -157,6 +170,7 @@ func _setup_character() -> void:
 		return
 	mesh.add_child(model)
 	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	rig = CharacterCatalog.rig_of(model)
 
 
 ## Locomotion clips loop; one-shots (landing, hit) play once.
@@ -444,6 +458,8 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		_anim_state = new_state
 		_anim_time = 0.0
 		_play_animation(new_state)
+		if rig:
+			rig.set_state(new_state)
 
 	_anim_time += delta
 	if _anim_state != "stun":
@@ -500,16 +516,23 @@ func _play_animation(state: String, blend: float = 0.15) -> void:
 		"run":
 			clip = "Running_A"
 		"jump":
-			clip = "Jump_Idle"
+			clip = "Running_A"
 		"land":
 			clip = "Jump_Land"
 		"stun":
 			clip = "Hit_A"
 	if anim.current_animation != clip:
 		anim.play(clip, blend)
-	# El pack no trae clip de carrera: el andar se acelera para que lea como
-	# esprint y no como un paseo.
-	anim.speed_scale = 1.9 if clip == "Running_A" else 1.0
+	if state == "jump":
+		# El pack no trae salto: en el aire se congela una zancada de la
+		# carrera, que lee mucho mejor que el idle de pie. El rig le suma
+		# encima la pose recogida de salto.
+		anim.seek(jump_pose_time, true)
+		anim.speed_scale = 0.0
+	else:
+		# El pack no trae clip de carrera: el andar se acelera para que lea
+		# como esprint y no como un paseo.
+		anim.speed_scale = run_clip_speed if clip == "Running_A" else 1.0
 
 
 func _update_dust(horizontal_speed: float) -> void:
@@ -608,6 +631,8 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	_fall_speed = 0.0
 	_anim_state = "idle"
 	_anim_time = 0.0
+	if rig:
+		rig.set_state("idle")
 	mesh.rotation = Vector3.ZERO
 	mesh.position.y = _mesh_base_y
 	mesh.scale = Vector3.ONE

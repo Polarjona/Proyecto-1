@@ -34,7 +34,12 @@ los clips a los que esperan el jugador y los bots.
   `Punch`, `RecieveHit`, `Victory`, `Defeat`, `PickUp`, `SitDown`, `StandUp` y
   `Shoot_OneHanded`. El catálogo los mapea a los alias que usa el juego; **el
   pack no trae clip de carrera ni de salto**, así que `Running_A` reutiliza el
-  andar acelerado (×1,9) y el salto se queda con el idle.
+  andar acelerado (×2,4), en el aire se congela una zancada de esa carrera y el
+  rig procedural (`scripts/character_rig.gd`) inclina el torso al esprintar,
+  recoge piernas y brazos en el salto y flexiona el aterrizaje.
+- **Acabado de juguete**: `build_model` sustituye el material plano de cada
+  superficie por `shaders/character.gdshader` (toon + brillo plástico + borde),
+  así que los cuerpos casan con los circuitos.
 - Los `.glb` salen de convertir los FBX del pack con FBX2glTF 0.9.7: misma
   geometría, materiales y animaciones, en un contenedor que Godot importa sin
   plugins.

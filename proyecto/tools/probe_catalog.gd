@@ -40,11 +40,31 @@ func _initialize() -> void:
 				bad += 1
 			if anim != null and has_clips.size() < WANTED.size():
 				bad += 1
+			# Los cuerpos tienen que salir con el acabado plástico del circuito y
+			# con la capa procedural de animación (esprint, salto, aterrizaje).
+			var plastic := _plastic_surfaces(model)
+			var rig := CharacterCatalog.rig_of(model)
+			if plastic == 0 or rig == null:
+				print("      ^ FALLO: falta el acabado plástico o el rig de animación")
+				bad += 1
+			else:
+				print("      plástico en %d superficies, rig procedural OK" % plastic)
 			model.free()
 	print("RESULT: %s (%d personajes, %d cuerpos)" % [
 		"TODO OK" if bad == 0 else "%d cuerpos con problemas" % bad,
 		CharacterCatalog.CHARACTERS.size(), bodies])
 	quit(0 if bad == 0 else 1)
+
+
+## Superficies que llevan el shader de personaje (plástico cartoon).
+func _plastic_surfaces(model: Node3D) -> int:
+	var count := 0
+	for node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := node as MeshInstance3D
+		for surface in mesh_instance.get_surface_override_material_count():
+			if mesh_instance.get_surface_override_material(surface) is ShaderMaterial:
+				count += 1
+	return count
 
 
 ## Altura real del modelo sumando las transformadas de las mallas anidadas

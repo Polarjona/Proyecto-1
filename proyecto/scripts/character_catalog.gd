@@ -18,14 +18,19 @@ extends RefCounted
 ## `price` es lo que cuesta desbloquearlo en el menú Personaje. El primero es
 ## gratis: todo el mundo empieza jugando con él.
 ##
-## Los corredores son deliberadamente pequeños (un metro de alto, escala de
-## juguete) para que las plataformas de los circuitos parezcan grandes. Al
-## cambiar `CHARACTER_HEIGHT` hay que ajustar en la misma proporción la cápsula
-## del jugador y de los bots (`player.tscn`, `bot_racer.tscn`) y la cámara
-## (valores por defecto de `player.gd`).
+## Los corredores son compactos (~1,25 m, escala de juguete) para que las
+## plataformas de los circuitos parezcan grandes y se lean bien de un vistazo.
+## Al cambiar `CHARACTER_HEIGHT` hay que ajustar en la misma proporción la
+## cápsula del jugador y de los bots (`player.tscn`, `bot_racer.tscn`) y la
+## cámara (valores por defecto de `player.gd`).
 
 ## Altura, en metros, a la que se escala cualquier cuerpo del catálogo.
-const CHARACTER_HEIGHT := 1.05
+const CHARACTER_HEIGHT := 1.25
+
+## Acabado de plástico de juguete compartido por todos los cuerpos. El shader
+## toma el color plano de cada superficie y le añade brillo y borde cartoon,
+## para que los personajes casen con los circuitos.
+const CHARACTER_SHADER := preload("res://shaders/character.gdshader")
 
 ## Carpeta de los cuerpos del pack.
 const MODEL_DIR := "res://assets/characters/ultimate/"
@@ -227,7 +232,45 @@ static func build_model(id: String, node_name: String = "Model", variant: int = 
 	else:
 		model.scale = Vector3.ONE * float(entry.get("scale", 0.55))
 	_prepare_animations(model)
+	_apply_plastic_look(model)
+	_add_rig(model)
 	return model
+
+
+## Sustituye el material plano del GLB por el plástico del juego, por instancia
+## (las mallas se comparten entre cuerpos, así que no se toca el recurso).
+static func _apply_plastic_look(model: Node3D) -> void:
+	for node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := node as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		for surface in mesh_instance.mesh.get_surface_count():
+			var source := mesh_instance.mesh.surface_get_material(surface)
+			var color := Color.WHITE
+			if source is BaseMaterial3D:
+				color = (source as BaseMaterial3D).albedo_color
+			elif source is ShaderMaterial:
+				continue
+			var material := ShaderMaterial.new()
+			material.shader = CHARACTER_SHADER
+			material.set_shader_parameter("albedo_color", color)
+			mesh_instance.set_surface_override_material(surface, material)
+
+
+## Capa de animación procedural (carrera inclinada, salto recogido, aterrizaje).
+static func _add_rig(model: Node3D) -> void:
+	for node in model.find_children("*", "Skeleton3D", true, false):
+		var rig := CharacterRig.new()
+		rig.name = "Rig"
+		(node as Skeleton3D).add_child(rig)
+		return
+
+
+## Rig del modelo (o null si el cuerpo no trae esqueleto).
+static func rig_of(model: Node3D) -> CharacterRig:
+	if model == null:
+		return null
+	return model.find_child("Rig", true, false) as CharacterRig
 
 
 ## AABB del modelo en su espacio local (sin depender de estar en el árbol).
@@ -253,7 +296,8 @@ static func _model_bounds(node: Node3D, base: Transform3D = Transform3D.IDENTITY
 ## tramo del nombre ("CharacterArmature|Walk").
 ##
 ## El pack no trae clip de carrera ni de salto: la carrera reutiliza el andar
-## acelerado y el salto se queda con el idle, que es lo que mejor lee en el aire.
+## acelerado y el aire congela una zancada de la carrera. El rig procedural
+## (`character_rig.gd`) añade la inclinación de esprint y la pose de salto.
 const CLIP_ALIASES := {
 	"Idle": ["Idle"],
 	"Walking_A": ["Walk", "Walking"],

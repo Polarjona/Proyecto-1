@@ -75,6 +75,11 @@ const LANE_HALF_WIDTH: Array[float] = [
 	1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6,
 ]
 
+## El pack solo trae el clip de andar: se acelera para que lea como esprint.
+const RUN_CLIP_SPEED := 2.4
+## Fotograma del andar que se congela en el aire (el pack no trae salto).
+const JUMP_POSE_TIME := 0.42
+
 @export var speed_min: float = 4.8
 @export var speed_max: float = 6.4
 @export var speed_scale: float = 1.0
@@ -119,6 +124,8 @@ var character_id: String = ""
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
 var _anim: AnimationPlayer
+## Capa procedural de animación (inclinación al correr, salto recogido).
+var _rig: CharacterRig
 ## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
 var _path: Array[Vector3] = []
 var _path_widths: Array[float] = []
@@ -157,6 +164,7 @@ func _setup_model() -> void:
 	model.scale *= randf_range(0.95, 1.05)
 	body.add_child(model)
 	_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	_rig = CharacterCatalog.rig_of(model)
 	if _anim:
 		for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Cheer", "Jump_Land"]:
 			var clip := _anim.get_animation(clip_name)
@@ -166,21 +174,37 @@ func _setup_model() -> void:
 
 
 func _play_anim(clip: String, blend: float = 0.15) -> void:
-	if _anim == null or _anim.current_animation == clip:
+	if _anim == null:
 		return
-	_anim.play(clip, blend)
-	_anim.speed_scale = 1.8 if clip == "Running_A" else 1.0
+	if _anim.current_animation != clip:
+		_anim.play(clip, blend)
+	_anim.speed_scale = RUN_CLIP_SPEED if clip == "Running_A" else 1.0
+
+
+## En el aire se congela una zancada de la carrera: el pack no trae salto y el
+## idle de pie dejaba al bot tieso. El rig le suma la pose recogida.
+func _play_air_pose(blend: float = 0.1) -> void:
+	if _anim != null:
+		if _anim.current_animation != "Running_A":
+			_anim.play("Running_A", blend)
+		_anim.seek(JUMP_POSE_TIME, true)
+		_anim.speed_scale = 0.0
+	if _rig:
+		_rig.set_state("jump")
 
 
 func _update_animation(walking: bool) -> void:
+	if not is_on_floor():
+		_play_air_pose()
+		return
 	var clip := "Idle"
 	if _stumble_time > 0.0:
 		clip = "Hit_A"
-	elif not is_on_floor():
-		clip = "Jump_Idle"
 	elif walking:
 		clip = "Running_A"
 	_play_anim(clip)
+	if _rig:
+		_rig.set_state("stun" if _stumble_time > 0.0 else ("run" if walking else "idle"))
 
 
 func _physics_process(delta: float) -> void:
@@ -233,7 +257,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 		_jump_request = 0.0
 		_jump_cooldown = 0.45
-		_play_anim("Jump_Idle", 0.08)
+		_play_air_pose(0.08)
 		AudioManager.play_sfx_at("jump", global_position, 0.14, -11.0)
 
 	move_and_slide()
@@ -528,6 +552,8 @@ func _finish() -> void:
 	velocity = Vector3.ZERO
 	set_physics_process(false)
 	_play_anim("Cheer", 0.2)
+	if _rig:
+		_rig.set_state("idle")
 	var elapsed := float(Time.get_ticks_msec() - _start_ms) / 1000.0
 	finished.emit(self, elapsed)
 

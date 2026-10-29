@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scripts/bot_racer.gd" id="1_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bot"]
-radius = 0.17
-height = 0.62
+radius = 0.2
+height = 0.74
 
 [node name="BotRacer" type="CharacterBody3D"]
 collision_layer = 2
@@ -15,7 +15,7 @@ floor_snap_length = 0.35
 script = ExtResource("1_script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, 0)
 shape = SubResource("CapsuleShape3D_bot")
 
 [node name="Body" type="MeshInstance3D" parent="."]
