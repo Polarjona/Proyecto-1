@@ -11,6 +11,13 @@ extends Node3D
 @onready var push_area: Area3D = $Hammer/PushArea
 
 var _whoosh_timer: float = 0.0
+## Tiempo acumulado en milisegundos simulados. El balanceo se calculaba con el
+## reloj real (`Time.get_ticks_msec`), así que el martillo caía en un punto
+## distinto en cada partida y la física dejaba de ser reproducible: los bots se
+## comían golpes que no tocaban según lo que tardara la máquina. Sumando `delta`
+## el martillo siempre empieza en el mismo sitio y `swing_speed` sigue midiéndose
+## en radianes por milisegundo.
+var _time_ms: float = 0.0
 
 
 func _ready() -> void:
@@ -18,9 +25,9 @@ func _ready() -> void:
 	push_area.body_entered.connect(_on_body_entered)
 
 
-func _process(delta: float) -> void:
-	var t := Time.get_ticks_msec() * swing_speed + phase_offset
-	hammer.rotation.z = sin(t) * max_angle
+func _physics_process(delta: float) -> void:
+	_time_ms += delta * 1000.0
+	hammer.rotation.z = sin(_time_ms * swing_speed + phase_offset) * max_angle
 	# Siseo del martillo al pasar: posicional, solo se nota cerca.
 	_whoosh_timer -= delta
 	if _whoosh_timer <= 0.0:

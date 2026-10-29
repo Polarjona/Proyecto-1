@@ -6,8 +6,8 @@ extends SceneTree
 
 ## Fila del roster del personaje gratis con el que arranca un perfil nuevo y
 ## carpeta de la que sale su modelo.
-const STARTER_ROW := "Coco"
-const STARTER_DIR := "res://assets/characters/mini/"
+const STARTER_ROW := "Chef"
+const STARTER_DIR := "res://assets/characters/ultimate/"
 
 var _failures := 0
 var _audio: Node
@@ -41,11 +41,14 @@ func _run() -> void:
 	var models_ok := true
 	var unique_ids := {}
 	for entry in CharacterCatalog.CHARACTERS:
-		var path := String(entry.get("scene", ""))
-		if path.is_empty() or not ResourceLoader.exists(path):
+		var paths := CharacterCatalog.variant_paths(String(entry.get("id", "")))
+		if paths.size() < 2:
 			models_ok = false
+		for path: String in paths:
+			if path.is_empty() or not ResourceLoader.exists(path):
+				models_ok = false
 		unique_ids[String(entry.get("id", ""))] = true
-	_check(models_ok, "Todos los modelos del catálogo existen")
+	_check(models_ok, "Todos los modelos del catálogo existen (los dos cuerpos de cada personaje)")
 	_check(unique_ids.size() == CharacterCatalog.CHARACTERS.size(), "Los ids de personaje son únicos")
 
 	# --- Audio nuevo -------------------------------------------------------
@@ -108,7 +111,7 @@ func _run() -> void:
 			"El jugador usa el personaje elegido (%s)" % String(player.get("character_id")))
 		var model: Node3D = player.get_node_or_null("MeshInstance3D/Model")
 		_check(model != null
-			and String(CharacterCatalog.by_id(CharacterCatalog.default_id())["scene"]).begins_with(STARTER_DIR)
+			and String(CharacterCatalog.variant_paths(CharacterCatalog.default_id())[0]).begins_with(STARTER_DIR)
 			and model.find_child("AnimationPlayer", true, false) != null,
 			"El modelo cargado es el del personaje elegido")
 		_check(player.get_node_or_null("MeshInstance3D/Model/AnimationPlayer") != null,

@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dwldkfwp66xf1"
-path="res://.godot/imported/bunny.glb-46406d596f8a43fd6ff9abb050df82fe.scn"
+uid="uid://c886ft8sat6bc"
+path="res://.godot/imported/kimono_male.glb-5c02c070f7776a04b21140fcb4f8bc88.scn"
 
 [deps]
 
-source_file="res://assets/characters/mascots/bunny.glb"
-dest_files=["res://.godot/imported/bunny.glb-46406d596f8a43fd6ff9abb050df82fe.scn"]
+source_file="res://assets/characters/ultimate/kimono_male.glb"
+dest_files=["res://.godot/imported/kimono_male.glb-5c02c070f7776a04b21140fcb4f8bc88.scn"]
 
 [params]
 

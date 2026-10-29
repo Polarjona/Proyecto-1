@@ -28,8 +28,6 @@ func _process(delta: float) -> void:
 		speed_ratio = clampf(horizontal / 10.0, 0.0, 1.0)
 		if _player.has_method("is_stunned") and _player.is_stunned():
 			target_stun = 1.0
-		elif _player.has_method("is_prone") and _player.is_prone():
-			target_stun = 0.45
 	_stun = lerpf(_stun, target_stun, 6.0 * delta)
 
 	_material.set_shader_parameter("speed", speed_ratio)

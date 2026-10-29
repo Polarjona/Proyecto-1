@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://6eyb84f7l7v1"
-path="res://.godot/imported/character-female-d.glb-8bb1ed2d6fe2c5af7aa7524206d4b3a4.scn"
+uid="uid://dgk6sw2cbkg3h"
+path="res://.godot/imported/ninja_male.glb-f5fc9d87ed15fbab1ba977b8f4cd350d.scn"
 
 [deps]
 
-source_file="res://assets/characters/mini/character-female-d.glb"
-dest_files=["res://.godot/imported/character-female-d.glb-8bb1ed2d6fe2c5af7aa7524206d4b3a4.scn"]
+source_file="res://assets/characters/ultimate/ninja_male.glb"
+dest_files=["res://.godot/imported/ninja_male.glb-f5fc9d87ed15fbab1ba977b8f4cd350d.scn"]
 
 [params]
 

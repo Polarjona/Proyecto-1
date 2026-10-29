@@ -35,19 +35,21 @@ extends Control
 @onready var selected_character_label: Label = $CharacterPanel/VBox/Body/PreviewBox/SelectedCharacterLabel
 @onready var price_label: Label = $CharacterPanel/VBox/Body/PreviewBox/PriceLabel
 @onready var buy_button: Button = $CharacterPanel/VBox/Body/PreviewBox/BuyButton
-@onready var character_buttons: Array[Button] = [
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow/CocoButton,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow/MentaButton,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow/NubeButton,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow/MochiButton,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow/TurboButton,
-]
-@onready var character_status: Array[Label] = [
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/CocoRow/CocoStatus,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/MentaRow/MentaStatus,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/NubeRow/NubeStatus,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/MochiRow/MochiStatus,
-	$CharacterPanel/VBox/Body/RosterScroll/Roster/TurboRow/TurboStatus,
+@onready var roster: VBoxContainer = $CharacterPanel/VBox/Body/RosterScroll/Roster
+
+## Alto de cada fila del roster, en píxeles. Con diez personajes la lista entra
+## entera en el panel sin tener que bajar con la rueda.
+const ROSTER_ROW_HEIGHT := 36.0
+
+## Botones y etiquetas del roster, en el mismo orden que el catálogo. Se
+## rellenan en `_build_roster`, que es quien crea las filas.
+var character_buttons: Array[Button] = []
+var character_status: Array[Label] = []
+var _roster_group: ButtonGroup
+@onready var level_buttons: Array[Button] = [
+	$ModePanel/VBox/LevelPicker/LevelRow/Level1,
+	$ModePanel/VBox/LevelPicker/LevelRow/Level2,
+	$ModePanel/VBox/LevelPicker/LevelRow/Level3,
 ]
 
 ## Personaje que se está mirando en el panel (puede seguir bloqueado).
@@ -66,6 +68,7 @@ func _ready() -> void:
 	# cian se corta por abajo.
 	lobby_camera.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
 	preview_camera.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
+	_build_roster()
 	_connect_buttons()
 	_connect_character_buttons()
 	mode_panel.hide()
@@ -75,6 +78,7 @@ func _ready() -> void:
 	_refresh_lobby()
 	_refresh_profile()
 	_refresh_character_panel()
+	_refresh_level_picker()
 	play_button.grab_focus()
 	# La música vive en el menú: la carrera la detiene al empezar y la fanfarria
 	# de victoria la sustituye al cruzar la meta.
@@ -107,9 +111,57 @@ func _connect_buttons() -> void:
 	credits_button.pressed.connect(_on_credits_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 	buy_button.pressed.connect(_on_buy_pressed)
+	for i in level_buttons.size():
+		level_buttons[i].pressed.connect(_on_level_selected.bind(i))
 	character_back_button.pressed.connect(_close_panels)
 	controls_panel.get_node("VBoxContainer/BackButton").pressed.connect(_close_panels)
 	credits_panel.get_node("VBoxContainer/BackButton").pressed.connect(_close_panels)
+
+
+## La lista de personajes se genera desde el catálogo: añadir un personaje es
+## una entrada en `CharacterCatalog.CHARACTERS`, sin tocar la escena ni este
+## script. Cada fila se llama `<Id>Row` y contiene `<Id>Button` y `<Id>Status`.
+func _build_roster() -> void:
+	var tail: Array[Node] = []
+	for child in roster.get_children():
+		if child is HBoxContainer:
+			roster.remove_child(child)
+			child.queue_free()
+		else:
+			tail.append(child)
+	character_buttons.clear()
+	character_status.clear()
+	_roster_group = ButtonGroup.new()
+	for entry in CharacterCatalog.CHARACTERS:
+		var id := String(entry["id"])
+		var stem := id.substr(0, 1).to_upper() + id.substr(1)
+		var row := HBoxContainer.new()
+		row.name = stem + "Row"
+		row.add_theme_constant_override("separation", 8)
+		var button := Button.new()
+		button.name = stem + "Button"
+		button.text = String(entry["name"])
+		button.custom_minimum_size = Vector2(0.0, ROSTER_ROW_HEIGHT)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.toggle_mode = true
+		button.button_group = _roster_group
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_font_size_override("font_size", 16)
+		var status := Label.new()
+		status.name = stem + "Status"
+		status.custom_minimum_size = Vector2(104.0, 0.0)
+		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		status.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		status.add_theme_font_size_override("font_size", 12)
+		status.add_theme_color_override("font_color", Color(0.72, 0.451, 0.027))
+		row.add_child(button)
+		row.add_child(status)
+		roster.add_child(row)
+		character_buttons.append(button)
+		character_status.append(status)
+	# La nota del pie tiene que quedar siempre debajo de la última fila.
+	for node in tail:
+		roster.move_child(node, roster.get_child_count() - 1)
 
 
 func _connect_character_buttons() -> void:
@@ -143,6 +195,22 @@ func _on_tournament_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
 	GameSession.start_bots(true)
 	TransitionManager.change_scene(GameSession.level_path)
+
+
+## Circuito de la carrera clásica. Se guarda en el perfil para no tener que
+## elegirlo otra vez al volver al lobby.
+func _on_level_selected(index: int) -> void:
+	AudioManager.play_sfx("ui", 0.05)
+	GameSession.set_classic_level(index)
+	_refresh_level_picker()
+
+
+func _refresh_level_picker() -> void:
+	var chosen := clampi(GameSession.classic_level, 0, GameSession.level_count() - 1)
+	for i in mini(level_buttons.size(), GameSession.level_count()):
+		var button := level_buttons[i]
+		button.text = GameSession.level_name(i)
+		button.set_pressed_no_signal(i == chosen)
 
 
 # --- Paneles ----------------------------------------------------------------

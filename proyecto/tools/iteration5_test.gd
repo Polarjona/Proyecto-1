@@ -8,10 +8,10 @@ extends SceneTree
 
 ## Personaje de pago con el que se prueba la compra (y la fila del roster que
 ## le corresponde).
-const PAID_ID := "menta"
-const PAID_ROW := "Menta"
+const PAID_ID := "worker"
+const PAID_ROW := "Worker"
 ## Última fila del roster, para comprobar que la lista entera cabe en el panel.
-const LAST_ROW := "Turbo"
+const LAST_ROW := "Caballero"
 
 var _failures := 0
 var _last_results: Dictionary = {}
@@ -153,9 +153,22 @@ func _run() -> void:
 	var panel_rect := character_panel.get_global_rect()
 	var last_row: Control = menu.get_node(
 		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sStatus" % [LAST_ROW, LAST_ROW])
-	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y
-		and panel_rect.encloses(last_row.get_global_rect()),
-		"El submenú y su lista de personajes caben en el panel")
+	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y,
+		"El submenú cabe en la pantalla")
+	# Con diez personajes la lista es más alta que su ventana: se baja hasta el
+	# final y se comprueba que el último también queda dentro del panel.
+	var scroll: ScrollContainer = menu.get_node("CharacterPanel/VBox/Body/RosterScroll")
+	var roster_box: Control = menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster")
+	_check(roster_box.size.y > scroll.size.y,
+		"La lista de personajes se desplaza dentro del submenú (%.0f px en %.0f px)" % [
+			roster_box.size.y, scroll.size.y])
+	scroll.scroll_vertical = int(roster_box.size.y)
+	await process_frame
+	await process_frame
+	_check(panel_rect.encloses(last_row.get_global_rect()),
+		"Al bajar del todo, el último personaje sigue dentro del panel")
+	scroll.scroll_vertical = 0
+	await process_frame
 
 	# Cuenta las filas del roster en vez de una lista fija: añadir personajes al
 	# catálogo no debe obligar a tocar el test.
@@ -192,7 +205,7 @@ func _run() -> void:
 	save.call("save_profile")
 
 	_check(bool(save.call("is_character_unlocked", CharacterCatalog.default_id())),
-		"Coco viene desbloqueado de fábrica")
+		"El personaje gratis viene desbloqueado de fábrica")
 	_check(not bool(save.call("is_character_unlocked", PAID_ID)),
 		"%s empieza bloqueado" % CharacterCatalog.display_name(PAID_ID))
 	save.call("set_character", PAID_ID)
@@ -421,6 +434,40 @@ func _run() -> void:
 	audio.call("play_music", false)
 	_check(not bool(audio.call("is_victory_playing")) and bool(audio.call("is_music_playing")),
 		"Volver al lobby corta la fanfarria y recupera la música")
+
+	# --- Carrera clásica: el circuito se elige en el menú ----------------
+	# El circuito vive en el perfil, así que se deja en el primero para que el
+	# test no dependa de lo que guardara la partida anterior.
+	save.call("set_setting", "classic_level", 0)
+	session.set("classic_level", 0)
+	var menu3 := (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate() as Control
+	root.add_child(menu3)
+	current_scene = menu3
+	await process_frame
+	await process_frame
+	var level_row: Control = menu3.get_node("ModePanel/VBox/LevelPicker/LevelRow")
+	var level_one := level_row.get_node("Level1") as Button
+	var level_two := level_row.get_node("Level2") as Button
+	(menu3.get_node("PlayButton") as Button).pressed.emit()
+	await process_frame
+	var level_count := (session.get("LEVELS") as Array).size()
+	_check(level_row.get_child_count() == level_count,
+		"El menú ofrece los %d circuitos (%d botones)" % [level_count, level_row.get_child_count()])
+	_check(level_two.text == String(session.call("level_name", 1)) and level_one.button_pressed,
+		"La carrera clásica empieza en %s y el elegido está marcado" % level_one.text)
+	level_two.pressed.emit()
+	await process_frame
+	_check(int(session.get("classic_level")) == 1 and level_two.button_pressed
+		and not level_one.button_pressed,
+		"Elegir circuito marca el botón y lo recuerda en la sesión")
+	_check(int(save.call("get_setting", "classic_level", -1)) == 1,
+		"El circuito elegido se guarda en el perfil")
+	(menu3.get_node("ModePanel/VBox/ClassicCard") as Button).pressed.emit()
+	await create_timer(1.2).timeout
+	_check(String(session.get("mode")) == "classic" and current_scene != null
+		and current_scene.scene_file_path.ends_with("scenes/levels/spin_go_round.tscn"),
+		"La carrera clásica arranca en el circuito elegido (%s)"
+			% (current_scene.scene_file_path if current_scene else "sin escena"))
 
 	# Deja el perfil como estaba antes de ejecutar el test.
 	save.set("data", original_profile)

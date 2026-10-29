@@ -5,13 +5,16 @@ extends Node
 
 signal mode_changed(mode: String)
 
-## Los tres circuitos del torneo, en orden de ronda. El primero es tambien el
-## circuito de la carrera clasica y del modo de practica con bots.
+## Los tres circuitos del torneo, en orden de ronda. El torneo los recorre
+## enteros; la carrera clásica corre el que se elija en el menú.
 const LEVELS := [
 	"res://scenes/main.tscn",
 	"res://scenes/levels/spin_go_round.tscn",
 	"res://scenes/levels/pivot_panic.tscn",
 ]
+## Nombre de cada circuito para el menú. Es el `display_name` del LevelInfo de
+## su escena (lo comprueba `levels_test`).
+const LEVEL_NAMES := ["Pivot Push", "Spin Go Round", "Pivot Panic"]
 const TOTAL_ROUNDS := 3
 
 var mode: String = "classic"
@@ -19,17 +22,40 @@ var round: int = 1
 var bot_count: int = 7
 var qualifiers: int = 3
 var level_path: String = LEVELS[0]
+## Circuito elegido en el menú para la carrera clásica (índice de LEVELS).
+var classic_level: int = 0
 
 
 func _ready() -> void:
 	_install_gamepad_bindings()
+	# El circuito elegido sobrevive al cierre del juego, como el personaje.
+	classic_level = clampi(int(SaveManager.get_setting("classic_level", 0)), 0, LEVELS.size() - 1)
 
 
 func start_classic() -> void:
 	mode = "classic"
 	round = 1
-	level_path = LEVELS[0]
+	level_path = classic_level_path()
 	mode_changed.emit(mode)
+
+
+## Circuitos que se pueden elegir en la carrera clásica.
+func level_count() -> int:
+	return LEVELS.size()
+
+
+func level_name(index: int) -> String:
+	return String(LEVEL_NAMES[clampi(index, 0, LEVEL_NAMES.size() - 1)])
+
+
+func classic_level_path() -> String:
+	return String(LEVELS[clampi(classic_level, 0, LEVELS.size() - 1)])
+
+
+## Guarda el circuito elegido para la carrera clásica y lo recuerda en el perfil.
+func set_classic_level(index: int) -> void:
+	classic_level = clampi(index, 0, LEVELS.size() - 1)
+	SaveManager.set_setting("classic_level", classic_level)
 
 
 func start_bots(tournament: bool = false) -> void:
@@ -88,7 +114,6 @@ func _install_gamepad_bindings() -> void:
 	_add_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
 	_add_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
 	_add_button("jump", JOY_BUTTON_A)
-	_add_button("dive", JOY_BUTTON_X)
 	_add_button("pause", JOY_BUTTON_START)
 
 
