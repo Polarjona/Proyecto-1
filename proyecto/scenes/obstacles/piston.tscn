@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://piston_obs"]
+
+[ext_resource type="Script" path="res://scripts/piston.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/cyan.tres" id="2_body"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_head"]
+size = Vector3(1.6, 2.2, 2.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+size = Vector3(1.6, 2.2, 2.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_push"]
+size = Vector3(1.8, 2.0, 2.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lamp"]
+size = Vector3(0.42, 0.42, 0.42)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lamp"]
+albedo_color = Color(1, 0.82, 0.3, 1)
+emission_enabled = true
+emission = Color(1, 0.62, 0.12, 1)
+emission_energy_multiplier = 0.3
+
+[node name="Piston" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Head" type="AnimatableBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+sync_to_physics = true
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("BoxMesh_head")
+surface_material_override/0 = ExtResource("2_body")
+
+[node name="HeadShape" type="CollisionShape3D" parent="Head"]
+shape = SubResource("BoxShape3D_head")
+
+[node name="PushArea" type="Area3D" parent="Head"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="PushShape" type="CollisionShape3D" parent="Head/PushArea"]
+shape = SubResource("BoxShape3D_push")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_lamp")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_lamp")
+
+[node name="Warning" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.32, 0.18, 1)
+light_energy = 0.0
+omni_range = 6.0
+shadow_enabled = false

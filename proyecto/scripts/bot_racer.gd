@@ -239,8 +239,11 @@ func _physics_process(delta: float) -> void:
 
 	# Real ledges get a jump even if the waypoint table missed one.
 	if not holding and is_on_floor() and _jump_cooldown <= 0.0 and _jump_request <= 0.0:
+		# El aspa giratoria se salta: si el brazo va a pasar por abajo, salto.
+		if _rotor_blocks():
+			_jump_request = 0.3
 		# Do not jump into the cannon: the driver must run through its trigger.
-		if not _near_cannon() and not _ground_ahead(direction):
+		elif not _near_cannon() and not _ground_ahead(direction):
 			_jump_request = 0.3
 
 	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed
@@ -284,6 +287,35 @@ func _update_audio(delta: float) -> void:
 	else:
 		_step_timer = 0.0
 	_was_on_floor = grounded
+
+
+## Aspa giratoria a punto de barrer el pasillo: el bot la salta igual que el
+## jugador. Calcula cuánto tarda el brazo en llegar abajo y solo pide el salto
+## cuando falta menos de medio segundo, para no despegar demasiado pronto.
+func _rotor_blocks() -> bool:
+	for rotor in get_tree().get_nodes_in_group("rotors"):
+		if not (rotor is Node3D) or not is_instance_valid(rotor):
+			continue
+		var node := rotor as Node3D
+		var offset := node.global_position - global_position
+		if offset.z > 0.5 or offset.z < -3.4 or absf(offset.x) > 2.2:
+			continue
+		var spin := absf(float(node.get("spin_speed")))
+		if spin < 0.05:
+			continue
+		var body := node.get_node_or_null("Rotor") as Node3D
+		if body == null:
+			continue
+		var direction := signf(float(node.get("spin_direction")))
+		if absf(direction) < 0.1:
+			direction = 1.0
+		# Ángulo que le queda al brazo para pasar por abajo (rotation.z = PI).
+		var remaining := fposmod((PI - body.rotation.z) * direction, TAU)
+		if remaining / spin > 0.45:
+			continue
+		if offset.z < -0.6:
+			return true
+	return false
 
 
 func _near_cannon() -> bool:

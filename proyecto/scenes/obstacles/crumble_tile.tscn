@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://crumble_tile"]
+
+[ext_resource type="Script" path="res://scripts/crumble_tile.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/spin_orange.tres" id="2_default"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(3.4, 0.4, 3.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+size = Vector3(3.4, 0.4, 3.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(3.3, 0.6, 2.9)
+
+[node name="CrumbleTile" type="Node3D"]
+script = ExtResource("1_script")
+tile_material = ExtResource("2_default")
+
+[node name="Body" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Body"]
+mesh = SubResource("BoxMesh_body")
+
+[node name="Shape" type="CollisionShape3D" parent="Body"]
+shape = SubResource("BoxShape3D_body")
+
+[node name="Trigger" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="TriggerShape" type="CollisionShape3D" parent="Trigger"]
+shape = SubResource("BoxShape3D_trigger")

@@ -10,7 +10,7 @@ La iteración 5 ordena la experiencia: el menú se queda con **dos modos** (carr
 
 La iteración 6 convierte el menú en un **lobby estilo Fall Guys** con acabado de **pegatina 3D**: fondo de **degradado neón** (magenta → violeta → cian) sin líneas, paneles violeta con **borde blanco grueso** y **sombra sólida** desplazada (sin desenfoque), botones **inclinados** con esquinas asimétricas, tipografía redondeada **Baloo 2 ExtraBold** con contornos y un **JUGAR!** magenta enorme que **se hunde** al pulsarlo. El corredor equipado gira en 3D sobre su peana magenta, y el lobby incluye tarjeta de **temporada con progreso al oro** e insignia de monedas. El juego es **Tumble Rush** (el perfil anterior se migra solo) y al cruzar la meta suena una **canción de victoria** sobre la pantalla de resultados.
 
-La temporada de torneo añade **tres circuitos completos**: **Pivot Push** retematizado en azul real, magenta y oro, **Spin Go Round** en cian y naranja, y **Pivot Panic** en magenta y oro. Cada ronda tiene su propio récord, sus medallas, sus checkpoints y una ruta de bots. Pivot Push estrena un balancín; Spin Go Round mezcla barridos, plataforma móvil, disco giratorio y lluvia de bolas; Pivot Panic encadena balancín, péndulos, viento, cañón y trampolín final. Los detalles están en `documentacion/Torneo_tres_circuitos.md`.
+La temporada de torneo añade **tres circuitos completos**: **Pivot Push** retematizado en azul real, magenta y oro, **Spin Go Round** en cian y naranja, y **Pivot Panic** en magenta y oro. Cada ronda tiene su propio récord, sus medallas, sus checkpoints y una ruta de bots. Pivot Push estrena un balancín; Spin Go Round mezcla barridos, plataforma móvil, disco giratorio, lluvia de bolas, pistones, losas frágiles, rocas persecutorias, trampas de pinchos y aspas giratorias; Pivot Panic encadena balancín, péndulos, viento, cañón y trampolín final. Los detalles están en `documentacion/Torneo_tres_circuitos.md`.
 
 La última pasada hace tres cosas: los **corredores miden 1,25 m** (escala de juguete) para que los circuitos parezcan enormes, la **carrera clásica deja elegir entre los tres circuitos** desde el panel de modos (y lo recuerda en el perfil) y las **caídas de los bots son honestas**, porque vuelven a su último checkpoint en vez de aparecer en el siguiente. El único empujón hacia delante que queda es el último recurso, cuando un tramo se le atraganta a un bot.
 
@@ -64,8 +64,8 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 ### Carrera y progresión
 
 - Carrera cronometrada con **cuenta atrás**, **splits por checkpoint** y comparación con el récord.
-- **Checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco. Pivot Push y Pivot Panic tienen 5; Spin Go Round tiene 3.
-- **Medallas oro/plata/bronce por circuito** (Pivot Push 70/95/130 s, Spin Go Round 42/58/78 s, Pivot Panic 62/84/112 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
+- **Checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco. Pivot Push y Pivot Panic tienen 5; Spin Go Round tiene 12.
+- **Medallas oro/plata/bronce por circuito** (Pivot Push 70/95/130 s, Spin Go Round 100/130/170 s, Pivot Panic 62/84/112 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
 - **Monedas según tiempo y puesto**: 10 de base + medalla (40/25/10) + 1 por cada 2,5 s por debajo del tiempo de bronce (máx. 40) + puesto en los modos con bots (1º 40, 2º 25, 3º 15, resto 5). El resultado muestra el desglose.
 - **Perfil persistente** en `user://profile.json`: récord, medallas, monedas, estadísticas, ajustes y tutorial. Migra automáticamente el antiguo `user://best_time.save` y el perfil de las carpetas de datos de versiones anteriores.
 - **Tutorial** de primera vez y **menú de pausa** con reinicio desde checkpoint, reinicio de carrera y ajustes.
@@ -80,7 +80,7 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 
 **Pivot Push** (~211 m, 5 checkpoints) conserva los 13 tramos originales y añade un **balancín** entre las cintas y los martillos: la tabla de 13 × 10 m se nivela con el peso en el centro y vuelca hacia el lado cargado; la punta baja conecta con una rampa y un landing practicables. La paleta pasa a azul real, magenta, rosa claro y oro.
 
-**Spin Go Round** (~85 m, 3 checkpoints) es la ronda corta: arena de barridos, pasarela con **plataforma móvil**, tramo de **peonzas** con disco giratorio y lluvia de bolas, y meta con arco a cuadros. Usa cian, azul, naranja, magenta y lima.
+**Spin Go Round** (~339 m, 12 checkpoints) es la ronda de obstáculos y el circuito más largo: arena de barridos con pasillos cerrados, pasarela con **plataforma móvil** y tramo de **peonzas**; **rampa de subida**, dos **pistones** alternos con luz de aviso, un **puente de 12 losas que se derrumban** y rampa de bajada; y un tercer acto con **tres rocas persecutorias**, una **galería de 16 trampas de pinchos**, un **puente de tres aspas giratorias** que hay que saltar, una **cinta en contra**, la **subida larga al mirador** con lluvia de bolas, dos **péndulos** en la cima y una **bajada final** con bolas rodando cuesta abajo. Usa cian, azul, naranja, magenta y lima.
 
 **Pivot Panic** (~150 m, 5 checkpoints) es la final: barrido de entrada, **balancín** bajo un gran bastidor dorado, avenida de **cuatro péndulos**, plataforma móvil, **puente del viento** con dos túneles opuestos, **cañón** sobre el vacío y recta final con barrido, péndulo y **trampolín** que sube a la meta 4 m. Usa magenta intenso, rosa, azul real y oro.
 
@@ -126,7 +126,7 @@ Los tests headless recorren escenas, arranque, flujo completo, las novedades de 
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # 24/24 escenas OK
+godot --headless -s res://tools/check_scenes.gd       # 26/26 escenas OK
 godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
 godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
 godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK

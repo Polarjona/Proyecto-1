@@ -31,8 +31,8 @@ func _run() -> void:
 	]
 	var ids := ["pivot_push", "spin_go_round", "pivot_panic"]
 	var names := ["Pivot Push", "Spin Go Round", "Pivot Panic"]
-	var finishes := [-206.0, -80.0, -145.0]
-	var round_counts := [5, 3, 5]
+	var finishes := [-206.0, -334.0, -145.0]
+	var round_counts := [5, 12, 5]
 
 	var session: Node = root.get_node("GameSession")
 	_check(session.get("LEVELS").size() == 3, "GameSession registra tres circuitos")
@@ -118,6 +118,34 @@ func _run() -> void:
 				"Spin Go Round tiene lluvia de bolas")
 			_check(course.get_node_or_null("FinishApproach") != null,
 				"Spin Go Round conecta el último tramo con la meta")
+			_check(course.get_node_or_null("SpinClimb") != null
+				and course.get_node_or_null("SpinDrop") != null,
+				"Spin Go Round tiene subida y bajada")
+			_check(course.get_node_or_null("PressDeck") != null
+				and course.get_node_or_null("PistonLeft") != null
+				and course.get_node_or_null("PistonRight") != null,
+				"Spin Go Round tiene la plataforma de los pistones")
+			_check(get_nodes_in_group("crumble_tiles").size() == 12,
+				"Spin Go Round tiene el puente de 12 losas frágiles")
+			_check(course.get_node_or_null("FinalClimb") != null,
+				"Spin Go Round sube hasta la meta")
+			_check(course.get_node_or_null("BoulderDeck") != null,
+				"Spin Go Round tiene el descenso de rocas")
+			_check(get_nodes_in_group("boulders").size() == 3,
+				"Spin Go Round tiene las tres rocas del pasillo")
+			_check(course.get_node_or_null("SpikeDeck") != null
+				and get_nodes_in_group("spike_traps").size() == 16,
+				"Spin Go Round tiene la galería de 16 pinchos")
+			_check(course.get_node_or_null("GateBridge") != null
+				and get_nodes_in_group("rotors").size() == 3,
+				"Spin Go Round tiene el puente de las tres aspas")
+			_check(course.get_node_or_null("SummitClimb") != null
+				and course.get_node_or_null("SummitDeck") != null,
+				"Spin Go Round sube al mirador")
+			_check(course.get_node_or_null("SummitDrop") != null
+				and course.get_node_or_null("FinalDeck") != null
+				and course.get_node_or_null("FinishPlaza") != null,
+				"Spin Go Round baja a la recta final")
 		else:
 			_check(course.get_node_or_null("SeeSaw") != null,
 				"Pivot Panic tiene el balancín central")

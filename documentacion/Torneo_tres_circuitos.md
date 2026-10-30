@@ -15,7 +15,7 @@ rondas con tres circuitos distintos**, unidos por `GameSession`:
 | Ronda | Escena | Nombre | Longitud | Checkpoints |
 | --- | --- | --- | --- | --- |
 | 1 | `scenes/main.tscn` | Pivot Push | ~211 m | 5 |
-| 2 | `scenes/levels/spin_go_round.tscn` | Spin Go Round | ~85 m | 3 |
+| 2 | `scenes/levels/spin_go_round.tscn` | Spin Go Round | ~339 m | 12 |
 | 3 | `scenes/levels/pivot_panic.tscn` | Pivot Panic | ~150 m | 5 |
 
 Cada nivel lleva un `LevelInfo` con id, ronda, tiempos de medalla, récord
@@ -57,15 +57,40 @@ siempre; `LevelInfo` ahora la expone también en el inspector.
 
 ## 4. Spin Go Round (ronda 2)
 
-Circuito corto y circular, pensado como respiro entre las dos rondas largas:
+El circuito más largo del torneo: **339 m y 12 checkpoints**, en tres actos que
+alternan altura, persecuciones y obstáculos de suelo.
 
-- salida con arco y **dos barridos** en una arena ancha;
+**Acto 1 — arena y peonzas**
+
+- salida con arco y **dos barridos** en una arena con pasillos cerrados;
 - pasarela estrecha y **plataforma móvil** sobre el vacío;
-- **tramo de peonzas**: barrido, disco giratorio y lluvia de bolas;
-- meta con arco a cuadros, aro dorado y bolas de playa de atrezo.
+- **tramo de peonzas**: barrido, disco giratorio y lluvia de bolas.
 
-Los bots esperan la plataforma móvil y la cruzan; el tramo se validó con
-`tools/levels_bots_test.gd` (27 s, 0 rescates).
+**Acto 2 — altura**
+
+- **rampa de subida** a una plataforma alta con **dos pistones** alternos
+  (bloque sólido que sale de la pared con luz de aviso);
+- **puente de 12 losas frágiles** que tiemblan, se desploman y vuelven a
+  aparecer, para que el pelotón pueda seguir cruzando;
+- **rampa de bajada**, recta final y **subida final** a la plaza intermedia.
+
+**Acto 3 — el descenso y el mirador** (todo nuevo)
+
+- **pasillo de las rocas**: tres **rocas persecutorias** ruedan en contra de la
+  marcha por tres carriles desfasados y hay que dejarles hueco de lado;
+- **galería de pinchos**: 16 **trampas de pinchos** en 4 × 4 con aviso en rojo
+  antes de que salgan del suelo y golpeen hacia arriba;
+- **puente de las aspas**: pasarela de 4,6 m con tres **aspas giratorias** que
+  barren a la altura de las piernas y hay que saltar;
+- **cinta en contra** en el aterrizaje, para que el último metro cueste;
+- **subida larga al mirador** (24 m, +5,4 m) con lluvia de bolas en la cuesta;
+- **mirador**: barrido y **dos péndulos** en la plataforma más alta del mapa;
+- **bajada final** de 24 m con bolas rodando cuesta abajo y dos barridos de
+  cierre sobre la recta final.
+
+Los bots esperan la plataforma móvil, pasan los pistones, esquivan las rocas,
+saltan las aspas y cruzan los pinchos; el tramo se validó con
+`tools/levels_bots_test.gd` (entre 80 y 100 s, 0 o 1 rescates).
 
 ## 5. Pivot Panic (ronda 3)
 
@@ -78,7 +103,7 @@ La final mezcla los obstáculos que mejor encajan con Pivot Push:
 5. recta final con barrido, péndulo y **trampolín** que sube a la meta 4 m.
 
 Tiene 5 checkpoints para que una caída en la final no obligue a repetir el
-circuito entero. El bot de prueba termina en 45 s con 2 rescates; el jugador
+circuito entero. El bot de prueba termina en ~39 s con un par de rescates; el jugador
 tiene margen para repetir el tramo del cañón o el péndulo.
 
 ## 6. Récords y medallas
@@ -90,7 +115,7 @@ medalla son:
 | Circuito | Oro | Plata | Bronce |
 | --- | --- | --- | --- |
 | Pivot Push | 70 s | 95 s | 130 s |
-| Spin Go Round | 42 s | 58 s | 78 s |
+| Spin Go Round | 115 s | 145 s | 185 s |
 | Pivot Panic | 62 s | 84 s | 112 s |
 
 El HUD muestra la medalla de oro del circuito cargado y el panel de resultados
@@ -114,7 +139,7 @@ carrera y se pueden regenerar tras ajustar la paleta o la ruta.
 
 ## 8. Verificación
 
-- `tools/check_scenes.gd`: **24/24 escenas OK**.
+- `tools/check_scenes.gd`: **26/26 escenas OK**.
 - `tools/levels_test.gd`: tres circuitos cargan, `LevelInfo`, checkpoints,
   metas, rutas de bots y decoración; flujo de tres rondas del torneo.
 - `tools/levels_bots_test.gd`: un bot completa Spin Go Round y Pivot Panic.
