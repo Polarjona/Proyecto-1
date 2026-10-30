@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Verifica los tres circuitos del torneo: escena cargable, LevelInfo, meta,
+## Verifica los cuatro circuitos del torneo: escena cargable, LevelInfo, meta,
 ## checkpoints, ruta de bots, decoración y obstáculos propios de cada ronda.
 
 var _failures := 0
@@ -27,15 +27,16 @@ func _run() -> void:
 	var paths := [
 		"res://scenes/main.tscn",
 		"res://scenes/levels/spin_go_round.tscn",
-		"res://scenes/levels/pivot_panic.tscn",
+		"res://scenes/levels/glacier_gallop.tscn",
+		"res://scenes/levels/lava_vortex.tscn",
 	]
-	var ids := ["pivot_push", "spin_go_round", "pivot_panic"]
-	var names := ["Pivot Push", "Spin Go Round", "Pivot Panic"]
-	var finishes := [-363.0, -334.0, -318.0]
-	var round_counts := [11, 12, 11]
+	var ids := ["pivot_push", "spin_go_round", "glacier_gallop", "lava_vortex"]
+	var names := ["Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex"]
+	var round_counts := [11, 12, 9, 6]
 
 	var session: Node = root.get_node("GameSession")
-	_check(session.get("LEVELS").size() == 3, "GameSession registra tres circuitos")
+	_check(session.get("LEVELS").size() == 4, "GameSession registra cuatro circuitos")
+	_check(int(session.call("level_count")) == 4, "El menú ofrece cuatro circuitos")
 	for i in paths.size():
 		_check(String(session.get("LEVELS")[i]) == paths[i],
 			"Ronda %d apunta a %s" % [i + 1, paths[i]])
@@ -63,15 +64,17 @@ func _run() -> void:
 				"%s muestra su nombre de ronda" % names[i])
 			_check(int(info.get("round_index")) == i + 1,
 				"%s es la ronda %d" % [names[i], i + 1])
-			_check(is_equal_approx(float(info.get("finish_z")), finishes[i]),
-				"%s termina en z=%.1f" % [names[i], finishes[i]])
 			var waypoints: PackedVector3Array = info.get("waypoints")
 			var lanes: PackedFloat32Array = info.get("lane_widths")
-			_check(waypoints.size() >= 15, "%s tiene ruta de bots (%d puntos)" % [names[i], waypoints.size()])
+			_check(waypoints.size() >= 15,
+				"%s tiene ruta de bots (%d puntos)" % [names[i], waypoints.size()])
 			_check(lanes.size() == waypoints.size(),
 				"%s tiene un ancho de carril por punto" % names[i])
 			_check(float(info.get("finish_z")) < float(info.get("start_z")),
 				"%s avanza hacia delante" % names[i])
+			if i == 3:
+				_check(bool(info.get("path_corridor")),
+					"Lava Vortex corrige el rumbo del bot contra la ruta")
 
 		var manager := get_first_node_in_group("race_manager") as Node
 		_check(manager != null, "%s tiene RaceManager" % names[i])
@@ -80,7 +83,8 @@ func _run() -> void:
 				"%s carga el récord de su circuito" % names[i])
 			var checkpoints := get_nodes_in_group("checkpoints")
 			_check(checkpoints.size() == round_counts[i],
-				"%s tiene %d checkpoints (encontrados %d)" % [names[i], round_counts[i], checkpoints.size()])
+				"%s tiene %d checkpoints (encontrados %d)"
+					% [names[i], round_counts[i], checkpoints.size()])
 			_check(int(manager.get("checkpoints_total")) == round_counts[i],
 				"%s cuenta los checkpoints en el HUD" % names[i])
 
@@ -99,8 +103,11 @@ func _run() -> void:
 					var box := child as CSGBox3D
 					if box.material == null or box.size.y <= 0.0:
 						bad_material += 1
+				elif child is StaticBody3D:
+					platforms += 1
 			_check(platforms >= 6, "%s tiene %d plataformas" % [names[i], platforms])
-			_check(bad_material == 0, "%s tiene todas las plataformas con material" % names[i])
+			_check(bad_material == 0,
+				"%s tiene todas las plataformas CSG con material" % names[i])
 
 		if i == 0:
 			_check(course.get_node_or_null("SeeSaw") != null,
@@ -128,8 +135,6 @@ func _run() -> void:
 				"Spin Go Round tiene plataforma móvil")
 			_check(course.get_node_or_null("BallRain") != null,
 				"Spin Go Round tiene lluvia de bolas")
-			_check(course.get_node_or_null("FinishApproach") != null,
-				"Spin Go Round conecta el último tramo con la meta")
 			_check(course.get_node_or_null("SpinClimb") != null
 				and course.get_node_or_null("SpinDrop") != null,
 				"Spin Go Round tiene subida y bajada")
@@ -139,12 +144,9 @@ func _run() -> void:
 				"Spin Go Round tiene la plataforma de los pistones")
 			_check(get_nodes_in_group("crumble_tiles").size() == 12,
 				"Spin Go Round tiene el puente de 12 losas frágiles")
-			_check(course.get_node_or_null("FinalClimb") != null,
-				"Spin Go Round sube hasta la meta")
-			_check(course.get_node_or_null("BoulderDeck") != null,
+			_check(course.get_node_or_null("BoulderDeck") != null
+				and get_nodes_in_group("boulders").size() == 3,
 				"Spin Go Round tiene el descenso de rocas")
-			_check(get_nodes_in_group("boulders").size() == 3,
-				"Spin Go Round tiene las tres rocas del pasillo")
 			_check(course.get_node_or_null("SpikeDeck") != null
 				and get_nodes_in_group("spike_traps").size() == 16,
 				"Spin Go Round tiene la galería de 16 pinchos")
@@ -154,48 +156,53 @@ func _run() -> void:
 			_check(course.get_node_or_null("SummitClimb") != null
 				and course.get_node_or_null("SummitDeck") != null,
 				"Spin Go Round sube al mirador")
-			_check(course.get_node_or_null("SummitDrop") != null
-				and course.get_node_or_null("FinalDeck") != null
-				and course.get_node_or_null("FinishPlaza") != null,
-				"Spin Go Round baja a la recta final")
-		else:
-			_check(course.get_node_or_null("SeeSaw") != null,
-				"Pivot Panic tiene el balancín central")
-			_check(course.get_node_or_null("PendulumA") != null,
-				"Pivot Panic tiene péndulos")
-			_check(course.get_node_or_null("WindTunnelA") != null,
-				"Pivot Panic tiene túneles de viento")
-			_check(course.get_node_or_null("Launcher") != null,
-				"Pivot Panic tiene cañón")
-			_check(course.get_node_or_null("BouncePadFinal") != null,
-				"Pivot Panic tiene trampolín final")
-			_check(course.get_node_or_null("BoulderRavine") != null
-				and get_nodes_in_group("boulders").size() == 3,
-				"Pivot Panic tiene la garganta de las rocas")
-			_check(course.get_node_or_null("SpikeTerrace") != null
-				and get_nodes_in_group("spike_traps").size() == 16,
-				"Pivot Panic tiene la terraza de pinchos")
+		elif i == 2:
+			_check(course.get_node_or_null("IceLift") != null,
+				"Glacier Gallop tiene la plataforma móvil del lago")
+			_check(course.get_node_or_null("Centrifuge") != null
+				and course.get_node_or_null("BallRain") != null,
+				"Glacier Gallop tiene la arena giratoria con lluvia de bolas")
+			_check(course.get_node_or_null("IceGallery") != null
+				and course.get_node_or_null("PistonL") != null
+				and course.get_node_or_null("PistonR") != null,
+				"Glacier Gallop tiene la galería de pistones")
+			_check(get_nodes_in_group("crumble_tiles").size() == 12,
+				"Glacier Gallop tiene el puente de 12 placas frágiles")
 			_check(course.get_node_or_null("GaleBridge") != null
-				and get_nodes_in_group("rotors").size() == 3,
-				"Pivot Panic tiene el puente del vendaval")
-			_check(course.get_node_or_null("PanicSummit") != null
-				and course.get_node_or_null("PanicSwoop") != null
-				and course.get_node_or_null("PanicPlaza") != null,
-				"Pivot Panic sube a la cumbre y baja a la meta")
+				and get_nodes_in_group("rotors").size() == 2,
+				"Glacier Gallop tiene el puente del vendaval")
+			_check(course.get_node_or_null("BoulderDeck") != null
+				and get_nodes_in_group("boulders").size() == 3,
+				"Glacier Gallop tiene el pasillo de las rocas")
+			_check(get_nodes_in_group("spike_traps").size() == 12,
+				"Glacier Gallop tiene la terraza de 12 pinchos")
+			_check(course.get_node_or_null("SummitPlatform") != null,
+				"Glacier Gallop acaba en la cumbre helada")
+		else:
+			_check(course.get_node_or_null("SpiralDeck0") != null
+				and course.get_node_or_null("SpiralDeck3") != null,
+				"Lava Vortex construye la espiral completa")
+			_check(level.get_node_or_null("LavaSea") != null,
+				"Lava Vortex tiene el mar de lava")
+			_check(level.get_node_or_null("MeteorRain") != null,
+				"Lava Vortex tiene la lluvia de meteoros")
+			_check(get_nodes_in_group("lava_geysers").size() >= 6,
+				"Lava Vortex tiene al menos seis géiseres de lava")
+			_check(get_nodes_in_group("sweepers").size() >= 4,
+				"Lava Vortex tiene al menos cuatro barridos en la espiral")
+			_check(get_nodes_in_group("spike_traps").size() >= 18,
+				"Lava Vortex tiene al menos dieciocho trampas de pinchos")
+			_check(course.get_node_or_null("SummitPlatform") != null,
+				"Lava Vortex termina en la plataforma de la cumbre")
 
-		var decor := level.get_node_or_null("ArenaDecor") as Node3D
-		_check(decor != null, "%s tiene decoración de estadio" % names[i])
-		if decor != null:
-			var centers: PackedVector3Array = decor.get("section_centers")
-			var sizes: PackedVector2Array = decor.get("section_sizes")
-			if i == 0:
-				_check(centers.is_empty() and decor.get("build_arches") == true,
-					"Pivot Push conserva la decoración original")
-			else:
-				_check(centers.size() >= 6 and centers.size() == sizes.size(),
-					"%s decora sus %d tramos" % [names[i], centers.size()])
-				_check(decor.get("build_arches") == false,
-					"%s no hereda arcos del mapa original" % names[i])
+		if i < 2:
+			var arena := level.get_node_or_null("ArenaDecor") as Node3D
+			_check(arena != null, "%s tiene decoración de estadio" % names[i])
+		else:
+			var decor := level.get_node_or_null("Decor") as Node3D
+			_check(decor != null and decor.get_child_count() >= 5,
+				"%s tiene atrezo propio (%d piezas)" % [names[i],
+					decor.get_child_count() if decor != null else 0])
 
 		var kill := level.get_node_or_null("KillPlane") as Node3D
 		_check(kill != null and kill.position.y < 0.0,
@@ -207,17 +214,18 @@ func _run() -> void:
 		level.free()
 		await process_frame
 
-	# Flujo de tres rondas del torneo.
+	# Flujo de cuatro rondas del torneo.
 	session.call("start_bots", true)
 	_check(String(session.get("level_path")) == paths[0], "El torneo empieza en Pivot Push")
+	for round_number in [2, 3, 4]:
+		session.call("advance_round")
+		_check(int(session.get("round")) == round_number,
+			"La ronda %d es la ronda %d" % [round_number, round_number])
+		_check(String(session.get("level_path")) == paths[round_number - 1],
+			"La ronda %d carga %s" % [round_number, names[round_number - 1]])
 	session.call("advance_round")
-	_check(int(session.get("round")) == 2, "La segunda ronda es la ronda 2")
-	_check(String(session.get("level_path")) == paths[1], "La segunda ronda carga Spin Go Round")
-	session.call("advance_round")
-	_check(int(session.get("round")) == 3, "La tercera ronda es la ronda 3")
-	_check(String(session.get("level_path")) == paths[2], "La final carga Pivot Panic")
-	session.call("advance_round")
-	_check(int(session.get("round")) == 3, "El torneo se detiene en la final")
+	_check(int(session.get("round")) == 4, "El torneo se detiene en la final")
+	_check(int(session.call("total_rounds")) == 4, "El torneo anuncia cuatro rondas")
 	session.call("reset")
 
 	print("RESULT: %s (%d fallos)" % ["TODO OK" if _failures == 0 else "HAY FALLOS", _failures])

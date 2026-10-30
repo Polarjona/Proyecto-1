@@ -5,17 +5,18 @@ extends Node
 
 signal mode_changed(mode: String)
 
-## Los tres circuitos del torneo, en orden de ronda. El torneo los recorre
+## Los cuatro circuitos del torneo, en orden de ronda. El torneo los recorre
 ## enteros; la carrera clásica corre el que se elija en el menú.
 const LEVELS := [
 	"res://scenes/main.tscn",
 	"res://scenes/levels/spin_go_round.tscn",
-	"res://scenes/levels/pivot_panic.tscn",
+	"res://scenes/levels/glacier_gallop.tscn",
+	"res://scenes/levels/lava_vortex.tscn",
 ]
 ## Nombre de cada circuito para el menú. Es el `display_name` del LevelInfo de
 ## su escena (lo comprueba `levels_test`).
-const LEVEL_NAMES := ["Pivot Push", "Spin Go Round", "Pivot Panic"]
-const TOTAL_ROUNDS := 3
+const LEVEL_NAMES := ["Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex"]
+const TOTAL_ROUNDS := 4
 
 var mode: String = "classic"
 var round: int = 1
@@ -76,7 +77,7 @@ func is_tournament() -> bool:
 
 
 ## Pasa a la siguiente ronda del torneo. No hace nada si ya estaba en la
-## final: el torneo tiene tres circuitos y termina ahi.
+## final: el torneo tiene cuatro circuitos y termina ahi.
 func advance_round() -> void:
 	if round >= TOTAL_ROUNDS:
 		return

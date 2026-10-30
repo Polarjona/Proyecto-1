@@ -92,6 +92,9 @@ const JUMP_POSE_TIME := 0.42
 @export var body_color: Color = Color(0.95, 0.4, 0.55)
 @export var jump_velocity: float = 6.2
 @export var look_ahead: float = 1.8
+## En circuitos que giran sobre sí mismos hay que corregir el rumbo contra la
+## propia ruta, no contra el eje X, porque la pista ya no está centrada en x=0.
+@export var path_corridor: bool = false
 
 var _index: int = 0
 var _speed: float = 5.5
@@ -266,7 +269,9 @@ func _physics_process(delta: float) -> void:
 	_update_animation(walk_speed > 0.0 and is_on_floor())
 	_update_audio(delta)
 	_tick_progress(delta, flat.length(), holding)
-	if global_position.z <= finish_z:
+	# En una ruta propia la meta es el último waypoint: comprobar Z haría que
+	# un bot terminase al pasar por el punto más bajo de la espiral.
+	if _path.is_empty() and global_position.z <= finish_z:
 		_finish()
 
 
@@ -389,7 +394,7 @@ func _avoidance() -> Vector3:
 		if not (ball is Node3D) or not is_instance_valid(ball):
 			continue
 		var delta: Vector3 = (ball as Node3D).global_position - global_position
-		if delta.z > 1.5 or delta.z < -4.5 or absf(delta.x) > 3.0:
+		if delta.z > 1.5 or delta.z < -4.5 or absf(delta.x) > 3.0 or absf(delta.y) > 4.0:
 			continue
 		var side := signf(global_position.x - (ball as Node3D).global_position.x)
 		if absf(side) < 0.1:
@@ -398,7 +403,12 @@ func _avoidance() -> Vector3:
 		avoid.x += side * (0.8 + urgency * 1.6)
 
 	var corridor := _path_lane_width(mini(_index, _path_points().size() - 1))
-	if absf(global_position.x) > corridor + 0.8:
+	if path_corridor:
+		var target := _target_position()
+		var to_path := Vector3(target.x - global_position.x, 0.0, target.z - global_position.z)
+		if to_path.length() > corridor + 0.8:
+			avoid += to_path.normalized() * 2.0
+	elif absf(global_position.x) > corridor + 0.8:
 		avoid.x += -signf(global_position.x) * 2.0
 
 	if avoid.length_squared() > 2.25:
@@ -418,7 +428,7 @@ func _should_hold() -> bool:
 		if not (platform is Node3D) or not is_instance_valid(platform):
 			continue
 		var delta: Vector3 = (platform as Node3D).global_position - global_position
-		if absf(delta.x) > 2.5 or delta.z > 0.5 or delta.z < -14.0:
+		if absf(delta.x) > 2.5 or delta.z > 0.5 or delta.z < -14.0 or absf(delta.y) > 2.5:
 			continue
 		var progress := float((platform as Node3D).call("get_progress"))
 		var riding := absf(delta.z) < 2.4 and absf(delta.y) < 1.3 and absf(delta.x) < 2.4
@@ -435,7 +445,7 @@ func _should_hold() -> bool:
 			continue
 		var delta: Vector3 = (sweeper as Node3D).global_position - global_position
 		var id := (sweeper as Node3D).get_instance_id()
-		if delta.z > 1.5 or delta.z < -7.0 or absf(delta.x) > 5.0:
+		if delta.z > 1.5 or delta.z < -7.0 or absf(delta.x) > 5.0 or absf(delta.y) > 3.0:
 			_sweeper_commits.erase(id)
 			continue
 		if delta.z > -0.6:
@@ -458,7 +468,7 @@ func _should_hold() -> bool:
 		var rotor_node := rotor as Node3D
 		var rotor_delta: Vector3 = rotor_node.global_position - global_position
 		var rotor_id := rotor_node.get_instance_id()
-		if rotor_delta.z > 1.5 or rotor_delta.z < -6.5 or absf(rotor_delta.x) > 3.0:
+		if rotor_delta.z > 1.5 or rotor_delta.z < -6.5 or absf(rotor_delta.x) > 3.0 or absf(rotor_delta.y) > 3.0:
 			_rotor_commits.erase(rotor_id)
 			continue
 		if rotor_delta.z > -1.4:
@@ -476,7 +486,7 @@ func _should_hold() -> bool:
 			continue
 		var delta: Vector3 = (pendulum as Node3D).global_position - global_position
 		var id := (pendulum as Node3D).get_instance_id()
-		if delta.z > 1.5 or delta.z < -5.5:
+		if delta.z > 1.5 or delta.z < -5.5 or absf(delta.y) > 3.0:
 			_pendulum_commits.erase(id)
 			continue
 		if delta.z > -0.5:
