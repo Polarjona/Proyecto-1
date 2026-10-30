@@ -69,7 +69,7 @@ func _run() -> void:
 
 	# --- Determinismo de la carrera -------------------------------------
 	var checkpoints: Array = get_nodes_in_group("checkpoints")
-	_check(checkpoints.size() == 5, "Siguen existiendo 5 checkpoints (encontrados: %d)" % checkpoints.size())
+	_check(checkpoints.size() == 11, "Siguen existiendo 11 checkpoints (encontrados: %d)" % checkpoints.size())
 
 	# --- 1. Nuevos obstaculos presentes en el mapa ----------------------
 	var pad: Area3D = game.get_node_or_null("Course/BouncePadFinal")

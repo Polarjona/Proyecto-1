@@ -31,8 +31,8 @@ func _run() -> void:
 	]
 	var ids := ["pivot_push", "spin_go_round", "pivot_panic"]
 	var names := ["Pivot Push", "Spin Go Round", "Pivot Panic"]
-	var finishes := [-206.0, -334.0, -145.0]
-	var round_counts := [5, 12, 5]
+	var finishes := [-363.0, -334.0, -318.0]
+	var round_counts := [11, 12, 11]
 
 	var session: Node = root.get_node("GameSession")
 	_check(session.get("LEVELS").size() == 3, "GameSession registra tres circuitos")
@@ -107,6 +107,18 @@ func _run() -> void:
 				"Pivot Push conserva el balancín editado")
 			_check(course.get_node_or_null("Sweeper") != null,
 				"Pivot Push conserva los barridos")
+			_check(course.get_node_or_null("ForgeDeck") != null
+				and get_nodes_in_group("boulders").size() == 2,
+				"Pivot Push tiene el pasillo de las rocas")
+			_check(course.get_node_or_null("ChimneyBridge") != null
+				and get_nodes_in_group("rotors").size() == 3,
+				"Pivot Push tiene el puente de las aspas")
+			_check(get_nodes_in_group("spike_traps").size() == 14,
+				"Pivot Push tiene sus catorce trampas de pinchos")
+			_check(course.get_node_or_null("ForgeSummit") != null
+				and course.get_node_or_null("ForgeDrop") != null
+				and course.get_node_or_null("ForgePlaza") != null,
+				"Pivot Push sube a la cima y baja a la meta")
 		elif i == 1:
 			_check(course.get_node_or_null("SweeperA") != null,
 				"Spin Go Round tiene barridos")
@@ -157,6 +169,19 @@ func _run() -> void:
 				"Pivot Panic tiene cañón")
 			_check(course.get_node_or_null("BouncePadFinal") != null,
 				"Pivot Panic tiene trampolín final")
+			_check(course.get_node_or_null("BoulderRavine") != null
+				and get_nodes_in_group("boulders").size() == 3,
+				"Pivot Panic tiene la garganta de las rocas")
+			_check(course.get_node_or_null("SpikeTerrace") != null
+				and get_nodes_in_group("spike_traps").size() == 16,
+				"Pivot Panic tiene la terraza de pinchos")
+			_check(course.get_node_or_null("GaleBridge") != null
+				and get_nodes_in_group("rotors").size() == 3,
+				"Pivot Panic tiene el puente del vendaval")
+			_check(course.get_node_or_null("PanicSummit") != null
+				and course.get_node_or_null("PanicSwoop") != null
+				and course.get_node_or_null("PanicPlaza") != null,
+				"Pivot Panic sube a la cumbre y baja a la meta")
 
 		var decor := level.get_node_or_null("ArenaDecor") as Node3D
 		_check(decor != null, "%s tiene decoración de estadio" % names[i])

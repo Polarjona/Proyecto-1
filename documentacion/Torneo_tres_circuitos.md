@@ -14,9 +14,9 @@ rondas con tres circuitos distintos**, unidos por `GameSession`:
 
 | Ronda | Escena | Nombre | Longitud | Checkpoints |
 | --- | --- | --- | --- | --- |
-| 1 | `scenes/main.tscn` | Pivot Push | ~211 m | 5 |
+| 1 | `scenes/main.tscn` | Pivot Push | ~368 m | 11 |
 | 2 | `scenes/levels/spin_go_round.tscn` | Spin Go Round | ~339 m | 12 |
-| 3 | `scenes/levels/pivot_panic.tscn` | Pivot Panic | ~150 m | 5 |
+| 3 | `scenes/levels/pivot_panic.tscn` | Pivot Panic | ~323 m | 11 |
 
 Cada nivel lleva un `LevelInfo` con id, ronda, tiempos de medalla, récord
 propio y la ruta de los bots. `RaceManager` y `RaceDirector` leen esos datos,
@@ -52,8 +52,16 @@ Materiales nuevos: `pivot_floor`, `pivot_floor_alt`, `pivot_blue`,
 Es el circuito original, retematizado de azul/cian/lima a **azul real,
 magenta y oro**. Se conservan los tramos y se añadió un **balancín** en el
 hueco entre las cintas y la avenida de martillos, con su base, rampa y landing.
-La cámara, los 5 checkpoints y los 7 bots siguen usando la misma ruta de
+La cámara, los 11 checkpoints y los 7 bots siguen usando la misma ruta de
 siempre; `LevelInfo` ahora la expone también en el inspector.
+
+**Acto 3 — la forja** (todo nuevo): tras la plaza de la antigua meta, una
+rampa baja al **pasillo de las rocas** (dos rocas persecutorias por los
+carriles de fuera, con el centro libre y **cinta en contra**), sube a la
+**terraza de pinchos** (8 trampas) y cruza el **puente de las aspas** de 20 m
+con tres brazos giratorios. Después, **subida larga de 18 m** hasta la cima,
+con barrido y **dos péndulos** encima, y una **bajada de 18 m** hasta la recta
+final: dos barridos, cinta en contra y cuatro pinchos antes de la meta.
 
 ## 4. Spin Go Round (ronda 2)
 
@@ -102,9 +110,16 @@ La final mezcla los obstáculos que mejor encajan con Pivot Push:
 4. **cañón** que cruza el vacío hasta la plataforma del cañón;
 5. recta final con barrido, péndulo y **trampolín** que sube a la meta 4 m.
 
-Tiene 5 checkpoints para que una caída en la final no obligue a repetir el
-circuito entero. El bot de prueba termina en ~39 s con un par de rescates; el jugador
-tiene margen para repetir el tramo del cañón o el péndulo.
+Tiene 5 checkpoints en la primera mitad para que una caída no obligue a repetir
+el circuito entero. El bot de prueba termina en ~39 s con un par de rescates; el
+jugador tiene margen para repetir el tramo del cañón o el péndulo.
+
+**Acto 3 — la garganta** (todo nuevo, 11 checkpoints en total): rampa de
+bajada, **pasillo de las rocas** (tres rocas en contra), **terraza de 12
+trampas de pinchos**, **puente del vendaval** con viento cruzado y **tres aspas
+giratorias**, cinta en contra y aterrizaje; luego **subida de 18 m a la
+cumbre** con barrido y dos péndulos, **bajada de 20 m** y recta final con dos
+barridos, cinta en contra y cuatro pinchos.
 
 ## 6. Récords y medallas
 
@@ -114,9 +129,9 @@ medalla son:
 
 | Circuito | Oro | Plata | Bronce |
 | --- | --- | --- | --- |
-| Pivot Push | 70 s | 95 s | 130 s |
+| Pivot Push | 130 s | 170 s | 215 s |
 | Spin Go Round | 115 s | 145 s | 185 s |
-| Pivot Panic | 62 s | 84 s | 112 s |
+| Pivot Panic | 120 s | 155 s | 195 s |
 
 El HUD muestra la medalla de oro del circuito cargado y el panel de resultados
 indica la ronda y el puesto. Al clasificarse, «Siguiente ronda» avanza a la

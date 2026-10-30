@@ -109,6 +109,7 @@ var _progress_time: float = 0.0
 ## Once a bot sees a safe gap in a sweeper/pendulum it commits to crossing.
 var _sweeper_commits: Dictionary = {}
 var _pendulum_commits: Dictionary = {}
+var _rotor_commits: Dictionary = {}
 var _rescue_count: int = 0
 ## Caídas al vacío y tramos perdidos por ellas (expuesto para tests).
 var _fall_count: int = 0
@@ -239,11 +240,8 @@ func _physics_process(delta: float) -> void:
 
 	# Real ledges get a jump even if the waypoint table missed one.
 	if not holding and is_on_floor() and _jump_cooldown <= 0.0 and _jump_request <= 0.0:
-		# El aspa giratoria se salta: si el brazo va a pasar por abajo, salto.
-		if _rotor_blocks():
-			_jump_request = 0.3
 		# Do not jump into the cannon: the driver must run through its trigger.
-		elif not _near_cannon() and not _ground_ahead(direction):
+		if not _near_cannon() and not _ground_ahead(direction):
 			_jump_request = 0.3
 
 	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed
@@ -287,35 +285,6 @@ func _update_audio(delta: float) -> void:
 	else:
 		_step_timer = 0.0
 	_was_on_floor = grounded
-
-
-## Aspa giratoria a punto de barrer el pasillo: el bot la salta igual que el
-## jugador. Calcula cuánto tarda el brazo en llegar abajo y solo pide el salto
-## cuando falta menos de medio segundo, para no despegar demasiado pronto.
-func _rotor_blocks() -> bool:
-	for rotor in get_tree().get_nodes_in_group("rotors"):
-		if not (rotor is Node3D) or not is_instance_valid(rotor):
-			continue
-		var node := rotor as Node3D
-		var offset := node.global_position - global_position
-		if offset.z > 0.5 or offset.z < -3.4 or absf(offset.x) > 2.2:
-			continue
-		var spin := absf(float(node.get("spin_speed")))
-		if spin < 0.05:
-			continue
-		var body := node.get_node_or_null("Rotor") as Node3D
-		if body == null:
-			continue
-		var direction := signf(float(node.get("spin_direction")))
-		if absf(direction) < 0.1:
-			direction = 1.0
-		# Ángulo que le queda al brazo para pasar por abajo (rotation.z = PI).
-		var remaining := fposmod((PI - body.rotation.z) * direction, TAU)
-		if remaining / spin > 0.45:
-			continue
-		if offset.z < -0.6:
-			return true
-	return false
 
 
 func _near_cannon() -> bool:
@@ -479,6 +448,28 @@ func _should_hold() -> bool:
 		if bar != null and absf(cos(bar.rotation.y)) > 0.3:
 			return true
 		_sweeper_commits[id] = true
+
+	# Aspas giratorias: el brazo solo deja paso cuando apunta hacia arriba. El
+	# bot espera a media distancia y cruza de una vez, sin saltar (saltar lo
+	# dejaba a merced del brazo en el aire).
+	for rotor in get_tree().get_nodes_in_group("rotors"):
+		if not (rotor is Node3D) or not is_instance_valid(rotor):
+			continue
+		var rotor_node := rotor as Node3D
+		var rotor_delta: Vector3 = rotor_node.global_position - global_position
+		var rotor_id := rotor_node.get_instance_id()
+		if rotor_delta.z > 1.5 or rotor_delta.z < -6.5 or absf(rotor_delta.x) > 3.0:
+			_rotor_commits.erase(rotor_id)
+			continue
+		if rotor_delta.z > -1.4:
+			_rotor_commits[rotor_id] = true
+			continue
+		if bool(_rotor_commits.get(rotor_id, false)):
+			continue
+		var rotor_body := rotor_node.get_node_or_null("Rotor") as Node3D
+		if rotor_body != null and cos(rotor_body.rotation.z) < 0.45:
+			return true
+		_rotor_commits[rotor_id] = true
 
 	for pendulum in get_tree().get_nodes_in_group("pendulums"):
 		if not (pendulum is Node3D) or not is_instance_valid(pendulum):

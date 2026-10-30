@@ -64,8 +64,8 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 ### Carrera y progresión
 
 - Carrera cronometrada con **cuenta atrás**, **splits por checkpoint** y comparación con el récord.
-- **Checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco. Pivot Push y Pivot Panic tienen 5; Spin Go Round tiene 12.
-- **Medallas oro/plata/bronce por circuito** (Pivot Push 70/95/130 s, Spin Go Round 100/130/170 s, Pivot Panic 62/84/112 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
+- **Checkpoints** con respawn y penalización (+2,5 s por caída); se marcan con una banda luminosa en el suelo, sin arco. Pivot Push y Pivot Panic tienen 11; Spin Go Round tiene 12.
+- **Medallas oro/plata/bronce por circuito** (Pivot Push 130/170/215 s, Spin Go Round 115/145/185 s, Pivot Panic 120/155/195 s) y pantalla de **resultados** con tiempo, récord, medalla, splits, monedas y caídas.
 - **Monedas según tiempo y puesto**: 10 de base + medalla (40/25/10) + 1 por cada 2,5 s por debajo del tiempo de bronce (máx. 40) + puesto en los modos con bots (1º 40, 2º 25, 3º 15, resto 5). El resultado muestra el desglose.
 - **Perfil persistente** en `user://profile.json`: récord, medallas, monedas, estadísticas, ajustes y tutorial. Migra automáticamente el antiguo `user://best_time.save` y el perfil de las carpetas de datos de versiones anteriores.
 - **Tutorial** de primera vez y **menú de pausa** con reinicio desde checkpoint, reinicio de carrera y ajustes.
@@ -78,13 +78,15 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
 
 ### Contenido y obstáculos
 
-**Pivot Push** (~211 m, 5 checkpoints) conserva los 13 tramos originales y añade un **balancín** entre las cintas y los martillos: la tabla de 13 × 10 m se nivela con el peso en el centro y vuelca hacia el lado cargado; la punta baja conecta con una rampa y un landing practicables. La paleta pasa a azul real, magenta, rosa claro y oro.
+**Pivot Push** (~368 m, 11 checkpoints) conserva los 13 tramos originales, añade un **balancín** entre las cintas y los martillos y un tercer acto, **la forja**: pasillo de **rocas persecutorias**, **cinta en contra**, puente de **tres aspas giratorias**, terraza de **pinchos**, **subida larga** a la cima, dos **péndulos** sobre ella y una **bajada final** con barridos hasta la meta. La paleta pasa a azul real, magenta, rosa claro y oro.
 
 **Spin Go Round** (~339 m, 12 checkpoints) es la ronda de obstáculos y el circuito más largo: arena de barridos con pasillos cerrados, pasarela con **plataforma móvil** y tramo de **peonzas**; **rampa de subida**, dos **pistones** alternos con luz de aviso, un **puente de 12 losas que se derrumban** y rampa de bajada; y un tercer acto con **tres rocas persecutorias**, una **galería de 16 trampas de pinchos**, un **puente de tres aspas giratorias** que hay que saltar, una **cinta en contra**, la **subida larga al mirador** con lluvia de bolas, dos **péndulos** en la cima y una **bajada final** con bolas rodando cuesta abajo. Usa cian, azul, naranja, magenta y lima.
 
-**Pivot Panic** (~150 m, 5 checkpoints) es la final: barrido de entrada, **balancín** bajo un gran bastidor dorado, avenida de **cuatro péndulos**, plataforma móvil, **puente del viento** con dos túneles opuestos, **cañón** sobre el vacío y recta final con barrido, péndulo y **trampolín** que sube a la meta 4 m. Usa magenta intenso, rosa, azul real y oro.
+**Pivot Panic** (~323 m, 11 checkpoints) es la final: barrido de entrada, **balancín** bajo un gran bastidor dorado, avenida de **cuatro péndulos**, plataforma móvil, **puente del viento** con dos túneles opuestos, **cañón** sobre el vacío y trampolín; y un tercer acto, **la garganta**: **pasillo de rocas**, **terraza de 12 pinchos**, **puente del vendaval** con aspas y viento cruzado, **subida a la cumbre** con dos péndulos y **bajada final** con barridos y pinchos. Usa magenta intenso, rosa, azul real y oro.
 
 Las tres escenas comparten `LevelInfo` (id, ronda, récord, medallas y ruta de bots) y se pueden regenerar con `tools/build_levels.gd`. El atrezo incluye una **pelota de playa CC-BY** de Poly Pizza en los dos circuitos nuevos.
+
+Alrededor de los circuitos, `scripts/arena_decor.gd` levanta un **fondo 3D** animado: mar de nubes con islas flotantes y jardines de cristales, **globos aerostáticos** que se mecen, **anillos de neón** en el cielo, una segunda fila de **islas grandes con árboles** y rocas y cubos flotantes. Todo es decorativo (sin colisión) y se comparte entre los tres mapas, cada uno con su paleta.
 
 ### Arte y presentación
 

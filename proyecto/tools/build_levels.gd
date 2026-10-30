@@ -717,7 +717,7 @@ func _build_spin_go_round() -> void:
 	_obstacle(course, root, "RotorC", ROTOR_SCENE, Vector3(0.0, 4.5, -234.0), {
 		"spin_speed": 1.15, "phase_offset": 0.7,
 	})
-	_obstacle(course, root, "GateBelt", CONVEYOR_SCENE, Vector3(0.0, 3.68, -243.0), {
+	_obstacle(course, root, "GateBelt", CONVEYOR_SCENE, Vector3(0.0, 3.475, -243.0), {
 		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.2, "arrow_span": 2.0,
 	})
 	_obstacle(course, root, "Checkpoint10", CHECKPOINT_SCENE, Vector3(0.0, 3.6, -239.5), {
@@ -756,7 +756,7 @@ func _build_spin_go_round() -> void:
 	_obstacle(course, root, "SweeperFinalB", SWEEPER_SCENE, Vector3(0.0, 3.35, -321.0), {
 		"spin_speed": 2.9, "spin_direction": -1.0, "push_force": 7.2, "stuns": true,
 	})
-	_obstacle(course, root, "FinalBelt", CONVEYOR_SCENE, Vector3(0.0, 3.08, -317.0), {
+	_obstacle(course, root, "FinalBelt", CONVEYOR_SCENE, Vector3(0.0, 2.875, -317.0), {
 		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.6, "arrow_span": 2.2,
 	})
 	_obstacle(course, root, "FinishLine", FINISH_SCENE, Vector3(0.0, 3.0, -334.0))
@@ -979,11 +979,11 @@ func _build_pivot_panic() -> void:
 		"display_name": "Pivot Panic",
 		"round_index": 3,
 		"start_z": 5.0,
-		"finish_z": -145.0,
-		"course_length": 150.0,
-		"gold_time": 62.0,
-		"silver_time": 84.0,
-		"bronze_time": 112.0,
+		"finish_z": -318.0,
+		"course_length": 323.0,
+		"gold_time": 120.0,
+		"silver_time": 155.0,
+		"bronze_time": 195.0,
 		"waypoints": _pivot_waypoints(),
 		"lane_widths": _pivot_lanes(),
 	})
@@ -1071,7 +1071,116 @@ func _build_pivot_panic() -> void:
 	})
 	_slab(course, root, "FinishPlatform", 0.0, -145.0, 14.0, 14.0, 4.0,
 		MAT_PIVOT_FLOOR_ALT)
-	_obstacle(course, root, "FinishLine", FINISH_SCENE, Vector3(0.0, 4.0, -145.0))
+	# --- acto 3 de Pivot Panic: la garganta -------------------------------
+	_ramp(course, root, "RavineDrop", 0.0, -152.0, -158.0, 4.0, 2.2, 9.4, MAT_PIVOT_FLOOR)
+	_slab(course, root, "BoulderRavine", 0.0, -169.0, 11.5, 22.0, 2.2, MAT_PIVOT_FLOOR_ALT)
+	_ramp(course, root, "SpikeAscent", 0.0, -180.0, -186.0, 2.2, 4.6, 9.4, MAT_PIVOT_FLOOR)
+	_slab(course, root, "SpikeTerrace", 0.0, -194.0, 12.0, 16.0, 4.6, MAT_PIVOT_FLOOR_ALT)
+	_slab(course, root, "GaleBridge", 0.0, -212.0, 6.4, 20.0, 4.6, MAT_PIVOT_FLOOR)
+	_slab(course, root, "GaleLanding", 0.0, -227.5, 9.5, 11.0, 4.6, MAT_PIVOT_FLOOR_ALT)
+	_ramp(course, root, "PanicClimb", 0.0, -233.0, -251.0, 4.6, 9.0, 9.4, MAT_PIVOT_FLOOR)
+	_slab(course, root, "PanicSummit", 0.0, -258.0, 13.0, 14.0, 9.0, MAT_PIVOT_FLOOR_ALT)
+	_ramp(course, root, "PanicSwoop", 0.0, -265.0, -285.0, 9.0, 3.4, 9.4, MAT_PIVOT_FLOOR)
+	_slab(course, root, "PanicFinal", 0.0, -297.0, 13.0, 24.0, 3.4, MAT_PIVOT_FLOOR_ALT)
+	_slab(course, root, "PanicPlaza", 0.0, -318.0, 16.0, 18.0, 3.4, MAT_PIVOT_FLOOR)
+	# Muros laterales de los tramos nuevos: el borde queda cerrado.
+	_platform(course, root, "RavineWallLeft", Vector3(-6.4, 3.6, -169.0),
+		Vector3(0.9, 2.8, 22.0), MAT_PIVOT_WALL)
+	_platform(course, root, "RavineWallRight", Vector3(6.4, 3.6, -169.0),
+		Vector3(0.9, 2.8, 22.0), MAT_PIVOT_WALL)
+	# Brocal del puente del vendaval: el aspa aparta, pero no tira al vacío.
+	_platform(course, root, "GaleCurbLeft", Vector3(-3.05, 4.85, -212.0),
+		Vector3(0.2, 0.5, 20.0), MAT_PIVOT_WALL)
+	_platform(course, root, "GaleCurbRight", Vector3(3.05, 4.85, -212.0),
+		Vector3(0.2, 0.5, 20.0), MAT_PIVOT_WALL)
+	_platform(course, root, "TerraceWallLeft", Vector3(-6.4, 6.0, -194.0),
+		Vector3(0.9, 2.8, 16.0), MAT_PIVOT_WALL)
+	_platform(course, root, "TerraceWallRight", Vector3(6.4, 6.0, -194.0),
+		Vector3(0.9, 2.8, 16.0), MAT_PIVOT_WALL)
+	_platform(course, root, "FinalWallLeft", Vector3(-7.0, 4.7, -297.0),
+		Vector3(0.9, 2.6, 24.0), MAT_PIVOT_WALL)
+	_platform(course, root, "FinalWallRight", Vector3(7.0, 4.7, -297.0),
+		Vector3(0.9, 2.6, 24.0), MAT_PIVOT_WALL)
+
+	_obstacle(course, root, "Checkpoint6", CHECKPOINT_SCENE, Vector3(0.0, 4.0, -153.5), {
+		"checkpoint_name": "Checkpoint 6",
+	})
+	# Tres rocas ruedan por la garganta hacia el jugador.
+	_obstacle(course, root, "BoulderA", BOULDER_SCENE, Vector3(-3.0, 3.2, -176.0), {
+		"travel": Vector3(0.0, 0.0, 17.0), "speed": 5.4, "phase_offset": 0.0,
+	})
+	_obstacle(course, root, "BoulderB", BOULDER_SCENE, Vector3(0.0, 3.2, -176.0), {
+		"travel": Vector3(0.0, 0.0, 17.0), "speed": 6.0, "phase_offset": 2.2,
+	})
+	_obstacle(course, root, "BoulderC", BOULDER_SCENE, Vector3(3.0, 3.2, -176.0), {
+		"travel": Vector3(0.0, 0.0, 17.0), "speed": 6.6, "phase_offset": 4.4,
+	})
+	_obstacle(course, root, "Checkpoint7", CHECKPOINT_SCENE, Vector3(0.0, 2.2, -159.5), {
+		"checkpoint_name": "Checkpoint 7",
+	})
+	# Terraza de pinchos: doce trampas en 4 x 3.
+	for row in 3:
+		for col in 4:
+			_obstacle(course, root, "Spike%d_%d" % [row, col], SPIKE_SCENE,
+				Vector3(-4.5 + float(col) * 3.0, 4.6, -189.0 - float(row) * 5.0), {
+					"phase_offset": float(row) * 1.9 + float(col) * 0.6,
+				})
+	_obstacle(course, root, "Checkpoint8", CHECKPOINT_SCENE, Vector3(0.0, 4.6, -187.5), {
+		"checkpoint_name": "Checkpoint 8",
+	})
+	# Puente del vendaval: viento cruzado y aspas giratorias a la vez.
+	_obstacle(course, root, "GaleTunnel", WIND_SCENE, Vector3(0.0, 5.0, -208.0), {
+		"wind_direction": Vector3(1.0, 0.0, 0.0), "strength": 4.4,
+		"gust_amplitude": 1.6,
+	})
+	_obstacle(course, root, "RotorA", ROTOR_SCENE, Vector3(0.0, 5.5, -211.0), {
+		"spin_speed": 0.95, "phase_offset": 0.0,
+	})
+	_obstacle(course, root, "RotorB", ROTOR_SCENE, Vector3(0.0, 5.5, -217.0), {
+		"spin_speed": 1.1, "spin_direction": -1.0, "phase_offset": 2.0,
+	})
+	_obstacle(course, root, "RotorC", ROTOR_SCENE, Vector3(0.0, 5.5, -221.0), {
+		"spin_speed": 1.25, "phase_offset": 0.6,
+	})
+	_obstacle(course, root, "GaleBelt", CONVEYOR_SCENE, Vector3(0.0, 4.475, -227.5), {
+		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.0, "arrow_span": 2.0,
+	})
+	_obstacle(course, root, "Checkpoint9", CHECKPOINT_SCENE, Vector3(0.0, 4.6, -223.5), {
+		"checkpoint_name": "Checkpoint 9",
+	})
+	_obstacle(course, root, "Checkpoint10", CHECKPOINT_SCENE, Vector3(0.0, 9.0, -252.5), {
+		"checkpoint_name": "Checkpoint 10",
+	})
+	_obstacle(course, root, "SweeperSummit", SWEEPER_SCENE, Vector3(0.0, 9.35, -255.0), {
+		"spin_speed": 2.5, "push_force": 6.8, "stuns": true,
+	})
+	_obstacle(course, root, "PendulumSummitA", PENDULUM_SCENE, Vector3(0.0, 13.2, -258.0), {
+		"max_angle": 1.05, "swing_speed": 0.0024, "push_force": 12.0,
+		"phase_offset": 0.3,
+	})
+	_obstacle(course, root, "PendulumSummitB", PENDULUM_SCENE, Vector3(0.0, 13.2, -262.5), {
+		"max_angle": 1.05, "swing_speed": 0.0027, "push_force": 12.0,
+		"phase_offset": 1.9,
+	})
+	_obstacle(course, root, "Checkpoint11", CHECKPOINT_SCENE, Vector3(0.0, 3.4, -286.5), {
+		"checkpoint_name": "Checkpoint 11",
+	})
+	_obstacle(course, root, "SweeperFinalA", SWEEPER_SCENE, Vector3(0.0, 3.75, -290.0), {
+		"spin_speed": 2.7, "push_force": 7.0, "stuns": true,
+	})
+	_obstacle(course, root, "SweeperFinalB", SWEEPER_SCENE, Vector3(0.0, 3.75, -302.0), {
+		"spin_speed": 3.0, "spin_direction": -1.0, "push_force": 7.4, "stuns": true,
+	})
+	_obstacle(course, root, "FinalBelt", CONVEYOR_SCENE, Vector3(0.0, 3.275, -297.0), {
+		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.8, "arrow_span": 2.2,
+	})
+	for row in 2:
+		for col in 2:
+			_obstacle(course, root, "SpikeFinal%d_%d" % [row, col], SPIKE_SCENE,
+				Vector3(-2.8 + float(col) * 5.6, 3.4, -294.0 - float(row) * 6.0), {
+					"phase_offset": float(row) * 1.4 + float(col) * 0.9,
+				})
+	_obstacle(course, root, "FinishLine", FINISH_SCENE, Vector3(0.0, 3.4, -318.0))
 
 	# La salida y el pivote central.
 	_obstacle(course, root, "Checkpoint1", CHECKPOINT_SCENE, Vector3(0.0, 0.0, -19.0), {
@@ -1110,6 +1219,29 @@ func _build_pivot_panic() -> void:
 	_rail(decor, root, "FinalRailRight", 5.1, -130.0, 14.0, 1.0, MAT_PIVOT_GOLD, true)
 	_rail(decor, root, "FinishRailLeft", -7.1, -145.0, 14.0, 4.0, MAT_PIVOT_GOLD, true)
 	_rail(decor, root, "FinishRailRight", 7.1, -145.0, 14.0, 4.0, MAT_PIVOT_GOLD, true)
+	# --- atrezo del acto 3 ------------------------------------------------
+	_rail(decor, root, "RavineRailLeft", -6.4, -169.0, 22.0, 2.2, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "RavineRailRight", 6.4, -169.0, 22.0, 2.2, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "TerraceRailLeft", -6.4, -194.0, 16.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "TerraceRailRight", 6.4, -194.0, 16.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "GaleRailLeft", -3.3, -212.0, 20.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "GaleRailRight", 3.3, -212.0, 20.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "GaleLandingRailLeft", -4.8, -227.5, 11.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "GaleLandingRailRight", 4.8, -227.5, 11.0, 4.6, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "SummitRailLeft", -6.6, -258.0, 14.0, 9.0, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "SummitRailRight", 6.6, -258.0, 14.0, 9.0, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "FinalRailLeftB", -7.0, -297.0, 24.0, 3.4, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "FinalRailRightB", 7.0, -297.0, 24.0, 3.4, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "PlazaRailLeft", -8.1, -318.0, 18.0, 3.4, MAT_PIVOT_GOLD, true)
+	_rail(decor, root, "PlazaRailRight", 8.1, -318.0, 18.0, 3.4, MAT_PIVOT_GOLD, true)
+	_arch(decor, root, "SummitGate", -251.5, 9.0, 10.2, 5.4, MAT_PIVOT_BLUE,
+		MAT_PIVOT_GOLD, "CUMBRE")
+	_arch(decor, root, "PlazaGate", -309.5, 3.4, 13.6, 5.4, MAT_PIVOT_BLUE,
+		MAT_PIVOT_GOLD)
+	for i in 3:
+		_hazard(decor, root, "HazardRavine%d" % i, 0.0, -163.0 - float(i) * 6.0, 2.2, 10.8)
+	for i in 2:
+		_hazard(decor, root, "HazardPlaza%d" % i, 0.0, -313.0 - float(i) * 3.0, 3.4, 13.6)
 	for i in 4:
 		_hazard(decor, root, "HazardFinal%d" % i, 0.0, -125.0 - float(i) * 3.0, 1.0, 9.0)
 	# Gran bastidor dorado alrededor del balancín, como el pivote de referencia.
@@ -1140,8 +1272,12 @@ func _build_pivot_panic() -> void:
 	_prop(decor, root, "BeachBallC", "res://assets/props/beach_ball.glb",
 		Vector3(-10.0, -4.0, -62.0), 3.2, 5.0)
 	_lights(decor, root, [Vector3(0.0, 4.5, -30.0), Vector3(0.0, 4.5, -55.0),
-		Vector3(0.0, 4.5, -98.0), Vector3(0.0, 6.0, -145.0)],
-		Color(1.0, 0.72, 0.45), 1.35, 18.0)
+		Vector3(0.0, 4.5, -98.0), Vector3(0.0, 6.0, -145.0),
+		Vector3(0.0, 6.6, -169.0), Vector3(0.0, 7.0, -194.0),
+		Vector3(0.0, 7.0, -212.0), Vector3(0.0, 7.0, -227.5),
+		Vector3(0.0, 11.6, -258.0), Vector3(0.0, 8.6, -285.0),
+		Vector3(0.0, 7.0, -297.0), Vector3(0.0, 7.0, -318.0)],
+		Color(1.0, 0.72, 0.45), 1.35, 20.0)
 
 	_arena_decor(root, {
 		"section_centers": PackedVector3Array([
@@ -1150,19 +1286,26 @@ func _build_pivot_panic() -> void:
 			Vector3(0.0, 0.0, -55.0), Vector3(0.0, 0.0, -70.0),
 			Vector3(0.0, 0.0, -86.0), Vector3(0.0, 0.2, -98.0),
 			Vector3(0.0, 1.0, -118.0), Vector3(0.0, 1.0, -130.0),
-			Vector3(0.0, 4.0, -145.0),
+			Vector3(0.0, 4.0, -145.0), Vector3(0.0, 2.2, -169.0),
+			Vector3(0.0, 4.6, -194.0), Vector3(0.0, 4.6, -212.0),
+			Vector3(0.0, 4.6, -227.5), Vector3(0.0, 9.0, -258.0),
+			Vector3(0.0, 3.4, -297.0), Vector3(0.0, 3.4, -318.0),
 		]),
 		"section_sizes": PackedVector2Array([
 			Vector2(17.0, 13.0), Vector2(6.0, 10.0), Vector2(10.0, 6.0),
 			Vector2(10.0, 5.9), Vector2(5.0, 20.0), Vector2(10.0, 6.0),
 			Vector2(10.0, 8.0), Vector2(4.0, 16.0), Vector2(12.0, 12.0),
-			Vector2(10.0, 14.0), Vector2(14.0, 14.0),
+			Vector2(10.0, 14.0), Vector2(14.0, 14.0), Vector2(11.5, 22.0),
+			Vector2(12.0, 16.0), Vector2(6.4, 20.0), Vector2(9.5, 11.0),
+			Vector2(13.0, 14.0), Vector2(13.0, 24.0), Vector2(16.0, 18.0),
 		]),
 		"section_colors": PackedColorArray([
 			Color(1.0, 0.8, 0.2), Color(1.0, 0.45, 0.75), Color(1.0, 0.6, 0.3),
 			Color(1.0, 0.45, 0.75), Color(1.0, 0.8, 0.2), Color(1.0, 0.6, 0.3),
 			Color(1.0, 0.45, 0.75), Color(1.0, 0.8, 0.2), Color(1.0, 0.6, 0.3),
-			Color(1.0, 0.8, 0.2), Color(1.0, 0.86, 0.3),
+			Color(1.0, 0.8, 0.2), Color(1.0, 0.86, 0.3), Color(1.0, 0.6, 0.3),
+			Color(1.0, 0.45, 0.75), Color(1.0, 0.86, 0.3), Color(1.0, 0.6, 0.3),
+			Color(1.0, 0.45, 0.75), Color(1.0, 0.8, 0.2), Color(1.0, 0.86, 0.3),
 		]),
 		"sea_deep": Color(0.22, 0.03, 0.3),
 		"sea_mid": Color(0.68, 0.18, 0.52),
@@ -1179,11 +1322,11 @@ func _build_pivot_panic() -> void:
 		"build_light_towers": false,
 	})
 	_crowd(root, {
-		"per_row": 50, "stand_offset": 17.0, "stand_length": 120.0,
-		"stand_center_z": -72.0,
+		"per_row": 50, "stand_offset": 17.0, "stand_length": 340.0,
+		"stand_center_z": -160.0,
 	})
 	_add_post(root, cfg)
-	_add_director(root, 5.0, -145.0, 150.0)
+	_add_director(root, 5.0, -318.0, 323.0)
 	_add_player(root)
 	_add_pause(root)
 	_save(root, OUT_DIR + "/pivot_panic.tscn")
@@ -1191,49 +1334,97 @@ func _build_pivot_panic() -> void:
 
 func _pivot_waypoints() -> PackedVector3Array:
 	return PackedVector3Array([
-		Vector3(0.0, 0.2, 1.0),
-		Vector3(0.0, 0.2, -5.0),
-		Vector3(0.0, 0.2, -10.0),
-		Vector3(0.0, 0.2, -14.0),
-		Vector3(0.0, 0.2, -19.0),
-		Vector3(0.0, 0.2, -24.0),
-		Vector3(0.0, 0.2, -27.0),
-		Vector3(0.0, 0.2, -30.0),
-		Vector3(0.0, 0.2, -34.0),
-		Vector3(0.0, 0.2, -37.0),
-		Vector3(0.0, 0.2, -40.0),
-		Vector3(0.0, 0.2, -43.0),
-		Vector3(0.0, 0.2, -46.0),
-		Vector3(0.0, 0.2, -50.0),
-		Vector3(0.0, 0.2, -55.0),
-		Vector3(0.0, 0.2, -60.0),
-		Vector3(0.0, 0.2, -64.0),
-		Vector3(0.0, 0.2, -68.0),
-		Vector3(0.0, 0.2, -72.0),
-		Vector3(0.0, 0.2, -75.0),
-		Vector3(0.0, 0.2, -78.0),
-		Vector3(0.0, 0.2, -81.0),
-		Vector3(0.0, 0.2, -84.0),
-		Vector3(0.0, 0.2, -87.0),
-		Vector3(0.0, 0.2, -91.0),
-		Vector3(0.0, 0.2, -97.0),
-		Vector3(0.0, 0.2, -103.0),
-		Vector3(0.0, 0.2, -106.0),
-		Vector3(0.0, 0.2, -115.0),
-		Vector3(0.0, 0.2, -120.0),
-		Vector3(0.0, 0.2, -126.0),
-		Vector3(0.0, 0.2, -130.0),
-		Vector3(0.0, 0.2, -134.0),
-		Vector3(0.0, 0.2, -137.0),
-		Vector3(0.0, 4.2, -141.0),
-		Vector3(0.0, 4.2, -145.0),
-		Vector3(0.0, 4.2, -148.0),
+		Vector3(0.0, 0.20, 1.00),
+		Vector3(0.0, 0.20, -5.00),
+		Vector3(0.0, 0.20, -10.00),
+		Vector3(0.0, 0.20, -14.00),
+		Vector3(0.0, 0.20, -19.00),
+		Vector3(0.0, 0.20, -24.00),
+		Vector3(0.0, 0.20, -27.00),
+		Vector3(0.0, 0.20, -30.00),
+		Vector3(0.0, 0.20, -34.00),
+		Vector3(0.0, 0.20, -37.00),
+		Vector3(0.0, 0.20, -40.00),
+		Vector3(0.0, 0.20, -43.00),
+		Vector3(0.0, 0.20, -46.00),
+		Vector3(0.0, 0.20, -50.00),
+		Vector3(0.0, 0.20, -55.00),
+		Vector3(0.0, 0.20, -60.00),
+		Vector3(0.0, 0.20, -64.00),
+		Vector3(0.0, 0.20, -68.00),
+		Vector3(0.0, 0.20, -72.00),
+		Vector3(0.0, 0.20, -75.00),
+		Vector3(0.0, 0.20, -78.00),
+		Vector3(0.0, 0.20, -81.00),
+		Vector3(0.0, 0.20, -84.00),
+		Vector3(0.0, 0.20, -87.00),
+		Vector3(0.0, 0.20, -91.00),
+		Vector3(0.0, 0.20, -97.00),
+		Vector3(0.0, 0.20, -103.00),
+		Vector3(0.0, 0.20, -106.00),
+		Vector3(0.0, 0.20, -115.00),
+		Vector3(0.0, 0.20, -120.00),
+		Vector3(0.0, 0.20, -126.00),
+		Vector3(0.0, 0.20, -130.00),
+		Vector3(0.0, 0.20, -134.00),
+		Vector3(0.0, 0.20, -137.00),
+		Vector3(0.0, 4.20, -141.00),
+		Vector3(0.0, 4.20, -145.00),
+		Vector3(0.0, 4.20, -148.00),
+		Vector3(0.0, 4.20, -152.00),
+		Vector3(0.0, 3.20, -155.00),
+		Vector3(0.0, 2.40, -158.00),
+		Vector3(0.0, 2.40, -162.00),
+		Vector3(0.0, 2.40, -167.00),
+		Vector3(0.0, 2.40, -172.00),
+		Vector3(0.0, 2.40, -177.00),
+		Vector3(0.0, 2.40, -180.00),
+		Vector3(0.0, 3.40, -183.00),
+		Vector3(0.0, 4.80, -186.00),
+		Vector3(0.0, 4.80, -190.00),
+		Vector3(0.0, 4.80, -194.00),
+		Vector3(0.0, 4.80, -198.00),
+		Vector3(0.0, 4.80, -202.00),
+		Vector3(0.0, 4.80, -206.00),
+		Vector3(0.0, 4.80, -210.00),
+		Vector3(0.0, 4.80, -214.00),
+		Vector3(0.0, 4.80, -218.00),
+		Vector3(0.0, 5.20, -222.00),
+		Vector3(0.0, 5.60, -226.00),
+		Vector3(0.0, 6.00, -230.00),
+		Vector3(0.0, 6.20, -233.00),
+		Vector3(0.0, 7.20, -238.00),
+		Vector3(0.0, 8.20, -243.00),
+		Vector3(0.0, 9.20, -248.00),
+		Vector3(0.0, 9.20, -251.00),
+		Vector3(0.0, 9.20, -255.00),
+		Vector3(0.0, 9.20, -259.00),
+		Vector3(0.0, 9.20, -263.00),
+		Vector3(0.0, 9.20, -265.00),
+		Vector3(0.0, 7.80, -270.00),
+		Vector3(0.0, 6.40, -275.00),
+		Vector3(0.0, 5.00, -280.00),
+		Vector3(0.0, 3.60, -285.00),
+		Vector3(0.0, 3.60, -289.00),
+		Vector3(0.0, 3.60, -293.00),
+		Vector3(0.0, 3.60, -297.00),
+		Vector3(0.0, 3.60, -302.00),
+		Vector3(0.0, 3.60, -306.00),
+		Vector3(0.0, 3.60, -309.00),
+		Vector3(0.0, 3.60, -313.00),
+		Vector3(0.0, 3.60, -318.00),
+		Vector3(0.0, 3.60, -322.00),
+		Vector3(0.0, 3.60, -327.00),
 	])
 
 
 func _pivot_lanes() -> PackedFloat32Array:
 	return PackedFloat32Array([
-		3.0, 2.0, 1.4, 1.4, 2.2, 1.6, 1.2, 1.2, 1.2, 1.0, 1.0, 2.0,
-		1.8, 1.2, 1.0, 1.0, 1.0, 1.6, 2.0, 1.6, 1.2, 1.2, 1.2, 1.6,
-		1.0, 0.8, 0.8, 1.0, 2.0, 2.0, 1.4, 1.2, 1.0, 1.2, 1.5, 1.8, 2.0,
+		3.00, 2.00, 1.40, 1.40, 2.20, 1.60, 1.20, 1.20, 1.20, 1.00, 1.00, 2.00,
+		1.80, 1.20, 1.00, 1.00, 1.00, 1.60, 2.00, 1.60, 1.20, 1.20, 1.20, 1.60,
+		1.00, 0.80, 0.80, 1.00, 2.00, 2.00, 1.40, 1.20, 1.00, 1.20, 1.50, 1.80,
+		2.00, 2.20, 2.00, 2.40, 2.80, 2.80, 2.80, 2.80, 2.40, 2.00, 2.20, 2.40,
+		2.40, 2.40, 2.00, 0.80, 0.80, 0.80, 0.80, 1.00, 2.20, 2.00, 2.00, 2.20,
+		2.20, 2.20, 2.40, 2.60, 2.60, 2.60, 2.60, 2.20, 2.20, 2.20, 2.20, 2.60,
+		2.80, 2.80, 2.80, 2.80, 2.60, 2.60, 3.00, 3.00, 3.00,
 	])

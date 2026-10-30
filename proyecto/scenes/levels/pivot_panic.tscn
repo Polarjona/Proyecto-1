@@ -1,51 +1,60 @@
 [gd_scene format=3]
 
-[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="1_j4fst"]
-[ext_resource type="Script" path="res://scripts/level_info.gd" id="2_kqegx"]
-[ext_resource type="Script" path="res://scripts/race_manager.gd" id="3_iktbs"]
-[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="4_7qlls"]
-[ext_resource type="Script" path="res://scripts/hud.gd" id="5_mvdh0"]
-[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="6_ktb5v"]
-[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_7efdw"]
-[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="8_xlk4i"]
-[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="9_enwmy"]
-[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="10_4qgwr"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="11_dyuaf"]
-[ext_resource type="Script" path="res://scripts/see_saw.gd" id="12_adysp"]
-[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="13_a0tca"]
-[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="14_ql8s7"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="15_uvwl7"]
-[ext_resource type="Script" path="res://scripts/pendulum.gd" id="16_kj5g3"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="17_exgf1"]
-[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="18_emj5v"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="19_05qmx"]
-[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="20_cuqjs"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="21_63tlq"]
-[ext_resource type="Script" path="res://scripts/launcher.gd" id="22_jtk60"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="23_gn2xh"]
-[ext_resource type="Script" path="res://scripts/sweeper.gd" id="24_dtjqq"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="25_jbwuc"]
-[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="26_hsh0m"]
-[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="27_3dq23"]
-[ext_resource type="Script" path="res://scripts/finish_line.gd" id="28_l5elo"]
-[ext_resource type="Material" path="res://materials/pivot_gold.tres" id="29_gexil"]
-[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="30_78n0q"]
-[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="31_m4tw7"]
-[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="32_rfquw"]
-[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="33_iuuw5"]
-[ext_resource type="PackedScene" path="res://assets/props/beach_ball.glb" id="34_ptik4"]
-[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="35_w18al"]
-[ext_resource type="Script" path="res://scripts/crowd.gd" id="36_3vd2i"]
-[ext_resource type="Script" path="res://scripts/post_process.gd" id="37_6inby"]
-[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="38_w1lnx"]
-[ext_resource type="Script" path="res://scripts/race_director.gd" id="39_lcc6i"]
-[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="40_xsl5g"]
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="41_x6yqx"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="42_7ly5u"]
-[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="43_qpheb"]
-[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="44_cn7k2"]
+[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="1_4qgwr"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="2_dyuaf"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="3_adysp"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="4_a0tca"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="5_ql8s7"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="6_uvwl7"]
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_kj5g3"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="8_exgf1"]
+[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="9_emj5v"]
+[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="10_05qmx"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="11_cuqjs"]
+[ext_resource type="Script" path="res://scripts/see_saw.gd" id="12_63tlq"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="13_jtk60"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="14_gn2xh"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="15_dtjqq"]
+[ext_resource type="Script" path="res://scripts/pendulum.gd" id="16_jbwuc"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="17_hsh0m"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="18_3dq23"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="19_l5elo"]
+[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="20_gexil"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="21_78n0q"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="22_m4tw7"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="23_rfquw"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="24_iuuw5"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="25_ptik4"]
+[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="26_w18al"]
+[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="27_3vd2i"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/boulder.tscn" id="28_6inby"]
+[ext_resource type="Script" path="res://scripts/boulder.gd" id="29_w1lnx"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spike_trap.tscn" id="30_lcc6i"]
+[ext_resource type="Script" path="res://scripts/spike_trap.gd" id="31_xsl5g"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/rotor_gate.tscn" id="32_x6yqx"]
+[ext_resource type="Script" path="res://scripts/rotor_gate.gd" id="33_7ly5u"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="34_qpheb"]
+[ext_resource type="Script" path="res://scripts/conveyor.gd" id="35_cn7k2"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="36_m73vf"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="37_dq1y6"]
+[ext_resource type="Script" path="res://scripts/finish_line.gd" id="38_r7yd2"]
+[ext_resource type="Material" path="res://materials/pivot_gold.tres" id="39_rdlkg"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="40_bkhlm"]
+[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="41_ds42t"]
+[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="42_3j56m"]
+[ext_resource type="PackedScene" path="res://assets/props/beach_ball.glb" id="43_tkw0d"]
+[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="44_r8oqe"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="45_hu0nd"]
+[ext_resource type="Script" path="res://scripts/post_process.gd" id="46_fiuox"]
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="47_ji8th"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="48_tmiyk"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="49_dcrwq"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="50_rnexs"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="51_v70cd"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="52_yommd"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="53_8uxrs"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m73vf"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hvvbu"]
 sky_top_color = Color(0.18, 0.24, 0.84, 1)
 sky_horizon_color = Color(0.98, 0.84, 0.72, 1)
 sky_curve = 0.18
@@ -55,12 +64,12 @@ ground_curve = 0.12
 sun_angle_max = 18.0
 sun_curve = 0.08
 
-[sub_resource type="Sky" id="Sky_dq1y6"]
-sky_material = SubResource("ProceduralSkyMaterial_m73vf")
+[sub_resource type="Sky" id="Sky_y3h7p"]
+sky_material = SubResource("ProceduralSkyMaterial_hvvbu")
 
-[sub_resource type="Environment" id="Environment_r7yd2"]
+[sub_resource type="Environment" id="Environment_ikal3"]
 background_mode = 2
-sky = SubResource("Sky_dq1y6")
+sky = SubResource("Sky_y3h7p")
 ambient_light_source = 3
 ambient_light_color = Color(1, 0.82, 0.9, 1)
 ambient_light_energy = 0.66
@@ -82,9 +91,9 @@ adjustment_enabled = true
 adjustment_contrast = 1.04
 adjustment_saturation = 1.14
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rdlkg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1hncq"]
 render_priority = 0
-shader = ExtResource("1_j4fst")
+shader = ExtResource("1_4qgwr")
 shader_parameter/top_color = Color(0.18, 0.24, 0.84, 1)
 shader_parameter/horizon_color = Color(0.98, 0.84, 0.72, 1)
 shader_parameter/ground_color = Color(0.45, 0.2, 0.48, 1)
@@ -98,7 +107,7 @@ shader_parameter/sun_size = null
 shader_parameter/sun_glow = 1.0
 shader_parameter/horizon_warmth = null
 
-[sub_resource type="SphereMesh" id="SphereMesh_bkhlm"]
+[sub_resource type="SphereMesh" id="SphereMesh_33sf2"]
 radius = 380.0
 height = 760.0
 radial_segments = 48
@@ -107,170 +116,257 @@ rings = 24
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_board"]
 friction = 0.05
 
-[sub_resource type="BoxMesh" id="BoxMesh_ds42t"]
+[sub_resource type="BoxMesh" id="BoxMesh_7lfp3"]
 size = Vector3(0.7, 6.8, 0.9)
 
-[sub_resource type="BoxMesh" id="BoxMesh_3j56m"]
+[sub_resource type="BoxMesh" id="BoxMesh_cfdwx"]
 size = Vector3(0.7, 6.8, 0.9)
 
-[sub_resource type="BoxMesh" id="BoxMesh_tkw0d"]
+[sub_resource type="BoxMesh" id="BoxMesh_864aa"]
 size = Vector3(19.8, 0.6, 1)
 
-[sub_resource type="TorusMesh" id="TorusMesh_r8oqe"]
+[sub_resource type="TorusMesh" id="TorusMesh_bdshi"]
 inner_radius = 3.42
 outer_radius = 4.18
 rings = 28
 ring_segments = 10
 
-[sub_resource type="BoxMesh" id="BoxMesh_hu0nd"]
-size = Vector3(1.1, 2.4, 12)
-
-[sub_resource type="BoxMesh" id="BoxMesh_fiuox"]
-size = Vector3(1.1, 2.4, 12)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ji8th"]
-size = Vector3(0.18, 0.18, 11)
-
-[sub_resource type="BoxMesh" id="BoxMesh_tmiyk"]
-size = Vector3(0.18, 0.18, 11)
-
-[sub_resource type="BoxMesh" id="BoxMesh_dcrwq"]
-size = Vector3(0.18, 0.18, 10)
-
-[sub_resource type="BoxMesh" id="BoxMesh_rnexs"]
-size = Vector3(0.18, 0.18, 10)
-
-[sub_resource type="BoxMesh" id="BoxMesh_v70cd"]
-size = Vector3(0.18, 0.18, 6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_yommd"]
-size = Vector3(0.18, 0.18, 6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_8uxrs"]
-size = Vector3(0.18, 0.18, 5.9)
-
-[sub_resource type="BoxMesh" id="BoxMesh_hvvbu"]
-size = Vector3(0.18, 0.18, 5.9)
-
-[sub_resource type="BoxMesh" id="BoxMesh_y3h7p"]
-size = Vector3(0.18, 0.18, 20)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ikal3"]
-size = Vector3(0.18, 0.18, 20)
-
-[sub_resource type="BoxMesh" id="BoxMesh_1hncq"]
-size = Vector3(0.9, 1.8, 6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_33sf2"]
-size = Vector3(0.9, 1.8, 6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_7lfp3"]
-size = Vector3(0.18, 0.18, 8)
-
-[sub_resource type="BoxMesh" id="BoxMesh_cfdwx"]
-size = Vector3(0.18, 0.18, 8)
-
-[sub_resource type="BoxMesh" id="BoxMesh_864aa"]
-size = Vector3(0.18, 0.18, 16)
-
-[sub_resource type="BoxMesh" id="BoxMesh_bdshi"]
-size = Vector3(0.18, 0.18, 16)
-
 [sub_resource type="BoxMesh" id="BoxMesh_soa48"]
-size = Vector3(0.18, 0.18, 14)
+size = Vector3(1.1, 2.4, 12)
 
 [sub_resource type="BoxMesh" id="BoxMesh_nu1d8"]
-size = Vector3(0.18, 0.18, 14)
+size = Vector3(1.1, 2.4, 12)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ygn75"]
-size = Vector3(0.18, 0.18, 14)
+size = Vector3(0.18, 0.18, 11)
 
 [sub_resource type="BoxMesh" id="BoxMesh_dlfxg"]
-size = Vector3(0.18, 0.18, 14)
+size = Vector3(0.18, 0.18, 11)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ainwf"]
-size = Vector3(9, 0.02, 0.55)
+size = Vector3(0.18, 0.18, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_h87u5"]
-size = Vector3(9, 0.02, 0.55)
+size = Vector3(0.18, 0.18, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_4mvgk"]
-size = Vector3(9, 0.02, 0.55)
+size = Vector3(0.18, 0.18, 6)
 
 [sub_resource type="BoxMesh" id="BoxMesh_r6pau"]
-size = Vector3(9, 0.02, 0.55)
+size = Vector3(0.18, 0.18, 6)
 
 [sub_resource type="BoxMesh" id="BoxMesh_n6vf1"]
-size = Vector3(0.6, 7, 0.8)
+size = Vector3(0.18, 0.18, 5.9)
 
 [sub_resource type="BoxMesh" id="BoxMesh_cbodt"]
-size = Vector3(0.6, 7, 0.8)
+size = Vector3(0.18, 0.18, 5.9)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ovrpa"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_v0vhv"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qxwrg"]
+size = Vector3(0.9, 1.8, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fqo58"]
+size = Vector3(0.9, 1.8, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rla8a"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m30pr"]
+size = Vector3(0.18, 0.18, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e5rif"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0a55b"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wc5h2"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0j3gi"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ov2to"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xaem6"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wry0j"]
+size = Vector3(0.18, 0.18, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5qekg"]
+size = Vector3(0.18, 0.18, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x4gcl"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hnbuy"]
+size = Vector3(0.18, 0.18, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bb8c5"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ciajv"]
+size = Vector3(0.18, 0.18, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ef0cu"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5qjrc"]
+size = Vector3(0.18, 0.18, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dtlte"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h80n2"]
+size = Vector3(0.18, 0.18, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_c1i6m"]
+size = Vector3(0.18, 0.18, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wq27g"]
+size = Vector3(0.18, 0.18, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sm080"]
+size = Vector3(0.18, 0.18, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_j2gwj"]
+size = Vector3(0.18, 0.18, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_b1418"]
+size = Vector3(0.7, 5.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_np456"]
+size = Vector3(0.7, 5.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_p806l"]
+size = Vector3(11, 0.6, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_2i30v"]
+inner_radius = 1.836
+outer_radius = 2.244
+rings = 28
+ring_segments = 10
+
+[sub_resource type="BoxMesh" id="BoxMesh_2y7vf"]
+size = Vector3(0.7, 5.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8a3ry"]
+size = Vector3(0.7, 5.4, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eyl5i"]
+size = Vector3(14.4, 0.6, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_4m7o2"]
+inner_radius = 2.448
+outer_radius = 2.992
+rings = 28
+ring_segments = 10
+
+[sub_resource type="BoxMesh" id="BoxMesh_p7el0"]
+size = Vector3(10.8, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3jpq0"]
+size = Vector3(10.8, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_203v8"]
+size = Vector3(10.8, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_aubq3"]
+size = Vector3(13.6, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xilh5"]
+size = Vector3(13.6, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qgwsj"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kr57p"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g0qrl"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8jyxu"]
+size = Vector3(9, 0.02, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_s7kjo"]
+size = Vector3(0.6, 7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mgni1"]
+size = Vector3(0.6, 7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_p8pgd"]
 size = Vector3(12.8, 0.55, 0.8)
 
-[sub_resource type="SphereMesh" id="SphereMesh_v0vhv"]
+[sub_resource type="SphereMesh" id="SphereMesh_vrb4l"]
 radius = 0.7
 height = 1.4
 radial_segments = 20
 rings = 10
 
-[sub_resource type="BoxMesh" id="BoxMesh_qxwrg"]
+[sub_resource type="BoxMesh" id="BoxMesh_a8v88"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_fqo58"]
+[sub_resource type="BoxMesh" id="BoxMesh_lnrsq"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_rla8a"]
+[sub_resource type="BoxMesh" id="BoxMesh_3yl2n"]
 size = Vector3(7, 0.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_m30pr"]
+[sub_resource type="BoxMesh" id="BoxMesh_svt3v"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_e5rif"]
+[sub_resource type="BoxMesh" id="BoxMesh_tkhnp"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0a55b"]
+[sub_resource type="BoxMesh" id="BoxMesh_c55a4"]
 size = Vector3(7, 0.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_wc5h2"]
+[sub_resource type="BoxMesh" id="BoxMesh_q0nr7"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0j3gi"]
+[sub_resource type="BoxMesh" id="BoxMesh_dorsv"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_ov2to"]
+[sub_resource type="BoxMesh" id="BoxMesh_tpvnb"]
 size = Vector3(7, 0.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_xaem6"]
+[sub_resource type="BoxMesh" id="BoxMesh_x3qmb"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_wry0j"]
+[sub_resource type="BoxMesh" id="BoxMesh_safmd"]
 size = Vector3(0.35, 6.4, 0.45)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5qekg"]
+[sub_resource type="BoxMesh" id="BoxMesh_sww26"]
 size = Vector3(7, 0.4, 0.45)
 
-[sub_resource type="SphereMesh" id="SphereMesh_x4gcl"]
+[sub_resource type="SphereMesh" id="SphereMesh_142py"]
 radius = 1.1
 height = 2.2
 radial_segments = 20
 rings = 10
 
-[sub_resource type="SphereMesh" id="SphereMesh_hnbuy"]
+[sub_resource type="SphereMesh" id="SphereMesh_7ovqi"]
 radius = 1.0
 height = 2.0
 radial_segments = 20
 rings = 10
 
-[sub_resource type="SphereMesh" id="SphereMesh_bb8c5"]
+[sub_resource type="SphereMesh" id="SphereMesh_d4yp5"]
 radius = 0.9
 height = 1.8
 radial_segments = 20
 rings = 10
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ciajv"]
-shader = ExtResource("38_w1lnx")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2s15f"]
+shader = ExtResource("47_ji8th")
 shader_parameter/aberration = null
 shader_parameter/vignette = 0.3
 shader_parameter/grain = null
@@ -282,12 +378,12 @@ shader_parameter/contrast = 1.06
 shader_parameter/dithering = null
 shader_parameter/flash_color = null
 
-[node name="PivotPanic" type="Node3D" unique_id=1365039915]
+[node name="PivotPanic" type="Node3D" unique_id=23262168]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=214302265]
-environment = SubResource("Environment_r7yd2")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1476733414]
+environment = SubResource("Environment_ikal3")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=167136711]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1509758723]
 transform = Transform3D(0.9135454, -0.28254303, 0.29258186, 0, 0.7193398, 0.6946584, -0.40673664, -0.634602, 0.65714955, 0, 0, 0)
 light_color = Color(1, 0.96, 0.88, 1)
 light_energy = 0.98
@@ -296,297 +392,640 @@ shadow_enabled = true
 shadow_blur = 1.4
 directional_shadow_max_distance = 220.0
 
-[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=1125640206]
+[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=842394826]
 transform = Transform3D(-0.9702957, 0.1209609, -0.20951042, 0, 0.8660254, 0.5, 0.2419218, 0.48514786, -0.84030074, 0, 0, 0)
 light_color = Color(0.65, 0.6, 1, 1)
 light_energy = 0.45
 
-[node name="SkyDome" type="MeshInstance3D" parent="." unique_id=720714184]
+[node name="SkyDome" type="MeshInstance3D" parent="." unique_id=166182531]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -70)
-material_override = SubResource("ShaderMaterial_rdlkg")
+material_override = SubResource("ShaderMaterial_1hncq")
 cast_shadow = 0
-mesh = SubResource("SphereMesh_bkhlm")
+mesh = SubResource("SphereMesh_33sf2")
 
-[node name="LevelInfo" type="Node" parent="." unique_id=1586243513]
-script = ExtResource("2_kqegx")
+[node name="LevelInfo" type="Node" parent="." unique_id=1434289624]
+script = ExtResource("2_dyuaf")
 level_id = "pivot_panic"
 display_name = "Pivot Panic"
 round_index = 3
-finish_z = -145.0
-course_length = 150.0
-gold_time = 62.0
-silver_time = 84.0
-bronze_time = 112.0
-waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -5, 0, 0.2, -10, 0, 0.2, -14, 0, 0.2, -19, 0, 0.2, -24, 0, 0.2, -27, 0, 0.2, -30, 0, 0.2, -34, 0, 0.2, -37, 0, 0.2, -40, 0, 0.2, -43, 0, 0.2, -46, 0, 0.2, -50, 0, 0.2, -55, 0, 0.2, -60, 0, 0.2, -64, 0, 0.2, -68, 0, 0.2, -72, 0, 0.2, -75, 0, 0.2, -78, 0, 0.2, -81, 0, 0.2, -84, 0, 0.2, -87, 0, 0.2, -91, 0, 0.2, -97, 0, 0.2, -103, 0, 0.2, -106, 0, 0.2, -115, 0, 0.2, -120, 0, 0.2, -126, 0, 0.2, -130, 0, 0.2, -134, 0, 0.2, -137, 0, 4.2, -141, 0, 4.2, -145, 0, 4.2, -148)
-lane_widths = PackedFloat32Array(3, 2, 1.4, 1.4, 2.2, 1.6, 1.2, 1.2, 1.2, 1, 1, 2, 1.8, 1.2, 1, 1, 1, 1.6, 2, 1.6, 1.2, 1.2, 1.2, 1.6, 1, 0.8, 0.8, 1, 2, 2, 1.4, 1.2, 1, 1.2, 1.5, 1.8, 2)
+finish_z = -318.0
+course_length = 323.0
+gold_time = 120.0
+silver_time = 155.0
+bronze_time = 195.0
+waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -5, 0, 0.2, -10, 0, 0.2, -14, 0, 0.2, -19, 0, 0.2, -24, 0, 0.2, -27, 0, 0.2, -30, 0, 0.2, -34, 0, 0.2, -37, 0, 0.2, -40, 0, 0.2, -43, 0, 0.2, -46, 0, 0.2, -50, 0, 0.2, -55, 0, 0.2, -60, 0, 0.2, -64, 0, 0.2, -68, 0, 0.2, -72, 0, 0.2, -75, 0, 0.2, -78, 0, 0.2, -81, 0, 0.2, -84, 0, 0.2, -87, 0, 0.2, -91, 0, 0.2, -97, 0, 0.2, -103, 0, 0.2, -106, 0, 0.2, -115, 0, 0.2, -120, 0, 0.2, -126, 0, 0.2, -130, 0, 0.2, -134, 0, 0.2, -137, 0, 4.2, -141, 0, 4.2, -145, 0, 4.2, -148, 0, 4.2, -152, 0, 3.2, -155, 0, 2.4, -158, 0, 2.4, -162, 0, 2.4, -167, 0, 2.4, -172, 0, 2.4, -177, 0, 2.4, -180, 0, 3.4, -183, 0, 4.8, -186, 0, 4.8, -190, 0, 4.8, -194, 0, 4.8, -198, 0, 4.8, -202, 0, 4.8, -206, 0, 4.8, -210, 0, 4.8, -214, 0, 4.8, -218, 0, 5.2, -222, 0, 5.6, -226, 0, 6, -230, 0, 6.2, -233, 0, 7.2, -238, 0, 8.2, -243, 0, 9.2, -248, 0, 9.2, -251, 0, 9.2, -255, 0, 9.2, -259, 0, 9.2, -263, 0, 9.2, -265, 0, 7.8, -270, 0, 6.4, -275, 0, 5, -280, 0, 3.6, -285, 0, 3.6, -289, 0, 3.6, -293, 0, 3.6, -297, 0, 3.6, -302, 0, 3.6, -306, 0, 3.6, -309, 0, 3.6, -313, 0, 3.6, -318, 0, 3.6, -322, 0, 3.6, -327)
+lane_widths = PackedFloat32Array(3, 2, 1.4, 1.4, 2.2, 1.6, 1.2, 1.2, 1.2, 1, 1, 2, 1.8, 1.2, 1, 1, 1, 1.6, 2, 1.6, 1.2, 1.2, 1.2, 1.6, 1, 0.8, 0.8, 1, 2, 2, 1.4, 1.2, 1, 1.2, 1.5, 1.8, 2, 2.2, 2, 2.4, 2.8, 2.8, 2.8, 2.8, 2.4, 2, 2.2, 2.4, 2.4, 2.4, 2, 0.8, 0.8, 0.8, 0.8, 1, 2.2, 2, 2, 2.2, 2.2, 2.2, 2.4, 2.6, 2.6, 2.6, 2.6, 2.2, 2.2, 2.2, 2.2, 2.6, 2.8, 2.8, 2.8, 2.8, 2.6, 2.6, 3, 3, 3)
 
-[node name="RaceManager" type="Node" parent="." unique_id=1716980567]
-script = ExtResource("3_iktbs")
+[node name="RaceManager" type="Node" parent="." unique_id=253852771]
+script = ExtResource("3_adysp")
 
-[node name="HUD" type="CanvasLayer" parent="." unique_id=777491120 instance=ExtResource("4_7qlls")]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1437157620 instance=ExtResource("4_a0tca")]
 layer = 3
-script = ExtResource("5_mvdh0")
+script = ExtResource("5_ql8s7")
 
-[node name="KillPlane" type="Area3D" parent="." unique_id=520769303 instance=ExtResource("6_ktb5v")]
+[node name="KillPlane" type="Area3D" parent="." unique_id=1068590155 instance=ExtResource("6_uvwl7")]
 transform = Transform3D(1.6, 0, 0, 0, 1, 0, 0, 0, 1.6, 0, -10, -70)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("7_7efdw")
+script = ExtResource("7_kj5g3")
 
-[node name="Course" type="Node3D" parent="." unique_id=175925089]
+[node name="Course" type="Node3D" parent="." unique_id=147022156]
 
-[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=1652698609]
+[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=562460963]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 1.5)
 use_collision = true
 size = Vector3(17, 0.5, 13)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="SweeperBridge" type="CSGBox3D" parent="Course" unique_id=1435390042]
+[node name="SweeperBridge" type="CSGBox3D" parent="Course" unique_id=1918059854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -10)
 use_collision = true
 size = Vector3(6, 0.5, 10)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="SafeOne" type="CSGBox3D" parent="Course" unique_id=803307034]
+[node name="SafeOne" type="CSGBox3D" parent="Course" unique_id=278672383]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -19)
 use_collision = true
 size = Vector3(10, 0.5, 6)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="SeeSawBase" type="CSGBox3D" parent="Course" unique_id=1023731369]
+[node name="SeeSawBase" type="CSGBox3D" parent="Course" unique_id=67292489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, -30)
 use_collision = true
 size = Vector3(1.4, 2.4, 1.4)
-material = ExtResource("10_4qgwr")
+material = ExtResource("10_05qmx")
 
-[node name="SeeSaw" type="AnimatableBody3D" parent="Course" unique_id=167307037 instance=ExtResource("11_dyuaf")]
+[node name="SeeSaw" type="AnimatableBody3D" parent="Course" unique_id=687887486 instance=ExtResource("11_cuqjs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, -30)
 collision_mask = 0
 physics_material_override = SubResource("PhysicsMaterial_board")
 sync_to_physics = false
-script = ExtResource("12_adysp")
+script = ExtResource("12_63tlq")
 slide_speed = 4.2
 
-[node name="SeeSawRamp" type="CSGBox3D" parent="Course" unique_id=1908625214]
+[node name="SeeSawRamp" type="CSGBox3D" parent="Course" unique_id=1102643290]
 transform = Transform3D(1, 0, 0, 0, 0.909744, -0.41516966, 0, 0.41516966, 0.909744, 0, -1.5275, -37.25)
 use_collision = true
 size = Vector3(10, 0.5, 6.264)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="SeeSawLanding" type="CSGBox3D" parent="Course" unique_id=446975197]
+[node name="SeeSawLanding" type="CSGBox3D" parent="Course" unique_id=694186485]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -42.95)
 use_collision = true
 size = Vector3(10, 0.5, 5.9)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=1284037494 instance=ExtResource("13_a0tca")]
+[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=79900913 instance=ExtResource("13_jtk60")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -43.5)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_ql8s7")
+script = ExtResource("14_gn2xh")
 checkpoint_name = "Checkpoint 2"
 
-[node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=1073690168]
+[node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=557542020]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -55)
 use_collision = true
 size = Vector3(5, 0.5, 20)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="PendulumA" type="Node3D" parent="Course" unique_id=574964137 instance=ExtResource("15_uvwl7")]
+[node name="PendulumA" type="Node3D" parent="Course" unique_id=1949488139 instance=ExtResource("15_dtjqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -49)
-script = ExtResource("16_kj5g3")
+script = ExtResource("16_jbwuc")
 max_angle = 1.05
 swing_speed = 0.0021
 push_force = 12.0
 
-[node name="PendulumB" type="Node3D" parent="Course" unique_id=1345523768 instance=ExtResource("15_uvwl7")]
+[node name="PendulumB" type="Node3D" parent="Course" unique_id=244161057 instance=ExtResource("15_dtjqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -54)
-script = ExtResource("16_kj5g3")
+script = ExtResource("16_jbwuc")
 max_angle = 1.05
 swing_speed = 0.0021
 push_force = 12.0
 phase_offset = 1.57
 
-[node name="PendulumC" type="Node3D" parent="Course" unique_id=1138011466 instance=ExtResource("15_uvwl7")]
+[node name="PendulumC" type="Node3D" parent="Course" unique_id=1912686675 instance=ExtResource("15_dtjqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -59)
-script = ExtResource("16_kj5g3")
+script = ExtResource("16_jbwuc")
 swing_speed = 0.0024
 push_force = 12.0
 phase_offset = 0.8
 
-[node name="PendulumD" type="Node3D" parent="Course" unique_id=328374439 instance=ExtResource("15_uvwl7")]
+[node name="PendulumD" type="Node3D" parent="Course" unique_id=866629659 instance=ExtResource("15_dtjqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -64)
-script = ExtResource("16_kj5g3")
+script = ExtResource("16_jbwuc")
 swing_speed = 0.0024
 push_force = 12.0
 phase_offset = 2.4
 
-[node name="SafeTwo" type="CSGBox3D" parent="Course" unique_id=1173664661]
+[node name="SafeTwo" type="CSGBox3D" parent="Course" unique_id=1027091976]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -70)
 use_collision = true
 size = Vector3(10, 0.5, 6)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=1224942698 instance=ExtResource("13_a0tca")]
+[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=1325460034 instance=ExtResource("13_jtk60")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -70)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_ql8s7")
+script = ExtResource("14_gn2xh")
 checkpoint_name = "Checkpoint 3"
 
-[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=1804284799 instance=ExtResource("17_exgf1")]
+[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=399599502 instance=ExtResource("17_hsh0m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -75)
 collision_mask = 0
-script = ExtResource("18_emj5v")
+script = ExtResource("18_3dq23")
 speed = 2.2
 pause_time = 0.4
 
-[node name="MovingLanding" type="CSGBox3D" parent="Course" unique_id=1838493820]
+[node name="MovingLanding" type="CSGBox3D" parent="Course" unique_id=568115503]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -86)
 use_collision = true
 size = Vector3(10, 0.5, 8)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="Checkpoint4" type="Area3D" parent="Course" unique_id=1832023760 instance=ExtResource("13_a0tca")]
+[node name="Checkpoint4" type="Area3D" parent="Course" unique_id=1444609184 instance=ExtResource("13_jtk60")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -86)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_ql8s7")
+script = ExtResource("14_gn2xh")
 checkpoint_name = "Checkpoint 4"
 
-[node name="WindBridge" type="CSGBox3D" parent="Course" unique_id=394366692]
+[node name="WindBridge" type="CSGBox3D" parent="Course" unique_id=56280278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -98)
 use_collision = true
 size = Vector3(4, 0.5, 16)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="WindTunnelA" type="Area3D" parent="Course" unique_id=929631051 instance=ExtResource("19_05qmx")]
+[node name="WindTunnelA" type="Area3D" parent="Course" unique_id=1332059597 instance=ExtResource("19_l5elo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -94)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("20_cuqjs")
+script = ExtResource("20_gexil")
 strength = 5.4
 gust_amplitude = 1.9
 
-[node name="WindTunnelB" type="Area3D" parent="Course" unique_id=178224855 instance=ExtResource("19_05qmx")]
+[node name="WindTunnelB" type="Area3D" parent="Course" unique_id=560271906 instance=ExtResource("19_l5elo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -102)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("20_cuqjs")
+script = ExtResource("20_gexil")
 wind_direction = Vector3(-1, 0, 0)
 strength = 5.4
 gust_amplitude = 1.9
 
-[node name="Launcher" type="Area3D" parent="Course" unique_id=4316305 instance=ExtResource("21_63tlq")]
+[node name="Launcher" type="Area3D" parent="Course" unique_id=1654061509 instance=ExtResource("21_78n0q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -105)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("22_jtk60")
+script = ExtResource("22_m4tw7")
 launch_force = 10.0
 launch_up = 7.8
 
-[node name="CannonLanding" type="CSGBox3D" parent="Course" unique_id=1549264539]
+[node name="CannonLanding" type="CSGBox3D" parent="Course" unique_id=963808483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -118)
 use_collision = true
 size = Vector3(12, 0.5, 12)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="Checkpoint5" type="Area3D" parent="Course" unique_id=1024080893 instance=ExtResource("13_a0tca")]
+[node name="Checkpoint5" type="Area3D" parent="Course" unique_id=180480420 instance=ExtResource("13_jtk60")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -120)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_ql8s7")
+script = ExtResource("14_gn2xh")
 checkpoint_name = "Checkpoint 5"
 
-[node name="FinalRun" type="CSGBox3D" parent="Course" unique_id=1524325940]
+[node name="FinalRun" type="CSGBox3D" parent="Course" unique_id=1779516276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -130)
 use_collision = true
 size = Vector3(10, 0.5, 14)
-material = ExtResource("8_xlk4i")
+material = ExtResource("8_exgf1")
 
-[node name="SweeperFinal" type="Node3D" parent="Course" unique_id=1894451958 instance=ExtResource("23_gn2xh")]
+[node name="SweeperFinal" type="Node3D" parent="Course" unique_id=1323986044 instance=ExtResource("23_rfquw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -127)
-script = ExtResource("24_dtjqq")
+script = ExtResource("24_iuuw5")
 spin_speed = 2.6
 push_force = 7.0
 
-[node name="PendulumFinal" type="Node3D" parent="Course" unique_id=44908122 instance=ExtResource("15_uvwl7")]
+[node name="PendulumFinal" type="Node3D" parent="Course" unique_id=1765477323 instance=ExtResource("15_dtjqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.3, -133)
-script = ExtResource("16_kj5g3")
+script = ExtResource("16_jbwuc")
 max_angle = 1.0
 swing_speed = 0.0025
 push_force = 12.0
 phase_offset = 0.4
 
-[node name="BouncePadFinal" type="Area3D" parent="Course" unique_id=775087681 instance=ExtResource("25_jbwuc")]
+[node name="BouncePadFinal" type="Area3D" parent="Course" unique_id=1370014712 instance=ExtResource("25_ptik4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -137)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("26_hsh0m")
+script = ExtResource("26_w18al")
 
-[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=461348910]
+[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=417909167]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -145)
 use_collision = true
 size = Vector3(14, 0.5, 14)
-material = ExtResource("9_enwmy")
+material = ExtResource("9_emj5v")
 
-[node name="FinishLine" type="Area3D" parent="Course" unique_id=703031907 instance=ExtResource("27_3dq23")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -145)
+[node name="RavineDrop" type="CSGBox3D" parent="Course" unique_id=299100448]
+transform = Transform3D(1, 0, 0, 0, 0.9578263, 0.28734788, 0, -0.28734788, 0.9578263, 0, 2.8605435, -154.92816)
+use_collision = true
+size = Vector3(9.4, 0.5, 6.264184)
+material = ExtResource("8_exgf1")
+
+[node name="BoulderRavine" type="CSGBox3D" parent="Course" unique_id=837353355]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, -169)
+use_collision = true
+size = Vector3(11.5, 0.5, 22)
+material = ExtResource("9_emj5v")
+
+[node name="SpikeAscent" type="CSGBox3D" parent="Course" unique_id=216344]
+transform = Transform3D(1, 0, 0, 0, 0.9284767, -0.37139067, 0, 0.37139067, 0.9284767, 0, 3.1678808, -183.09285)
+use_collision = true
+size = Vector3(9.4, 0.5, 6.462198)
+material = ExtResource("8_exgf1")
+
+[node name="SpikeTerrace" type="CSGBox3D" parent="Course" unique_id=1529538031]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, -194)
+use_collision = true
+size = Vector3(12, 0.5, 16)
+material = ExtResource("9_emj5v")
+
+[node name="GaleBridge" type="CSGBox3D" parent="Course" unique_id=1438824781]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, -212)
+use_collision = true
+size = Vector3(6.4, 0.5, 20)
+material = ExtResource("8_exgf1")
+
+[node name="GaleLanding" type="CSGBox3D" parent="Course" unique_id=2099194790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, -227.5)
+use_collision = true
+size = Vector3(9.5, 0.5, 11)
+material = ExtResource("9_emj5v")
+
+[node name="PanicClimb" type="CSGBox3D" parent="Course" unique_id=569434814]
+transform = Transform3D(1, 0, 0, 0, 0.971399, -0.23745309, 0, 0.23745309, 0.971399, 0, 6.5571504, -242.05936)
+use_collision = true
+size = Vector3(9.4, 0.5, 18.529976)
+material = ExtResource("8_exgf1")
+
+[node name="PanicSummit" type="CSGBox3D" parent="Course" unique_id=1548967244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.75, -258)
+use_collision = true
+size = Vector3(13, 0.5, 14)
+material = ExtResource("9_emj5v")
+
+[node name="PanicSwoop" type="CSGBox3D" parent="Course" unique_id=1629099555]
+transform = Transform3D(1, 0, 0, 0, 0.962964, 0.26962993, 0, -0.26962993, 0.962964, 0, 5.959259, -274.9326)
+use_collision = true
+size = Vector3(9.4, 0.5, 20.769209)
+material = ExtResource("8_exgf1")
+
+[node name="PanicFinal" type="CSGBox3D" parent="Course" unique_id=1311897897]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.15, -297)
+use_collision = true
+size = Vector3(13, 0.5, 24)
+material = ExtResource("9_emj5v")
+
+[node name="PanicPlaza" type="CSGBox3D" parent="Course" unique_id=1805545391]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.15, -318)
+use_collision = true
+size = Vector3(16, 0.5, 18)
+material = ExtResource("8_exgf1")
+
+[node name="RavineWallLeft" type="CSGBox3D" parent="Course" unique_id=1410170957]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 3.6, -169)
+use_collision = true
+size = Vector3(0.9, 2.8, 22)
+material = ExtResource("27_3vd2i")
+
+[node name="RavineWallRight" type="CSGBox3D" parent="Course" unique_id=434420764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 3.6, -169)
+use_collision = true
+size = Vector3(0.9, 2.8, 22)
+material = ExtResource("27_3vd2i")
+
+[node name="GaleCurbLeft" type="CSGBox3D" parent="Course" unique_id=1808855343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05, 4.85, -212)
+use_collision = true
+size = Vector3(0.2, 0.5, 20)
+material = ExtResource("27_3vd2i")
+
+[node name="GaleCurbRight" type="CSGBox3D" parent="Course" unique_id=1826763724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05, 4.85, -212)
+use_collision = true
+size = Vector3(0.2, 0.5, 20)
+material = ExtResource("27_3vd2i")
+
+[node name="TerraceWallLeft" type="CSGBox3D" parent="Course" unique_id=2035230796]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 6, -194)
+use_collision = true
+size = Vector3(0.9, 2.8, 16)
+material = ExtResource("27_3vd2i")
+
+[node name="TerraceWallRight" type="CSGBox3D" parent="Course" unique_id=1866586564]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 6, -194)
+use_collision = true
+size = Vector3(0.9, 2.8, 16)
+material = ExtResource("27_3vd2i")
+
+[node name="FinalWallLeft" type="CSGBox3D" parent="Course" unique_id=255546395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 4.7, -297)
+use_collision = true
+size = Vector3(0.9, 2.6, 24)
+material = ExtResource("27_3vd2i")
+
+[node name="FinalWallRight" type="CSGBox3D" parent="Course" unique_id=2103256135]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 4.7, -297)
+use_collision = true
+size = Vector3(0.9, 2.6, 24)
+material = ExtResource("27_3vd2i")
+
+[node name="Checkpoint6" type="Area3D" parent="Course" unique_id=1058036576 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -153.5)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("28_l5elo")
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 6"
 
-[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=307079530 instance=ExtResource("13_a0tca")]
+[node name="BoulderA" type="Node3D" parent="Course" unique_id=1975733479 instance=ExtResource("28_6inby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.2, -176)
+script = ExtResource("29_w1lnx")
+travel = Vector3(0, 0, 17)
+
+[node name="BoulderB" type="Node3D" parent="Course" unique_id=432473677 instance=ExtResource("28_6inby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -176)
+script = ExtResource("29_w1lnx")
+travel = Vector3(0, 0, 17)
+speed = 6.0
+phase_offset = 2.2
+
+[node name="BoulderC" type="Node3D" parent="Course" unique_id=2000606010 instance=ExtResource("28_6inby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3.2, -176)
+script = ExtResource("29_w1lnx")
+travel = Vector3(0, 0, 17)
+speed = 6.6
+phase_offset = 4.4
+
+[node name="Checkpoint7" type="Area3D" parent="Course" unique_id=984600423 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, -159.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 7"
+
+[node name="Spike0_0" type="Node3D" parent="Course" unique_id=2106395445 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.6, -189)
+script = ExtResource("31_xsl5g")
+
+[node name="Spike0_1" type="Node3D" parent="Course" unique_id=1337943723 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.6, -189)
+script = ExtResource("31_xsl5g")
+phase_offset = 0.6
+
+[node name="Spike0_2" type="Node3D" parent="Course" unique_id=2089995206 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.6, -189)
+script = ExtResource("31_xsl5g")
+phase_offset = 1.2
+
+[node name="Spike0_3" type="Node3D" parent="Course" unique_id=902857690 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.6, -189)
+script = ExtResource("31_xsl5g")
+phase_offset = 1.7999999999999998
+
+[node name="Spike1_0" type="Node3D" parent="Course" unique_id=744233989 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.6, -194)
+script = ExtResource("31_xsl5g")
+phase_offset = 1.9
+
+[node name="Spike1_1" type="Node3D" parent="Course" unique_id=1144474554 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.6, -194)
+script = ExtResource("31_xsl5g")
+phase_offset = 2.5
+
+[node name="Spike1_2" type="Node3D" parent="Course" unique_id=1552586426 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.6, -194)
+script = ExtResource("31_xsl5g")
+phase_offset = 3.0999999999999996
+
+[node name="Spike1_3" type="Node3D" parent="Course" unique_id=999762427 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.6, -194)
+script = ExtResource("31_xsl5g")
+phase_offset = 3.6999999999999997
+
+[node name="Spike2_0" type="Node3D" parent="Course" unique_id=269060294 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.6, -199)
+script = ExtResource("31_xsl5g")
+phase_offset = 3.8
+
+[node name="Spike2_1" type="Node3D" parent="Course" unique_id=1081021134 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.6, -199)
+script = ExtResource("31_xsl5g")
+phase_offset = 4.3999999999999995
+
+[node name="Spike2_2" type="Node3D" parent="Course" unique_id=744533473 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.6, -199)
+script = ExtResource("31_xsl5g")
+phase_offset = 5.0
+
+[node name="Spike2_3" type="Node3D" parent="Course" unique_id=1257756220 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.6, -199)
+script = ExtResource("31_xsl5g")
+phase_offset = 5.6
+
+[node name="Checkpoint8" type="Area3D" parent="Course" unique_id=670839943 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, -187.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 8"
+
+[node name="GaleTunnel" type="Area3D" parent="Course" unique_id=459241696 instance=ExtResource("19_l5elo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -208)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("20_gexil")
+strength = 4.4
+gust_amplitude = 1.6
+
+[node name="RotorA" type="Node3D" parent="Course" unique_id=1177575533 instance=ExtResource("32_x6yqx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -211)
+script = ExtResource("33_7ly5u")
+spin_speed = 0.95
+
+[node name="RotorB" type="Node3D" parent="Course" unique_id=183650490 instance=ExtResource("32_x6yqx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -217)
+script = ExtResource("33_7ly5u")
+spin_speed = 1.1
+spin_direction = -1.0
+phase_offset = 2.0
+
+[node name="RotorC" type="Node3D" parent="Course" unique_id=931043609 instance=ExtResource("32_x6yqx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, -221)
+script = ExtResource("33_7ly5u")
+spin_speed = 1.25
+phase_offset = 0.6
+
+[node name="GaleBelt" type="Area3D" parent="Course" unique_id=1457723282 instance=ExtResource("34_qpheb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.475, -227.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("35_cn7k2")
+direction = Vector3(0, 0, 1)
+force = 3.0
+arrow_material = ExtResource("36_m73vf")
+arrow_span = 2.0
+
+[node name="Checkpoint9" type="Area3D" parent="Course" unique_id=1266605626 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, -223.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 9"
+
+[node name="Checkpoint10" type="Area3D" parent="Course" unique_id=683247087 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, -252.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 10"
+
+[node name="SweeperSummit" type="Node3D" parent="Course" unique_id=2098450442 instance=ExtResource("23_rfquw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.35, -255)
+script = ExtResource("24_iuuw5")
+spin_speed = 2.5
+push_force = 6.8
+
+[node name="PendulumSummitA" type="Node3D" parent="Course" unique_id=1530087208 instance=ExtResource("15_dtjqq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.2, -258)
+script = ExtResource("16_jbwuc")
+max_angle = 1.05
+swing_speed = 0.0024
+push_force = 12.0
+phase_offset = 0.3
+
+[node name="PendulumSummitB" type="Node3D" parent="Course" unique_id=1551449529 instance=ExtResource("15_dtjqq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.2, -262.5)
+script = ExtResource("16_jbwuc")
+max_angle = 1.05
+swing_speed = 0.0027
+push_force = 12.0
+phase_offset = 1.9
+
+[node name="Checkpoint11" type="Area3D" parent="Course" unique_id=1573850932 instance=ExtResource("13_jtk60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -286.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gn2xh")
+checkpoint_name = "Checkpoint 11"
+
+[node name="SweeperFinalA" type="Node3D" parent="Course" unique_id=1427355893 instance=ExtResource("23_rfquw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -290)
+script = ExtResource("24_iuuw5")
+spin_speed = 2.7
+push_force = 7.0
+
+[node name="SweeperFinalB" type="Node3D" parent="Course" unique_id=1904614982 instance=ExtResource("23_rfquw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -302)
+script = ExtResource("24_iuuw5")
+spin_speed = 3.0
+push_force = 7.4
+spin_direction = -1.0
+
+[node name="FinalBelt" type="Area3D" parent="Course" unique_id=1943799129 instance=ExtResource("34_qpheb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.275, -297)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("35_cn7k2")
+direction = Vector3(0, 0, 1)
+force = 3.8
+arrow_material = ExtResource("36_m73vf")
+arrow_span = 2.2
+
+[node name="SpikeFinal0_0" type="Node3D" parent="Course" unique_id=863926096 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 3.4, -294)
+script = ExtResource("31_xsl5g")
+
+[node name="SpikeFinal0_1" type="Node3D" parent="Course" unique_id=1022179492 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 3.4, -294)
+script = ExtResource("31_xsl5g")
+phase_offset = 0.9
+
+[node name="SpikeFinal1_0" type="Node3D" parent="Course" unique_id=1568505654 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 3.4, -300)
+script = ExtResource("31_xsl5g")
+phase_offset = 1.4
+
+[node name="SpikeFinal1_1" type="Node3D" parent="Course" unique_id=1306439146 instance=ExtResource("30_lcc6i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 3.4, -300)
+script = ExtResource("31_xsl5g")
+phase_offset = 2.3
+
+[node name="FinishLine" type="Area3D" parent="Course" unique_id=1864294288 instance=ExtResource("37_dq1y6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -318)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("38_r7yd2")
+
+[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=1606676967 instance=ExtResource("13_jtk60")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_ql8s7")
+script = ExtResource("14_gn2xh")
 checkpoint_name = "Checkpoint 1"
 
-[node name="SweeperStart" type="Node3D" parent="Course" unique_id=1727953952 instance=ExtResource("23_gn2xh")]
+[node name="SweeperStart" type="Node3D" parent="Course" unique_id=916141015 instance=ExtResource("23_rfquw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10)
-script = ExtResource("24_dtjqq")
+script = ExtResource("24_iuuw5")
 spin_speed = 2.2
 push_force = 6.5
 
-[node name="Decor" type="Node3D" parent="." unique_id=222819685]
+[node name="Decor" type="Node3D" parent="." unique_id=1242183962]
 
-[node name="StartGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1609982680]
+[node name="StartGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=282467180]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3.4, -2.5)
-material_override = ExtResource("10_4qgwr")
+material_override = ExtResource("10_05qmx")
 cast_shadow = 0
-mesh = SubResource("BoxMesh_ds42t")
+mesh = SubResource("BoxMesh_7lfp3")
 
-[node name="StartGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=1999502113]
+[node name="StartGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=898358572]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3.4, -2.5)
-material_override = ExtResource("10_4qgwr")
+material_override = ExtResource("10_05qmx")
 cast_shadow = 0
-mesh = SubResource("BoxMesh_3j56m")
+mesh = SubResource("BoxMesh_cfdwx")
 
-[node name="StartGateBeam" type="MeshInstance3D" parent="Decor" unique_id=276059732]
+[node name="StartGateBeam" type="MeshInstance3D" parent="Decor" unique_id=2044741121]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.8, -2.5)
-material_override = ExtResource("29_gexil")
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
-mesh = SubResource("BoxMesh_tkw0d")
+mesh = SubResource("BoxMesh_864aa")
 
-[node name="StartGateRing" type="MeshInstance3D" parent="Decor" unique_id=1107743539]
+[node name="StartGateRing" type="MeshInstance3D" parent="Decor" unique_id=1323909018]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4.216, -2.5)
-material_override = ExtResource("29_gexil")
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
-mesh = SubResource("TorusMesh_r8oqe")
+mesh = SubResource("TorusMesh_bdshi")
 
-[node name="StartGateLabel" type="Label3D" parent="Decor" unique_id=303717253]
+[node name="StartGateLabel" type="Label3D" parent="Decor" unique_id=249622241]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.6, -2.5)
 pixel_size = 0.0045
 modulate = Color(1, 0.92, 0.55, 1)
@@ -595,314 +1034,533 @@ text = "PIVOT PANIC"
 font_size = 230
 outline_size = 34
 
-[node name="StartWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1720427045]
+[node name="StartWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1512409813]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 1.2, 2)
-material_override = ExtResource("30_78n0q")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_hu0nd")
-
-[node name="StartWallRight" type="MeshInstance3D" parent="Decor" unique_id=747092880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, 1.2, 2)
-material_override = ExtResource("30_78n0q")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_fiuox")
-
-[node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1161903103]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.55, 2)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_ji8th")
-
-[node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=1627808116]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.55, 2)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_tmiyk")
-
-[node name="BridgeRailLeft" type="MeshInstance3D" parent="Decor" unique_id=354047920]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.55, -10)
-material_override = ExtResource("31_m4tw7")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_dcrwq")
-
-[node name="BridgeRailRight" type="MeshInstance3D" parent="Decor" unique_id=2043443579]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.55, -10)
-material_override = ExtResource("31_m4tw7")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_rnexs")
-
-[node name="SafeOneRailLeft" type="MeshInstance3D" parent="Decor" unique_id=944191183]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -19)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_v70cd")
-
-[node name="SafeOneRailRight" type="MeshInstance3D" parent="Decor" unique_id=1302374340]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -19)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_yommd")
-
-[node name="LandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=729621711]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -43)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_8uxrs")
-
-[node name="LandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=1705620399]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -43)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_hvvbu")
-
-[node name="PendulumRailLeft" type="MeshInstance3D" parent="Decor" unique_id=460284149]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.55, -55)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_y3h7p")
-
-[node name="PendulumRailRight" type="MeshInstance3D" parent="Decor" unique_id=726883796]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.55, -55)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_ikal3")
-
-[node name="SafeTwoWallLeft" type="MeshInstance3D" parent="Decor" unique_id=1025564306]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.9, -70)
-material_override = ExtResource("30_78n0q")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_1hncq")
-
-[node name="SafeTwoWallRight" type="MeshInstance3D" parent="Decor" unique_id=746222140]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.9, -70)
-material_override = ExtResource("30_78n0q")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_33sf2")
-
-[node name="LandingRailLeftB" type="MeshInstance3D" parent="Decor" unique_id=826925891]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -86)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_7lfp3")
-
-[node name="LandingRailRightB" type="MeshInstance3D" parent="Decor" unique_id=1489798588]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -86)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_cfdwx")
-
-[node name="WindRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1626131479]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.75, -98)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_864aa")
-
-[node name="WindRailRight" type="MeshInstance3D" parent="Decor" unique_id=1165446703]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.75, -98)
-material_override = ExtResource("29_gexil")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_bdshi")
-
-[node name="FinalRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1325580698]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.55, -130)
-material_override = ExtResource("29_gexil")
+material_override = ExtResource("27_3vd2i")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_soa48")
 
-[node name="FinalRailRight" type="MeshInstance3D" parent="Decor" unique_id=842372479]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 1.55, -130)
-material_override = ExtResource("29_gexil")
+[node name="StartWallRight" type="MeshInstance3D" parent="Decor" unique_id=642504281]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, 1.2, 2)
+material_override = ExtResource("27_3vd2i")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_nu1d8")
 
-[node name="FinishRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1415204960]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1, 4.55, -145)
-material_override = ExtResource("29_gexil")
+[node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1571922365]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.55, 2)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ygn75")
 
-[node name="FinishRailRight" type="MeshInstance3D" parent="Decor" unique_id=1915377222]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1, 4.55, -145)
-material_override = ExtResource("29_gexil")
+[node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=1908023820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.55, 2)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_dlfxg")
 
-[node name="HazardFinal0" type="MeshInstance3D" parent="Decor" unique_id=1861173606]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -125)
-material_override = ExtResource("32_rfquw")
+[node name="BridgeRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1217896625]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.55, -10)
+material_override = ExtResource("40_bkhlm")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ainwf")
 
-[node name="HazardFinal1" type="MeshInstance3D" parent="Decor" unique_id=55840964]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -128)
-material_override = ExtResource("32_rfquw")
+[node name="BridgeRailRight" type="MeshInstance3D" parent="Decor" unique_id=646912907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.55, -10)
+material_override = ExtResource("40_bkhlm")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_h87u5")
 
-[node name="HazardFinal2" type="MeshInstance3D" parent="Decor" unique_id=228758461]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -131)
-material_override = ExtResource("32_rfquw")
+[node name="SafeOneRailLeft" type="MeshInstance3D" parent="Decor" unique_id=854401830]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -19)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_4mvgk")
 
-[node name="HazardFinal3" type="MeshInstance3D" parent="Decor" unique_id=1861013616]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -134)
-material_override = ExtResource("32_rfquw")
+[node name="SafeOneRailRight" type="MeshInstance3D" parent="Decor" unique_id=30857988]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -19)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_r6pau")
 
-[node name="PivotPostLeft" type="MeshInstance3D" parent="Decor" unique_id=316681048]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1, 3.5, -30)
-material_override = ExtResource("29_gexil")
+[node name="LandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1329750431]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -43)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_n6vf1")
 
-[node name="PivotPostRight" type="MeshInstance3D" parent="Decor" unique_id=1178194235]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 3.5, -30)
-material_override = ExtResource("29_gexil")
+[node name="LandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=1001391726]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -43)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_cbodt")
 
-[node name="PivotBeam" type="MeshInstance3D" parent="Decor" unique_id=2018128442]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -30)
-material_override = ExtResource("29_gexil")
+[node name="PendulumRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1290026529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.55, -55)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ovrpa")
 
-[node name="PivotBall" type="MeshInstance3D" parent="Decor" unique_id=1857824685]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.8, -30)
-material_override = ExtResource("33_iuuw5")
+[node name="PendulumRailRight" type="MeshInstance3D" parent="Decor" unique_id=1191179936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.55, -55)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
-mesh = SubResource("SphereMesh_v0vhv")
+mesh = SubResource("BoxMesh_v0vhv")
 
-[node name="PendFramePostLeft0" type="MeshInstance3D" parent="Decor" unique_id=763927059]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -49)
-material_override = ExtResource("29_gexil")
+[node name="SafeTwoWallLeft" type="MeshInstance3D" parent="Decor" unique_id=767159876]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 0.9, -70)
+material_override = ExtResource("27_3vd2i")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_qxwrg")
 
-[node name="PendFramePostRight0" type="MeshInstance3D" parent="Decor" unique_id=1861215613]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -49)
-material_override = ExtResource("29_gexil")
+[node name="SafeTwoWallRight" type="MeshInstance3D" parent="Decor" unique_id=782004993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.9, -70)
+material_override = ExtResource("27_3vd2i")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_fqo58")
 
-[node name="PendFrameBeam0" type="MeshInstance3D" parent="Decor" unique_id=1797666452]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -49)
-material_override = ExtResource("29_gexil")
+[node name="LandingRailLeftB" type="MeshInstance3D" parent="Decor" unique_id=1329457986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.55, -86)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_rla8a")
 
-[node name="PendFramePostLeft1" type="MeshInstance3D" parent="Decor" unique_id=184702350]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -54)
-material_override = ExtResource("29_gexil")
+[node name="LandingRailRightB" type="MeshInstance3D" parent="Decor" unique_id=473626257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0.55, -86)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_m30pr")
 
-[node name="PendFramePostRight1" type="MeshInstance3D" parent="Decor" unique_id=821428184]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -54)
-material_override = ExtResource("29_gexil")
+[node name="WindRailLeft" type="MeshInstance3D" parent="Decor" unique_id=814592253]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.75, -98)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_e5rif")
 
-[node name="PendFrameBeam1" type="MeshInstance3D" parent="Decor" unique_id=1566734920]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -54)
-material_override = ExtResource("29_gexil")
+[node name="WindRailRight" type="MeshInstance3D" parent="Decor" unique_id=1642042187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.75, -98)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_0a55b")
 
-[node name="PendFramePostLeft2" type="MeshInstance3D" parent="Decor" unique_id=1438610960]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -59)
-material_override = ExtResource("29_gexil")
+[node name="FinalRailLeft" type="MeshInstance3D" parent="Decor" unique_id=816129802]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.55, -130)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_wc5h2")
 
-[node name="PendFramePostRight2" type="MeshInstance3D" parent="Decor" unique_id=1538939068]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -59)
-material_override = ExtResource("29_gexil")
+[node name="FinalRailRight" type="MeshInstance3D" parent="Decor" unique_id=1467007066]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 1.55, -130)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_0j3gi")
 
-[node name="PendFrameBeam2" type="MeshInstance3D" parent="Decor" unique_id=815070667]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -59)
-material_override = ExtResource("29_gexil")
+[node name="FinishRailLeft" type="MeshInstance3D" parent="Decor" unique_id=908183302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1, 4.55, -145)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ov2to")
 
-[node name="PendFramePostLeft3" type="MeshInstance3D" parent="Decor" unique_id=1846867164]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -64)
-material_override = ExtResource("29_gexil")
+[node name="FinishRailRight" type="MeshInstance3D" parent="Decor" unique_id=1184413925]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1, 4.55, -145)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xaem6")
 
-[node name="PendFramePostRight3" type="MeshInstance3D" parent="Decor" unique_id=991568882]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -64)
-material_override = ExtResource("29_gexil")
+[node name="RavineRailLeft" type="MeshInstance3D" parent="Decor" unique_id=612703487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 2.75, -169)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_wry0j")
 
-[node name="PendFrameBeam3" type="MeshInstance3D" parent="Decor" unique_id=1246567935]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -64)
-material_override = ExtResource("29_gexil")
+[node name="RavineRailRight" type="MeshInstance3D" parent="Decor" unique_id=2312593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 2.75, -169)
+material_override = ExtResource("39_rdlkg")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_5qekg")
 
-[node name="PinkBallA" type="MeshInstance3D" parent="Decor" unique_id=965346629]
+[node name="TerraceRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1943419794]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 5.15, -194)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_x4gcl")
+
+[node name="TerraceRailRight" type="MeshInstance3D" parent="Decor" unique_id=1493001875]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 5.15, -194)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_hnbuy")
+
+[node name="GaleRailLeft" type="MeshInstance3D" parent="Decor" unique_id=487213848]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 5.15, -212)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_bb8c5")
+
+[node name="GaleRailRight" type="MeshInstance3D" parent="Decor" unique_id=1428623492]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 5.15, -212)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ciajv")
+
+[node name="GaleLandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=452994580]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 5.15, -227.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ef0cu")
+
+[node name="GaleLandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=15522847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 5.15, -227.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_5qjrc")
+
+[node name="SummitRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1582292524]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6, 9.55, -258)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dtlte")
+
+[node name="SummitRailRight" type="MeshInstance3D" parent="Decor" unique_id=1501016054]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 9.55, -258)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_h80n2")
+
+[node name="FinalRailLeftB" type="MeshInstance3D" parent="Decor" unique_id=772059033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3.95, -297)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_c1i6m")
+
+[node name="FinalRailRightB" type="MeshInstance3D" parent="Decor" unique_id=830546576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 3.95, -297)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_wq27g")
+
+[node name="PlazaRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1502879172]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.1, 3.95, -318)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_sm080")
+
+[node name="PlazaRailRight" type="MeshInstance3D" parent="Decor" unique_id=743907132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.95, -318)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_j2gwj")
+
+[node name="SummitGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1753061342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 11.7, -251.5)
+material_override = ExtResource("10_05qmx")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_b1418")
+
+[node name="SummitGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=197940522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 11.7, -251.5)
+material_override = ExtResource("10_05qmx")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_np456")
+
+[node name="SummitGateBeam" type="MeshInstance3D" parent="Decor" unique_id=1442200462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.4, -251.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_p806l")
+
+[node name="SummitGateRing" type="MeshInstance3D" parent="Decor" unique_id=1717245173]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 12.348, -251.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_2i30v")
+
+[node name="SummitGateLabel" type="Label3D" parent="Decor" unique_id=1110401676]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.2, -251.5)
+pixel_size = 0.0045
+modulate = Color(1, 0.92, 0.55, 1)
+outline_modulate = Color(0.06, 0.05, 0.14, 1)
+text = "CUMBRE"
+font_size = 230
+outline_size = 34
+
+[node name="PlazaGatePostLeft" type="MeshInstance3D" parent="Decor" unique_id=1080832280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 6.1, -309.5)
+material_override = ExtResource("10_05qmx")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_2y7vf")
+
+[node name="PlazaGatePostRight" type="MeshInstance3D" parent="Decor" unique_id=1306335039]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 6.1, -309.5)
+material_override = ExtResource("10_05qmx")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_8a3ry")
+
+[node name="PlazaGateBeam" type="MeshInstance3D" parent="Decor" unique_id=405547734]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.8, -309.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_eyl5i")
+
+[node name="PlazaGateRing" type="MeshInstance3D" parent="Decor" unique_id=1525816760]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 6.748, -309.5)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_4m7o2")
+
+[node name="HazardRavine0" type="MeshInstance3D" parent="Decor" unique_id=715356043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.21, -163)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_p7el0")
+
+[node name="HazardRavine1" type="MeshInstance3D" parent="Decor" unique_id=1178551305]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.21, -169)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_3jpq0")
+
+[node name="HazardRavine2" type="MeshInstance3D" parent="Decor" unique_id=1170131629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.21, -175)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_203v8")
+
+[node name="HazardPlaza0" type="MeshInstance3D" parent="Decor" unique_id=1819653558]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.41, -313)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_aubq3")
+
+[node name="HazardPlaza1" type="MeshInstance3D" parent="Decor" unique_id=801345860]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.41, -316)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_xilh5")
+
+[node name="HazardFinal0" type="MeshInstance3D" parent="Decor" unique_id=130968635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -125)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_qgwsj")
+
+[node name="HazardFinal1" type="MeshInstance3D" parent="Decor" unique_id=271705542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -128)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_kr57p")
+
+[node name="HazardFinal2" type="MeshInstance3D" parent="Decor" unique_id=837158166]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -131)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_g0qrl")
+
+[node name="HazardFinal3" type="MeshInstance3D" parent="Decor" unique_id=1671102758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, -134)
+material_override = ExtResource("41_ds42t")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_8jyxu")
+
+[node name="PivotPostLeft" type="MeshInstance3D" parent="Decor" unique_id=1323148715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1, 3.5, -30)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_s7kjo")
+
+[node name="PivotPostRight" type="MeshInstance3D" parent="Decor" unique_id=788301707]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 3.5, -30)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_mgni1")
+
+[node name="PivotBeam" type="MeshInstance3D" parent="Decor" unique_id=1142349573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -30)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_p8pgd")
+
+[node name="PivotBall" type="MeshInstance3D" parent="Decor" unique_id=667152815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.8, -30)
+material_override = ExtResource("42_3j56m")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_vrb4l")
+
+[node name="PendFramePostLeft0" type="MeshInstance3D" parent="Decor" unique_id=796657958]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -49)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_a8v88")
+
+[node name="PendFramePostRight0" type="MeshInstance3D" parent="Decor" unique_id=1660833899]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -49)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_lnrsq")
+
+[node name="PendFrameBeam0" type="MeshInstance3D" parent="Decor" unique_id=2021432853]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -49)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_3yl2n")
+
+[node name="PendFramePostLeft1" type="MeshInstance3D" parent="Decor" unique_id=710374769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -54)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_svt3v")
+
+[node name="PendFramePostRight1" type="MeshInstance3D" parent="Decor" unique_id=184607810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -54)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_tkhnp")
+
+[node name="PendFrameBeam1" type="MeshInstance3D" parent="Decor" unique_id=758922230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -54)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_c55a4")
+
+[node name="PendFramePostLeft2" type="MeshInstance3D" parent="Decor" unique_id=239724284]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -59)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_q0nr7")
+
+[node name="PendFramePostRight2" type="MeshInstance3D" parent="Decor" unique_id=1761942120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -59)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dorsv")
+
+[node name="PendFrameBeam2" type="MeshInstance3D" parent="Decor" unique_id=2071308836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -59)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_tpvnb")
+
+[node name="PendFramePostLeft3" type="MeshInstance3D" parent="Decor" unique_id=1345189307]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.2, -64)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_x3qmb")
+
+[node name="PendFramePostRight3" type="MeshInstance3D" parent="Decor" unique_id=1399526574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.2, -64)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_safmd")
+
+[node name="PendFrameBeam3" type="MeshInstance3D" parent="Decor" unique_id=1815946229]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.4, -64)
+material_override = ExtResource("39_rdlkg")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_sww26")
+
+[node name="PinkBallA" type="MeshInstance3D" parent="Decor" unique_id=168052135]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -18)
-material_override = ExtResource("31_m4tw7")
+material_override = ExtResource("40_bkhlm")
 cast_shadow = 0
-mesh = SubResource("SphereMesh_x4gcl")
+mesh = SubResource("SphereMesh_142py")
 
-[node name="PinkBallB" type="MeshInstance3D" parent="Decor" unique_id=1774421700]
+[node name="PinkBallB" type="MeshInstance3D" parent="Decor" unique_id=1293459268]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, -43)
-material_override = ExtResource("10_4qgwr")
+material_override = ExtResource("10_05qmx")
 cast_shadow = 0
-mesh = SubResource("SphereMesh_hnbuy")
+mesh = SubResource("SphereMesh_7ovqi")
 
-[node name="PinkBallC" type="MeshInstance3D" parent="Decor" unique_id=1984598001]
+[node name="PinkBallC" type="MeshInstance3D" parent="Decor" unique_id=56513426]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.4, 1, -86)
-material_override = ExtResource("33_iuuw5")
+material_override = ExtResource("42_3j56m")
 cast_shadow = 0
-mesh = SubResource("SphereMesh_bb8c5")
+mesh = SubResource("SphereMesh_d4yp5")
 
-[node name="BeachBallA" type="Node3D" parent="Decor" unique_id=332969512 instance=ExtResource("34_ptik4")]
+[node name="BeachBallA" type="Node3D" parent="Decor" unique_id=332969512 instance=ExtResource("43_tkw0d")]
 transform = Transform3D(1.409539, 0, 0.5130302, 0, 1.5, 0, -0.5130302, 0, 1.409539, -7.8, 1, -19)
 
-[node name="BeachBallB" type="Node3D" parent="Decor" unique_id=1825106783 instance=ExtResource("34_ptik4")]
+[node name="BeachBallB" type="Node3D" parent="Decor" unique_id=1275572468 instance=ExtResource("43_tkw0d")]
 transform = Transform3D(0.8917738, 0, -0.80295676, 0, 1.2, 0, 0.80295676, 0, 0.8917738, 7.6, 1, -86)
 
-[node name="BeachBallC" type="Node3D" parent="Decor" unique_id=2103613549 instance=ExtResource("34_ptik4")]
+[node name="BeachBallC" type="Node3D" parent="Decor" unique_id=113607292 instance=ExtResource("43_tkw0d")]
 transform = Transform3D(3.187823, 0, 0.27889836, 0, 3.2, 0, -0.27889836, 0, 3.187823, -10, -4, -62)
 
-[node name="CourseLight1" type="OmniLight3D" parent="Decor" unique_id=1929072645]
+[node name="CourseLight1" type="OmniLight3D" parent="Decor" unique_id=53552364]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -30)
 light_color = Color(1, 0.72, 0.45, 1)
 light_energy = 1.35
-omni_range = 18.0
+omni_range = 20.0
 
-[node name="CourseLight2" type="OmniLight3D" parent="Decor" unique_id=1778965543]
+[node name="CourseLight2" type="OmniLight3D" parent="Decor" unique_id=572454137]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -55)
 light_color = Color(1, 0.72, 0.45, 1)
 light_energy = 1.35
-omni_range = 18.0
+omni_range = 20.0
 
-[node name="CourseLight3" type="OmniLight3D" parent="Decor" unique_id=625234183]
+[node name="CourseLight3" type="OmniLight3D" parent="Decor" unique_id=1100670213]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -98)
 light_color = Color(1, 0.72, 0.45, 1)
 light_energy = 1.35
-omni_range = 18.0
+omni_range = 20.0
 
-[node name="CourseLight4" type="OmniLight3D" parent="Decor" unique_id=1057457656]
+[node name="CourseLight4" type="OmniLight3D" parent="Decor" unique_id=1000516056]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -145)
 light_color = Color(1, 0.72, 0.45, 1)
 light_energy = 1.35
-omni_range = 18.0
+omni_range = 20.0
 
-[node name="ArenaDecor" type="Node3D" parent="." unique_id=2104775277]
-script = ExtResource("35_w18al")
-section_centers = PackedVector3Array(0, 0, 1.5, 0, 0, -10, 0, 0, -19, 0, 0, -43, 0, 0, -55, 0, 0, -70, 0, 0, -86, 0, 0.2, -98, 0, 1, -118, 0, 1, -130, 0, 4, -145)
-section_sizes = PackedVector2Array(17, 13, 6, 10, 10, 6, 10, 5.9, 5, 20, 10, 6, 10, 8, 4, 16, 12, 12, 10, 14, 14, 14)
-section_colors = PackedColorArray(1, 0.8, 0.2, 1, 1, 0.45, 0.75, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1)
+[node name="CourseLight5" type="OmniLight3D" parent="Decor" unique_id=1550078130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.6, -169)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight6" type="OmniLight3D" parent="Decor" unique_id=116813299]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -194)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight7" type="OmniLight3D" parent="Decor" unique_id=632890624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -212)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight8" type="OmniLight3D" parent="Decor" unique_id=846087822]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -227.5)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight9" type="OmniLight3D" parent="Decor" unique_id=501433715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.6, -258)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight10" type="OmniLight3D" parent="Decor" unique_id=218238416]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.6, -285)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight11" type="OmniLight3D" parent="Decor" unique_id=1856770131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -297)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="CourseLight12" type="OmniLight3D" parent="Decor" unique_id=159189885]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -318)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.35
+omni_range = 20.0
+
+[node name="ArenaDecor" type="Node3D" parent="." unique_id=131457562]
+script = ExtResource("44_r8oqe")
+section_centers = PackedVector3Array(0, 0, 1.5, 0, 0, -10, 0, 0, -19, 0, 0, -43, 0, 0, -55, 0, 0, -70, 0, 0, -86, 0, 0.2, -98, 0, 1, -118, 0, 1, -130, 0, 4, -145, 0, 2.2, -169, 0, 4.6, -194, 0, 4.6, -212, 0, 4.6, -227.5, 0, 9, -258, 0, 3.4, -297, 0, 3.4, -318)
+section_sizes = PackedVector2Array(17, 13, 6, 10, 10, 6, 10, 5.9, 5, 20, 10, 6, 10, 8, 4, 16, 12, 12, 10, 14, 14, 14, 11.5, 22, 12, 16, 6.4, 20, 9.5, 11, 13, 14, 13, 24, 16, 18)
+section_colors = PackedColorArray(1, 0.8, 0.2, 1, 1, 0.45, 0.75, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.6, 0.3, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.86, 0.3, 1, 1, 0.6, 0.3, 1, 1, 0.45, 0.75, 1, 1, 0.8, 0.2, 1, 1, 0.86, 0.3, 1)
 sea_deep = Color(0.22, 0.03, 0.3, 1)
 sea_mid = Color(0.68, 0.18, 0.52, 1)
 sea_foam = Color(1, 0.78, 0.92, 1)
@@ -913,18 +1571,18 @@ build_arches = false
 build_pendulum_frames = false
 build_light_towers = false
 
-[node name="Crowd" type="Node3D" parent="." unique_id=1005584996]
-script = ExtResource("36_3vd2i")
+[node name="Crowd" type="Node3D" parent="." unique_id=1629205006]
+script = ExtResource("45_hu0nd")
 per_row = 50
 stand_offset = 17.0
-stand_length = 120.0
-stand_center_z = -72.0
+stand_length = 340.0
+stand_center_z = -160.0
 
-[node name="PostProcess" type="CanvasLayer" parent="." unique_id=1367725125]
-script = ExtResource("37_6inby")
+[node name="PostProcess" type="CanvasLayer" parent="." unique_id=1255313296]
+script = ExtResource("46_fiuox")
 
-[node name="Rect" type="ColorRect" parent="PostProcess" unique_id=1519141285]
-material = SubResource("ShaderMaterial_ciajv")
+[node name="Rect" type="ColorRect" parent="PostProcess" unique_id=1289636676]
+material = SubResource("ShaderMaterial_2s15f")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -932,21 +1590,21 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="RaceDirector" type="Node" parent="." unique_id=974004004]
-script = ExtResource("39_lcc6i")
-bot_scene = ExtResource("40_xsl5g")
-finish_z = -145.0
-course_length = 150.0
+[node name="RaceDirector" type="Node" parent="." unique_id=221364203]
+script = ExtResource("48_tmiyk")
+bot_scene = ExtResource("49_dcrwq")
+finish_z = -318.0
+course_length = 323.0
 
-[node name="Player" type="CharacterBody3D" parent="." unique_id=1915041390 instance=ExtResource("41_x6yqx")]
+[node name="Player" type="CharacterBody3D" parent="." unique_id=439355341 instance=ExtResource("50_rnexs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4)
 collision_layer = 2
 collision_mask = 5
 floor_stop_on_slope = false
 floor_max_angle = 0.9
 floor_snap_length = 0.35
-script = ExtResource("42_7ly5u")
+script = ExtResource("51_v70cd")
 
-[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=736824145 instance=ExtResource("43_qpheb")]
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1141756662 instance=ExtResource("52_yommd")]
 layer = 10
-script = ExtResource("44_cn7k2")
+script = ExtResource("53_8uxrs")

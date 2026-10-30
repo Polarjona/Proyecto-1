@@ -11,8 +11,8 @@ extends Node3D
 @export var travel: Vector3 = Vector3(0.0, 0.0, 18.0)
 @export var speed: float = 5.4
 @export var radius: float = 1.0
-@export var push_force: float = 8.5
-@export var push_lift: float = 2.2
+@export var push_force: float = 7.0
+@export var push_lift: float = 1.2
 @export var stuns: bool = true
 @export var phase_offset: float = 0.0
 @export var respawn_delay: float = 1.4

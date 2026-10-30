@@ -11,7 +11,10 @@ extends Node3D
 @export var spin_speed: float = 1.0
 ## -1.0 invierte el sentido de giro (dos aspas seguidas giran al revés).
 @export var spin_direction: float = 1.0
-@export var push_force: float = 7.5
+@export var push_force: float = 5.5
+## Empuje vertical pequeño: el aspa aparta al que pilla de lado, pero no lo
+## lanza por los aires ni lo tira del puente.
+@export var push_lift: float = 1.2
 @export var stuns: bool = true
 @export var phase_offset: float = 0.0
 @export var arm_length: float = 2.5
@@ -47,7 +50,7 @@ func _on_body_entered(body: Node3D) -> void:
 		direction = Vector3.RIGHT
 	else:
 		direction = direction.normalized()
-	body.apply_push(direction * push_force + Vector3.UP * 3.4)
+	body.apply_push(direction * push_force + Vector3.UP * push_lift)
 	if stuns and body.has_method("stun"):
 		body.stun()
 	GameFeel.shake(1.8)
