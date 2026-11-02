@@ -1,11 +1,13 @@
 extends SceneTree
 
-## Recorre Spin Go Round y Pivot Panic con un bot para comprobar que la ruta
-## nueva es completable (plataforma móvil, viento, cañón y trampolín incluidos).
+## Recorre Spin Go Round, Glacier Gallop y Lava Vortex con un bot para
+## comprobar que sus rutas son completables (plataformas móviles, vendaval y la
+## espiral del volcán con sus saltos incluidos).
 
 const LEVELS := [
 	"res://scenes/levels/spin_go_round.tscn",
-	"res://scenes/levels/pivot_panic.tscn",
+	"res://scenes/levels/glacier_gallop.tscn",
+	"res://scenes/levels/lava_vortex.tscn",
 ]
 
 var _failures := 0
@@ -39,7 +41,7 @@ func _run() -> void:
 			continue
 		var bot: Node3D = bots[0]
 		var frames := 0
-		while not bool(bot.get("_finished")) and frames < 9000:
+		while not bool(bot.get("_finished")) and frames < 20000:
 			await physics_frame
 			frames += 1
 			if frames % 900 == 0:
@@ -55,7 +57,7 @@ func _run() -> void:
 		])
 		if not finished:
 			_failures += 1
-		if rescues > 8:
+		if rescues > 14:
 			_failures += 1
 		root.remove_child(game)
 		game.free()

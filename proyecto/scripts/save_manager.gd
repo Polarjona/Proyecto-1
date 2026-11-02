@@ -171,7 +171,7 @@ func _repair_types() -> void:
 	var splits_by_level: Dictionary = data["best_splits_by_level"]
 	for key: Variant in best_times.keys():
 		best_times[key] = float(best_times[key])
-	# Perfiles anteriores a los tres circuitos: el record global pasa a ser el
+	# Perfiles anteriores a los cuatro circuitos: el record global pasa a ser el
 	# del circuito original, sin perderlo.
 	if bool(data.get("has_best", false)) and not best_times.has("pivot_push"):
 		best_times["pivot_push"] = float(data.get("best_time", 0.0))
@@ -369,7 +369,7 @@ func coin_reward(time: float, medal: String, position: int = 0, bronze_time: flo
 
 
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
-## `level_id` separa los records de los tres circuitos; los tiempos de medalla
+## `level_id` separa los records de los cuatro circuitos; los tiempos de medalla
 ## y la moneda por tiempo se calculan con los del nivel.
 func register_finish(time: float, falls: int, splits: Array, position: int = 0,
 		level_id: String = "", gold: float = MEDAL_GOLD,

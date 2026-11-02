@@ -20,6 +20,13 @@ const SECTIONS := [
 	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(1.0, 0.82, 0.24)},
 	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.78, 0.18)},
 	{"name": "Finish", "center": Vector3(0.0, 4.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(1.0, 0.86, 0.28)},
+	# Acto 3 de Pivot Push: la forja.
+	{"name": "ForgeDeck", "center": Vector3(0.0, 2.0, -232.0), "size": Vector2(11.5, 24.0), "color": Color(1.0, 0.62, 0.75)},
+	{"name": "ChimneyBridge", "center": Vector3(0.0, 4.8, -260.0), "size": Vector2(4.6, 20.0), "color": Color(1.0, 0.82, 0.28)},
+	{"name": "ChimneyLanding", "center": Vector3(0.0, 4.8, -275.0), "size": Vector2(9.0, 10.0), "color": Color(1.0, 0.6, 0.8)},
+	{"name": "ForgeSummit", "center": Vector3(0.0, 9.2, -305.0), "size": Vector2(13.0, 14.0), "color": Color(1.0, 0.86, 0.3)},
+	{"name": "ForgeFinal", "center": Vector3(0.0, 3.6, -342.0), "size": Vector2(13.0, 24.0), "color": Color(1.0, 0.62, 0.75)},
+	{"name": "ForgePlaza", "center": Vector3(0.0, 3.6, -363.0), "size": Vector2(16.0, 18.0), "color": Color(1.0, 0.86, 0.3)},
 ]
 
 const ISLAND_COLORS := [
@@ -54,6 +61,9 @@ const DISTANT_COLOR := Color(0.52, 0.64, 0.92)
 
 var _rng := RandomNumberGenerator.new()
 var _toy_cache: Dictionary = {}
+## Adornos que respiran: globos, anillos de neón y rocas flotantes.
+var _floaters: Array = []
+var _time: float = 0.0
 
 
 func _ready() -> void:
@@ -62,6 +72,7 @@ func _ready() -> void:
 	_build_platform_edges()
 	_build_islands()
 	_build_distant_mountains()
+	_build_backdrop()
 	if build_arches:
 		_build_arches()
 	if build_pendulum_frames:
@@ -300,6 +311,186 @@ func _build_distant_mountains() -> void:
 		var bottom := _rng.randf_range(22.0, 48.0)
 		var shade := distant_color.lerp(Color(1.0, 0.95, 0.98), _rng.randf_range(0.0, 0.22))
 		_cylinder(0.0, bottom, height, Vector3(x, -38.0 + height * 0.5, z), _flat_material(shade.darkened(0.04), 0.0), "Mountain_%d" % i, 7, Vector3(0.0, _rng.randf_range(0.0, 360.0), 0.0))
+
+
+## Fondo 3D lejano: globos aerostáticos, anillos de neón en el cielo, islas
+## grandes de segunda fila y rocas flotantes. Todo se mece despacio en
+## `_process`, así que el horizonte nunca se queda quieto.
+func _build_backdrop() -> void:
+	var palette: Array = ISLAND_COLORS
+	if not island_palette.is_empty():
+		palette = []
+		for entry in island_palette:
+			palette.append(entry)
+	_build_balloons(palette)
+	_build_sky_rings(palette)
+	_build_far_islands(palette)
+	_build_floaters(palette)
+
+
+func _register_floater(node: Node3D, amplitude: float, speed: float) -> void:
+	_floaters.append({
+		"node": node,
+		"base": node.position,
+		"phase": _rng.randf_range(0.0, TAU),
+		"amplitude": amplitude,
+		"speed": speed,
+	})
+
+
+func _process(delta: float) -> void:
+	if _floaters.is_empty():
+		return
+	_time += delta
+	for entry in _floaters:
+		var node: Node3D = entry["node"]
+		if not is_instance_valid(node):
+			continue
+		var base: Vector3 = entry["base"]
+		var phase: float = entry["phase"]
+		var amplitude: float = entry["amplitude"]
+		var speed: float = entry["speed"]
+		node.position = base + Vector3(0.0, sin(_time * speed + phase) * amplitude, 0.0)
+		node.rotation.y = sin(_time * speed * 0.4 + phase) * 0.25
+
+
+func _build_balloons(palette: Array) -> void:
+	var basket_material := _toy_material(Color(0.55, 0.36, 0.22), 0.4, 0.02)
+	var rope_material := _toy_material(Color(0.95, 0.92, 0.8), 0.3, 0.02)
+	for i in 12:
+		var angle := TAU * float(i) / 12.0 + 0.37
+		var distance := _rng.randf_range(52.0, 108.0)
+		var root := Node3D.new()
+		root.name = "Balloon%d" % i
+		root.position = Vector3(cos(angle) * distance,
+			_rng.randf_range(9.0, 36.0), -120.0 + sin(angle) * distance * 1.45)
+		add_child(root)
+		var color: Color = palette[i % palette.size()]
+
+		var envelope_mesh := SphereMesh.new()
+		envelope_mesh.radius = 2.4
+		envelope_mesh.height = 5.4
+		envelope_mesh.radial_segments = 16
+		envelope_mesh.rings = 10
+		var envelope := MeshInstance3D.new()
+		envelope.name = "Envelope"
+		envelope.mesh = envelope_mesh
+		envelope.material_override = _toy_material(color, 0.8, 0.12)
+		envelope.scale = Vector3(1.0, 1.15, 1.0)
+		envelope.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(envelope)
+
+		var band_mesh := TorusMesh.new()
+		band_mesh.inner_radius = 2.05
+		band_mesh.outer_radius = 2.3
+		band_mesh.rings = 20
+		band_mesh.ring_segments = 6
+		var band := MeshInstance3D.new()
+		band.name = "Band"
+		band.mesh = band_mesh
+		band.material_override = _glow_material(color.lightened(0.35), 1.1)
+		band.position.y = -1.5
+		band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(band)
+
+		var basket_mesh := BoxMesh.new()
+		basket_mesh.size = Vector3(1.15, 0.85, 1.15)
+		var basket := MeshInstance3D.new()
+		basket.name = "Basket"
+		basket.mesh = basket_mesh
+		basket.material_override = basket_material
+		basket.position.y = -3.9
+		basket.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(basket)
+
+		for rope_index in 2:
+			var rope_mesh := BoxMesh.new()
+			rope_mesh.size = Vector3(0.06, 1.9, 0.06)
+			var rope := MeshInstance3D.new()
+			rope.name = "Rope%d" % rope_index
+			rope.mesh = rope_mesh
+			rope.material_override = rope_material
+			rope.position = Vector3(-0.5 if rope_index == 0 else 0.5, -2.5, 0.0)
+			rope.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(rope)
+		_register_floater(root, 1.1, _rng.randf_range(0.18, 0.32))
+
+
+func _build_sky_rings(palette: Array) -> void:
+	for i in 8:
+		var angle := TAU * float(i) / 8.0 + 0.2
+		var distance := _rng.randf_range(120.0, 190.0)
+		var ring := Node3D.new()
+		ring.name = "SkyRing%d" % i
+		ring.position = Vector3(cos(angle) * distance, _rng.randf_range(16.0, 52.0),
+			-140.0 + sin(angle) * distance)
+		ring.rotation_degrees = Vector3(_rng.randf_range(-30.0, 30.0),
+			_rng.randf_range(0.0, 360.0), _rng.randf_range(-30.0, 30.0))
+		add_child(ring)
+		var color: Color = palette[(i + 2) % palette.size()]
+
+		var outer := _rng.randf_range(9.0, 16.0)
+		var ring_mesh := TorusMesh.new()
+		ring_mesh.inner_radius = outer
+		ring_mesh.outer_radius = outer + _rng.randf_range(0.5, 1.1)
+		ring_mesh.rings = 36
+		ring_mesh.ring_segments = 8
+		var mesh := MeshInstance3D.new()
+		mesh.name = "Ring"
+		mesh.mesh = ring_mesh
+		mesh.material_override = _glow_material(color, 0.85)
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		ring.add_child(mesh)
+		_register_floater(ring, 1.6, _rng.randf_range(0.12, 0.22))
+
+
+func _build_far_islands(palette: Array) -> void:
+	for i in 14:
+		var angle := TAU * float(i) / 14.0 + 0.45
+		var distance := _rng.randf_range(80.0, 150.0)
+		var x := cos(angle) * distance
+		var z := -150.0 + sin(angle) * distance * 1.15
+		var top_y := _rng.randf_range(-12.0, 2.0)
+		var radius := _rng.randf_range(7.0, 15.0)
+		var color: Color = palette[i % palette.size()]
+
+		_cylinder(radius * 0.95, radius * 0.35, radius * 0.9,
+			Vector3(x, top_y - radius * 0.45, z), _toy_material(ROCK_COLOR, 0.5, 0.02),
+			"FarRock_%d" % i, 8)
+		_sphere(radius, radius * 0.42, Vector3(x, top_y, z),
+			_toy_material(color, 0.7, 0.08), "FarTop_%d" % i)
+		for t in 3:
+			var tx := x + _rng.randf_range(-radius * 0.4, radius * 0.4)
+			var tz := z + _rng.randf_range(-radius * 0.4, radius * 0.4)
+			var trunk_height := _rng.randf_range(1.6, 3.0)
+			_cylinder(0.2, 0.32, trunk_height, Vector3(tx, top_y + trunk_height * 0.5, tz),
+				_toy_material(Color(0.42, 0.3, 0.26), 0.4), "FarTrunk_%d_%d" % [i, t], 6)
+			_cylinder(0.0, _rng.randf_range(1.2, 2.2), _rng.randf_range(2.2, 3.6),
+				Vector3(tx, top_y + trunk_height + 1.4, tz),
+				_toy_material(Color(0.42, 0.88, 0.52), 0.6, 0.05), "FarTree_%d_%d" % [i, t], 7)
+
+
+func _build_floaters(palette: Array) -> void:
+	for i in 16:
+		var side := -1.0 if i % 2 == 0 else 1.0
+		var root := Node3D.new()
+		root.name = "Floater%d" % i
+		root.position = Vector3(side * _rng.randf_range(13.0, 30.0),
+			_rng.randf_range(3.0, 16.0), _rng.randf_range(-360.0, 10.0))
+		root.rotation_degrees = Vector3(_rng.randf_range(0.0, 360.0),
+			_rng.randf_range(0.0, 360.0), _rng.randf_range(0.0, 360.0))
+		add_child(root)
+		var color: Color = palette[(i + 1) % palette.size()]
+		var size := _rng.randf_range(0.7, 1.8)
+		var cube_mesh := BoxMesh.new()
+		cube_mesh.size = Vector3(size, size, size)
+		var cube := MeshInstance3D.new()
+		cube.name = "Cube"
+		cube.mesh = cube_mesh
+		cube.material_override = _toy_material(color, 0.9, 0.14)
+		cube.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(cube)
+		_register_floater(root, _rng.randf_range(0.35, 0.9), _rng.randf_range(0.2, 0.45))
 
 
 func _build_arches() -> void:

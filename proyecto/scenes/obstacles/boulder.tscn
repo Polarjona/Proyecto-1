@@ -1,0 +1,78 @@
+[gd_scene load_steps=9 format=3 uid="uid://boulder_obs"]
+
+[ext_resource type="Script" path="res://scripts/boulder.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/spin_magenta.tres" id="2_ball"]
+[ext_resource type="Material" path="res://materials/spin_gold.tres" id="3_gold"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ball"]
+radius = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_ball"]
+radius = 1.0
+height = 2.0
+radial_segments = 24
+rings = 12
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_push"]
+radius = 1.3
+
+[sub_resource type="SphereMesh" id="SphereMesh_stud"]
+radius = 0.26
+height = 0.52
+radial_segments = 12
+rings = 6
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 1.05
+outer_radius = 1.24
+rings = 24
+ring_segments = 8
+
+[node name="Boulder" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Ball" type="AnimatableBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+sync_to_physics = false
+
+[node name="Shape" type="CollisionShape3D" parent="Ball"]
+shape = SubResource("SphereShape3D_ball")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ball"]
+mesh = SubResource("SphereMesh_ball")
+surface_material_override/0 = ExtResource("2_ball")
+
+[node name="StudA" type="MeshInstance3D" parent="Ball"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.86, 0)
+mesh = SubResource("SphereMesh_stud")
+surface_material_override/0 = ExtResource("3_gold")
+cast_shadow = 0
+
+[node name="StudB" type="MeshInstance3D" parent="Ball"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.81, -0.28, 0)
+mesh = SubResource("SphereMesh_stud")
+surface_material_override/0 = ExtResource("3_gold")
+cast_shadow = 0
+
+[node name="StudC" type="MeshInstance3D" parent="Ball"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.81, -0.28, 0)
+mesh = SubResource("SphereMesh_stud")
+surface_material_override/0 = ExtResource("3_gold")
+cast_shadow = 0
+
+[node name="PushArea" type="Area3D" parent="Ball"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="PushShape" type="CollisionShape3D" parent="Ball/PushArea"]
+shape = SubResource("SphereShape3D_push")
+
+[node name="SpawnRing" type="Node3D" parent="."]
+
+[node name="Ring" type="MeshInstance3D" parent="SpawnRing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("TorusMesh_ring")
+surface_material_override/0 = ExtResource("3_gold")
+cast_shadow = 0

@@ -50,6 +50,7 @@ var _roster_group: ButtonGroup
 	$ModePanel/VBox/LevelPicker/LevelRow/Level1,
 	$ModePanel/VBox/LevelPicker/LevelRow/Level2,
 	$ModePanel/VBox/LevelPicker/LevelRow/Level3,
+	$ModePanel/VBox/LevelPicker/LevelRow/Level4,
 ]
 
 ## Personaje que se está mirando en el panel (puede seguir bloqueado).

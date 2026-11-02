@@ -863,7 +863,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Los tres circuitos, contra el cronómetro. Persigue tu récord y las medallas."
+text = "Los cuatro circuitos, contra el cronómetro. Persigue tu récord y las medallas."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/ClassicCard"]
@@ -926,7 +926,17 @@ focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
 theme_override_font_sizes/font_size = 15
-text = "Pivot Panic"
+text = "Glacier Gallop"
+
+[node name="Level4" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Lava Vortex"
 
 [node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
@@ -969,7 +979,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "3 rondas, 3 circuitos. Clasifícate en el top 3 y llega a la final."
+text = "4 rondas, 4 circuitos. Clasifícate en el top 3 y llega a la final."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/TournamentCard"]
@@ -985,7 +995,7 @@ grow_horizontal = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.792, 0.267, 0.2, 1)
 theme_override_font_sizes/font_size = 15
-text = "3 RONDAS"
+text = "4 RONDAS"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -993,7 +1003,7 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 12
-text = "El torneo recorre los tres circuitos en orden. Cada modo guarda su récord y reparte monedas."
+text = "El torneo recorre los cuatro circuitos en orden. Cada modo guarda su récord y reparte monedas."
 horizontal_alignment = 1
 autowrap_mode = 2
 

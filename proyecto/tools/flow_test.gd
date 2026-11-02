@@ -53,8 +53,8 @@ func _run() -> void:
 	var manager: Node = get_first_node_in_group("race_manager")
 	var checkpoints: Array = get_nodes_in_group("checkpoints")
 	_check(manager != null, "RaceManager presente y en su grupo")
-	_check(checkpoints.size() == 5, "Se detectan los 5 checkpoints (encontrados: %d)" % checkpoints.size())
-	_check(manager.checkpoints_total == 5, "El contador total del HUD es 5 (leído: %d)" % manager.checkpoints_total)
+	_check(checkpoints.size() == 11, "Se detectan los 11 checkpoints (encontrados: %d)" % checkpoints.size())
+	_check(manager.checkpoints_total == 11, "El contador total del HUD es 11 (leído: %d)" % manager.checkpoints_total)
 	_check(manager.is_running and not manager.is_finished, "El cronómetro está en marcha")
 
 	# --- 3. El jugador se mueve al pulsar avanzar -------------------------
