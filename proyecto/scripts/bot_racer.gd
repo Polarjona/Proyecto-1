@@ -79,6 +79,8 @@ const LANE_HALF_WIDTH: Array[float] = [
 const RUN_CLIP_SPEED := 2.4
 ## Fotograma del andar que se congela en el aire (el pack no trae salto).
 const JUMP_POSE_TIME := 0.42
+## Suavizado con el que la cadencia del clip sigue a la velocidad.
+const STRIDE_BLEND_SPEED := 10.0
 
 @export var speed_min: float = 4.8
 @export var speed_max: float = 6.4
@@ -128,6 +130,8 @@ var character_id: String = ""
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
 var _anim: AnimationPlayer
+## Cadencia a la que debe ir el clip; se interpola para no cortar la zancada.
+var _stride_target: float = 1.0
 ## Capa procedural de animación (inclinación al correr, salto recogido).
 var _rig: CharacterRig
 ## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
@@ -182,7 +186,15 @@ func _play_anim(clip: String, blend: float = 0.15) -> void:
 		return
 	if _anim.current_animation != clip:
 		_anim.play(clip, blend)
-	_anim.speed_scale = RUN_CLIP_SPEED if clip == "Running_A" else 1.0
+	_stride_target = RUN_CLIP_SPEED if clip == "Running_A" else 1.0
+
+
+## La cadencia persigue su objetivo en vez de cambiar de golpe: entrar y salir
+## de la carrera no corta la zancada del bot.
+func _apply_stride(delta: float) -> void:
+	if _anim == null:
+		return
+	_anim.speed_scale = lerpf(_anim.speed_scale, _stride_target, clampf(STRIDE_BLEND_SPEED * delta, 0.0, 1.0))
 
 
 ## En el aire se congela una zancada de la carrera: el pack no trae salto y el
@@ -193,11 +205,13 @@ func _play_air_pose(blend: float = 0.1) -> void:
 			_anim.play("Running_A", blend)
 		_anim.seek(JUMP_POSE_TIME, true)
 		_anim.speed_scale = 0.0
+		_stride_target = 0.0
 	if _rig:
 		_rig.set_state("jump")
 
 
-func _update_animation(walking: bool) -> void:
+func _update_animation(walking: bool, delta: float) -> void:
+	_apply_stride(delta)
 	if not is_on_floor():
 		_play_air_pose()
 		return
@@ -266,7 +280,7 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_face(direction, delta)
-	_update_animation(walk_speed > 0.0 and is_on_floor())
+	_update_animation(walk_speed > 0.0 and is_on_floor(), delta)
 	_update_audio(delta)
 	_tick_progress(delta, flat.length(), holding)
 	# En una ruta propia la meta es el último waypoint: comprobar Z haría que

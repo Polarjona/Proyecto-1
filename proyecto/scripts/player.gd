@@ -59,6 +59,33 @@ extends CharacterBody3D
 ## Fotograma del andar que se congela en el aire (el pack no trae salto).
 @export var jump_pose_time: float = 0.42
 
+@export_group("Swimming")
+## Velocidad de nado del circuito abisal.
+@export var swim_speed: float = 7.4
+@export var swim_acceleration: float = 24.0
+## Flotabilidad tenue: sin tocar nada el corredor sube muy despacio.
+@export var swim_buoyancy: float = 0.35
+## Arrastre del agua, por segundo. Frena la inercia al soltar el stick.
+@export var swim_drag: float = 0.9
+## Inclinación del cuerpo mientras nada, en grados.
+@export var swim_pitch_degrees: float = 64.0
+
+## Lo activan las zonas de agua (`scripts/water_zone.gd`).
+var swimming: bool = false
+## Cota de crucero de la zona: al entrar, el corredor baja solo hasta ella.
+var _swim_depth: float = 0.0
+var _has_swim_depth: bool = false
+## Franja vertical del tramo de agua: sin salirse por arriba ni por abajo.
+var _swim_band_min: float = -1.0e9
+var _swim_band_max: float = 1.0e9
+var _has_swim_band: bool = false
+## Cadencia del andar a poca marcha. Sube sin escalones hasta `run_clip_speed`
+## conforme el corredor acelera, así la zancada no se corta al pasar de andar
+## a esprintar.
+@export var walk_clip_speed: float = 1.0
+## Suavizado con el que la cadencia sigue a la velocidad real.
+@export var stride_blend_speed: float = 9.0
+
 ## Set by a bot driver (future split-screen / network input).
 @export var is_bot: bool = false
 ## Id del personaje que se está usando (expuesto para tests y HUD).
@@ -204,15 +231,25 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		platform_floor_layers = saved_layers
 	_tick_timers(delta)
-	_apply_gravity(delta)
-	_handle_jump()
-	_handle_movement(delta)
-	velocity.x = _control_velocity.x + _external_velocity.x
-	velocity.z = _control_velocity.z + _external_velocity.z
-	velocity.y += _external_velocity.y
-	_external_velocity = Vector3.ZERO
+	if swimming:
+		_swim(delta)
+	else:
+		_apply_gravity(delta)
+		_handle_jump()
+		_handle_movement(delta)
+	if swimming:
+		velocity = _control_velocity + _external_velocity
+		velocity.y = clampf(velocity.y, -swim_speed * 1.5, swim_speed * 1.5)
+		_external_velocity = Vector3.ZERO
+	else:
+		velocity.x = _control_velocity.x + _external_velocity.x
+		velocity.z = _control_velocity.z + _external_velocity.z
+		velocity.y += _external_velocity.y
+		_external_velocity = Vector3.ZERO
 	var was_on_floor := is_on_floor()
 	move_and_slide()
+	if swimming:
+		_clamp_swim_band()
 	if not is_on_floor():
 		_fall_speed = minf(_fall_speed, velocity.y)
 	else:
@@ -230,7 +267,7 @@ func _physics_process(delta: float) -> void:
 ## Pisadas sincronizadas con la velocidad: suenan al correr, no al quedarse
 ## quieto ni en el aire.
 func _update_footsteps(delta: float) -> void:
-	if is_bot:
+	if is_bot or swimming:
 		return
 	if not is_on_floor() or _stun_timer > 0.0:
 		_step_timer = 0.0
@@ -342,6 +379,122 @@ func _handle_movement(delta: float) -> void:
 		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, friction * control * delta)
 
 
+## Entra o sale del agua. Lo llaman las zonas de agua del circuito abisal.
+func set_swimming(value: bool) -> void:
+	if swimming == value:
+		return
+	swimming = value
+	if swimming:
+		velocity.y = minf(velocity.y, 1.5)
+		_fall_speed = 0.0
+		_land_squash_timer = 0.0
+		_jump_cut_available = false
+	else:
+		_has_swim_depth = false
+		clear_swim_band()
+	if not swimming and velocity.y > 0.0:
+		velocity.y = minf(velocity.y, 2.0)
+
+
+func is_swimming() -> bool:
+	return swimming
+
+
+func set_swim_depth(target_y: float) -> void:
+	_swim_depth = target_y
+	_has_swim_depth = true
+
+
+func clear_swim_depth() -> void:
+	_has_swim_depth = false
+
+
+## Franja vertical del tramo de agua. Mientras se nada no se sale por arriba ni
+## por abajo: el corredor se queda en el pasillo donde están los obstáculos.
+func set_swim_band(min_y: float, max_y: float) -> void:
+	_swim_band_min = min_y
+	_swim_band_max = maxf(min_y, max_y)
+	_has_swim_band = true
+
+
+func clear_swim_band() -> void:
+	_has_swim_band = false
+	_swim_band_min = -1.0e9
+	_swim_band_max = 1.0e9
+
+
+func _clamp_swim_band() -> void:
+	if not _has_swim_band:
+		return
+	var y := global_position.y
+	if y > _swim_band_max:
+		global_position.y = _swim_band_max
+		velocity.y = minf(velocity.y, 0.0)
+		_control_velocity.y = minf(_control_velocity.y, 0.0)
+	elif y < _swim_band_min:
+		global_position.y = _swim_band_min
+		velocity.y = maxf(velocity.y, 0.0)
+		_control_velocity.y = maxf(_control_velocity.y, 0.0)
+
+
+## Natación en tres dimensiones: la cámara marca el rumbo, `jump` sube y
+## `dive` (Shift/Ctrl) baja. Sin gravedad y con arrastre corto.
+func _swim(delta: float) -> void:
+	if input_locked:
+		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, swim_acceleration * delta)
+		_wish_dir = Vector3.ZERO
+		return
+
+	var wish := Vector3.ZERO
+	if is_bot:
+		wish = _bot_wish
+	else:
+		var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+		var cam_basis := camera.global_transform.basis
+		var forward := -cam_basis.z
+		var right := cam_basis.x
+		wish = right * input_dir.x + forward * -input_dir.y
+		var vertical := 0.0
+		if Input.is_action_pressed("jump"):
+			vertical += 1.0
+		if InputMap.has_action("dive") and Input.is_action_pressed("dive"):
+			vertical -= 1.0
+		wish += Vector3.UP * vertical
+		if wish.length_squared() > 1.0:
+			wish = wish.normalized()
+
+	# Cota de crucero de la zona: al entrar en el agua el corredor baja solo
+	# hasta la altura del tramo. Space y dive mandan siempre, así se puede
+	# subir o bajar cuando haga falta.
+	var manual_vertical := false
+	if not is_bot:
+		manual_vertical = Input.is_action_pressed("jump") \
+			or (InputMap.has_action("dive") and Input.is_action_pressed("dive"))
+	_wish_dir = wish
+	_control_velocity = _control_velocity.move_toward(wish * swim_speed, swim_acceleration * delta)
+	if _has_swim_depth and not manual_vertical:
+		var depth_error := _swim_depth - global_position.y
+		_control_velocity.y = move_toward(_control_velocity.y,
+			clampf(depth_error * 1.5, -2.6, 2.6), 8.0 * delta)
+	_control_velocity += Vector3.UP * swim_buoyancy * delta
+	_control_velocity *= maxf(0.0, 1.0 - swim_drag * delta)
+	_control_velocity.y = clampf(_control_velocity.y, -swim_speed, swim_speed)
+
+
+## Reaplica el estado de agua al reaparecer: el `body_exited` del `Area3D` no
+## siempre se emite cuando el cuerpo se teletransporta al checkpoint.
+func _refresh_water_state() -> void:
+	var inside := false
+	for zone in get_tree().get_nodes_in_group("water_zones"):
+		if zone.has_method("contains_point") and zone.contains_point(global_position):
+			inside = true
+			if zone.has_method("apply_to"):
+				zone.apply_to(self)
+			break
+	if not inside:
+		set_swimming(false)
+
+
 func _update_facing(delta: float) -> void:
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
 	if horizontal.length_squared() < 0.05:
@@ -403,6 +556,10 @@ func _keep_camera_above_ground() -> void:
 func _update_shadow() -> void:
 	if shadow == null:
 		return
+	# Bajo el agua no hay sombra de contacto: la mancha del suelo se lee mal.
+	if swimming:
+		shadow.visible = false
+		return
 	var space := get_world_3d().direct_space_state
 	if space == null:
 		return
@@ -430,7 +587,7 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 	var on_floor := is_on_floor()
 	var horizontal_speed := Vector3(velocity.x, 0.0, velocity.z).length()
 
-	if on_floor and not _anim_was_on_floor:
+	if on_floor and not _anim_was_on_floor and not swimming:
 		_land_squash_timer = 0.18
 		_burst_dust()
 		if _impact_speed < -7.0:
@@ -446,6 +603,8 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 	var new_state := "idle"
 	if _stun_timer > 0.0:
 		new_state = "stun"
+	elif swimming:
+		new_state = "swim"
 	elif not on_floor:
 		new_state = "jump"
 	elif _land_squash_timer > 0.0:
@@ -462,6 +621,18 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			rig.set_state(new_state)
 
 	_anim_time += delta
+	# La cadencia sigue a la velocidad real: la zancada se acelera de forma
+	# continua en vez de saltar de golpe entre andar y esprintar, y los pies
+	# dejan de patinar. En el aire se frena hasta congelar la postura.
+	if anim != null:
+		var stride := 1.0
+		if _anim_state == "jump":
+			stride = 0.0
+		elif _anim_state == "swim":
+			stride = clampf(_control_velocity.length() * 0.35, 0.5, 1.7)
+		elif _anim_state == "walk" or _anim_state == "run":
+			stride = clampf(horizontal_speed * (run_clip_speed / maxf(max_speed, 0.01)), walk_clip_speed, run_clip_speed)
+		anim.speed_scale = lerpf(anim.speed_scale, stride, clampf(stride_blend_speed * delta, 0.0, 1.0))
 	if _anim_state != "stun":
 		mesh.rotation.z = lerpf(mesh.rotation.z, 0.0, 12.0 * delta)
 
@@ -481,6 +652,13 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			var stretch := 1.05 if rising else 1.03
 			mesh.scale = Vector3(1.0 / stretch, stretch, 1.0 / stretch)
 			mesh.position.y = _mesh_base_y
+		"swim":
+			# El cuerpo se tumba hacia delante: se lee como brazada, no como salto.
+			mesh.rotation.x = lerpf(mesh.rotation.x, deg_to_rad(swim_pitch_degrees), 5.0 * delta)
+			var swim_bob := sin(_anim_time * 3.2) * 0.035
+			var stroke := 1.0 + sin(_anim_time * 6.4) * 0.02
+			mesh.scale = Vector3(1.0 / stroke, stroke, 1.0 / stroke)
+			mesh.position.y = _mesh_base_y + swim_bob
 		"land":
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
@@ -489,6 +667,9 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
 			mesh.rotation.z = wobble
+
+	if _anim_state != "swim":
+		mesh.rotation.x = lerpf(mesh.rotation.x, 0.0, 10.0 * delta)
 
 	# Landing squash overrides for a few frames after touching the ground.
 	if _land_squash_timer > 0.0:
@@ -506,17 +687,16 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			dizzy.position.y = _dizzy_base_y + sin(Time.get_ticks_msec() * 0.006) * 0.08
 
 
-func _play_animation(state: String, blend: float = 0.15) -> void:
+func _play_animation(state: String, blend: float = 0.2) -> void:
 	if anim == null:
 		return
 	var clip := "Idle"
 	match state:
-		"walk":
+		"walk", "run", "jump", "swim":
+			# El pack no trae clip de carrera ni de salto: el andar se reproduce
+			# más o menos rápido según la velocidad (ver `_update_animation`) y
+			# en el aire se congela una de sus zancadas.
 			clip = "Walking_A"
-		"run":
-			clip = "Running_A"
-		"jump":
-			clip = "Running_A"
 		"land":
 			clip = "Jump_Land"
 		"stun":
@@ -524,15 +704,10 @@ func _play_animation(state: String, blend: float = 0.15) -> void:
 	if anim.current_animation != clip:
 		anim.play(clip, blend)
 	if state == "jump":
-		# El pack no trae salto: en el aire se congela una zancada de la
-		# carrera, que lee mucho mejor que el idle de pie. El rig le suma
-		# encima la pose recogida de salto.
+		# En el aire se congela una zancada, que lee mucho mejor que el idle de
+		# pie. El rig le suma encima la pose recogida de salto.
 		anim.seek(jump_pose_time, true)
 		anim.speed_scale = 0.0
-	else:
-		# El pack no trae clip de carrera: el andar se acelera para que lea
-		# como esprint y no como un paseo.
-		anim.speed_scale = run_clip_speed if clip == "Running_A" else 1.0
 
 
 func _update_dust(horizontal_speed: float) -> void:
@@ -641,6 +816,7 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	if dizzy:
 		dizzy.visible = false
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)
+	_refresh_water_state()
 	_clear_platform_on_next_frame = true
 
 

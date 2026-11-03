@@ -9,6 +9,9 @@ const PINK := preload("res://materials/pink.tres")
 const PURPLE := preload("res://materials/purple.tres")
 
 @export var spin_speed: float = 1.2
+## Luz y chispas del disco. Con muchos discos juntos conviene apagarlas para no
+## llenar la sala de luces dinámicas.
+@export var glow: bool = true
 
 
 func _ready() -> void:
@@ -77,6 +80,9 @@ func _build_details() -> void:
 	cap.material_override = YELLOW
 	cap.position.y = 0.21
 	details.add_child(cap)
+
+	if not glow:
+		return
 
 	# Soft cyan glow so the platform pops against the dark arena.
 	var light := OmniLight3D.new()

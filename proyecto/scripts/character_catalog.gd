@@ -32,6 +32,88 @@ const CHARACTER_HEIGHT := 1.25
 ## para que los personajes casen con los circuitos.
 const CHARACTER_SHADER := preload("res://shaders/character.gdshader")
 
+## Piel, cara y pelo comunes a todos los cuerpos. El pack viene del FBX con la
+## piel a 0.01 y casi toda la ropa por debajo de 0.05 (casi negro), así que
+## pintar cada superficie con el color del .glb dejaba muñecos grises.
+const TOY_SKIN := Color(0.9, 0.7, 0.56)
+const TOY_FACE := Color(0.94, 0.77, 0.63)
+const TOY_HAIR := Color(0.3, 0.2, 0.13)
+
+## Paleta de juguete de cada personaje, por nombre de material del pack. Los
+## nombres son los que traen los `.glb` (`Skin`, `Clothes`, `Hood`…); lo que no
+## esté en la tabla cae en piel/pelo o en un realce del color original.
+const PALETTES := {
+	"chef": {
+		"Clothes": Color(0.98, 0.96, 0.92),
+		"DarkClothes": Color(0.66, 0.68, 0.75),
+		"Band": Color(0.94, 0.31, 0.28),
+		"Hair": Color(0.28, 0.18, 0.12),
+	},
+	"worker": {
+		"Vest": Color(1.0, 0.55, 0.18),
+		"Shirt": Color(0.93, 0.91, 0.84),
+		"Pants": Color(0.24, 0.42, 0.66),
+		"Hat": Color(1.0, 0.82, 0.24),
+		"Hair": Color(0.36, 0.22, 0.12),
+	},
+	"cowboy": {
+		"Pants": Color(0.22, 0.32, 0.5),
+		"Scarf": Color(0.92, 0.28, 0.26),
+		"Jacket": Color(0.78, 0.46, 0.24),
+		"Top": Color(0.97, 0.9, 0.74),
+		"HatBrown": Color(0.55, 0.33, 0.17),
+		"HatLightBrown": Color(0.84, 0.62, 0.35),
+		"Hair": Color(0.42, 0.28, 0.14),
+	},
+	"ninja": {
+		"Main": Color(0.2, 0.3, 0.55),
+		"Details": Color(0.92, 0.25, 0.3),
+		"Grey": Color(0.5, 0.54, 0.6),
+		"Hair": Color(0.17, 0.17, 0.21),
+	},
+	"pirate": {
+		"Clothes": Color(0.18, 0.28, 0.48),
+		"Beige": Color(0.86, 0.78, 0.6),
+		"Gold": Color(1.0, 0.78, 0.3),
+		"Brown": Color(0.42, 0.26, 0.15),
+		"Black": Color(0.24, 0.21, 0.23),
+		"Red": Color(0.9, 0.28, 0.26),
+		"Hair": Color(0.4, 0.26, 0.13),
+	},
+	"vikingo": {
+		"Pants": Color(0.35, 0.26, 0.2),
+		"Main": Color(0.36, 0.48, 0.66),
+		"Light": Color(0.86, 0.74, 0.56),
+		"Hair": Color(0.85, 0.5, 0.24),
+	},
+	"kimono": {
+		"Clothes": Color(0.97, 0.6, 0.78),
+		"Band": Color(0.78, 0.15, 0.3),
+		"Hair": Color(0.18, 0.14, 0.18),
+	},
+	"soldado": {
+		"DarkGreen": Color(0.32, 0.42, 0.24),
+		"Black": Color(0.22, 0.24, 0.22),
+		"Main": Color(0.44, 0.56, 0.32),
+		"Helmet": Color(0.36, 0.46, 0.28),
+		"Hair": Color(0.3, 0.2, 0.12),
+	},
+	"ejecutivo": {
+		"Black": Color(0.22, 0.25, 0.36),
+		"Shirt": Color(0.97, 0.97, 0.98),
+		"Belt": Color(0.3, 0.24, 0.18),
+		"Details": Color(0.55, 0.6, 0.72),
+		"Hair": Color(0.28, 0.2, 0.16),
+	},
+	"caballero": {
+		"Armor": Color(1.0, 0.78, 0.28),
+		"Armor_Dark": Color(0.5, 0.36, 0.16),
+		"Detail": Color(0.85, 0.22, 0.26),
+		"Red": Color(0.85, 0.25, 0.25),
+		"Hair": Color(0.3, 0.2, 0.12),
+	},
+}
+
 ## Carpeta de los cuerpos del pack.
 const MODEL_DIR := "res://assets/characters/ultimate/"
 
@@ -232,14 +314,18 @@ static func build_model(id: String, node_name: String = "Model", variant: int = 
 	else:
 		model.scale = Vector3.ONE * float(entry.get("scale", 0.55))
 	_prepare_animations(model)
-	_apply_plastic_look(model)
+	_apply_plastic_look(model, entry)
 	_add_rig(model)
 	return model
 
 
 ## Sustituye el material plano del GLB por el plástico del juego, por instancia
-## (las mallas se comparten entre cuerpos, así que no se toca el recurso).
-static func _apply_plastic_look(model: Node3D) -> void:
+## (las mallas se comparten entre cuerpos, así que no se toca el recurso). El
+## color no se copia del .glb: se pinta con la paleta del personaje (ver
+## `_toy_color`), porque los materiales del pack son casi negros.
+static func _apply_plastic_look(model: Node3D, entry: Dictionary) -> void:
+	var palette: Dictionary = PALETTES.get(String(entry.get("id", "")), {})
+	var accent: Color = entry.get("color", Color.WHITE)
 	for node in model.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance := node as MeshInstance3D
 		if mesh_instance.mesh == null:
@@ -247,14 +333,59 @@ static func _apply_plastic_look(model: Node3D) -> void:
 		for surface in mesh_instance.mesh.get_surface_count():
 			var source := mesh_instance.mesh.surface_get_material(surface)
 			var color := Color.WHITE
+			var material_name := ""
 			if source is BaseMaterial3D:
-				color = (source as BaseMaterial3D).albedo_color
+				var base := source as BaseMaterial3D
+				color = base.albedo_color
+				material_name = String(base.resource_name)
 			elif source is ShaderMaterial:
 				continue
 			var material := ShaderMaterial.new()
 			material.shader = CHARACTER_SHADER
-			material.set_shader_parameter("albedo_color", color)
+			material.set_shader_parameter("albedo_color", _toy_color(material_name, color, accent, palette))
 			mesh_instance.set_surface_override_material(surface, material)
+
+
+## Color de juguete de una superficie: manda la paleta del personaje, luego los
+## materiales comunes (piel, cara, pelo) y, si el nombre no aparece, se conserva
+## el tono del .glb con el valor y la saturación de un juguete.
+static func _toy_color(material_name: String, source: Color, accent: Color, palette: Dictionary) -> Color:
+	var key := material_name.strip_edges()
+	var lower := key.to_lower()
+	var toy := Color.WHITE
+	var found := false
+	if palette.has(key):
+		toy = palette[key]
+		found = true
+	if not found:
+		for candidate in palette:
+			if String(candidate).to_lower() == lower:
+				toy = palette[candidate]
+				found = true
+				break
+	if not found:
+		if lower == "skin":
+			toy = TOY_SKIN
+		elif lower == "face":
+			toy = TOY_FACE
+		elif lower == "hair":
+			toy = TOY_HAIR
+		elif source.s < 0.12:
+			# El gris casi negro del pack es la piel; el gris de prenda se viste
+			# con el color del personaje.
+			toy = TOY_SKIN if source.v < 0.12 else accent.lightened(0.15)
+		else:
+			# Tono propio pero oscuro: se sube el valor y la saturación sin
+			# cambiar la familia de color, así cada prenda conserva su intención.
+			toy = Color.from_hsv(source.h, clampf(0.2 + source.s * 1.05, 0.0, 0.7), clampf(0.5 + source.v * 0.4, 0.5, 0.85))
+	return _calm(toy)
+
+
+## Apaga la paleta: saturada al 100 % y con el brillo a tope cansaba la vista en
+## cuanto había varios corredores en pantalla. Con ropa y piel de tonos medios
+## los cuerpos se leen como personajes normales.
+static func _calm(color: Color) -> Color:
+	return Color.from_hsv(color.h, color.s * 0.7, minf(color.v, 0.9) * 0.8)
 
 
 ## Capa de animación procedural (carrera inclinada, salto recogido, aterrizaje).

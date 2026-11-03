@@ -2,6 +2,7 @@ extends SceneTree
 
 ## Verifica los cuatro circuitos del torneo: escena cargable, LevelInfo, meta,
 ## checkpoints, ruta de bots, decoración y obstáculos propios de cada ronda.
+## Abyss Run (el quinto) también debe estar registrado para la carrera clásica.
 
 var _failures := 0
 
@@ -32,11 +33,13 @@ func _run() -> void:
 	]
 	var ids := ["pivot_push", "spin_go_round", "glacier_gallop", "lava_vortex"]
 	var names := ["Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex"]
-	var round_counts := [11, 12, 9, 6]
+	var round_counts := [11, 12, 9, 0]
 
 	var session: Node = root.get_node("GameSession")
-	_check(session.get("LEVELS").size() == 4, "GameSession registra cuatro circuitos")
-	_check(int(session.call("level_count")) == 4, "El menú ofrece cuatro circuitos")
+	_check(session.get("LEVELS").size() == 5, "GameSession registra cinco circuitos")
+	_check(int(session.call("level_count")) == 5, "El menú ofrece cinco circuitos")
+	_check(String(session.get("LEVELS")[4]) == "res://scenes/levels/abyss_run.tscn",
+		"El quinto circuito es Abyss Run")
 	for i in paths.size():
 		_check(String(session.get("LEVELS")[i]) == paths[i],
 			"Ronda %d apunta a %s" % [i + 1, paths[i]])
@@ -162,20 +165,29 @@ func _run() -> void:
 			_check(course.get_node_or_null("Centrifuge") != null
 				and course.get_node_or_null("BallRain") != null,
 				"Glacier Gallop tiene la arena giratoria con lluvia de bolas")
+			_check(course.get_node_or_null("BallRain0") != null
+				and course.get_node_or_null("BallRain17") != null,
+				"Glacier Gallop reparte dieciocho lanzadores de bolas")
 			_check(course.get_node_or_null("IceGallery") != null
 				and course.get_node_or_null("PistonL") != null
-				and course.get_node_or_null("PistonR") != null,
-				"Glacier Gallop tiene la galería de pistones")
-			_check(get_nodes_in_group("crumble_tiles").size() == 12,
-				"Glacier Gallop tiene el puente de 12 placas frágiles")
-			_check(course.get_node_or_null("GaleBridge") != null
+				and course.get_node_or_null("PistonR") != null
+				and course.get_node_or_null("GalleryConveyor") != null,
+				"Glacier Gallop tiene la galería de pistones con cinta")
+			_check(get_nodes_in_group("crumble_tiles").size() == 35,
+				"Glacier Gallop tiene el puente de 35 placas frágiles")
+			_check(course.get_node_or_null("GaleLedgeL") != null
+				and course.get_node_or_null("GaleLedgeR") != null
 				and get_nodes_in_group("rotors").size() == 2,
 				"Glacier Gallop tiene el puente del vendaval")
 			_check(course.get_node_or_null("BoulderDeck") != null
-				and get_nodes_in_group("boulders").size() == 3,
-				"Glacier Gallop tiene el pasillo de las rocas")
-			_check(get_nodes_in_group("spike_traps").size() == 12,
-				"Glacier Gallop tiene la terraza de 12 pinchos")
+				and get_nodes_in_group("boulders").size() == 5,
+				"Glacier Gallop tiene el pasillo de las cinco rocas")
+			_check(get_nodes_in_group("spike_traps").size() == 24,
+				"Glacier Gallop tiene la terraza de 24 pinchos")
+			_check(get_nodes_in_group("ice_ramparts").size() >= 1,
+				"Glacier Gallop conserva el muro de témpanos")
+			_check(get_nodes_in_group("ice_crevasses").size() >= 1,
+				"Glacier Gallop estrena la grieta glacial")
 			_check(course.get_node_or_null("SummitPlatform") != null,
 				"Glacier Gallop acaba en la cumbre helada")
 		else:
@@ -194,6 +206,10 @@ func _run() -> void:
 				"Lava Vortex tiene al menos dieciocho trampas de pinchos")
 			_check(course.get_node_or_null("SummitPlatform") != null,
 				"Lava Vortex termina en la plataforma de la cumbre")
+			_check(get_nodes_in_group("checkpoints").is_empty(),
+				"Lava Vortex no tiene checkpoints: la lava termina la carrera")
+			_check(get_nodes_in_group("ball_droppers").size() >= 4,
+				"Lava Vortex añade lluvia de bolas a la espiral")
 
 		if i < 2:
 			var arena := level.get_node_or_null("ArenaDecor") as Node3D

@@ -7,8 +7,12 @@ extends RigidBody3D
 @export var push_lift: float = 2.5
 @export var speed_for_max_push: float = 12.0
 @export var lifetime: float = 14.0
+## Color de la bola. El lanzador lo cambia para que no se confunda con el
+## decorado de cada circuito (en el hielo, las bolas ya no parecen nieve).
+@export var ball_color: Color = Color(0.92, 0.44, 0.16)
 
 @onready var hit_area: Area3D = $HitArea
+@onready var mesh: MeshInstance3D = $MeshInstance3D
 
 var _age: float = 0.0
 
@@ -16,6 +20,11 @@ var _age: float = 0.0
 func _ready() -> void:
 	add_to_group("hazard_balls")
 	hit_area.body_entered.connect(_on_body_entered)
+	if ball_color.a > 0.0:
+		var material := StandardMaterial3D.new()
+		material.albedo_color = ball_color
+		material.roughness = 0.45
+		mesh.material_override = material
 
 
 func _physics_process(delta: float) -> void:
