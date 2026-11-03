@@ -5,17 +5,20 @@ extends Node
 
 signal mode_changed(mode: String)
 
-## Los cuatro circuitos del torneo, en orden de ronda. El torneo los recorre
-## enteros; la carrera clásica corre el que se elija en el menú.
+## Los circuitos, en orden de ronda. El torneo recorre los cuatro primeros;
+## la carrera clásica puede correr cualquiera, incluido el abisal (el quinto).
 const LEVELS := [
 	"res://scenes/main.tscn",
 	"res://scenes/levels/spin_go_round.tscn",
 	"res://scenes/levels/glacier_gallop.tscn",
 	"res://scenes/levels/lava_vortex.tscn",
+	"res://scenes/levels/abyss_run.tscn",
 ]
 ## Nombre de cada circuito para el menú. Es el `display_name` del LevelInfo de
 ## su escena (lo comprueba `levels_test`).
-const LEVEL_NAMES := ["Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex"]
+const LEVEL_NAMES := [
+	"Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex", "Abyss Run",
+]
 const TOTAL_ROUNDS := 4
 
 var mode: String = "classic"
@@ -116,6 +119,8 @@ func _install_gamepad_bindings() -> void:
 	_add_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
 	_add_button("jump", JOY_BUTTON_A)
 	_add_button("pause", JOY_BUTTON_START)
+	# Gatillo derecho para bajar nadando en el circuito abisal.
+	_add_axis("dive", JOY_AXIS_TRIGGER_RIGHT, 1.0)
 
 
 func _add_axis(action: String, axis: int, value: float) -> void:

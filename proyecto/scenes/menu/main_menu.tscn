@@ -13,7 +13,7 @@ variation_opentype = {
 
 [sub_resource type="Gradient" id="Gradient_bg"]
 offsets = PackedFloat32Array(0, 0.4, 0.72, 1)
-colors = PackedColorArray(1, 0.176, 0.608, 1, 0.765, 0.157, 1, 1, 0.427, 0.161, 1, 1, 0, 0.82, 1, 1)
+colors = PackedColorArray(0.36, 0.28, 0.46, 1, 0.5, 0.36, 0.52, 1, 0.74, 0.46, 0.44, 1, 0.93, 0.75, 0.55, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
 gradient = SubResource("Gradient_bg")
@@ -428,12 +428,12 @@ theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="TopBar/HBox/Logo"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0.102, 0, 0.169, 1)
-theme_override_constants/outline_size = 12
+theme_override_colors/font_color = Color(0.98, 0.89, 0.68, 1)
+theme_override_colors/font_outline_color = Color(0.17, 0.09, 0.15, 1)
+theme_override_colors/font_shadow_color = Color(0.09, 0.04, 0.09, 0.55)
+theme_override_constants/outline_size = 7
 theme_override_constants/shadow_offset_x = 0
-theme_override_constants/shadow_offset_y = 6
+theme_override_constants/shadow_offset_y = 4
 theme_override_font_sizes/font_size = 38
 text = "TUMBLE RUSH"
 
@@ -654,19 +654,19 @@ far = 20.0
 [node name="KeyLight" type="DirectionalLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
 light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.6
+light_energy = 0.85
 shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.6, 2.4)
-light_color = Color(0.72, 0.92, 1, 1)
-light_energy = 2.2
+light_color = Color(0.72, 0.86, 0.98, 1)
+light_energy = 0.8
 omni_range = 7.0
 
 [node name="RimLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 2.0, -1.6)
-light_color = Color(1, 0.7, 0.74, 1)
-light_energy = 2.4
+light_color = Color(1, 0.84, 0.82, 1)
+light_energy = 0.75
 omni_range = 7.0
 
 [node name="PlayerBadge" type="PanelContainer" parent="."]
@@ -938,6 +938,16 @@ button_group = SubResource("ButtonGroup_levels")
 theme_override_font_sizes/font_size = 15
 text = "Lava Vortex"
 
+[node name="Level5" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 14
+text = "Abyss Run"
+
 [node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
@@ -1132,19 +1142,19 @@ far = 20.0
 [node name="KeyLight" type="DirectionalLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
 light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.6
+light_energy = 0.85
 shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.4, 2.4)
 light_color = Color(0.65, 0.85, 1, 1)
-light_energy = 2.2
+light_energy = 0.75
 omni_range = 6.0
 
 [node name="RimLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.9, -1.6)
-light_color = Color(1, 0.68, 0.8, 1)
-light_energy = 2.6
+light_color = Color(1, 0.84, 0.86, 1)
+light_energy = 0.8
 omni_range = 6.0
 
 [node name="SelectedCharacterLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]

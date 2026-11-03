@@ -39,7 +39,11 @@ los clips a los que esperan el jugador y los bots.
   recoge piernas y brazos en el salto y flexiona el aterrizaje.
 - **Acabado de juguete**: `build_model` sustituye el material plano de cada
   superficie por `shaders/character.gdshader` (toon + brillo plástico + borde),
-  así que los cuerpos casan con los circuitos.
+  así que los cuerpos casan con los circuitos. El color no se copia del `.glb`:
+  el pack viene del FBX con la piel a 0.01 y casi toda la ropa por debajo de
+  0.05, así que cada personaje se pinta con su paleta de
+  `CharacterCatalog.PALETTES` (por nombre de material: `Skin`, `Clothes`…).
+  Añadir un personaje nuevo implica añadir también su paleta.
 - Los `.glb` salen de convertir los FBX del pack con FBX2glTF 0.9.7: misma
   geometría, materiales y animaciones, en un contenedor que Godot importa sin
   plugins.

@@ -11,6 +11,10 @@ extends Area3D
 ## Local X distance the arrows travel before wrapping around.
 @export var arrow_span: float = 2.6
 @export var arrow_speed: float = 2.4
+## Tamaño del suelo de la cinta. Los chevrones no se estiran: solo crecen el
+## área que empuja y la placa que la dibuja, para cubrir una sala entera.
+@export var belt_length: float = 6.0
+@export var belt_width: float = 4.0
 
 var _bodies: Array[Node3D] = []
 var _arrows_root: Node3D
@@ -25,7 +29,27 @@ func _ready() -> void:
 	direction = direction.normalized()
 	if direction.length_squared() < 0.01:
 		direction = Vector3.RIGHT
+	_apply_size()
 	_build_arrows()
+
+
+## Escala el área, el suelo sólido y la placa visual al tamaño pedido.
+func _apply_size() -> void:
+	var area_shape := get_node_or_null("CollisionShape3D") as CollisionShape3D
+	if area_shape != null and area_shape.shape is BoxShape3D:
+		var box := (area_shape.shape as BoxShape3D).duplicate() as BoxShape3D
+		box.size = Vector3(belt_length, 1.5, belt_width)
+		area_shape.shape = box
+	var floor_shape := get_node_or_null("StaticBody3D/FloorShape") as CollisionShape3D
+	if floor_shape != null and floor_shape.shape is BoxShape3D:
+		var floor_box := (floor_shape.shape as BoxShape3D).duplicate() as BoxShape3D
+		floor_box.size = Vector3(belt_length, 0.25, belt_width)
+		floor_shape.shape = floor_box
+	var belt := get_node_or_null("BeltMesh") as MeshInstance3D
+	if belt != null and belt.mesh is BoxMesh:
+		var belt_box := (belt.mesh as BoxMesh).duplicate() as BoxMesh
+		belt_box.size = Vector3(belt_length, 0.05, belt_width)
+		belt.mesh = belt_box
 
 
 func _process(delta: float) -> void:

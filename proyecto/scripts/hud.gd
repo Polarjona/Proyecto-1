@@ -101,6 +101,8 @@ func _connect_manager() -> void:
 		_manager.countdown_tick.connect(_on_countdown_tick)
 	if _manager.has_signal("results_ready"):
 		_manager.results_ready.connect(_on_results_ready)
+	if _manager.has_signal("failed"):
+		_manager.failed.connect(_on_failed)
 	# Sync state emitted before the HUD connected.
 	if "best_time" in _manager and _manager.best_time > 0.0:
 		_on_best_time_updated(_manager.best_time)
@@ -159,7 +161,11 @@ func _on_split(checkpoint_name: String, split_time: float, delta: float) -> void
 
 
 func _on_checkpoints_updated(completed: int, total: int) -> void:
-	checkpoints_label.text = "%d/%d" % [completed, total]
+	# La final del volcán no tiene checkpoints: se oculta el contador en vez de
+	# dejar un "0/0" en pantalla.
+	checkpoints_label.visible = total > 0
+	if total > 0:
+		checkpoints_label.text = "%d/%d" % [completed, total]
 
 
 func _on_best_time_updated(time: float) -> void:
@@ -273,6 +279,38 @@ func _on_results_ready(data: Dictionary) -> void:
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
 	tween.tween_property(results_panel, "modulate:a", 1.0, 0.3)
+
+
+## Derrota en la final del volcán: la lava o el vacío acaban la carrera. El
+## panel solo deja volver al lobby, sin reintento ni estadísticas de meta.
+func _on_failed(reason: String) -> void:
+	if _results_shown:
+		return
+	_results_shown = true
+	message_label.text = ""
+	countdown_label.hide()
+	results_title.text = "¡HAS PERDIDO!"
+	results_title.modulate = Color(1.0, 0.42, 0.34)
+	results_time.text = "La lava te alcanzó" if reason == "lava" else "Caíste al vacío"
+	results_time.modulate = Color(1.0, 1.0, 1.0, 0.92)
+	var elapsed := float(_manager.get("elapsed_time")) if _manager != null else 0.0
+	results_best.text = "Tiempo: %.2f s" % elapsed
+	results_medal.text = ""
+	results_rank.text = "Vuelve al lobby para volver a intentarlo."
+	results_coins.text = ""
+	results_coin_breakdown.text = ""
+	results_coin_breakdown.visible = false
+	retry_button.visible = false
+	next_round_button.visible = false
+	menu_button.text = "VOLVER AL LOBBY"
+	results_panel.show()
+	results_panel.modulate = Color(1, 1, 1, 0)
+	var tween := create_tween()
+	tween.tween_property(results_panel, "modulate:a", 1.0, 0.3)
+	AudioManager.play_sfx("fall")
+	AudioManager.stop_music()
+	GameFeel.flash(Color(1.0, 0.3, 0.05), 0.45)
+	GameFeel.shake(3.0)
 
 
 ## Desglose de la recompensa: "Base 10 · Tiempo 24 · Puesto 1º 40 · Medalla 40".

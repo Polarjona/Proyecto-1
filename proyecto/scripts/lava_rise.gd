@@ -2,7 +2,7 @@ extends Area3D
 
 ## Mar de lava del volcán. La superficie sube sola y persigue al corredor
 ## manteniéndose unos metros por debajo: si te quedas parado acaba alcanzándote,
-## y si caes, te devuelve al último checkpoint.
+## y si caes, pierdes la carrera (la final no tiene checkpoints).
 ##
 ## La superficie es una malla con el shader de olas del mar de nubes, teñido de
 ## naranja, y un área de colisión ancha que viaja con ella. Tras un respawn la
@@ -127,7 +127,9 @@ func _on_body_entered(body: Node3D) -> void:
 	_cooldown = 1.5
 	AudioManager.play_sfx("fall")
 	GameFeel.flash(Color(1.0, 0.3, 0.05), 0.4)
-	if _manager != null and _manager.has_method("respawn_player"):
+	if _manager != null and _manager.has_method("fail_race"):
+		_manager.fail_race("lava")
+	elif _manager != null and _manager.has_method("respawn_player"):
 		_manager.respawn_player()
 
 

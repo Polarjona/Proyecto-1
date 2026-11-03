@@ -18,6 +18,14 @@ extends Node3D
 @export var stuns: bool = true
 @export var phase_offset: float = 0.0
 @export var spike_height: float = 0.8
+## Cuántas púas se levantan en esta trampa. 0 = todas las del patrón.
+## El generador lo usa para alternar trampas de 1, 2, 3 y 4 pinchos.
+@export var spike_count: int = 0
+## Velocidad del ciclo. A 0.7 suben y bajan más despacio y se pueden leer.
+@export var cycle_speed: float = 0.7
+## Material de los pinchos. Por defecto, acero neutro: fuera el dorado, el
+## blanco y las rayas naranjas que no pegaban con ningún mapa.
+@export var spike_material: Material
 
 @onready var spikes: Node3D = $Spikes
 @onready var plate: MeshInstance3D = $Plate
@@ -35,6 +43,14 @@ func _ready() -> void:
 	_cycle = idle_time + warn_time + rise_time + hold_time + hide_time
 	_time = fposmod(phase_offset, _cycle)
 	spikes.position.y = -spike_height
+	# Placa neutra (antes eran rayas naranjas y blancas, el color más raro del
+	# juego): un metal oscuro que no canta en ningún circuito.
+	if plate != null:
+		var plate_material := StandardMaterial3D.new()
+		plate_material.albedo_color = Color(0.14, 0.15, 0.18)
+		plate_material.metallic = 0.5
+		plate_material.roughness = 0.5
+		plate.material_override = plate_material
 	_build_spikes()
 
 
@@ -49,13 +65,22 @@ func _build_spikes() -> void:
 	mesh.height = 0.9
 	mesh.radial_segments = 8
 	mesh.rings = 1
-	var material := load("res://materials/spin_gold.tres") as Material
+	var material := spike_material
+	if material == null:
+		var steel := StandardMaterial3D.new()
+		steel.albedo_color = Color(0.58, 0.6, 0.64)
+		steel.metallic = 0.85
+		steel.roughness = 0.32
+		material = steel
 	var offsets := [
 		Vector3(0.0, 0.0, 0.0),
 		Vector3(-0.85, 0.0, -0.85), Vector3(0.85, 0.0, -0.85),
 		Vector3(-0.85, 0.0, 0.85), Vector3(0.85, 0.0, 0.85),
 	]
-	for i in offsets.size():
+	var visible_count := offsets.size()
+	if spike_count > 0:
+		visible_count = mini(visible_count, spike_count)
+	for i in visible_count:
 		var spike := MeshInstance3D.new()
 		spike.name = "Spike%d" % i
 		spike.mesh = mesh
@@ -66,7 +91,7 @@ func _build_spikes() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	_time = fposmod(_time + delta, _cycle)
+	_time = fposmod(_time + delta * cycle_speed, _cycle)
 	var shift := 0.0
 	var warning_on := false
 	if _time < idle_time:

@@ -13,6 +13,8 @@ signal checkpoints_updated(completed: int, total: int)
 signal countdown_tick(value: int)
 signal race_started
 signal results_ready(data: Dictionary)
+## La carrera termina en derrota (lava o vacío en la final sin checkpoints).
+signal failed(reason: String)
 
 @export var time_penalty: float = 2.5
 
@@ -132,6 +134,20 @@ func respawn_player() -> void:
 	time_updated.emit(elapsed_time)
 	GameFeel.flash(Color(1.0, 0.35, 0.4), 0.35)
 	GameFeel.shake(2.5)
+
+
+## Final sin checkpoints: caer en la lava o al vacío acaba la carrera en vez
+## de devolver al corredor al último punto. El HUD muestra la derrota y el
+## botón para volver al lobby.
+func fail_race(reason: String = "lava") -> void:
+	if is_finished:
+		return
+	is_finished = true
+	is_running = false
+	fall_count += 1
+	_set_player_locked(true)
+	time_updated.emit(elapsed_time)
+	failed.emit(reason)
 
 
 ## Puesto del jugador en la carrera con bots (1 = primero). 0 en clásico.

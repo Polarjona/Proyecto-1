@@ -14,6 +14,9 @@ extends Area3D
 @export var stream_span: float = 4.6
 @export var stream_speed: float = 7.0
 @export var fan_spin_speed: float = 8.0
+## Pone el ventilador y su peana. Se apaga en los mapas donde la máquina
+## cantaba demasiado (el glaciar): queda solo la corriente de aire.
+@export var show_fan: bool = true
 
 @onready var streams: Array = [$StreamA, $StreamB, $StreamC]
 @onready var fan: Node3D = $Fan
@@ -36,6 +39,16 @@ func _ready() -> void:
 	if absf(_flow_sign) < 0.1:
 		_flow_sign = 1.0
 	_orient_props()
+	if not show_fan:
+		if fan != null:
+			fan.visible = false
+		if fan_platform != null:
+			fan_platform.visible = false
+			# La peana también tenía cuerpo sólido: oculta pero con colisión
+			# dejaba una plataforma invisible flotando junto a la pista.
+			var deck_body := fan_platform.get_node_or_null("StaticBody3D") as StaticBody3D
+			if deck_body != null:
+				deck_body.collision_layer = 0
 	_setup_wind_audio()
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)

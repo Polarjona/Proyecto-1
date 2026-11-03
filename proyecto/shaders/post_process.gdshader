@@ -23,8 +23,10 @@ float hash(vec2 p) {
 vec3 grade(vec3 col) {
 	// Cool the shadows, warm the highlights: a cheap split-toning pass.
 	float luma = dot(col, vec3(0.299, 0.587, 0.114));
-	vec3 shadows = vec3(0.86, 0.94, 1.12);
-	vec3 highlights = vec3(1.08, 1.02, 0.94);
+	// Un sepia/azul muy suave: antes las sombras azuladas teñían de morado
+	// los mapas naranjas (lava) y los hielos se veían eléctricos.
+	vec3 shadows = vec3(0.95, 0.99, 1.05);
+	vec3 highlights = vec3(1.03, 1.0, 0.97);
 	col *= mix(shadows, highlights, smoothstep(0.15, 0.8, luma));
 	col = mix(vec3(luma), col, saturation);
 	col = (col - 0.5) * contrast + 0.5;
