@@ -94,6 +94,8 @@ func _push(body: Node3D) -> void:
 	_hit_ids[id] = true
 	var direction := (global_transform.basis * travel).normalized()
 	body.apply_push(direction * push_force + Vector3.UP * 1.1)
+	if body.has_method("slow"):
+		body.slow(0.85, 0.55)
 	if stuns and body.has_method("stun"):
 		body.stun()
 	AudioManager.play_sfx_at("impact", head.global_position, 0.18, -3.0)

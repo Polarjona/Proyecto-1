@@ -10,6 +10,8 @@ extends Area3D
 	$ConfettiLeft, $ConfettiRight, $ConfettiBurst,
 ]
 
+const FIREWORKS := preload("res://scripts/fireworks.gd")
+
 const PARTY_COLORS := [
 	Color(0.93, 0.4, 0.45), Color(0.4, 0.72, 0.95), Color(0.96, 0.8, 0.4),
 	Color(0.55, 0.85, 0.55), Color(0.8, 0.55, 0.9),
@@ -113,3 +115,16 @@ func _play_feedback() -> void:
 			particles.restart()
 	GameFeel.shake(2.0)
 	GameFeel.flash(Color(1.0, 0.9, 0.35), 0.2)
+	_launch_fireworks()
+
+
+## Fuegos artificiales sobre la meta. Se crean aquí para que los tenga cualquier
+## circuito, incluidos los que genera `level_builder.gd`.
+func _launch_fireworks() -> void:
+	var fireworks := FIREWORKS.new() as Node3D
+	if fireworks == null:
+		return
+	fireworks.name = "Fireworks"
+	get_parent().add_child(fireworks)
+	fireworks.global_position = global_position + Vector3(0.0, 1.5, 0.0)
+	fireworks.call("celebrate")

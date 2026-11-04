@@ -1,8 +1,10 @@
 extends Node
 
-## Genera los dos circuitos nuevos del torneo:
+## Genera el circuito nuevo del torneo:
 ##   res://scenes/levels/spin_go_round.tscn   (ronda 2)
-##   res://scenes/levels/pivot_panic.tscn     (ronda 3)
+##
+## Pivot Panic se retiró del juego: su constructor sigue más abajo, pero ya no
+## se llama y no vuelve a escribir la escena.
 ##
 ## Se ejecuta una sola vez con:
 ##   godot --headless --path . res://tools/build_levels.tscn
@@ -35,6 +37,7 @@ const BOULDER_SCENE := preload("res://scenes/obstacles/boulder.tscn")
 const SPIKE_SCENE := preload("res://scenes/obstacles/spike_trap.tscn")
 const ROTOR_SCENE := preload("res://scenes/obstacles/rotor_gate.tscn")
 const CRUMBLE_TILE_SCENE := preload("res://scenes/obstacles/crumble_tile.tscn")
+const HAZARD_PAD_SCRIPT := preload("res://scripts/hazard_pad.gd")
 
 const MAT_SPIN_FLOOR := preload("res://materials/spin_floor.tres")
 const MAT_SPIN_BLUE := preload("res://materials/spin_blue.tres")
@@ -110,7 +113,6 @@ const PIVOT_ENV := {
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	_build_spin_go_round()
-	_build_pivot_panic()
 	print("Niveles generados en ", OUT_DIR)
 	get_tree().quit()
 
@@ -294,6 +296,10 @@ func _hazard(parent: Node3D, root: Node3D, node_name: String, x: float, z: float
 		top: float, width: float) -> void:
 	_mesh_box(parent, root, node_name, Vector3(x, top + 0.01, z),
 		Vector3(width, 0.02, 0.55), MAT_SPIN_HAZARD)
+	# La placa frena a quien la pisa, igual que en main.tscn.
+	var plate := parent.get_node_or_null(NodePath(node_name)) as MeshInstance3D
+	if plate != null:
+		plate.set_script(HAZARD_PAD_SCRIPT)
 
 
 func _prop(parent: Node3D, root: Node3D, node_name: String, path: String,

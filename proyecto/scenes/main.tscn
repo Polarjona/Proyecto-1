@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bld2q12egd1bk"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="2_pendulum"]
@@ -6,60 +6,42 @@
 [ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="4_conveyor"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/wall.tscn" id="4_wall"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="5_bouncepad"]
-[ext_resource type="Script" path="res://scripts/hud.gd" id="5_kf5aa"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="6_sweeper"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="7_moving"]
-[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_t5ykj"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="8_dropper"]
 [ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="9_checkpoint"]
 [ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="10_finish"]
-[ext_resource type="Script" path="res://scripts/sweeper.gd" id="11_e755i"]
 [ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="11_kill"]
 [ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="12_hud"]
-[ext_resource type="Script" path="res://scripts/race_manager.gd" id="13_race"]
-[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="13_ro3en"]
-[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="14_pause"]
-[ext_resource type="Script" path="res://scripts/conveyor.gd" id="15_od4ux"]
-[ext_resource type="Material" path="res://materials/yellow.tres" id="16_xhfw6"]
-[ext_resource type="Script" path="res://scripts/see_saw.gd" id="18_1epgm"]
-[ext_resource type="Script" path="res://scripts/pendulum.gd" id="22_152kg"]
+[ext_resource type="Script" uid="uid://bwr6qldar7jt8" path="res://scripts/race_manager.gd" id="13_race"]
+[ext_resource type="PackedScene" uid="uid://dak2m3n4p5q" path="res://scenes/menu/pause_menu.tscn" id="14_pause"]
+[ext_resource type="Material" uid="uid://dlyacafamweja" path="res://materials/yellow.tres" id="16_xhfw6"]
 [ext_resource type="Material" path="res://materials/pivot_cream.tres" id="22_lime"]
-[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="24_r4e17"]
 [ext_resource type="Material" path="res://materials/pivot_wall.tres" id="25_purple"]
-[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="26_y57op"]
 [ext_resource type="Material" path="res://materials/pivot_rail.tres" id="26_yellow"]
-[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="28_mlv25"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="29_a82wo"]
-[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="30_post_shader"]
-[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="31_gdvew"]
-[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="31_sky_shader"]
-[ext_resource type="Script" path="res://scripts/post_process.gd" id="32_post_script"]
-[ext_resource type="Script" path="res://scripts/crowd.gd" id="33_crowd"]
-[ext_resource type="Script" path="res://scripts/launcher.gd" id="33_kjtvk"]
+[ext_resource type="Shader" uid="uid://dqef6rnww4juf" path="res://shaders/post_process.gdshader" id="30_post_shader"]
+[ext_resource type="Shader" uid="uid://bb6cbb224ree0" path="res://shaders/sky_clouds.gdshader" id="31_sky_shader"]
+[ext_resource type="Script" uid="uid://ctmm5mvgcr802" path="res://scripts/post_process.gd" id="32_post_script"]
+[ext_resource type="Script" uid="uid://jva0dcgxdfl2" path="res://scripts/crowd.gd" id="33_crowd"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="34_wind"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="35_seesaw"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="36_launcher"]
-[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="36_xrs0c"]
-[ext_resource type="Script" path="res://scripts/race_director.gd" id="38_director"]
-[ext_resource type="Script" path="res://scripts/finish_line.gd" id="38_xljpf"]
+[ext_resource type="Script" uid="uid://suj6vb0s2y30" path="res://scripts/race_director.gd" id="38_director"]
 [ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="39_bot"]
 [ext_resource type="Material" path="res://materials/platform_purple.tres" id="39_j4bwh"]
 [ext_resource type="Material" path="res://materials/platform_pink.tres" id="40_ksmap"]
-[ext_resource type="Material" path="res://materials/purple.tres" id="41_ygd8o"]
+[ext_resource type="Material" uid="uid://lmhy0bw4l6cb" path="res://materials/purple.tres" id="41_ygd8o"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/boulder.tscn" id="42_2s0kr"]
-[ext_resource type="Script" path="res://scripts/boulder.gd" id="43_xaipn"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/rotor_gate.tscn" id="44_ndrjj"]
-[ext_resource type="Script" path="res://scripts/rotor_gate.gd" id="45_ih3m7"]
 [ext_resource type="PackedScene" path="res://scenes/obstacles/spike_trap.tscn" id="46_11yus"]
-[ext_resource type="Script" path="res://scripts/spike_trap.gd" id="47_b6ruc"]
 [ext_resource type="Material" path="res://materials/spin_hazard.tres" id="50_155or"]
 [ext_resource type="Material" path="res://materials/pivot_floor.tres" id="54_plat_pink"]
 [ext_resource type="Material" path="res://materials/pivot_blue.tres" id="55_plat_purple"]
 [ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="56_plat_yellow"]
-[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="57_decor"]
-[ext_resource type="Script" path="res://scripts/level_info.gd" id="58_levelinfo"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="58_vtx2l"]
-[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="60_63lxy"]
+[ext_resource type="Script" uid="uid://dr0k0l4sm0sxw" path="res://scripts/arena_decor.gd" id="57_decor"]
+[ext_resource type="Script" uid="uid://tp7peuciitkj" path="res://scripts/level_info.gd" id="58_levelinfo"]
+
+[ext_resource type="Script" path="res://scripts/hazard_pad.gd" id="90_hazard_pad"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 sky_top_color = Color(0.25, 0.5, 0.92, 1)
@@ -107,7 +89,7 @@ shader_parameter/sun_direction = Vector3(0.5, 0.61, -0.61)
 shader_parameter/cloud_opacity = 0.6
 shader_parameter/cloud_scale = 2.2
 shader_parameter/cloud_speed = 0.035
-shader_parameter/sun_size = null
+shader_parameter/sun_size = 0.9991
 shader_parameter/sun_glow = 0.25
 shader_parameter/horizon_warmth = 0.12
 
@@ -188,16 +170,16 @@ size = Vector3(13.6, 0.02, 0.55)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
 shader = ExtResource("30_post_shader")
-shader_parameter/aberration = null
-shader_parameter/vignette = null
-shader_parameter/grain = null
-shader_parameter/speed = null
-shader_parameter/stun = null
-shader_parameter/flash_amount = null
-shader_parameter/saturation = null
-shader_parameter/contrast = null
-shader_parameter/dithering = null
-shader_parameter/flash_color = null
+shader_parameter/aberration = 0.0015
+shader_parameter/vignette = 0.35
+shader_parameter/grain = 0.025
+shader_parameter/speed = 0.0
+shader_parameter/stun = 0.0
+shader_parameter/flash_amount = 0.0
+shader_parameter/saturation = 1.12
+shader_parameter/contrast = 1.06
+shader_parameter/dithering = 0.7
+shader_parameter/flash_color = Color(1, 1, 1, 1)
 
 [node name="Main" type="Node3D" unique_id=1215996817]
 
@@ -219,7 +201,7 @@ light_color = Color(0.55, 0.7, 1, 1)
 light_energy = 0.45
 
 [node name="SkyDome" type="MeshInstance3D" parent="." unique_id=734866336]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -100)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 11.598158, -0.0045261383, -94.31464)
 material_override = SubResource("ShaderMaterial_sky")
 cast_shadow = 0
 mesh = SubResource("SphereMesh_sky")
@@ -237,16 +219,10 @@ lane_widths = PackedFloat32Array(3.2, 3.2, 2, 2, 1.5, 2.4, 2, 1.6, 0.4, 1.6, 2.2
 [node name="RaceManager" type="Node" parent="." unique_id=1204461491 groups=["race_manager"]]
 script = ExtResource("13_race")
 
-[node name="HUD" type="CanvasLayer" parent="." unique_id=699110431 instance=ExtResource("12_hud")]
-layer = 3
-script = ExtResource("5_kf5aa")
+[node name="HUD" parent="." unique_id=699110431 instance=ExtResource("12_hud")]
 
-[node name="KillPlane" type="Area3D" parent="." unique_id=1419531123 instance=ExtResource("11_kill")]
-transform = Transform3D(1.25, 0, 0, 0, 1, 0, 0, 0, 3.0, 0, -10, -100)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("7_t5ykj")
+[node name="KillPlane" parent="." unique_id=1419531123 instance=ExtResource("11_kill")]
+transform = Transform3D(1.25, 0, 0, 0, 1, 0, 0, 0, 3, 0, -10, -100)
 
 [node name="Course" type="Node3D" parent="." unique_id=1607520208]
 
@@ -262,25 +238,18 @@ use_collision = true
 size = Vector3(9, 0.5, 18)
 material = ExtResource("54_plat_pink")
 
-[node name="Sweeper" type="Node3D" parent="Course" unique_id=93388107 instance=ExtResource("6_sweeper")]
+[node name="Sweeper" parent="Course" unique_id=93388107 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10.5)
-script = ExtResource("11_e755i")
 spin_speed = 1.5
-push_force = 11.0
 
-[node name="Sweeper3" type="Node3D" parent="Course" unique_id=56085574 instance=ExtResource("6_sweeper")]
+[node name="Sweeper3" parent="Course" unique_id=56085574 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -20.5)
-script = ExtResource("11_e755i")
 spin_speed = 2.3
 push_force = 5.2
 spin_direction = -1.0
 
-[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=559320377 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint1" parent="Course" unique_id=559320377 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 1"
 
 [node name="ConveyorHall" type="CSGBox3D" parent="Course" unique_id=418285387]
@@ -289,60 +258,31 @@ use_collision = true
 size = Vector3(12, 0.5, 14.5)
 material = ExtResource("54_plat_pink")
 
-[node name="ConveyorA1" type="Area3D" parent="Course" unique_id=1118517262 instance=ExtResource("4_conveyor")]
+[node name="ConveyorA1" parent="Course" unique_id=1118517262 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -30.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
-direction = Vector3(1, 0, 0)
 force = 8.0
-arrow_material = ExtResource("16_xhfw6")
 
-[node name="ConveyorA2" type="Area3D" parent="Course" unique_id=1135987790 instance=ExtResource("4_conveyor")]
+[node name="ConveyorA2" parent="Course" unique_id=1135987790 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -30.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
-direction = Vector3(1, 0, 0)
 force = 8.0
-arrow_material = ExtResource("16_xhfw6")
 
-[node name="ConveyorB1" type="Area3D" parent="Course" unique_id=177667009 instance=ExtResource("4_conveyor")]
+[node name="ConveyorB1" parent="Course" unique_id=177667009 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -38.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
 direction = Vector3(-1, 0, 0)
 force = 8.0
-arrow_material = ExtResource("16_xhfw6")
 
-[node name="ConveyorB2" type="Area3D" parent="Course" unique_id=750982850 instance=ExtResource("4_conveyor")]
+[node name="ConveyorB2" parent="Course" unique_id=750982850 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -38.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
 direction = Vector3(-1, 0, 0)
 force = 8.0
-arrow_material = ExtResource("16_xhfw6")
 
-[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=1809009276 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint2" parent="Course" unique_id=1809009276 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -35.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 2"
 
-[node name="SeeSaw" type="AnimatableBody3D" parent="Course" unique_id=1550683640 instance=ExtResource("35_seesaw")]
+[node name="SeeSaw" parent="Course" unique_id=1550683640 instance=ExtResource("35_seesaw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, -51)
-collision_mask = 0
 physics_material_override = SubResource("PhysicsMaterial_board")
-sync_to_physics = false
-script = ExtResource("18_1epgm")
 
 [node name="SeeSawBase" type="CSGBox3D" parent="Course" unique_id=1931893746]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, -51)
@@ -361,12 +301,8 @@ use_collision = true
 size = Vector3(10, 0.5, 5.9)
 material = ExtResource("56_plat_yellow")
 
-[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=1270513605 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint3" parent="Course" unique_id=1270513605 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -63.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 3"
 
 [node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=1408253480]
@@ -375,47 +311,37 @@ use_collision = true
 size = Vector3(5, 0.5, 22)
 material = ExtResource("54_plat_pink")
 
-[node name="Pendulum" type="Node3D" parent="Course" unique_id=1828546740 instance=ExtResource("2_pendulum")]
+[node name="Pendulum" parent="Course" unique_id=1828546740 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -71)
-script = ExtResource("22_152kg")
 swing_speed = 0.0018
 
-[node name="Pendulum2" type="Node3D" parent="Course" unique_id=1049703201 instance=ExtResource("2_pendulum")]
+[node name="Pendulum2" parent="Course" unique_id=1049703201 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -76.5)
-script = ExtResource("22_152kg")
 swing_speed = 0.0018
 phase_offset = 1.7
 
-[node name="Pendulum3" type="Node3D" parent="Course" unique_id=1293782340 instance=ExtResource("2_pendulum")]
+[node name="Pendulum3" parent="Course" unique_id=1293782340 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -82)
-script = ExtResource("22_152kg")
 swing_speed = 0.0018
 phase_offset = 3.4
 
-[node name="Pendulum4" type="Node3D" parent="Course" unique_id=27180908 instance=ExtResource("2_pendulum")]
+[node name="Pendulum4" parent="Course" unique_id=27180908 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -86.5)
-script = ExtResource("22_152kg")
 swing_speed = 0.0018
 phase_offset = 5.1
 
-[node name="SpinningPlatform" type="AnimatableBody3D" parent="Course" unique_id=98190501 instance=ExtResource("3_spin")]
+[node name="SpinningPlatform" parent="Course" unique_id=98190501 instance=ExtResource("3_spin")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -94)
-collision_mask = 0
-script = ExtResource("24_r4e17")
 spin_speed = 1.5
 
-[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=418534994 instance=ExtResource("7_moving")]
+[node name="MovingPlatform" parent="Course" unique_id=418534994 instance=ExtResource("7_moving")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -101.5)
-collision_mask = 0
-script = ExtResource("26_y57op")
 travel = Vector3(0, 0, -5)
 speed = 2.4
 pause_time = 0.5
 
-[node name="BallDropperMoving" type="Node3D" parent="Course/MovingPlatform" unique_id=1483783759 instance=ExtResource("8_dropper")]
+[node name="BallDropperMoving" parent="Course/MovingPlatform" unique_id=1483783759 instance=ExtResource("8_dropper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.7, 0)
-script = ExtResource("28_mlv25")
-ball_scene = ExtResource("29_a82wo")
 interval = 3.0
 drop_radius = 1.4
 max_balls = 3
@@ -428,18 +354,12 @@ use_collision = true
 size = Vector3(10, 0.5, 7)
 material = ExtResource("55_plat_purple")
 
-[node name="Checkpoint4" type="Area3D" parent="Course" unique_id=1716453756 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint4" parent="Course" unique_id=1716453756 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -114.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 4"
 
-[node name="MovingPlatform2" type="AnimatableBody3D" parent="Course" unique_id=1803679456 instance=ExtResource("7_moving")]
+[node name="MovingPlatform2" parent="Course" unique_id=1803679456 instance=ExtResource("7_moving")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -118.5)
-collision_mask = 0
-script = ExtResource("26_y57op")
 travel = Vector3(0, 0, -2)
 speed = 2.0
 pause_time = 0.4
@@ -450,31 +370,19 @@ use_collision = true
 size = Vector3(5.2, 0.5, 17)
 material = ExtResource("55_plat_purple")
 
-[node name="WindTunnel" type="Area3D" parent="Course" unique_id=352744461 instance=ExtResource("34_wind")]
+[node name="WindTunnel" parent="Course" unique_id=352744461 instance=ExtResource("34_wind")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -126)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("31_gdvew")
 strength = 4.6
 gust_amplitude = 1.4
 
-[node name="WindTunnel2" type="Area3D" parent="Course" unique_id=1764378265 instance=ExtResource("34_wind")]
+[node name="WindTunnel2" parent="Course" unique_id=1764378265 instance=ExtResource("34_wind")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -137)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("31_gdvew")
 wind_direction = Vector3(-1, 0, 0)
 strength = 4.6
 gust_amplitude = 1.4
 
-[node name="Launcher" type="Area3D" parent="Course" unique_id=695700015 instance=ExtResource("36_launcher")]
+[node name="Launcher" parent="Course" unique_id=695700015 instance=ExtResource("36_launcher")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -139.2)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("33_kjtvk")
 launch_force = 9.0
 launch_up = 8.5
 
@@ -484,15 +392,9 @@ use_collision = true
 size = Vector3(12, 0.5, 14)
 material = ExtResource("54_plat_pink")
 
-[node name="ConveyorC" type="Area3D" parent="Course" unique_id=39339241 instance=ExtResource("4_conveyor")]
+[node name="ConveyorC" parent="Course" unique_id=39339241 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, -157)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
-direction = Vector3(1, 0, 0)
 force = 5.0
-arrow_material = ExtResource("16_xhfw6")
 arrow_span = 2.0
 
 [node name="BallApproach" type="CSGBox3D" parent="Course" unique_id=1741899455]
@@ -525,44 +427,33 @@ use_collision = true
 size = Vector3(7, 0.5, 2.4)
 material = ExtResource("55_plat_purple")
 
-[node name="BallDropper" type="Node3D" parent="Course" unique_id=1123578526 instance=ExtResource("8_dropper")]
+[node name="BallDropper" parent="Course" unique_id=1123578526 instance=ExtResource("8_dropper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -166)
-script = ExtResource("28_mlv25")
-ball_scene = ExtResource("29_a82wo")
 interval = 1.7
 drop_radius = 2.4
 max_balls = 7
 despawn_below_y = -2.0
 start_delay = 1.2
 
-[node name="BallDropper2" type="Node3D" parent="Course" unique_id=270263855 instance=ExtResource("8_dropper")]
+[node name="BallDropper2" parent="Course" unique_id=270263855 instance=ExtResource("8_dropper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -174.5)
-script = ExtResource("28_mlv25")
-ball_scene = ExtResource("29_a82wo")
 interval = 1.4
 drop_radius = 2.4
 max_balls = 7
 despawn_below_y = -2.0
 start_delay = 2.0
 
-[node name="WallBallLeftA" type="StaticBody3D" parent="Course" unique_id=441202033 instance=ExtResource("4_wall")]
+[node name="WallBallLeftA" parent="Course" unique_id=441202033 instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 0.9691, -0.2468, 0, 0.2468, 0.9691, -2.4, 2.808, -168)
-collision_mask = 0
 
-[node name="WallBallRightA" type="StaticBody3D" parent="Course" unique_id=488141695 instance=ExtResource("4_wall")]
+[node name="WallBallRightA" parent="Course" unique_id=488141695 instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 0.9691, -0.2468, 0, 0.2468, 0.9691, 2.4, 3.954, -172.5)
-collision_mask = 0
 
-[node name="WallBallLeftB" type="StaticBody3D" parent="Course" unique_id=1257219806 instance=ExtResource("4_wall")]
+[node name="WallBallLeftB" parent="Course" unique_id=1257219806 instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 0.849, 0.5285, 0, -0.5285, 0.849, -2.4, 3.334, -178.8)
-collision_mask = 0
 
-[node name="Checkpoint5" type="Area3D" parent="Course" unique_id=1376745690 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint5" parent="Course" unique_id=1376745690 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -182.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 5"
 
 [node name="FinalRun" type="CSGBox3D" parent="Course" unique_id=329845337]
@@ -571,45 +462,32 @@ use_collision = true
 size = Vector3(9, 0.5, 14)
 material = ExtResource("54_plat_pink")
 
-[node name="Sweeper4" type="Node3D" parent="Course" unique_id=1908238811 instance=ExtResource("6_sweeper")]
+[node name="Sweeper4" parent="Course" unique_id=1908238811 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -186)
-script = ExtResource("11_e755i")
 spin_speed = 2.4
 push_force = 5.6
 
-[node name="FinalConveyor" type="Area3D" parent="Course" unique_id=1840840800 instance=ExtResource("4_conveyor")]
+[node name="FinalConveyor" parent="Course" unique_id=1840840800 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83, -186)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
 direction = Vector3(0, 0, 1)
 force = 5.0
-arrow_material = ExtResource("16_xhfw6")
 arrow_span = 2.0
 
-[node name="Pendulum5" type="Node3D" parent="Course" unique_id=2136273283 instance=ExtResource("2_pendulum")]
+[node name="Pendulum5" parent="Course" unique_id=2136273283 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.3, -192)
-script = ExtResource("22_152kg")
 max_angle = 1.25
 swing_speed = 0.0024
 push_force = 15.0
 phase_offset = 2.0
 
-[node name="WallFinalLeft" type="StaticBody3D" parent="Course" unique_id=1127967113 instance=ExtResource("4_wall")]
+[node name="WallFinalLeft" parent="Course" unique_id=1127967113 instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 1.75, -189)
-collision_mask = 0
 
-[node name="WallFinalRight" type="StaticBody3D" parent="Course" unique_id=398559488 instance=ExtResource("4_wall")]
+[node name="WallFinalRight" parent="Course" unique_id=398559488 instance=ExtResource("4_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 1.75, -189)
-collision_mask = 0
 
-[node name="BouncePadFinal" type="Area3D" parent="Course" unique_id=1708000121 instance=ExtResource("5_bouncepad")]
+[node name="BouncePadFinal" parent="Course" unique_id=1708000121 instance=ExtResource("5_bouncepad")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -194)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("36_xrs0c")
 
 [node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=1398893886]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -206)
@@ -617,12 +495,8 @@ use_collision = true
 size = Vector3(14, 0.5, 16)
 material = ExtResource("56_plat_yellow")
 
-[node name="FinishLine" type="Area3D" parent="Course" unique_id=2113755696 instance=ExtResource("10_finish")]
+[node name="FinishLine" parent="Course" unique_id=2113755696 instance=ExtResource("10_finish")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -363)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("38_xljpf")
 
 [node name="ForgeRampDown" type="CSGBox3D" parent="Course" unique_id=2015054946]
 transform = Transform3D(1, 0, 0, 0, 0.9486833, 0.31622776, 0, -0.31622776, 0.9486833, 0, 2.762829, -216.92094)
@@ -679,9 +553,9 @@ size = Vector3(13, 0.5, 24)
 material = ExtResource("39_j4bwh")
 
 [node name="ForgePlaza" type="CSGBox3D" parent="Course" unique_id=1901450151]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, -363)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.123413086, 3.35, -363)
 use_collision = true
-size = Vector3(16, 0.5, 18)
+size = Vector3(13.273193, 0.5, 18)
 material = ExtResource("40_ksmap")
 
 [node name="ForgeWallLeft" type="CSGBox3D" parent="Course" unique_id=1351316284]
@@ -709,218 +583,152 @@ size = Vector3(0.2, 0.5, 20)
 material = ExtResource("41_ygd8o")
 
 [node name="FinalWallLeft" type="CSGBox3D" parent="Course" unique_id=2015333976]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 4.9, -342)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8488207, 4.9, -342)
 use_collision = true
 size = Vector3(0.9, 2.6, 24)
 material = ExtResource("41_ygd8o")
 
 [node name="FinalWallRight" type="CSGBox3D" parent="Course" unique_id=317524123]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 4.9, -342)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.772153, 4.9, -342)
 use_collision = true
 size = Vector3(0.9, 2.6, 24)
 material = ExtResource("41_ygd8o")
 
-[node name="Checkpoint6" type="Area3D" parent="Course" unique_id=519406178 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint6" parent="Course" unique_id=519406178 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -209)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 6"
 
-[node name="BoulderA" type="Node3D" parent="Course" unique_id=1479485353 instance=ExtResource("42_2s0kr")]
+[node name="BoulderA" parent="Course" unique_id=1479485353 instance=ExtResource("42_2s0kr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 3, -241)
-script = ExtResource("43_xaipn")
 travel = Vector3(0, 0, 19)
 speed = 5.2
 
-[node name="BoulderB" type="Node3D" parent="Course" unique_id=1789975706 instance=ExtResource("42_2s0kr")]
+[node name="BoulderB" parent="Course" unique_id=1789975706 instance=ExtResource("42_2s0kr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 3, -241)
-script = ExtResource("43_xaipn")
 travel = Vector3(0, 0, 19)
 speed = 5.8
 phase_offset = 2.6
 
-[node name="SpikeDeck0" type="Node3D" parent="Course" unique_id=313891052 instance=ExtResource("46_11yus")]
+[node name="SpikeDeck0" parent="Course" unique_id=313891052 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -227)
-script = ExtResource("47_b6ruc")
 
-[node name="SpikeDeck1" type="Node3D" parent="Course" unique_id=649759194 instance=ExtResource("46_11yus")]
+[node name="SpikeDeck1" parent="Course" unique_id=649759194 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -235)
-script = ExtResource("47_b6ruc")
 phase_offset = 1.3
 
-[node name="ForgeBelt" type="Area3D" parent="Course" unique_id=1664756215 instance=ExtResource("4_conveyor")]
+[node name="ForgeBelt" parent="Course" unique_id=1664756215 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.875, -232)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
 direction = Vector3(0, 0, 1)
 force = 3.2
-arrow_material = ExtResource("16_xhfw6")
 arrow_span = 2.0
 
-[node name="Checkpoint7" type="Area3D" parent="Course" unique_id=519741100 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint7" parent="Course" unique_id=519741100 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -221.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 7"
 
-[node name="Checkpoint8" type="Area3D" parent="Course" unique_id=1498408106 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint8" parent="Course" unique_id=1498408106 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, -251.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 8"
 
-[node name="RotorA" type="Node3D" parent="Course" unique_id=1299550702 instance=ExtResource("44_ndrjj")]
+[node name="RotorA" parent="Course" unique_id=1299550702 instance=ExtResource("44_ndrjj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -254)
-script = ExtResource("45_ih3m7")
-spin_speed = 0.95
+spin_speed = 1.5
 
-[node name="RotorB" type="Node3D" parent="Course" unique_id=1047499899 instance=ExtResource("44_ndrjj")]
+[node name="RotorB" parent="Course" unique_id=1047499899 instance=ExtResource("44_ndrjj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -260)
-script = ExtResource("45_ih3m7")
-spin_speed = 1.05
+spin_speed = 1.7
 spin_direction = -1.0
 phase_offset = 2.1
 
-[node name="RotorC" type="Node3D" parent="Course" unique_id=1688516224 instance=ExtResource("44_ndrjj")]
+[node name="RotorC" parent="Course" unique_id=1688516224 instance=ExtResource("44_ndrjj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -266)
-script = ExtResource("45_ih3m7")
-spin_speed = 1.15
+spin_speed = 1.9
 phase_offset = 0.7
 
-[node name="Checkpoint9" type="Area3D" parent="Course" unique_id=390979098 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint9" parent="Course" unique_id=390979098 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, -271.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 9"
 
-[node name="Spike0_0" type="Node3D" parent="Course" unique_id=1770096361 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.8, -274)
-script = ExtResource("47_b6ruc")
+[node name="Spike0_0" parent="Course" unique_id=1770096361 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0121908, 4.8, -274)
 
-[node name="Spike0_1" type="Node3D" parent="Course" unique_id=2146693043 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.8, -274)
-script = ExtResource("47_b6ruc")
+[node name="Spike0_1" parent="Course" unique_id=2146693043 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.012190819, 4.8, -274)
 phase_offset = 0.55
 
-[node name="Spike0_2" type="Node3D" parent="Course" unique_id=1033358096 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.8, -274)
-script = ExtResource("47_b6ruc")
+[node name="Spike0_2" parent="Course" unique_id=1033358096 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9878092, 4.8, -274)
 phase_offset = 1.1
 
-[node name="Spike0_3" type="Node3D" parent="Course" unique_id=466377286 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.8, -274)
-script = ExtResource("47_b6ruc")
-phase_offset = 1.6500000000000001
-
-[node name="Spike1_0" type="Node3D" parent="Course" unique_id=699970722 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4.8, -278)
-script = ExtResource("47_b6ruc")
+[node name="Spike1_0" parent="Course" unique_id=699970722 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0121908, 4.8, -278)
 phase_offset = 1.6
 
-[node name="Spike1_1" type="Node3D" parent="Course" unique_id=418666800 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 4.8, -278)
-script = ExtResource("47_b6ruc")
+[node name="Spike1_1" parent="Course" unique_id=418666800 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.012190819, 4.8, -278)
 phase_offset = 2.1500000000000004
 
-[node name="Spike1_2" type="Node3D" parent="Course" unique_id=758585792 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.8, -278)
-script = ExtResource("47_b6ruc")
+[node name="Spike1_2" parent="Course" unique_id=758585792 instance=ExtResource("46_11yus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1153522, 4.8, -278)
 phase_offset = 2.7
 
-[node name="Spike1_3" type="Node3D" parent="Course" unique_id=1196746638 instance=ExtResource("46_11yus")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.8, -278)
-script = ExtResource("47_b6ruc")
-phase_offset = 3.25
-
-[node name="Checkpoint10" type="Area3D" parent="Course" unique_id=957262020 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint10" parent="Course" unique_id=957262020 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.2, -299.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 10"
 
-[node name="SweeperSummit" type="Node3D" parent="Course" unique_id=991217913 instance=ExtResource("6_sweeper")]
+[node name="SweeperSummit" parent="Course" unique_id=991217913 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.55, -302)
-script = ExtResource("11_e755i")
 spin_speed = 2.5
 push_force = 6.8
 
-[node name="PendulumSummitA" type="Node3D" parent="Course" unique_id=64241717 instance=ExtResource("2_pendulum")]
+[node name="PendulumSummitA" parent="Course" unique_id=64241717 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.4, -305.5)
-script = ExtResource("22_152kg")
 max_angle = 1.05
 swing_speed = 0.0024
 push_force = 12.0
 phase_offset = 0.2
 
-[node name="PendulumSummitB" type="Node3D" parent="Course" unique_id=841111870 instance=ExtResource("2_pendulum")]
+[node name="PendulumSummitB" parent="Course" unique_id=841111870 instance=ExtResource("2_pendulum")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.4, -310)
-script = ExtResource("22_152kg")
 max_angle = 1.05
 swing_speed = 0.0027
 push_force = 12.0
 phase_offset = 1.8
 
-[node name="Checkpoint11" type="Area3D" parent="Course" unique_id=1696573640 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint11" parent="Course" unique_id=1696573640 instance=ExtResource("9_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -331.5)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("13_ro3en")
 checkpoint_name = "Checkpoint 11"
 
-[node name="SweeperFinalA" type="Node3D" parent="Course" unique_id=584866545 instance=ExtResource("6_sweeper")]
+[node name="SweeperFinalA" parent="Course" unique_id=584866545 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -336)
-script = ExtResource("11_e755i")
 spin_speed = 2.7
 push_force = 7.0
 
-[node name="SweeperFinalB" type="Node3D" parent="Course" unique_id=1665247301 instance=ExtResource("6_sweeper")]
+[node name="SweeperFinalB" parent="Course" unique_id=1665247301 instance=ExtResource("6_sweeper")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -348)
-script = ExtResource("11_e755i")
 spin_speed = 3.0
 push_force = 7.4
 spin_direction = -1.0
 
-[node name="FinalBelt" type="Area3D" parent="Course" unique_id=1587084713 instance=ExtResource("4_conveyor")]
+[node name="FinalBelt" parent="Course" unique_id=1587084713 instance=ExtResource("4_conveyor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.475, -342)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("15_od4ux")
 direction = Vector3(0, 0, 1)
 force = 3.8
-arrow_material = ExtResource("16_xhfw6")
-arrow_span = 2.2
+arrow_span = 4.0
 
-[node name="SpikeFinal0_0" type="Node3D" parent="Course" unique_id=194166275 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal0_0" parent="Course" unique_id=194166275 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.6, -339)
-script = ExtResource("47_b6ruc")
 
-[node name="SpikeFinal0_1" type="Node3D" parent="Course" unique_id=1465639095 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal0_1" parent="Course" unique_id=1465639095 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3.6, -339)
-script = ExtResource("47_b6ruc")
 phase_offset = 0.9
 
-[node name="SpikeFinal1_0" type="Node3D" parent="Course" unique_id=950294266 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal1_0" parent="Course" unique_id=950294266 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.6, -345)
-script = ExtResource("47_b6ruc")
 phase_offset = 1.4
 
-[node name="SpikeFinal1_1" type="Node3D" parent="Course" unique_id=369550510 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal1_1" parent="Course" unique_id=369550510 instance=ExtResource("46_11yus")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3.6, -345)
-script = ExtResource("47_b6ruc")
 phase_offset = 2.3
 
 [node name="Decor" type="Node3D" parent="." unique_id=386218001]
@@ -1091,42 +899,47 @@ cast_shadow = 0
 mesh = SubResource("BoxMesh_y57op")
 
 [node name="PlazaRailLeft" type="MeshInstance3D" parent="Decor" unique_id=127530268]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.1, 4.15, -363)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6264977, 4.15, -363)
 material_override = ExtResource("16_xhfw6")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_mlv25")
 
 [node name="PlazaRailRight" type="MeshInstance3D" parent="Decor" unique_id=1125902073]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 4.15, -363)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5128994, 4.15, -363)
 material_override = ExtResource("16_xhfw6")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_a82wo")
 
 [node name="HazardForge0" type="MeshInstance3D" parent="Decor" unique_id=1504652577]
+script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -226)
 material_override = ExtResource("50_155or")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_gdvew")
 
 [node name="HazardForge1" type="MeshInstance3D" parent="Decor" unique_id=871528093]
+script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -232)
 material_override = ExtResource("50_155or")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_kjtvk")
 
 [node name="HazardForge2" type="MeshInstance3D" parent="Decor" unique_id=1057385108]
+script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -238)
 material_override = ExtResource("50_155or")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xrs0c")
 
 [node name="HazardPlaza0" type="MeshInstance3D" parent="Decor" unique_id=1769379076]
+script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.61, -358)
 material_override = ExtResource("50_155or")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xljpf")
 
 [node name="HazardPlaza1" type="MeshInstance3D" parent="Decor" unique_id=1637296946]
+script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.61, -361)
 material_override = ExtResource("50_155or")
 cast_shadow = 0
@@ -1165,18 +978,10 @@ bot_scene = ExtResource("39_bot")
 finish_z = -363.0
 course_length = 368.0
 
-[node name="Player" type="CharacterBody3D" parent="." unique_id=1803748887 instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=1803748887 instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 5)
-collision_layer = 2
-collision_mask = 5
-floor_stop_on_slope = false
-floor_max_angle = 0.9
-floor_snap_length = 0.35
-script = ExtResource("58_vtx2l")
 acceleration = 22.0
 friction = 12.0
 jump_velocity = 5.0
 
-[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=973587988 instance=ExtResource("14_pause")]
-layer = 10
-script = ExtResource("60_63lxy")
+[node name="PauseMenu" parent="." unique_id=973587988 instance=ExtResource("14_pause")]

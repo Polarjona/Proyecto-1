@@ -1,9 +1,14 @@
+@tool
 extends Node3D
 
 ## Muro de témpanos: exclusivo del glaciar. Tres bloques de hielo duermen bajo
 ## el suelo y salen por turnos, de modo que siempre queda un carril abierto.
 ## Se pasa leyendo el ritmo: el carril por el que vas avisa con una franja que
 ## parpadea justo antes de cerrarse.
+##
+## Los bloques se crean una sola vez: si la escena ya los tiene guardados se
+## reutilizan, y al abrirla en el editor pasan a ser nodos de la escena para
+## poder seleccionarlos y moverlos como cualquier otro bloque.
 
 @export var lanes: int = 3
 @export var lane_width: float = 3.2
@@ -30,37 +35,83 @@ func _ready() -> void:
 	_up_y = block_height * 0.5
 	_down_y = -block_height * 0.5 - embed
 	var ice := _ice_material()
+	_bodies.clear()
+	_lamps.clear()
 	for i in lanes:
-		var body := AnimatableBody3D.new()
-		body.name = "Block%d" % i
+		var body := get_node_or_null(NodePath("Block%d" % i)) as AnimatableBody3D
+		if body == null:
+			body = _make_block(i, ice)
 		body.collision_layer = 1
 		body.collision_mask = 0
 		body.sync_to_physics = true
-		body.position = Vector3(_lane_x(i), _down_y, 0.0)
-		var shape := CollisionShape3D.new()
-		var box := BoxShape3D.new()
-		box.size = Vector3(lane_width * 0.92, block_height, block_depth)
-		shape.shape = box
-		body.add_child(shape)
-		var mesh := MeshInstance3D.new()
-		var block_mesh := BoxMesh.new()
-		block_mesh.size = box.size
-		mesh.mesh = block_mesh
-		mesh.material_override = ice
-		body.add_child(mesh)
-		add_child(body)
+		if Engine.is_editor_hint():
+			# En el editor los tres bloques se ven a la altura del carril: si no,
+			# el que duerme bajo el hielo quedaba enterrado por debajo del mapa
+			# y no había forma de verlo ni de tocarlo.
+			body.position.y = _up_y
 		_bodies.append(body)
-		# Franja de aviso en el suelo del carril.
-		var lamp := MeshInstance3D.new()
-		lamp.name = "Warn%d" % i
-		var lamp_mesh := BoxMesh.new()
-		lamp_mesh.size = Vector3(lane_width * 0.86, 0.05, block_depth * 0.6)
-		lamp.mesh = lamp_mesh
-		lamp.material_override = _lamp_material()
-		lamp.position = Vector3(_lane_x(i), 0.04, block_depth * 0.95)
-		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(lamp)
-		_lamps.append(lamp.material_override as StandardMaterial3D)
+
+		var lamp := get_node_or_null(NodePath("Warn%d" % i)) as MeshInstance3D
+		if lamp == null:
+			lamp = _make_lamp(i)
+		var lamp_material := lamp.material_override as StandardMaterial3D
+		if lamp_material == null:
+			lamp_material = _lamp_material()
+			lamp.material_override = lamp_material
+		_lamps.append(lamp_material)
+
+	if Engine.is_editor_hint():
+		# Diferido: en `_ready` el padre aún está montando los hijos.
+		call_deferred("_own_generated", self)
+
+
+## Crea un bloque de hielo y lo devuelve.
+func _make_block(index: int, ice: Material) -> AnimatableBody3D:
+	var body := AnimatableBody3D.new()
+	body.name = "Block%d" % index
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.sync_to_physics = true
+	body.position = Vector3(_lane_x(index), _down_y, 0.0)
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(lane_width * 0.92, block_height, block_depth)
+	shape.shape = box
+	body.add_child(shape)
+	var mesh := MeshInstance3D.new()
+	var block_mesh := BoxMesh.new()
+	block_mesh.size = box.size
+	mesh.mesh = block_mesh
+	mesh.material_override = ice
+	body.add_child(mesh)
+	add_child(body)
+	return body
+
+
+## Franja de aviso en el suelo del carril.
+func _make_lamp(index: int) -> MeshInstance3D:
+	var lamp := MeshInstance3D.new()
+	lamp.name = "Warn%d" % index
+	var lamp_mesh := BoxMesh.new()
+	lamp_mesh.size = Vector3(lane_width * 0.86, 0.05, block_depth * 0.6)
+	lamp.mesh = lamp_mesh
+	lamp.material_override = _lamp_material()
+	lamp.position = Vector3(_lane_x(index), 0.04, block_depth * 0.95)
+	lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(lamp)
+	return lamp
+
+
+## Da `owner` a lo generado para que el editor pueda seleccionarlo y guardarlo
+## dentro de la escena, como el resto del mapa.
+func _own_generated(node: Node) -> void:
+	var root := get_tree().edited_scene_root
+	if root == null:
+		return
+	for child in node.get_children():
+		if child.owner == null:
+			child.owner = root
+		_own_generated(child)
 
 
 func _lane_x(index: int) -> float:
@@ -68,6 +119,9 @@ func _lane_x(index: int) -> float:
 
 
 func _physics_process(delta: float) -> void:
+	# En el editor el muro se queda quieto, con los bloques a la vista.
+	if Engine.is_editor_hint():
+		return
 	_time += delta
 	var slot_time := cycle / float(maxi(lanes, 1))
 	var slot := int(_time / slot_time)

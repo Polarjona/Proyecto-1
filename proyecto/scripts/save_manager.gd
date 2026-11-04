@@ -125,6 +125,7 @@ func _default_data() -> Dictionary:
 			"music": 0.75,
 			"sfx": 0.9,
 			"shake": 1.0,
+			"sensitivity": 1.0,
 			"fullscreen": false,
 		},
 		"stats": {

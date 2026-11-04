@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## Cortina de magma: exclusiva del volcán. Una fila de chorros verticales cruza
@@ -101,6 +102,9 @@ func _physics_process(delta: float) -> void:
 				body.add_belt_velocity(Vector3.UP * push_up)
 			elif body.has_method("apply_push"):
 				body.apply_push(Vector3.UP * push_up)
+			# Bajo el chorro el corredor pierde velocidad mientras lo cruza.
+			if body.has_method("slow"):
+				body.slow(0.25, 0.6)
 	var pulse := 0.85 + 0.35 * sin(_time * 7.0)
 	if _light != null:
 		_light.light_energy = 1.6 * pulse

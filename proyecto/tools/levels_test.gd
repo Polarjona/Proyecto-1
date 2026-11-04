@@ -184,10 +184,10 @@ func _run() -> void:
 				"Glacier Gallop tiene el pasillo de las cinco rocas")
 			_check(get_nodes_in_group("spike_traps").size() == 24,
 				"Glacier Gallop tiene la terraza de 24 pinchos")
-			_check(get_nodes_in_group("ice_ramparts").size() >= 1,
-				"Glacier Gallop conserva el muro de témpanos")
-			_check(get_nodes_in_group("ice_crevasses").size() >= 1,
-				"Glacier Gallop estrena la grieta glacial")
+			# El cierre del glaciar son dos muros de témpanos: los tres bloques
+			# del tramo final tienen que funcionar igual que los tres primeros.
+			_check(get_nodes_in_group("ice_ramparts").size() >= 2,
+				"Glacier Gallop cierra con dos muros de témpanos")
 			_check(course.get_node_or_null("SummitPlatform") != null,
 				"Glacier Gallop acaba en la cumbre helada")
 		else:

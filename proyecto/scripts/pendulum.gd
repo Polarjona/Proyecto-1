@@ -48,3 +48,5 @@ func _on_body_entered(body: Node3D) -> void:
 		else:
 			dir = tangent
 		body.apply_push(dir * push_force + Vector3.UP * 3.0)
+		if body.has_method("slow"):
+			body.slow(0.9, 0.5)

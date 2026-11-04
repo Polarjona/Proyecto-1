@@ -77,8 +77,13 @@ func _ready() -> void:
 		_build_arches()
 	if build_pendulum_frames:
 		_build_pendulum_frames()
+	else:
+		# Los mapas nuevos no traen las vigas fijas del circuito original: se
+		# cuelga cada martillo de una estructura construida aquí.
+		_build_pendulum_supports.call_deferred()
 	if build_light_towers:
 		_build_light_towers()
+	_build_ramp_trims()
 	_build_ambient_sparks()
 
 
@@ -573,6 +578,97 @@ func _build_light_towers() -> void:
 		_box(Vector3(1.4, 0.85, 2.4), Vector3(x, 12.3, z), _glow_material(color, 1.6), "TowerLamp_%d" % i)
 		_omni_light(Vector3(x * 0.82, 11.4, z), color, 1.5, 20.0, "TowerLight_%d" % i)
 
+
+
+## Detalle de todas las rampas del mapa: dos guías luminosas a los lados y dos
+## filas de remaches. Cuelgan como hijos de la propia rampa, así siguen su
+## inclinación sin repetir transformaciones en cada escena.
+func _build_ramp_trims() -> void:
+	var root := get_parent()
+	if root == null:
+		return
+	var glow := _glow_material(Color(1.0, 0.86, 0.3), 1.45)
+	var metal := _toy_material(Color(0.16, 0.2, 0.45), 0.55, 0.03)
+	for ramp in _find_ramps(root):
+		var size: Vector3 = ramp.size
+		var half_width: float = size.x * 0.5 - 0.55
+		var depth: float = maxf(size.z - 0.8, 1.0)
+		for side in [-1.0, 1.0]:
+			var trim := MeshInstance3D.new()
+			trim.name = "RampTrim%s" % ("L" if side < 0.0 else "R")
+			var trim_mesh := BoxMesh.new()
+			trim_mesh.size = Vector3(0.16, 0.06, depth)
+			trim.mesh = trim_mesh
+			trim.material_override = glow
+			trim.position = Vector3(side * half_width, 0.29, 0.0)
+			trim.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			ramp.add_child(trim)
+		for row in 2:
+			var row_z := -1.0 if row == 0 else 1.0
+			for i in 4:
+				var bolt := MeshInstance3D.new()
+				var bolt_mesh := BoxMesh.new()
+				bolt_mesh.size = Vector3(0.18, 0.05, 0.18)
+				bolt.mesh = bolt_mesh
+				bolt.material_override = metal
+				bolt.position = Vector3(
+					lerpf(-half_width + 0.4, half_width - 0.4, float(i) / 3.0),
+					0.29,
+					row_z * (depth * 0.5 - 0.35))
+				bolt.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				ramp.add_child(bolt)
+
+
+## Rampas del mapa: losas CSG inclinadas, distinguidas por el nombre.
+func _find_ramps(root: Node) -> Array[CSGBox3D]:
+	var found: Array[CSGBox3D] = []
+	for child in root.get_children():
+		if child is CSGBox3D and _is_ramp_name(String(child.name)):
+			found.append(child)
+		found.append_array(_find_ramps(child))
+	return found
+
+
+func _is_ramp_name(node_name: String) -> bool:
+	return node_name.contains("Ramp") or node_name.contains("Climb") or node_name.contains("Drop")
+
+
+## Vigas de soporte para los péndulos de los mapas que no traen la estructura
+## del circuito original: dos postes hasta el suelo, la viga y el cepo del eje.
+func _build_pendulum_supports() -> void:
+	var metal := _toy_material(Color(0.18, 0.28, 0.62), 0.55, 0.02)
+	var glow := _glow_material(Color(1.0, 0.8, 0.2), 1.3)
+	for node in get_tree().get_nodes_in_group("pendulums"):
+		var pivot := node as Node3D
+		if pivot == null:
+			continue
+		var center := pivot.global_position
+		var beam_y := center.y + 0.35
+		var ground_y := _ground_below(center)
+		var tag := String(pivot.name)
+		for side in [-1.0, 1.0]:
+			var post_height: float = maxf(beam_y - ground_y, 1.0)
+			_box(Vector3(0.36, post_height, 0.36),
+				Vector3(center.x + side * 4.2, ground_y + post_height * 0.5, center.z),
+				metal, "PendulumPost_%s_%s" % [tag, "L" if side < 0.0 else "R"])
+		_box(Vector3(8.9, 0.34, 0.34), Vector3(center.x, beam_y, center.z), metal,
+			"PendulumBeam_%s" % tag)
+		_box(Vector3(7.4, 0.06, 0.12), Vector3(center.x, beam_y - 0.22, center.z), glow,
+			"PendulumGlow_%s" % tag)
+		_box(Vector3(0.72, 0.42, 0.72), Vector3(center.x, center.y + 0.05, center.z), metal,
+			"PendulumMount_%s" % tag)
+
+
+func _ground_below(point: Vector3) -> float:
+	var space := get_world_3d().direct_space_state
+	if space == null:
+		return point.y - 4.0
+	var query := PhysicsRayQueryParameters3D.create(
+		point + Vector3.UP * 7.0, point + Vector3.DOWN * 40.0, 1)
+	var hit := space.intersect_ray(query)
+	if hit.is_empty():
+		return point.y - 4.0
+	return (hit["position"] as Vector3).y
 
 
 func _build_ambient_sparks() -> void:
