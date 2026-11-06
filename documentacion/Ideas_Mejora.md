@@ -4,6 +4,8 @@
 **Fecha:** Octubre 2026
 **Cómo usar este documento:** cada idea tiene un **ID**. Responde con la lista de IDs que quieres aplicar (por ejemplo `M3, M7, G2, G9, P1`) y se implementan en ese orden. Las etiquetas de coste son orientativas: **S** ≈ media sesión, **M** ≈ una sesión larga, **L** ≈ varias sesiones.
 
+> **Nota (noviembre 2026):** este banco se escribió en octubre. Algunas ideas ya están implementadas: formato de nivel con `LevelInfo` (P1), circuitos temáticos (P4), torneo de cuatro rondas (M30) y nado en Abyss Run. El resto sigue siendo propuesta.
+
 ---
 
 ## 0. Auditoría: dónde está el juego hoy
@@ -14,7 +16,7 @@
 - `scripts/race_manager.gd`: cronómetro, checkpoints, splits vs. récord, penalización por caída, medallas, persistencia.
 - `scripts/save_manager.gd`: perfil JSON versionado, ajustes, monedas, medallas, migración de saves antiguos.
 - `scripts/race_director.gd` + `bot_racer.gd`: bots con waypoints, clasificación en vivo, cualificación por rondas.
-- 12 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud, 5 suites de test headless.
+- 17 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud y batería de tests headless.
 
 **Los cinco techos actuales** (esto es lo que impide el "x100"):
 
@@ -238,7 +240,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **T4** | **Object pooling** | Bolas, partículas y confeti reutilizados en vez de instanciar/destruir. | S |
 | **T5** | **Precompilación de shaders** | Evitar el tirón del primer obstáculo que aparece (`shader_compile` en carga). | S |
 | **T6** | **Tests de escena obligatorios** | Ampliar `tools/check_scenes.gd` + `iteration3_test.gd`: cada obstáculo nuevo debe tener un test headless que verifique su señal. | S |
-| **T7** | **CI con Godot headless** | GitHub Action que importa el proyecto y corre las 5 suites en cada push. | M |
+| **T7** | **CI con Godot headless** | GitHub Action que importa el proyecto y corre la batería de tests en cada push. | M |
 | **T8** | **Instrumentación de rendimiento** | Medir tiempo de frame en el circuito completo y fijar presupuesto (< 8 ms de CPU). | S |
 | **T9** | **Desacoplar con señales y grupos** | Menos `get_node` directos entre sistemas; estados de juego en una máquina de estados (`GameState`). | M |
 | **T10** | **Modo "sin UI / capturas"** | Tecla F12 que oculta HUD y sube calidad para hacer capturas de prensa. | S |

@@ -1,207 +1,201 @@
-# Informe de Seguiment — Segona Iteració
+# Informe de Seguimiento — Segunda Entrega
 
-**Projecte:** Tumble Rush
-**Autors:** Pol Arjona i Yazan Issa
+**Proyecto:** Tumble Rush
+**Autores:** Pol Arjona e Yazan Issa
 **Motor:** Godot Engine 4.7.2 (Forward Plus, física Jolt)
-**Llenguatge:** GDScript
-**Data:** Octubre 2026
+**Lenguaje:** GDScript
+**Fecha:** Noviembre 2026
 
 ---
 
-## 1. Objectiu de la Iteració
+## 1. Estado de la entrega
 
-Sobre la base jugable de la primera entrega (curs lineal amb tres zones d'obstacles,
-checkpoints, HUD, àudio i persistència), aquesta iteració s'ha centrat en dues línies:
+El juego ya no es un circuito único con bots: es una temporada de **cinco circuitos** con dos formas de jugarlos.
 
-1. **Ampliar el mapa i les seves funcions interactives** — més tipus d'obstacles, zones
-   noves i un entorn més ric visualment.
-2. **Millorar les físiques i els gràfics del personatge** — control del salt, resposta als
-   impactes i representació visual (extremitats, cara, sombra i estela).
+- **Torneo de cuatro rondas:** Pivot Push → Spin Go Round → Glacier Gallop → Lava Vortex.
+- **Carrera clásica:** permite elegir cualquiera de los cinco, incluido **Abyss Run**, el circuito submarino.
 
----
+Cada circuito tiene su propia escena, su `LevelInfo` (id, nombre, ronda, longitud, tiempos de medalla, ruta de bots y anchos de carril), su récord, sus medallas y sus checkpoints. `GameSession` es quien decide qué mapa se carga según el modo y la ronda, y el menú recuerda el circuito elegido para la carrera clásica.
 
-## 2. Mapa: noves zones i interacció
+| Ronda | Circuito       | Escena                             | Longitud | Checkpoints | Oro / Plata / Bronce |
+| ----- | -------------- | ---------------------------------- | -------- | ----------- | -------------------- |
+| 1     | Pivot Push     | `scenes/main.tscn`                 | 368 m    | 11          | 130 / 170 / 215 s    |
+| 2     | Spin Go Round  | `scenes/levels/spin_go_round.tscn` | 339 m    | 12          | 115 / 145 / 185 s    |
+| 3     | Glacier Gallop | `scenes/levels/glacier_gallop.tscn`| 367 m    | 9           | 145 / 180 / 225 s    |
+| 4     | Lava Vortex    | `scenes/levels/lava_vortex.tscn`   | 509 m    | 0           | 84 / 100 / 116 s     |
+| —     | Abyss Run      | `scenes/levels/abyss_run.tscn`     | 428 m    | 6           | 112 / 138 / 172 s    |
 
-El curs s'ha allargat d'uns 60 m a uns 85 m i ara té **sis zones d'obstacles seqüencials**.
-Cada zona nova és una escena pròpia amb el seu script, seguint la mateixa separació de
-responsabilitats que les existents.
-
-| Zona                 | Escena / script                                   | Interacció                                                                 |
-| -------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
-| Cinta transportadora | `conveyor.tscn` / `conveyor.gd`                   | Empeny el jugador cap endavant mentre hi és a sobre                        |
-| Pèndol oscil·lant    | `pendulum.tscn` / `pendulum.gd`                   | Martell que gira i llança el jugador en tocar-lo                           |
-| Plataforma giratòria | `spinning_platform.tscn` / `spinning_platform.gd` | Gira sobre l'eix Y; el jugador ha de mantenir l'equilibri                  |
-| **Corredor de pilotes** | `ball_dropper.tscn` + `ball.tscn`              | El dispensador deixa caure boles rígides que empenyen el jugador enrere    |
-| **Trampolí**         | `bounce_pad.tscn` / `bounce_pad.gd`               | En trepitjar-lo llança el jugador cap amunt (fins a la plataforma elevada) |
-| **Barra giratòria**  | `sweeper.tscn` / `sweeper.gd`                     | Barra que gira i fa fora el jugador del camí                               |
-| **Plataforma mòbil** | `moving_platform.tscn` / `moving_platform.gd`     | Viatja d'anada i tornada; el jugador hi ha de pujar per creuar el buit     |
-
-### Recorregut (eix −Z)
-
-```
-Inici (0) → Pont 1 (−8) → Cinta (−14/−18) → Plataforma central + Pèndol (−26)
-→ Pont del pèndol (−34) → Aproximació (−40,5) → Plataforma giratòria (−46)
-→ Corredor de pilotes + dispensador (−53) → Trampolí (−54,4)
-→ Plataforma elevada (y=2,5; −59) + Barra giratòria (−58)
-→ Plataforma mòbil (−66, recorregut 4 m) → Meta (−77/−79)
-```
-
-Els tres checkpoints es mantenen (un per zona crítica), però el tercer ara és a la
-plataforma elevada, després de l'ascens amb el trampolí.
-
-### Detalls d'implementació
-
-- **Dispensador de pilotes:** les boles s'instancien amb un desfasament aleatori dins d'un
-  radi, es reciclen quan baixen per sota del corredor (`despawn_below_y`) i es limita el
-  nombre simultani (`max_balls`) per no degradar el rendiment.
-- **Boles:** `RigidBody3D` amb `continuous_cd` activat per evitar que travessin el terra a
-  gran velocitat. La capa de col·lisió és la d'obstacles i la màscara inclou món i jugador.
-- **Empenta proporcional:** la força de retrocés de cada bola escala amb la seva velocitat
-  de caiguda, amb un màxim perquè el cop sigui exigent però just.
-- **Trampolí:** a més de l'`Area3D` de detecció, inclou un `StaticBody3D` fill que fa de
-  terra físic, de manera que el jugador s'hi pot recolzar abans de ser llançat. La força
-  està dimensionada perquè l'ascens (≈4,9 m) superi amb marge la plataforma elevada (2,75 m).
-- **Plataforma mòbil:** `AnimatableBody3D` amb `sync_to_physics = true`; es mou entre dos
-  punts amb una pausa a cada extrem i el jugador la cavalca gràcies a `move_and_slide`.
-- **Barra giratòria:** el braç és un cos sòlid (bloqueja) i el seu `Area3D` afegeix el
-  retrocés en entrar-hi en contacte, igual que el patró ja usat pel pèndol.
-
-### Decoració i entorn
-
-- Node `Decor` amb **arc de sortida**, **valles**, **columnes** i **pilars de fons**.
-  És decoració purament visual (sense col·lisió) per no afectar el joc ni els tests.
-- **Cel procedural** (`ProceduralSkyMaterial` + `Sky`) en substitució del color pla, amb
-  boira i ambient provinents del cel. Això dóna profunditat al fons i separa visualment
-  les zones.
+**Pivot Panic se retiró.** Su escena ya no existe y su constructor quedó desactivado en `tools/build_levels.gd`; el torneo se cerró con los cuatro circuitos actuales.
 
 ---
 
-## 3. Personatge: física i gràfics
+## 2. Los cinco circuitos
 
-### Física
+### 2.1 Pivot Push (ronda 1, 368 m, 11 checkpoints)
 
-| Millora                      | Com funciona                                                                                                        |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Altura de salt variable**  | Si el jugador deixa anar el botó mentre puja, la velocitat vertical es retalla a `min_jump_velocity`. Salt curt a l'instant. |
-| **Aturdiment / tambaleo**    | Els cops horitzontals per sobre de `stun_push_threshold` activen un temporitzador durant el qual el control queda reduït a `stun_control`, de manera que l'empenta no es pot cancel·lar a l'instant. |
-| **Bounce**                   | Nou mètode `bounce(strength)` per als trampolins; ignora la regla del salt curt i encadena l'animació d'estirament. |
-| **Salt ajustat**             | `jump_velocity` passa de 3,5 a 5,0 i l'acceleració/fricció de la cursa s'apugen lleugerament perquè el control sigui més àgil sense perdre la inèrcia característica de l'estil *Stumble*. |
-| **Respawn net**              | `respawn_at()` reinicia també l'aturdiment, l'estirament i la inclinació del cos.                                    |
+Es el circuito original, retematizado en azul real, magenta y oro. Conserva los tramos clásicos (barridos, plataformas móviles, túneles de viento, cañón, balancín, péndulos, disco giratorio y lluvia de bolas) y el tercer acto, **la forja**: pasillo de rocas persecutorias, terraza de pinchos, puente de tres aspas, subida larga con dos péndulos y bajada final con barridos y pinchos.
 
-### Gràfics
+### 2.2 Spin Go Round (ronda 2, 339 m, 12 checkpoints)
 
-- **Extremitats animades:** bessons `ArmPivotLeft/Right` i `LegPivotLeft/Right` amb braços i
-  cames en fase oposada (carrera, idle, salt i aturdiment).
-- **Cara:** cap amb dos ulls i pupil·les, orientats amb la rotació del cos.
-- **Estat d'aturdiment:** el cos s'inclina lateralment de manera oscil·lant mentre dura el
-  temporitzador, amb una amplitud que decreix.
-- **Sombra projectada:** un disc pla que fa un *raycast* cap avall cada frame físic
-  (màscara = capa `world`), s'enganxa al terra i s'escala i s'aclareix segons l'altura.
-  S'amaga si no hi ha terra a sota.
-- **Estela de polvo:** `CPUParticles3D` que s'activa en córrer per sobre d'un llindar de
-  velocitat i emet una ràfega curta a cada aterratge.
+El circuito más largo del torneo y el más cargado de obstáculos de suelo:
+
+- **Acto 1:** arena de barridos con pasillos cerrados, pasarela con plataforma móvil y tramo de peonzas con lluvia de bolas.
+- **Acto 2:** rampa de subida, dos pistones alternos con luz de aviso, puente de 12 losas frágiles y rampa de bajada.
+- **Acto 3:** descenso de rocas, galería de 16 trampas de pinchos, puente de tres aspas, cinta en contra, subida al mirador con lluvia de bolas, dos péndulos en la cima y bajada final.
+
+### 2.3 Glacier Gallop (ronda 3, 367 m, 9 checkpoints)
+
+El circuito de hielo. La primera mitad encadena barridos, arena giratoria, ascensor de hielo, galería de pistones y puente de placas frágiles. La segunda suma el **puente del vendaval**, el pasillo de rocas y la terraza de pinchos antes de la recta final.
+
+Sus dos señas de identidad son los **muros de témpanos** (tres carriles que suben y bajan con aviso, siempre queda uno abierto) y un **salto recortado** (impulso 5,02 en vez de 6,0) para que el hielo pese. La escena añade nieve, niebla, una catedral de hielo y decoración propia.
+
+### 2.4 Lava Vortex (ronda 4, 509 m, 0 checkpoints)
+
+La final del torneo es una **espiral de cuatro vueltas** alrededor de una montaña, construida con 116 tramos y tres saltos sobre la lava.
+
+- **Lava que sube** desde la base hasta la cima: no se puede perder tiempo.
+- **Géiseres**, **lluvia de meteoros** con aviso, **vórtices de ceniza** y **cortinas de magma** en los tramos altos.
+- **Sin checkpoints**: una caída devuelve a la salida. El circuito está pensado para correrse de una tirada.
+- La cámara puede seguir la espiral (el código de seguimiento por muelle existe, aunque el control actual es con ratón).
+
+### 2.5 Abyss Run (carrera clásica, 428 m, 6 checkpoints)
+
+El circuito submarino se juega solo en carrera clásica. Es un túnel de 428 m con islas secas, tramos de agua con franja de nado, ascensores, pasos estrechos y hazards marinos:
+
+- **Erizos** y **medusas** que golpean o empujan.
+- **Minas de burbujas** y **estrellas giratorias**.
+- **Aros de impulso** que lanzan al corredor al tramo siguiente.
+- **Zonas de agua** con flotabilidad, arrastre, inclinación del cuerpo y descenso con `Shift`/`Ctrl` o gatillo derecho.
 
 ---
 
-## 4. Verificació
+## 3. Mecánicas y sistemas
 
-S'ha mantingut i ampliat el joc de proves headless del projecte. Tots quatre passen:
+### 3.1 Movimiento y cámara
+
+Se mantiene el paquete de *game feel* de la iteración anterior: coyote time, jump buffer, ápice flotante, herencia de velocidad de plataformas, aturdimiento, hitstop y *slow motion*.
+
+La novedad es la **cámara con ratón**: durante la carrera el puntero se captura y el pivote gira con el movimiento del ratón, con cabeceo limitado (-75° a 15°), sensibilidad ajustable desde Ajustes y `SpringArm3D` para no atravesar paredes. El FOV sigue subiendo con la velocidad y la caída.
+
+### 3.2 Nado
+
+`player.gd` incorpora un modo de nado que activan las zonas de agua:
+
+- flotabilidad tenue (sin tocar nada se sube despacio),
+- arrastre que frena la inercia,
+- inclinación del cuerpo,
+- control vertical con el gatillo derecho o `Shift`/`Ctrl`,
+- franja vertical de la zona para no salirse por arriba ni por abajo.
+
+### 3.3 Kit de hazards temáticos
+
+Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden scripts propios:
+
+| Circuito | Hazard | Qué hace |
+| --- | --- | --- |
+| Glaciar | Muro de témpanos (`ice_rampart.gd`) | Bloques que emergen por carriles, con aviso y ciclo |
+| Glaciar | Nieve (`snowfall.gd`) y niebla | Ambiente y lectura de profundidad |
+| Volcán | Lava que sube (`lava_rise.gd`) | Superficie que asciende y persigue al corredor |
+| Volcán | Géiser (`lava_geyser.gd`) | Columna que empuja hacia arriba |
+| Volcán | Lluvia de meteoros (`meteor_rain.gd`) | Impactos con aviso previo |
+| Volcán | Vórtice de ceniza (`ash_vortex.gd`) | Zona que arrastra |
+| Volcán | Cortina de magma (`magma_curtain.gd`) | Chorro vertical que corta el paso |
+| Abismo | Zona de agua (`water_zone.gd`) | Activa el nado y fija la franja |
+| Abismo | Fauna y trampas (`ocean_hazards.gd`) | Erizos, medusas, minas, estrellas y aros de impulso |
+
+### 3.4 Bots y torneo
+
+- El torneo empieza con 7 bots y 3 plazas; cada ronda añade un bot (hasta 11), sube un 5 % su velocidad y reduce las plazas (3 → 3 → 2 → 1).
+- Los bots siguen la ruta de cada circuito, esperan plataformas y barridos, esquivan rocas y bolas y reciben los hazards como el jugador.
+- Una caída devuelve al bot a **su último checkpoint**, no al que perseguía. El empujón de seguridad solo aparece si el tramo se le atraganta dos veces o se queda atascado.
+
+### 3.5 Perfil, monedas y medallas
+
+- Perfil JSON versionado en `user://profile.json`, con récord y splits **por circuito**, medallas, monedas, estadísticas, ajustes, personaje y tutorial.
+- Migración automática del antiguo `user://best_time.save` y de perfiles de versiones anteriores.
+- Monedas por medalla, tiempo y puesto, con desglose en el panel de resultados.
+- Ajustes de volumen de música/SFX, intensidad de sacudida, sensibilidad de ratón y pantalla completa.
+
+### 3.6 Personajes, lobby y audio
+
+- **Diez personajes CC0 de Quaternius** con dos cuerpos cada uno (20 modelos), animaciones de idle, andar, caída y celebración, más una capa procedural de esprint, salto y aterrizaje.
+- **Lobby** con escaparate 3D del corredor equipado, tarjeta de temporada, monedas y panel de personajes con compra y vista previa.
+- **Audio:** tema de menú, canción de victoria en bus propio y **15 SFX** sintetizados con `tools/generate_audio.py`.
+
+---
+
+## 4. Arquitectura y generación de niveles
+
+- **Autoloads:** `SaveManager` (perfil), `GameSession` (modo, ronda y circuito), `GameFeel` (hitstop/sacudida), `AudioManager` (música y SFX) y `TransitionManager` (fades).
+- **Contrato de circuito:** cada escena lleva un `LevelInfo` con id, nombre, ronda, longitud, tiempos de medalla, meta, ruta de bots, anchos de carril y punto de salida. `RaceManager`, `RaceDirector` y el HUD lo leen sin conocer el mapa.
+- **Escenas horneadas:** Pivot Push y Spin Go Round están construidas a mano y guardadas como `.tscn`.
+- **Generador `@tool`:** `scripts/level_builder.gd` construye Glacier Gallop, Lava Vortex y Abyss Run. Al abrir la escena en el editor se genera el mapa; al guardar, los nodos quedan marcados con `owner` y el `.tscn` queda horneado y editable. Si la escena ya tiene contenido, el generador no reconstruye nada.
+- **Abyss Run:** su escena solo contiene el constructor, así que el túnel se genera en runtime.
+- **Grupos:** `player`, `bot`, `bots`, `checkpoints`, `race_manager`, `race_director`, `pause_menu`, `wind_tunnels`, `launchers`, `see_saws` y `level_info`.
+
+---
+
+## 5. Verificación
+
+La batería se ha ejecutado con Godot 4.7.2 en esta máquina. Resultados reales:
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd    # 17/17 escenes OK
-godot --headless -s res://tools/smoke_test.gd      # SMOKE OK
-godot --headless -s res://tools/flow_test.gd       # RESULT: TODO OK
-godot --headless -s res://tools/features_test.gd   # RESULT: TODO OK
+godot --headless -s res://tools/check_scenes.gd       # RESULT: 30/30 scenes OK
+godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
+godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
+godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
+godot --headless -s res://tools/iteration3_test.gd    # RESULT: 1 fallo
+godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
+godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
+godot --headless -s res://tools/levels_test.gd        # 4 fallos
+godot --headless -s res://tools/levels_bots_test.gd   # no termina en 280 s
 ```
 
-**`check_scenes.gd`** valida l'arranjament sintàctic de les 17 escenes del projecte
-(les 12 anteriors més `bounce_pad`, `sweeper`, `moving_platform`, `ball` i `ball_dropper`).
+**Fallos conocidos y su causa:**
 
-**`flow_test.gd`** continua recorrent el flux real de joc (menú → carrera → moviment → salt
-→ checkpoint → meta → caiguda amb penalització) sense regressions.
+1. `iteration3_test.gd` — «La acción de dive ya no existe». El test se escribió cuando el dive se retiró, pero la acción volvió para **nadar hacia abajo** en Abyss Run y sigue en el `InputMap` (`Shift`/`Ctrl` y gatillo derecho). Es una expectativa desfasada, no una regresión.
+2. `levels_test.gd` — cuatro comprobaciones que piden elementos que los mapas ya no tienen en ese punto: 14 trampas de pinchos en Pivot Push, un descenso de rocas en Spin Go Round, una arena giratoria con lluvia de bolas en Glacier Gallop y lluvia de bolas en Lava Vortex. El resto de la suite (carga de circuitos, `LevelInfo`, checkpoints, meta, plataformas y rutas) pasa.
+3. `levels_bots_test.gd` — el recorrido de bots de los circuitos nuevos no termina dentro de 280 s en esta máquina (código 124) y al salir deja avisos de RIDs de `NavMesh` sin liberar. No se considera verde.
+4. `bots_test.gd` — no se ha vuelto a ejecutar en esta pasada; la última referencia válida es la del informe anterior.
 
-**`features_test.gd`** (nou) comprova 31 punts sobre les funcions afegides:
-
-- Presència al mapa dels quatre obstacles nous i de la decoració, i que l'entorn fa servir
-  un cel procedural.
-- **Càlcul d'abast del trampolí** contra l'altura real de la plataforma elevada.
-- **Llançament real:** es deixa caure el jugador sobre el trampolí i es comprova que la
-  velocitat vertical arriba a la força configurada.
-- Rotació de la barra giratòria i desplaçament de la plataforma mòbil.
-- El dispensador genera boles i una bola en caiguda **atura i aturdeix** el jugador.
-- Recuperació i reactivació de l'aturdiment.
-- **Altura de salt variable** mesurada com a àpex real (1,16 m mantenint el botó enfront
-  de 0,50 m deixant-lo anar).
-- Existència d'ulls, pupil·les, braços i cames, i que les extremitats es mouen en córrer.
-- **Sombra** visible sobre terra i invisible al buit.
-- **Geometria del curs:** es deixa caure el jugador sobre cada plataforma nova i es
-  comprova l'altura exacta d'aterratge (0,00 / 0,20 / 0,00 / 2,75 / 0,00).
-- **Plataforma mòbil cavalcable:** el jugador s'hi recolza i avança amb ella.
+Los tests siguen asumiendo que el proyecto ya se ha abierto una vez en Godot para importar escenas y WAV nuevos.
 
 ---
 
-## 5. Incidències i Decisions
+## 6. Incidencias y decisiones
 
-- **El test del salt donava àpex 0:** el jugador encara era a l'aire quan es polsava el
-  botó, perquè l'espera de "assentament" era de 15 frames i la caiguda durava més. Solucionat
-  esperant que `is_on_floor()` sigui cert abans de saltar. També es va corregir la mesura per
-  incloure el pic durant la fase en què es manté el botó (abans es mesurava només la baixada).
-- **Àrea d'activació del trampolí:** un `Area3D` no és sòlid, així que el jugador el
-  travessaria. S'hi ha afegit un `StaticBody3D` fill que fa de superfície física.
-- **Capçalera de columnes del dispensador:** les columnes visuals penjaven cap amunt; s'han
-  recol·locat perquè baixin fins al nivell del corredor.
-- **Sostres de plataforma:** totes les plataformes de terra s'han unificat a la cara superior
-  `y = 0`, i la zona elevada a `y = 2,75`, per evitar escales invisibles entre trams.
-- **Travessa de boles:** amb caigudes de 6,5 m una bola ràpida podia travessar el terra;
-  resolt amb `continuous_cd` al `RigidBody3D`.
-- **Decoració sense col·lisió:** es va decidir que la decoració no generi col·lisió perquè no
-  interfereixi amb el joc ni amb les proves automàtiques.
-- **Recorregut de la plataforma mòbil:** l'escena tenia un recorregut per defecte de 6 m i, amb
-  l'origen a z = −66, l'extrem final s'encavalcava 2 m amb la plataforma de meta. S'ha fixat el
-  recorregut a 4 m a la instància de `main.tscn`, de manera que l'extrem final toca exactament
-  la vora de la meta.
-- **Test inestable per les pilotes:** el `features_test` fallava d'una manera intermitent en
-  comprovar les altures d'aterratge, perquè les pilotes del dispensador empenyien el jugador
-  fora del punt de caiguda (de z = −51 fins a la plataforma giratòria, a z ≈ −49). No era un
-  error del joc sinó del test: ara les comprovacions de geometria **aturen el dispensador i
-  netegen les pilotes** abans de mesurar. Detectat executant el test 12 vegades seguides.
-- **Mesura de la plataforma mòbil:** com que la plataforma fa pauses als extrems, mesurar el
-  desplaçament final donava valors enganyosos. Ara el test acumula el **recorregut** del
-  jugador durant una finestra prou llarga, cosa que el fa independent de la fase de la pausa.
+- **Pivot Panic fuera del torneo.** Su escena y su constructor se retiraron para cerrar el torneo con cuatro circuitos; las referencias a Pivot Panic que quedaban en la documentación se han eliminado.
+- **Lava Vortex sin checkpoints.** La subida de lava convierte cada caída en un reinicio completo; por eso el circuito no tiene puntos de control y sus medallas son las más ajustadas del juego.
+- **Dive restaurado para nadar.** El dive como mecánica de carrera sigue fuera, pero la acción de entrada se reutiliza para descender en el agua. Eso invalida una comprobación de `iteration3_test`.
+- **Saltos y alturas del glaciar.** El jugador lleva un impulso de salto recortado (5,02) para que el hielo se note; el resto del control no cambia.
+- **Generación y horneado.** El generador `@tool` permite reconstruir un circuito temático sin copiar escenas gigantes, y el horneado deja el mapa editable y estable para los tests.
+- **Documentación alineada.** README, este informe y el informe del torneo describen los cinco circuitos y el torneo de cuatro rondas; la Tercera Iteración se retira de la entrega y queda para una futura iteración.
 
 ---
 
-## 6. Ús d'Intel·ligència Artificial
+## 7. Uso de inteligencia artificial
 
-En aquesta iteració la IA (Freebuff, de Codebuff) s'ha fet servir per a:
+En esta iteración la IA (Freebuff, de Codebuff) se ha utilizado para:
 
-- Disseny de les noves zones del mapa i càlcul de l'abast del trampolí en funció de l'altura
-  de la plataforma destí.
-- Implementació dels quatre obstacles nous i del seu desacoblament (senyals, grups i
-  interfícies ja existents com `apply_push()`).
-- Implementació de les millores de física (salt variable, aturdiment) i de gràfics
-  (extremitats, cara, sombra, pols).
-- Ampliació de les proves headless i diagnòstic de per què fallava la mesura del salt.
+- Revisar el estado real del proyecto frente a la documentación y localizar las contradicciones (tres circuitos frente a cinco, Pivot Panic frente a Glacier/Lava/Abyss, tests que ya no pasan).
+- Revisar los circuitos nuevos y sus scripts (`level_builder.gd`, hazards de hielo, volcán y abismo) para describirlos con datos verificados.
+- Reescribir este informe, el README y el informe del torneo con los datos reales de escenas, `LevelInfo`, checkpoints y medallas.
+- Ejecutar la batería headless y documentar con precisión qué pasa, qué falla y por qué.
 
-Tot el codi s'ha revisat i validat executant la bateria de proves completa.
+Todo el código citado se ha revisado y los resultados de los tests son los que se muestran en la sección 5.
 
 ---
 
-## Checklist de la Iteració
+## Checklist de la entrega
 
-| Punt                                                   | Estat |
-| ------------------------------------------------------ | ----- |
-| Mapa ampliat amb zones noves                           | ✅    |
-| Trampolí interactiu i funcional                        | ✅    |
-| Plataforma mòbil cavalcable                            | ✅    |
-| Barra giratòria que empeny                             | ✅    |
-| Dispensador de boles que tiren el jugador enrere       | ✅    |
-| Decoració i cel procedural                             | ✅    |
-| Salt d'altura variable                                 | ✅    |
-| Aturdiment / tambaleo amb pèrdua de control            | ✅    |
-| Extremitats i cara animades                            | ✅    |
-| Sombra projectada i estela de pols                     | ✅    |
-| Sense regressions (`flow_test`)                        | ✅    |
-| Proves noves (`features_test`)                         | ✅    |
-| README i documentació actualitzats                     | ✅    |
+| Punto                                              | Estado |
+| -------------------------------------------------- | ------ |
+| Los cinco circuitos cargan y tienen `LevelInfo`    | ✅     |
+| El torneo tiene cuatro rondas y el menú, cinco circuitos | ✅ |
+| Medallas, longitudes y checkpoints documentados    | ✅     |
+| Nado y cámara con ratón documentados               | ✅     |
+| Lobby, personajes, monedas y audio documentados    | ✅     |
+| README e informe del torneo alineados              | ✅     |
+| Tercera Iteración retirada de la entrega           | ✅     |
+| Tests en verde                                     | ⚠️ 5 comprobaciones desfasadas + un test que no termina |

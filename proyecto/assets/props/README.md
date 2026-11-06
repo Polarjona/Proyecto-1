@@ -6,11 +6,10 @@
 - Autor: **the_ normalgamer**
 - Fuente: https://poly.pizza/m/4IwPTeOmq6c
 - Licencia: **Creative Commons Attribution 3.0 (CC-BY 3.0)**
-- Uso: atrezo decorativo de **Spin Go Round** (bolas de playa junto a la salida, la arena, el tramo de bolas y la meta) y de **Pivot Panic** (junto a la salida y la meta).
+- Uso: atrezo decorativo de **Spin Go Round** (bolas de playa junto a la salida, la arena, el tramo de bolas y la meta).
 
 El archivo se importa directamente como `PackedScene` de Godot y se instancia en
-`scenes/levels/spin_go_round.tscn` y `scenes/levels/pivot_panic.tscn` mediante
-`tools/build_levels.gd`.
+`scenes/levels/spin_go_round.tscn` mediante `tools/build_levels.gd`.
 
 ## Referencias visuales
 
