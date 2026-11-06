@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## Grieta glacial: exclusiva del glaciar. El suelo del último tramo se abre por
@@ -6,6 +7,10 @@ extends Node3D
 ##
 ## Se distingue del muro de témpanos (que cierra carriles en vertical) en que
 ## aquí el peligro es el hueco: el suelo desaparece bajo los pies.
+##
+## Las losas se crean una sola vez: si la escena ya las tiene guardadas se
+## reutilizan, y al abrirla en el editor pasan a ser nodos de la escena para
+## poder seleccionarlas y moverlas como cualquier otro bloque.
 
 @export var lanes: int = 3
 @export var lane_width: float = 3.2
@@ -24,41 +29,89 @@ var _closed_y: float = -0.25
 
 func _ready() -> void:
 	add_to_group("ice_crevasses")
-	_build_pit()
+	if not has_node("Pit"):
+		_build_pit()
 	var ice := _ice_material()
+	_bodies.clear()
+	_lamps.clear()
 	for i in lanes:
-		var body := AnimatableBody3D.new()
-		body.name = "Lane%d" % i
+		var body := get_node_or_null(NodePath("Lane%d" % i)) as AnimatableBody3D
+		if body == null:
+			body = _make_lane(i, ice)
 		body.collision_layer = 1
 		body.collision_mask = 0
 		body.sync_to_physics = true
-		body.position = Vector3(_lane_x(i), _closed_y, 0.0)
-		var shape := CollisionShape3D.new()
-		var box := BoxShape3D.new()
-		box.size = Vector3(lane_width * 0.96, 0.5, lane_length)
-		shape.shape = box
-		body.add_child(shape)
-		var mesh := MeshInstance3D.new()
-		var block := BoxMesh.new()
-		block.size = box.size
-		mesh.mesh = block
-		mesh.material_override = ice
-		body.add_child(mesh)
-		add_child(body)
+		# Las losas arrancan siempre cerradas y a ras del hielo: si la escena se
+		# guardó a mitad de una oleada, no empiezan hundidas bajo el suelo.
+		body.position.y = _closed_y
+		# Y con el hielo claro, no translúcido: así se leen como tres losas
+		# encima del hueco en vez de como un parche oscuro debajo de él.
+		for child in body.get_children():
+			if child is MeshInstance3D:
+				(child as MeshInstance3D).material_override = ice
 		_bodies.append(body)
 
-		# Franja de aviso en el borde del carril.
-		var lamp := MeshInstance3D.new()
-		lamp.name = "Warn%d" % i
-		var lamp_mesh := BoxMesh.new()
-		lamp_mesh.size = Vector3(lane_width * 0.9, 0.05, 0.18)
-		lamp.mesh = lamp_mesh
-		var lamp_material := _lamp_material()
-		lamp.material_override = lamp_material
-		lamp.position = Vector3(_lane_x(i), 0.03, lane_length * 0.5 + 0.16)
-		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(lamp)
+		var lamp := get_node_or_null(NodePath("Warn%d" % i)) as MeshInstance3D
+		if lamp == null:
+			lamp = _make_lamp(i)
+		var lamp_material := lamp.material_override as StandardMaterial3D
+		if lamp_material == null:
+			lamp_material = _lamp_material()
+			lamp.material_override = lamp_material
 		_lamps.append(lamp_material)
+
+	if Engine.is_editor_hint():
+		# Diferido: en `_ready` el padre aún está montando los hijos.
+		call_deferred("_own_generated", self)
+
+
+## Crea una losa de carril y la devuelve.
+func _make_lane(index: int, ice: Material) -> AnimatableBody3D:
+	var body := AnimatableBody3D.new()
+	body.name = "Lane%d" % index
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.sync_to_physics = true
+	body.position = Vector3(_lane_x(index), _closed_y, 0.0)
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(lane_width * 0.96, 0.5, lane_length)
+	shape.shape = box
+	body.add_child(shape)
+	var mesh := MeshInstance3D.new()
+	var block := BoxMesh.new()
+	block.size = box.size
+	mesh.mesh = block
+	mesh.material_override = ice
+	body.add_child(mesh)
+	add_child(body)
+	return body
+
+
+## Franja luminosa que avisa antes de que el carril se cierre.
+func _make_lamp(index: int) -> MeshInstance3D:
+	var lamp := MeshInstance3D.new()
+	lamp.name = "Warn%d" % index
+	var lamp_mesh := BoxMesh.new()
+	lamp_mesh.size = Vector3(lane_width * 0.9, 0.05, 0.18)
+	lamp.mesh = lamp_mesh
+	lamp.material_override = _lamp_material()
+	lamp.position = Vector3(_lane_x(index), 0.03, lane_length * 0.5 + 0.16)
+	lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(lamp)
+	return lamp
+
+
+## Da `owner` a lo generado para que el editor pueda seleccionarlo y guardarlo
+## dentro de la escena, como el resto del mapa.
+func _own_generated(node: Node) -> void:
+	var root := get_tree().edited_scene_root
+	if root == null:
+		return
+	for child in node.get_children():
+		if child.owner == null:
+			child.owner = root
+		_own_generated(child)
 
 
 func _lane_x(index: int) -> float:
@@ -66,6 +119,9 @@ func _lane_x(index: int) -> float:
 
 
 func _physics_process(delta: float) -> void:
+	# En el editor no se abre ninguna grieta: el mapa se edita quieto.
+	if Engine.is_editor_hint():
+		return
 	_time += delta
 	var slot_time := cycle / float(maxi(lanes, 1))
 	var slot := int(_time / slot_time)
@@ -107,7 +163,9 @@ func _build_pit() -> void:
 	pit_mesh.size = Vector3(width, 12.0, lane_length)
 	pit.mesh = pit_mesh
 	pit.material_override = dark
-	pit.position = Vector3(0.0, -6.5, 0.0)
+	# Hondo de sobra: el hueco abierto tiene que leerse como un pozo, no como
+	# una franja oscura de medio metro.
+	pit.position = Vector3(0.0, -8.0, 0.0)
 	pit.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(pit)
 
@@ -169,13 +227,14 @@ func _build_pit() -> void:
 
 func _ice_material() -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(0.62, 0.85, 0.95, 0.92)
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.roughness = 0.12
-	material.metallic = 0.15
+	# Hielo opaco y luminoso: las losas cerradas tienen que leerse por encima del
+	# hueco, no como una sombra bajo el suelo.
+	material.albedo_color = Color(0.8, 0.94, 1.0)
+	material.roughness = 0.16
+	material.metallic = 0.1
 	material.emission_enabled = true
-	material.emission = Color(0.3, 0.7, 0.9)
-	material.emission_energy_multiplier = 0.32
+	material.emission = Color(0.42, 0.78, 0.95)
+	material.emission_energy_multiplier = 0.5
 	return material
 
 

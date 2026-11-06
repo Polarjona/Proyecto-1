@@ -46,3 +46,5 @@ func _on_body_entered(body: Node3D) -> void:
 	var force := push_dir * push_force * (0.5 + 0.5 * impact)
 	force.y = push_lift
 	body.apply_push(force)
+	if body.has_method("slow"):
+		body.slow(0.8, 0.6)

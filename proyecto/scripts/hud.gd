@@ -70,7 +70,7 @@ func _ready() -> void:
 		tutorial_panel.show()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player") as Node3D
 		if _player == null:

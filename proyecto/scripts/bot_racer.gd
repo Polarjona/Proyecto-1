@@ -104,6 +104,10 @@ var _lane: float = 0.0
 var _finished: bool = false
 var _stumble_time: float = 0.0
 var _stumble_cooldown: float = 0.0
+## Frenazo de los hazards (misma regla que el jugador): los bots cruzan los
+## mismos charcos y martillos, así que la carrera no se desequilibra.
+var _slow_timer: float = 0.0
+var _slow_factor: float = 1.0
 var _start_ms: int = 0
 var _jump_cooldown: float = 0.0
 var _jump_request: float = 0.0
@@ -236,6 +240,7 @@ func _physics_process(delta: float) -> void:
 	_jump_cooldown = maxf(0.0, _jump_cooldown - delta)
 	_jump_request = maxf(0.0, _jump_request - delta)
 	_tick_stumble(delta)
+	_tick_slow(delta)
 
 	var target := _target_position()
 	var to_target := target - global_position
@@ -261,7 +266,7 @@ func _physics_process(delta: float) -> void:
 		if not _near_cannon() and not _ground_ahead(direction):
 			_jump_request = 0.3
 
-	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed
+	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed * _slow_scale()
 	velocity.x = direction.x * walk_speed + _knockback.x + _external.x
 	velocity.z = direction.z * walk_speed + _knockback.z + _external.z
 	velocity.y += _external.y
@@ -371,6 +376,32 @@ func _tick_stumble(delta: float) -> void:
 	# seconds for no reason.
 	if randf() < 0.35:
 		_stumble_time = randf_range(0.15, 0.35)
+
+
+## Los hazards frenan a los bots igual que al corredor. Se queda el factor más
+## fuerte mientras dura el frenazo, para que una zona suave no anule el golpe
+## de un martillo.
+func slow(duration: float = 0.8, factor: float = 0.6) -> void:
+	var clamped := clampf(factor, 0.2, 1.0)
+	_slow_factor = minf(_slow_factor, clamped) if _slow_timer > 0.0 else clamped
+	_slow_timer = maxf(_slow_timer, duration)
+
+
+func _tick_slow(delta: float) -> void:
+	_slow_timer = maxf(0.0, _slow_timer - delta)
+
+
+func _slow_scale() -> float:
+	return _slow_factor if _slow_timer > 0.0 else 1.0
+
+
+## Para el HUD y los tests.
+func is_slowed() -> bool:
+	return _slow_timer > 0.0
+
+
+func slow_ratio() -> float:
+	return _slow_scale()
 
 
 ## Returns true once the race is running. Until then the bot just stands on
@@ -574,6 +605,7 @@ func _rescue(from_fall: bool) -> void:
 		_fall_count += 1
 	_retries += 1
 	var point := _checkpoint_index()
+	_slow_timer = 0.0
 	if _retries >= MAX_RETRIES:
 		_shortcut_count += 1
 		_retries = 0
@@ -612,6 +644,7 @@ func apply_push(force: Vector3) -> void:
 	_knockback += Vector3(force.x, 0.0, force.z).limit_length(6.0)
 	velocity.y = maxf(velocity.y, force.y)
 	_stumble_time = maxf(_stumble_time, 0.25)
+	slow(0.8, 0.6)
 
 
 ## Trampoline launch. Kept explicit so the bot cancels any pending ledge
@@ -632,6 +665,7 @@ func launch(impulse: Vector3) -> void:
 func apply_push_soft(force: Vector3) -> void:
 	_knockback += Vector3(force.x, 0.0, force.z)
 	velocity.y = maxf(velocity.y, force.y)
+	slow(0.6, 0.72)
 
 
 ## Empujes externos que van enteros (el balancín, por ejemplo): el bot recibe

@@ -1,3 +1,4 @@
+@tool
 extends Area3D
 
 ## Remolino de ceniza: exclusivo de Lava Vortex. No es sólido, se nota como una
@@ -51,6 +52,9 @@ func _physics_process(delta: float) -> void:
 		var outward := offset.normalized()
 		var tangent := Vector3(-outward.z, 0.0, outward.x)
 		body.add_external_velocity(tangent * spin_force - outward * pull_force)
+		# Dentro del remolino se corre más lento: el viento frena la zancada.
+		if body.has_method("slow"):
+			body.slow(0.2, 0.62)
 
 
 func _build_visual() -> void:

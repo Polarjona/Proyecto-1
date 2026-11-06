@@ -5,6 +5,7 @@ extends SceneTree
 ## la escena ya cargada y la vuelve a empaquetar.
 
 const PATH := "res://scenes/main.tscn"
+const HAZARD_PAD_SCRIPT := preload("res://scripts/hazard_pad.gd")
 
 var scene_root: Node3D
 var course: Node3D
@@ -166,6 +167,8 @@ func _hazard(node_name: String, z: float, top: float, width: float) -> void:
 	instance.mesh = mesh
 	instance.material_override = mat_hazard
 	instance.position = Vector3(0.0, top + 0.01, z)
+	# Placa pisable: frena a quien la cruza.
+	instance.set_script(HAZARD_PAD_SCRIPT)
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	decor.add_child(instance)
 	_add(instance)

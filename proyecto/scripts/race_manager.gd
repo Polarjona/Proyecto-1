@@ -43,6 +43,11 @@ var _headless: bool = false
 
 func _ready() -> void:
 	add_to_group("race_manager")
+	# El generador crea este nodo también dentro del editor para hornear la
+	# escena: ahí no hay partida y los autoloads son instancias de relleno.
+	if Engine.is_editor_hint():
+		set_process(false)
+		return
 	_headless = DisplayServer.get_name() == "headless"
 	# Durante la partida solo suenan los efectos y el viento.
 	AudioManager.stop_music(false)
@@ -146,6 +151,9 @@ func fail_race(reason: String = "lava") -> void:
 	is_running = false
 	fall_count += 1
 	_set_player_locked(true)
+	if not _headless:
+		# La pantalla de derrota tiene botones: el cursor vuelve a verse.
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	time_updated.emit(elapsed_time)
 	failed.emit(reason)
 
@@ -177,6 +185,8 @@ func finish_race() -> void:
 	if not _headless:
 		GameFeel.slow_motion(0.6, 0.45)
 		GameFeel.flash(Color(1.0, 0.9, 0.35), 0.25)
+		# Los resultados se pulsan con el ratón: se suelta el cursor.
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 	var data := {
 		"time": elapsed_time,

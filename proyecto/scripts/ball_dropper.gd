@@ -123,24 +123,30 @@ func _fit_supports() -> void:
 	# La viga tiene que llegar de pata a pata.
 	if beam != null:
 		beam.scale.x = (column_spread * 2.0 + 0.5) / 5.5
+	# El extremo superior de cada pata se ancla al canto inferior de la viga.
+	# Antes se quedaba en la posición original de la escena, 0.7 m por debajo,
+	# y la viga se veía flotando sobre los postes.
+	var beam_bottom: float = 0.45 if beam == null else beam.position.y - 0.15
 	for column in [column_left, column_right]:
 		if column == null:
 			continue
 		var side: float = 1.0 if column.position.x >= 0.0 else -1.0
 		column.position.x = side * column_spread
-		var top_global: Vector3 = column.global_position + Vector3.UP * 3.0 * column.scale.y
+		var top_y: float = global_position.y + beam_bottom
+		var leg_x: float = global_position.x + side * column_spread
 		var query := PhysicsRayQueryParameters3D.create(
-			top_global, top_global + Vector3.DOWN * support_ray_length, 1)
+			Vector3(leg_x, top_y, global_position.z),
+			Vector3(leg_x, top_y - support_ray_length, global_position.z), 1)
 		var hit := space.intersect_ray(query)
 		if hit.is_empty():
 			continue
-		var bottom_global: Vector3 = hit["position"]
-		var height: float = maxf(top_global.y - bottom_global.y, 0.5)
+		var bottom_y: float = (hit["position"] as Vector3).y
+		var height: float = maxf(top_y - bottom_y, 0.5)
 		column.scale.y = height / 6.0
 		column.global_position = Vector3(
-			column.global_position.x,
-			(top_global.y + bottom_global.y) * 0.5,
-			column.global_position.z
+			leg_x,
+			(top_y + bottom_y) * 0.5,
+			global_position.z
 		)
 
 

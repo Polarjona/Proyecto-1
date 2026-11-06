@@ -1,10 +1,12 @@
+@tool
 extends Node3D
 
-## Construye en runtime los dos circuitos nuevos:
+## Construye en runtime los tres circuitos nuevos:
 ##   level_kind = "glacier"  ->  Glacier Gallop (ronda 3)
 ##   level_kind = "volcano"  ->  Lava Vortex   (ronda 4)
+##   level_kind = "ocean"    ->  Abyss Run     (carrera clásica)
 ##
-## Los dos comparten el mismo esqueleto que las escenas antiguas (LevelInfo,
+## Los tres comparten el mismo esqueleto que las escenas antiguas (LevelInfo,
 ## RaceManager, HUD, KillPlane, RaceDirector, Player y pausa), pero la pista se
 ## genera aquí: el glaciar es un recorrido helado con saltos, placas frágiles y
 ## vendavales; el volcán es una espiral de seis vueltas alrededor de una montaña,
@@ -12,6 +14,12 @@ extends Node3D
 ##
 ## La cámara del volcán gira con la espiral: sin eso, correr en línea recta con
 ## el stick dejaría al jugador mirando a la pared de la montaña.
+##
+## El script es `@tool`: al abrir la escena en el editor se genera el circuito
+## completo marcando cada nodo generado con `owner`. Al guardar la escena
+## (Ctrl+S), el mapa queda horneado en el `.tscn` y se edita elemento por
+## elemento como main.tscn; desde entonces el generador no reconstruye nada
+## (detecta el contenido guardado) y solo mantiene la cámara del volcán.
 
 @export var level_kind: String = "glacier"
 
@@ -24,6 +32,7 @@ const FINISH_SCENE := preload("res://scenes/race/finish_line.tscn")
 const BOT_SCENE := preload("res://scenes/race/bot_racer.tscn")
 
 const SWEEPER_SCENE := preload("res://scenes/obstacles/sweeper.tscn")
+const ICE_ARENA_DRESSING := preload("res://scripts/ice_arena_dressing.gd")
 const SPIN_SCENE := preload("res://scenes/obstacles/spinning_platform.tscn")
 const MOVING_SCENE := preload("res://scenes/obstacles/moving_platform.tscn")
 const DROPPER_SCENE := preload("res://scenes/obstacles/ball_dropper.tscn")
@@ -117,6 +126,13 @@ var _ocean_ray: StandardMaterial3D
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		_build_editor_preview()
+		return
+	# Escena ya horneada: el circuito está guardado y no hay que generarlo.
+	if get_child_count() > 0:
+		_resume_baked()
+		return
 	if level_kind == "volcano":
 		_build_volcano()
 		set_process(true)
@@ -126,11 +142,66 @@ func _ready() -> void:
 		_build_glacier()
 
 
+## Al abrir la escena en el editor se construye el circuito completo y se marca
+## cada nodo generado con `owner`, para que Ctrl+S lo guarde en el `.tscn`. A
+## partir de ahí la escena es un mapa normal (editable como main.tscn) y este
+## método no vuelve a tocar nada.
+func _build_editor_preview() -> void:
+	if get_child_count() > 0:
+		return
+	if level_kind == "volcano":
+		_build_volcano()
+		set_process(false)
+	elif level_kind == "ocean":
+		_build_ocean()
+	else:
+		_build_glacier()
+	if get_tree().edited_scene_root == self:
+		_own_generated(self)
+
+
+## Da `owner` a lo que crea el generador para que se guarde al salvar la escena.
+## No entra en escenas instanciadas ni en nodos con script: su contenido se crea
+## en `_ready` y se duplicaría si también se horneara.
+func _own_generated(node: Node) -> void:
+	for child in node.get_children():
+		if child.owner == null:
+			child.owner = self
+		if child.scene_file_path.is_empty() and child.get_script() == null:
+			_own_generated(child)
+
+
+## Escena ya horneada: no se genera nada. Solo se recupera la ruta del volcán,
+## que la cámara usa para seguir la espiral (la pendiente sale de las mismas
+## constantes con las que se construyó la rampa).
+func _resume_baked() -> void:
+	if level_kind != "volcano":
+		return
+	set_process(true)
+	var ramp_chord := (TAU / float(V_PER_TURN)) * V_RADIUS
+	_ramp_slope = atan2(V_RISE, ramp_chord)
+	var info := get_node_or_null("LevelInfo") as LevelInfo
+	if info == null:
+		return
+	_path.clear()
+	_widths.clear()
+	for point in info.waypoints:
+		_path.append(point)
+	for width in info.lane_widths:
+		_widths.append(width)
+
+
+## Giro automático de cámara en Lava Vortex. Desactivado: ahora el ratón manda
+## sobre el encuadre (ver `player.gd`). Se conserva el código por si se quiere
+## recuperar el seguimiento de la espiral.
+const CAMERA_FOLLOW_TRACK := false
+
+
 ## La cámara del jugador sigue la pista por delante de la espiral. Es una ayuda
 ## de control: el stick hacia delante sigue la cuesta en vez de salirse por
 ## fuera, y el encuadre queda centrado en el tramo que sube.
 func _process(delta: float) -> void:
-	if level_kind != "volcano":
+	if not CAMERA_FOLLOW_TRACK or Engine.is_editor_hint() or level_kind != "volcano":
 		return
 	var player := get_tree().get_first_node_in_group("player") as Node3D
 	if player == null:
@@ -435,10 +506,15 @@ func _add_kill_plane(position: Vector3, fail_run: bool = false) -> void:
 	add_child(kill)
 
 
-func _add_player(start: Vector3) -> void:
+func _add_player(start: Vector3, jump_velocity: float = 0.0) -> void:
 	var player := PLAYER_SCENE.instantiate() as Node3D
 	player.name = "Player"
 	player.position = start
+	# Salto a medida del nivel: si se pasa un impulso se ajusta también el
+	# salto corto en la misma proporción para no romper el tacto.
+	if jump_velocity > 0.0:
+		player.set("jump_velocity", jump_velocity)
+		player.set("min_jump_velocity", jump_velocity * 0.3665)
 	add_child(player)
 
 
@@ -785,22 +861,25 @@ func _snow_particles(parent: Node3D, center: Vector3) -> void:
 	flake_mesh.material = flake_material
 	var snow := CPUParticles3D.new()
 	snow.name = "Snowfall"
-	# Nieve fina y lenta: se ve en todo el circuito, pero no tapa al corredor
-	# ni compite con los obstáculos.
-	snow.amount = 420
-	snow.lifetime = 22.0
-	snow.preprocess = 12.0
+	# Nieve fina y constante en todo el recorrido. La caja es pequeña porque el
+	# emisor viaja con la cámara (snowfall.gd): así nieva igual en la salida, en
+	# la subida y en la meta, en vez de quedar solo donde está el nodo.
+	snow.set_script(load("res://scripts/snowfall.gd"))
+	snow.local_coords = false
+	snow.position = center + Vector3(0.0, 24.0, 0.0)
+	snow.amount = 2024
+	snow.lifetime = 18.0
+	snow.preprocess = 8.0
 	snow.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
-	snow.emission_box_extents = Vector3(55.0, 24.0, 120.0)
-	snow.position = center + Vector3(0.0, 30.0, 0.0)
+	snow.emission_box_extents = Vector3(50.0, 28.0, 70.0)
 	snow.direction = Vector3(0.22, -1.0, 0.08)
 	snow.spread = 14.0
-	snow.gravity = Vector3(0.0, -0.7, 0.0)
-	snow.initial_velocity_min = 0.3
-	snow.initial_velocity_max = 1.2
-	snow.scale_amount_min = 0.45
-	snow.scale_amount_max = 1.1
-	snow.color = Color(1.0, 1.0, 1.0, 0.62)
+	snow.gravity = Vector3(0.0, -0.9, 0.0)
+	snow.initial_velocity_min = 0.4
+	snow.initial_velocity_max = 1.5
+	snow.scale_amount_min = 0.5
+	snow.scale_amount_max = 1.25
+	snow.color = Color(1.0, 1.0, 1.0, 0.7)
 	snow.mesh = flake_mesh
 	snow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(snow)
@@ -951,8 +1030,8 @@ func _build_glacier() -> void:
 	# Arena de los barridos: las paredes van sobre la plataforma de salida, así
 	# que no hay una segunda losa que se solape con ella.
 
-	_ice_wall(course, "ArenaWallL", Vector3(-4.9, 1.5, -34.0), Vector3(1.2, 3.0, 19.0))
-	_ice_wall(course, "ArenaWallR", Vector3(4.9, 1.5, -34.0), Vector3(1.2, 3.0, 19.0))
+	_ice_wall(course, "ArenaWallL", Vector3(-8.425, 1.5, -34.013), Vector3(1.2, 3.0, 19.0))
+	_ice_wall(course, "ArenaWallR", Vector3(8.365, 1.5, -34.0), Vector3(1.2, 3.0, 19.0))
 	_path_add(Vector3(0.0, 0.0, -25.0), Vector3(0.0, 0.0, -43.0), 3.2)
 
 	_ramp_z(course, "ClimbA", 0.0, -43.0, -51.0, 0.0, 3.0, 10.0, _ice_alt)
@@ -1051,6 +1130,9 @@ func _build_glacier() -> void:
 	# enterradas en la losa y no se veían subir ni bajar.
 	_slab_top(course, "FinalRunN", 0.0, -326.05, 10.0, 12.3, 7.0, _ice)
 	_slab_top(course, "FinalRunS", 0.0, -337.9, 10.0, 4.2, 7.0, _ice)
+	# El cierre del glaciar vuelve a ser un muro de témpanos, así que la recta
+	# final lleva el suelo entero: sin hueco no hay nada bajo el hielo.
+	_slab_top(course, "FinalRunGap", 0.0, -334.0, 10.0, 3.6, 7.0, _ice)
 	_path_add(Vector3(0.0, 7.0, -319.5), Vector3(0.0, 7.0, -339.5), 2.8)
 
 	_ramp_z(course, "ClimbD", 0.0, -339.5, -346.5, 7.0, 10.0, 10.0, _ice_alt)
@@ -1060,11 +1142,14 @@ func _build_glacier() -> void:
 	_path_add(Vector3(0.0, 10.0, -346.5), Vector3(0.0, 10.0, -358.0), 3.4)
 
 	# --- obstáculos -------------------------------------------------------
+	# Los brazos se alargan hasta las paredes del arena: el pasillo mide 15,6 m
+	# de ancho y la barra de fábrica no llega a los extremos.
 	_obstacle(course, "SweeperA", SWEEPER_SCENE, Vector3(0.0, 0.35, -30.0), {
-		"spin_speed": 2.1, "push_force": 6.4, "stuns": true,
+		"spin_speed": 2.1, "push_force": 6.4, "stuns": true, "arm_length": 15.9,
 	})
 	_obstacle(course, "SweeperB", SWEEPER_SCENE, Vector3(0.0, 0.35, -38.0), {
 		"spin_speed": 2.5, "spin_direction": -1.0, "push_force": 6.8, "stuns": true,
+		"arm_length": 15.9,
 	})
 	# Teclado de calculadora: 3 discos por fila y 6 filas, todos del tamaño
 	# nativo (8 m) y tocándose de borde a borde. 3 x 8 = 24 m de ancho total.
@@ -1209,17 +1294,19 @@ func _build_glacier() -> void:
 		rampart.position = Vector3(0.0, 7.0, float(rampart_z[i]))
 		course.add_child(rampart)
 
-	# Estreno del cierre del glaciar: grieta que se abre por carriles. Sustituye
-	# al segundo muro de témpanos, que repetía el mismo obstáculo en la recta.
-	var crevasse := ICE_CREVASSE_SCRIPT.new() as Node3D
-	crevasse.name = "IceCrevasse"
-	crevasse.set("lanes", 3)
-	crevasse.set("lane_width", 3.2)
-	crevasse.set("lane_length", 3.6)
-	crevasse.set("cycle", 3.0)
-	crevasse.set("warn_time", 0.85)
-	crevasse.position = Vector3(0.0, 7.0, -334.0)
-	course.add_child(crevasse)
+	# Cierre del glaciar: segundo muro de témpanos con la misma mecánica que el
+	# primero (bloques que suben y bajan por carriles). Antes era una grieta de
+	# losas y en partida los tres bloques no se veían ni se movían.
+	var rampart2 := ICE_RAMPART_SCRIPT.new() as Node3D
+	rampart2.name = "IceRampart1"
+	rampart2.set("lanes", 3)
+	rampart2.set("lane_width", 3.2)
+	rampart2.set("block_height", 3.0)
+	rampart2.set("block_depth", 1.8)
+	rampart2.set("cycle", 2.7)
+	rampart2.set("warn_time", 0.7)
+	rampart2.position = Vector3(0.0, 7.0, -334.0)
+	course.add_child(rampart2)
 
 	# --- checkpoints y meta ----------------------------------------------
 	_add_checkpoint(course, "CP1", Vector3(0.0, 0.0, -24.0))
@@ -1250,6 +1337,13 @@ func _build_glacier() -> void:
 		var height := 9.0 + float(i % 4) * 4.5
 		_mesh_cylinder(decor, "IceSpire%d" % i, Vector3(x, -14.0 + height * 0.5, z),
 			0.0, 2.0 + float(i % 3) * 0.7, height, _ice_glow, Vector3(0.0, 0.0, float(i) * 7.0))
+
+	# Arena de los barridos: nieve en el lomo de las paredes, carámbanos, runas,
+	# cascadas heladas, lámparas y cristales. Mismo vestido que la escena
+	# horneada, así reconstruir el mapa no deja el tramo pelado.
+	var arena_dressing := ICE_ARENA_DRESSING.new() as Node3D
+	arena_dressing.name = "ArenaDressing"
+	decor.add_child(arena_dressing)
 
 	# Mar helado bajo el circuito.
 	var sea := MeshInstance3D.new()
@@ -1500,7 +1594,7 @@ func _build_glacier() -> void:
 	_ice_mist(decor, Vector3(0.0, -12.0, -300.0), 160)
 	_ice_stars(decor, Vector3(0.0, 70.0, -220.0))
 
-	_snow_particles(decor, Vector3(0.0, 0.0, -205.0))
+	_snow_particles(decor, Vector3(0.0, 0.0, -176.0))
 	var lights := [Vector3(0.0, 4.5, -34.0), Vector3(0.0, 7.5, -96.0),
 		Vector3(-18.0, 7.5, -111.0), Vector3(18.0, 7.5, -111.0),
 		Vector3(0.0, 7.5, -131.0), Vector3(0.0, 11.5, -156.0),
@@ -1534,7 +1628,9 @@ func _build_glacier() -> void:
 	_add_race_manager()
 	_add_hud()
 	_add_kill_plane(Vector3(0.0, -12.0, -180.0))
-	_add_player(Vector3(0.0, 0.6, 5.0))
+	# Salto flojo del glaciar: 5.02 de impulso deja el salto en el 70 % de la
+	# altura que da el salto por defecto (6.0) sin cambiar el resto del control.
+	_add_player(Vector3(0.0, 0.6, 5.0), 5.02)
 	_add_director(5.0, -357.0, 367.0)
 	_add_pause()
 
@@ -2114,6 +2210,15 @@ func _spiral_sample(index: int) -> Dictionary:
 const O_WATERLINE := 1.2
 const O_FLOOR_Y := -24.0
 const O_HALF_WIDTH := 12.0
+## Paredes laterales del túnel: su cara interior queda exactamente en
+## ±O_HALF_WIDTH, así encajan con las compuertas, las islas y el muelle. Antes
+## estaban en ±12,6 y quedaba una rendija de 0,6 m pegada al muro por la que se
+## cruzaba cada compuerta sin pasar por el hueco.
+const O_WALL_THICKNESS := 1.8
+## Las paredes suben hasta aquí: desde el muelle (2 m) no se puede saltar por
+## encima y salir del túnel por el aire.
+const O_WALL_TOP := 6.0
+const O_WALL_HEIGHT := O_WALL_TOP - (O_FLOOR_Y - 1.0)
 const O_START_Z := 12.0
 const O_FINISH_Z := -416.0
 ## Islas secas: centro, largo y altura de la meseta (justo bajo la línea de
@@ -2157,6 +2262,7 @@ func _build_ocean() -> void:
 	_build_ocean_water(course)
 	_build_ocean_path()
 	_build_ocean_hazards(course)
+	_build_ocean_lifts(course)
 	_build_ocean_chokes(course)
 	_build_ocean_decor(course)
 	_build_ocean_scenery(course)
@@ -2216,8 +2322,9 @@ func _build_ocean_trench(course: Node3D) -> void:
 	for side in [-1.0, 1.0]:
 		var suffix := "L" if side < 0.0 else "R"
 		_slab(course, "TrenchWall" + suffix,
-			Vector3(side * (O_HALF_WIDTH + 1.5), -11.0, -206.0),
-			Vector3(1.8, 28.0, 444.0), _ocean_rock)
+			Vector3(side * (O_HALF_WIDTH + O_WALL_THICKNESS * 0.5),
+				O_WALL_TOP - O_WALL_HEIGHT * 0.5, -206.0),
+			Vector3(O_WALL_THICKNESS, O_WALL_HEIGHT, 444.0), _ocean_rock)
 		# Repisas de roca a media altura: rompen la pared lisa.
 		for i in 9:
 			var z := -20.0 - float(i) * 46.0
@@ -2234,10 +2341,12 @@ func _build_ocean_trench(course: Node3D) -> void:
 
 
 func _build_ocean_start(course: Node3D) -> void:
+	# El muelle llega hasta las paredes (antes medía 22 m y quedaba un canal
+	# seco de 0,6 m a cada lado).
 	_slab(course, "StartDock", Vector3(0.0, 1.35, 6.0),
-		Vector3(22.0, 1.3, 20.0), _ocean_sand)
+		Vector3(25.4, 1.3, 20.0), _ocean_sand)
 	_slab(course, "StartDockLip", Vector3(0.0, 1.9, -4.6),
-		Vector3(22.0, 0.4, 1.6), _ocean_rock_dark)
+		Vector3(25.4, 0.4, 1.6), _ocean_rock_dark)
 	_arch(course, "StartGate", Vector3(0.0, 2.0, 2.0), 15.0, 6.4,
 		_ocean_rock_dark, _ocean_glow, "ABYSS RUN")
 	for side in [-1.0, 1.0]:
@@ -2255,11 +2364,13 @@ func _build_ocean_islands(course: Node3D) -> void:
 		var length: float = island["length"]
 		var top: float = island["top"]
 		var height := top - O_FLOOR_Y
+		# Un poco más anchas que el túnel: se meten en la pared y no dejan un
+		# hueco de 0,6 m junto al muro en el que caerse y quedarse atrapado.
 		_slab(course, "Island%d" % i,
 			Vector3(0.0, O_FLOOR_Y + height * 0.5, z),
-			Vector3(24.0, height, length), _ocean_rock)
+			Vector3(25.4, height, length), _ocean_rock)
 		_slab(course, "IslandSand%d" % i, Vector3(0.0, top - 0.12, z),
-			Vector3(24.4, 0.3, length + 0.6), _ocean_sand)
+			Vector3(25.8, 0.3, length + 0.6), _ocean_sand)
 		for j in 6:
 			var side := -1.0 if j % 2 == 0 else 1.0
 			_ocean_rock_boulder(course, "IslandRock%d_%d" % [i, j],
@@ -2273,10 +2384,19 @@ func _build_ocean_islands(course: Node3D) -> void:
 
 
 func _build_ocean_finish(course: Node3D) -> void:
-	_slab(course, "FinishDeck", Vector3(0.0, 0.3, -404.0),
-		Vector3(24.0, 1.4, 24.0), _ocean_sand)
-	_slab(course, "FinishRamp", Vector3(0.0, 0.85, -394.0),
-		Vector3(18.0, 0.3, 5.0), _ocean_rock_dark)
+	# La plataforma empieza detrás de la rampa: si llegaba hasta el agua, su
+	# cara vertical tapaba la subida.
+	_slab(course, "FinishDeck", Vector3(0.0, 0.3, -407.0),
+		Vector3(25.4, 1.4, 22.0), _ocean_sand)
+	# Rampa de ancho completo: antes medía 18 m dentro de un túnel de 24 y se
+	# caía uno al fondo seco por los lados. Ahora la única salida es subirla.
+	_ramp_z(course, "FinishRamp", 0.0, -391.0, -395.5, 0.5, 1.0, 25.4,
+		_ocean_rock_dark)
+	# Cierre del último tramo: pared desde el fondo hasta la base de la rampa,
+	# de lado a lado. A media profundidad el túnel ya no continúa: hay que
+	# salir por arriba y caminar hasta la meta.
+	_slab(course, "AbyssEndWall", Vector3(0.0, (0.5 + O_FLOOR_Y) * 0.5, -392.0),
+		Vector3(25.4, 0.5 - O_FLOOR_Y, 1.2), _ocean_rock_dark)
 	_slab(course, "Podium", Vector3(0.0, 1.8, -414.0),
 		Vector3(16.0, 1.6, 6.0), _ocean_rock)
 	_obstacle(course, "FinishLine", FINISH_SCENE, Vector3(0.0, 1.0, -408.0))
@@ -2329,15 +2449,20 @@ func _ocean_choke(course: Node3D, node_name: String, z: float, center_x: float,
 	var open_b := clampf(center_y - opening_h * 0.5, bottom + 1.0, top - 1.0)
 	var open_t := clampf(center_y + opening_h * 0.5, bottom + 1.0, top - 1.0)
 	var middle_y := (top + bottom) * 0.5
-	var left_w := open_l + O_HALF_WIDTH
+	# Los paneles laterales se meten 1,2 m dentro de la pared del túnel: aunque
+	# el hueco quede pegado a un lado, la compuerta no deja rendija junto al
+	# muro. El único paso posible es la abertura.
+	var left_edge := -(O_HALF_WIDTH + 1.2)
+	var left_w := open_l - left_edge
 	if left_w > 0.2:
 		_slab(course, node_name + "L",
-			Vector3(-O_HALF_WIDTH + left_w * 0.5, middle_y, z),
+			Vector3(left_edge + left_w * 0.5, middle_y, z),
 			Vector3(left_w, top - bottom, thickness), _ocean_rock)
-	var right_w := O_HALF_WIDTH - open_r
+	var right_edge := O_HALF_WIDTH + 1.2
+	var right_w := right_edge - open_r
 	if right_w > 0.2:
 		_slab(course, node_name + "R",
-			Vector3(O_HALF_WIDTH - right_w * 0.5, middle_y, z),
+			Vector3(right_edge - right_w * 0.5, middle_y, z),
 			Vector3(right_w, top - bottom, thickness), _ocean_rock)
 	var low_h := open_b - bottom
 	if low_h > 0.2:
@@ -2370,7 +2495,6 @@ func _build_ocean_chokes(course: Node3D) -> void:
 		{"z": -172.0, "x": 2.0, "y": -11.0, "w": 10.0, "h": 9.0},
 		{"z": -206.0, "x": 1.0, "y": -19.0, "w": 9.0, "h": 7.0},
 		{"z": -222.0, "x": -2.0, "y": -9.0, "w": 10.0, "h": 9.0},
-		{"z": -268.0, "x": 0.0, "y": -8.0, "w": 10.0, "h": 10.0},
 		{"z": -306.0, "x": 0.0, "y": -8.0, "w": 10.0, "h": 10.0},
 		{"z": -348.0, "x": 0.0, "y": -10.0, "w": 12.0, "h": 9.0},
 		{"z": -374.0, "x": 0.0, "y": -11.0, "w": 11.0, "h": 10.0},
@@ -2380,6 +2504,23 @@ func _build_ocean_chokes(course: Node3D) -> void:
 		var gate: Dictionary = gates[i]
 		_ocean_choke(course, "ReefGate%d" % i, float(gate["z"]), float(gate["x"]),
 			float(gate["y"]), float(gate["w"]), float(gate["h"]))
+
+
+## Corrientes ascendentes al final de cada tramo inundado. El agua termina en
+## una pared (las islas y el cierre de la meta) a 24 m del fondo: sin este
+## empujón hay que subir 20 m a ciegas y en la meta no se llega a la rampa.
+func _build_ocean_lifts(course: Node3D) -> void:
+	var lifts := [
+		{"name": "Updraft1", "z": -106.0},
+		{"name": "Updraft2", "z": -236.0},
+		{"name": "Updraft3", "z": -388.5},
+	]
+	for entry in lifts:
+		var lift := OCEAN_HAZARDS.Updraft.new()
+		lift.set("lift", 10.0)
+		lift.set("forward", 3.2)
+		_ocean_hazard(course, String(entry["name"]), lift,
+			Vector3(0.0, -11.5, float(entry["z"])))
 
 
 func _ocean_hazard(course: Node3D, node_name: String, hazard: Node3D,
@@ -2640,7 +2781,6 @@ func _build_ocean_hazards(course: Node3D) -> void:
 		{"z": -172.0, "x": 2.0, "y": -11.0, "kind": "kill"},
 		{"z": -206.0, "x": 1.0, "y": -19.0, "kind": "stun"},
 		{"z": -222.0, "x": -2.0, "y": -9.0, "kind": "push"},
-		{"z": -268.0, "x": 0.0, "y": -8.0, "kind": "kill"},
 		{"z": -306.0, "x": 0.0, "y": -8.0, "kind": "stun"},
 		{"z": -348.0, "x": 0.0, "y": -10.0, "kind": "push"},
 		{"z": -374.0, "x": 0.0, "y": -11.0, "kind": "kill"},
@@ -2664,6 +2804,15 @@ func _build_ocean_hazards(course: Node3D) -> void:
 		_ocean_hazard_kind(course, "GateJelly%d" % i, right,
 			Vector3(gate_x + 2.1, gate_y, gate_z + 0.7), kind,
 			24.0 if kind == "push" else 0.0)
+		# Rápidos: el aro de burbujas espera detrás del hueco. Cruzarlo lanza
+		# al corredor hacia el tramo siguiente; no golpea, así que quien
+		# prefiera ir con calma solo tiene que bordearlo.
+		if gate_z - 5.5 > -390.0:
+			var boost := OCEAN_HAZARDS.BoostRing.new()
+			boost.set("radius", 2.8)
+			boost.set("boost", 12.0)
+			_ocean_hazard(course, "BoostRing%d" % i, boost,
+				Vector3(gate_x, gate_y, gate_z - 5.5))
 
 	# --- zigzag obligatorio: ni una recta limpia en todo el túnel ----------
 	# Un obstáculo a cada lado, alternando cada pocos metros: hay que cruzar el
@@ -2887,8 +3036,10 @@ func _build_ocean_decor(course: Node3D) -> void:
 	for i in 14:
 		var z := -16.0 - float(i) * 27.0
 		var side := -1.0 if i % 2 == 0 else 1.0
+		# Pegados a la cara interior del muro (que ahora está en ±12), no dentro
+		# de él, para que se sigan viendo.
 		_mesh_box(course, "WallBarnacle%d" % i,
-			Vector3(side * (O_HALF_WIDTH + 0.35), -4.0 - float(i % 4) * 2.4, z),
+			Vector3(side * (O_HALF_WIDTH - 0.12), -4.0 - float(i % 4) * 2.4, z),
 			Vector3(0.55, 1.7, 2.6), _ocean_sand, Vector3(0.0, 0.0, side * 8.0))
 	for i in 12:
 		var z := -22.0 - float(i) * 32.0

@@ -75,6 +75,10 @@ func _physics_process(delta: float) -> void:
 			body.add_external_velocity(push)
 		elif body is CharacterBody3D:
 			(body as CharacterBody3D).velocity += push
+		# Cruzar la corriente cuesta: el aire frena la zancada mientras se está
+		# dentro del túnel.
+		if body.has_method("slow"):
+			body.slow(0.25, 0.78)
 
 	_animate_streams()
 	if rotor:

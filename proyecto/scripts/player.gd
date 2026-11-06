@@ -8,9 +8,9 @@ extends CharacterBody3D
 @export var max_speed: float = 6.5
 @export var acceleration: float = 28.0
 @export var friction: float = 18.0
-@export var jump_velocity: float = 7.5
+@export var jump_velocity: float = 6.0
 ## Upward speed kept when the jump button is released early.
-@export var min_jump_velocity: float = 2.6
+@export var min_jump_velocity: float = 2.2
 @export var air_control: float = 0.35
 @export var gravity_scale: float = 1.15
 @export var fall_gravity_scale: float = 1.4
@@ -42,6 +42,11 @@ extends CharacterBody3D
 @export var camera_look_ahead: float = 0.12
 @export var camera_fov_base: float = 55.0
 @export var camera_fov_max: float = 70.0
+## Sensibilidad del ratón al girar la cámara (radianes por píxel).
+@export var mouse_sensitivity: float = 0.0028
+## Límites del cabeceo manual, en grados.
+@export var camera_pitch_min: float = -75.0
+@export var camera_pitch_max: float = 15.0
 
 @export_group("Reactions")
 ## How long the player staggers after a hard hit.
@@ -110,6 +115,11 @@ var rig: CharacterRig
 @onready var camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
 
 var _spawn_transform: Transform3D
+## Giro y cabeceo manuales de la cámara: los mueve el ratón bloqueado.
+var _orbit_yaw: float = 0.0
+var _orbit_pitch: float = 0.0
+## Sensibilidad de fábrica; el ajuste del menú la multiplica.
+var _mouse_sensitivity_base: float = 0.0028
 ## Player-driven XZ velocity (friction/accel apply here only).
 var _control_velocity: Vector3 = Vector3.ZERO
 ## Per-frame belt/wind contribution (not cancelled by friction).
@@ -122,6 +132,9 @@ var _anim_was_on_floor: bool = true
 var _land_squash_timer: float = 0.0
 var _jump_cut_available: bool = false
 var _stun_timer: float = 0.0
+## Ralentización que dejan los hazards al tocarte.
+var _slow_timer: float = 0.0
+var _slow_factor: float = 1.0
 var _shadow_material: StandardMaterial3D
 var _dust_burst_timer: float = 0.0
 var _marker_base_y: float = 0.0
@@ -153,8 +166,17 @@ func _ready() -> void:
 	camera_pivot.top_level = true
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)
 	camera_pivot.visible = not is_bot
+	# Ratón bloqueado durante la carrera: es el mando de la cámara.
+	if not is_bot and DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_mouse_sensitivity_base = mouse_sensitivity
+	_apply_mouse_sensitivity()
+	if not is_bot:
+		# El ajuste del menú se aplica en caliente, sin reiniciar la carrera.
+		SaveManager.settings_changed.connect(_apply_mouse_sensitivity)
 	spring_arm.spring_length = camera_distance
-	spring_arm.rotation.x = deg_to_rad(camera_pitch)
+	_orbit_pitch = deg_to_rad(camera_pitch)
+	spring_arm.rotation.x = _orbit_pitch
 	spring_arm.add_excluded_object(get_rid())
 	camera.fov = camera_fov_base
 	_mesh_base_y = mesh.position.y
@@ -299,6 +321,8 @@ func _update_marker(delta: float) -> void:
 func _tick_timers(delta: float) -> void:
 	if _stun_timer > 0.0:
 		_stun_timer = maxf(0.0, _stun_timer - delta)
+	if _slow_timer > 0.0:
+		_slow_timer = maxf(0.0, _slow_timer - delta)
 	if is_on_floor():
 		_coyote_timer = coyote_time
 	elif _coyote_timer > 0.0:
@@ -368,7 +392,7 @@ func _handle_movement(delta: float) -> void:
 		wish = wish.normalized()
 	_wish_dir = wish
 
-	var target := wish * max_speed
+	var target := wish * max_speed * _slow_scale()
 	var control := 1.0 if is_on_floor() else air_control
 	if _stun_timer > 0.0:
 		control *= stun_control
@@ -471,7 +495,10 @@ func _swim(delta: float) -> void:
 		manual_vertical = Input.is_action_pressed("jump") \
 			or (InputMap.has_action("dive") and Input.is_action_pressed("dive"))
 	_wish_dir = wish
-	_control_velocity = _control_velocity.move_toward(wish * swim_speed, swim_acceleration * delta)
+	# Bajo el agua el frenazo de los hazards también cuenta: si no, en Abyss Run
+	# ningún obstáculo marino ralentizaría al corredor.
+	_control_velocity = _control_velocity.move_toward(wish * swim_speed * _slow_scale(),
+		swim_acceleration * delta)
 	if _has_swim_depth and not manual_vertical:
 		var depth_error := _swim_depth - global_position.y
 		_control_velocity.y = move_toward(_control_velocity.y,
@@ -505,7 +532,28 @@ func _update_facing(delta: float) -> void:
 
 ## Third-person camera behind the player with spring-arm collision, FOV kick,
 ## look-ahead and shake. The pivot keeps a world-fixed yaw so input stays stable.
+## Sensibilidad efectiva = base del jugador × ajuste del menú (100 % = 1,0).
+func _apply_mouse_sensitivity() -> void:
+	var multiplier := clampf(float(SaveManager.get_setting("sensitivity", 1.0)), 0.05, 5.0)
+	mouse_sensitivity = _mouse_sensitivity_base * multiplier
+
+
+## Cámara manual: con el ratón bloqueado, mover izquierda/derecha gira el pivote
+## y arriba/abajo inclina el muelle. El movimiento sigue leyendo la cámara, así
+## que mirar hacia donde corres sigue funcionando.
+func _unhandled_input(event: InputEvent) -> void:
+	if is_bot:
+		return
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		var motion := event as InputEventMouseMotion
+		_orbit_yaw = wrapf(_orbit_yaw - motion.relative.x * mouse_sensitivity, -PI, PI)
+		_orbit_pitch = clampf(_orbit_pitch - motion.relative.y * mouse_sensitivity,
+			deg_to_rad(camera_pitch_min), deg_to_rad(camera_pitch_max))
+
+
 func _update_camera(delta: float) -> void:
+	camera_pivot.rotation.y = _orbit_yaw
+	spring_arm.rotation.x = _orbit_pitch
 	if is_bot:
 		return
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
@@ -740,6 +788,9 @@ func apply_push(force: Vector3) -> void:
 	_control_velocity.x += force.x
 	_control_velocity.z += force.z
 	velocity.y += force.y
+	# Todo hazard que te alcanza deja el frenazo puesto aquí: así ninguno se
+	# queda sin ralentizar aunque su script no lo pida explícitamente.
+	slow(0.8, 0.6)
 	var horizontal_strength := Vector2(force.x, force.z).length()
 	if horizontal_strength >= stun_push_threshold:
 		stun()
@@ -757,6 +808,7 @@ func apply_push_soft(force: Vector3) -> void:
 	_control_velocity.x += force.x
 	_control_velocity.z += force.z
 	velocity.y += force.y
+	slow(0.6, 0.72)
 	if Vector2(force.x, force.z).length() > 2.0:
 		GameFeel.shake(0.5)
 		AudioManager.play_sfx("impact", 0.25, -6.0)
@@ -782,6 +834,31 @@ func stun(duration: float = -1.0) -> void:
 	_stun_timer = maxf(_stun_timer, stun_time if duration < 0.0 else duration)
 
 
+## Los hazards pegajosos frenan al corredor durante un momento en vez de
+## lanzarlo. Lo llaman los obstáculos justo después de empujar, y las zonas
+## (vórtices, corrientes, viento) mientras el corredor está dentro.
+func slow(duration: float = 0.85, factor: float = 0.55) -> void:
+	# Varios hazards pueden solaparse: mientras dura el frenazo se conserva el
+	# factor más fuerte, para que una zona suave no anule el golpe de un martillo.
+	var clamped := clampf(factor, 0.2, 1.0)
+	_slow_factor = minf(_slow_factor, clamped) if _slow_timer > 0.0 else clamped
+	_slow_timer = maxf(_slow_timer, duration)
+
+
+func _slow_scale() -> float:
+	return _slow_factor if _slow_timer > 0.0 else 1.0
+
+
+## Para el HUD y los tests: ¿arrastra el frenazo de un hazard ahora mismo?
+func is_slowed() -> bool:
+	return _slow_timer > 0.0
+
+
+## 1.0 sin frenazo; el factor activo mientras dura (tests/depuración).
+func slow_ratio() -> float:
+	return _slow_scale()
+
+
 func is_stunned() -> bool:
 	return _stun_timer > 0.0
 
@@ -799,6 +876,7 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	_control_velocity = Vector3.ZERO
 	_external_velocity = Vector3.ZERO
 	_stun_timer = 0.0
+	_slow_timer = 0.0
 	_jump_cut_available = false
 	_land_squash_timer = 0.0
 	_coyote_timer = 0.0

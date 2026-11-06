@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## Los quince obstáculos exclusivos del circuito abisal (Abyss Run).
@@ -27,23 +28,60 @@ class OceanHazard:
 	var _bodies: Array[Node3D] = []
 	var _cooldown_until: int = 0
 	var _collision_shape: CollisionShape3D
+	## El volumen de detección se dibuja con su tamaño real: así se ve dónde
+	## empieza a golpear en vez de chocar con un área invisible más grande que la
+	## figura. El color dice qué hace: rojo mata, naranja empuja, cian aturde.
+	var show_hitbox: bool = true
+	var _hitbox_ghost: MeshInstance3D
 
 	func _setup(box: Vector3, push: float = 6.0, stun_time: float = 0.0,
-			offset: Vector3 = Vector3.ZERO) -> void:
+			offset: Vector3 = Vector3.ZERO, ghost: bool = true) -> void:
 		push_force = push
 		stun_seconds = stun_time
 		collision_layer = 0
 		collision_mask = 2
 		monitoring = true
 		monitorable = false
-		_collision_shape = CollisionShape3D.new()
-		var box_shape := BoxShape3D.new()
-		box_shape.size = box
-		_collision_shape.shape = box_shape
-		_collision_shape.position = offset
-		add_child(_collision_shape)
+		if box != Vector3.ZERO:
+			_collision_shape = CollisionShape3D.new()
+			var box_shape := BoxShape3D.new()
+			box_shape.size = box
+			_collision_shape.shape = box_shape
+			_collision_shape.position = offset
+			add_child(_collision_shape)
+			if ghost:
+				_add_hitbox_ghost(box, offset)
 		body_entered.connect(_on_enter)
 		body_exited.connect(_on_exit)
+
+	## Volumen esférico. Para las figuras redondas (erizo, mina, tinta) la caja
+	## cuadrada golpeaba en las esquinas mucho más lejos que la figura: era lo
+	## que se notaba como «hitbox enorme».
+	func _setup_sphere(radius: float, push: float = 6.0, stun_time: float = 0.0,
+			offset: Vector3 = Vector3.ZERO, ghost: bool = true) -> void:
+		_setup(Vector3.ZERO, push, stun_time, offset, false)
+		var shape := SphereShape3D.new()
+		shape.radius = radius
+		_collision_shape = CollisionShape3D.new()
+		_collision_shape.shape = shape
+		_collision_shape.position = offset
+		add_child(_collision_shape)
+		if ghost:
+			_add_hitbox_sphere(radius, offset)
+
+	## Volumen cilíndrico: las aspas giran en un disco, así que la esquina de un
+	## cuadrado siempre sobraba.
+	func _setup_cylinder(radius: float, height_value: float, push: float = 6.0,
+			stun_time: float = 0.0, offset: Vector3 = Vector3.ZERO) -> void:
+		_setup(Vector3.ZERO, push, stun_time, offset, false)
+		var shape := CylinderShape3D.new()
+		shape.radius = radius
+		shape.height = height_value
+		_collision_shape = CollisionShape3D.new()
+		_collision_shape.shape = shape
+		_collision_shape.position = offset
+		add_child(_collision_shape)
+		_add_hitbox_cylinder(radius, height_value, offset)
 
 	func _on_enter(body: Node3D) -> void:
 		if not body.is_in_group("player"):
@@ -73,6 +111,9 @@ class OceanHazard:
 				_push_body(body, (away + Vector3.UP * 0.18).normalized() * force)
 				if body.has_method("stun"):
 					body.stun(0.22)
+			"boost":
+				# Los rápidos no golpean: solo aceleran mientras se está dentro.
+				pass
 			_:
 				_push_body(body, (away + Vector3.UP * 0.22).normalized() * force)
 				if stun_time > 0.0 and body.has_method("stun"):
@@ -102,6 +143,9 @@ class OceanHazard:
 				body.add_belt_velocity(vector)
 			else:
 				_push_body(body, vector)
+			# Las corrientes y chorros también frenan mientras se cruzan.
+			if body.has_method("slow"):
+				body.slow(0.25, 0.7)
 
 	func _add_sphere(parent: Node3D, radius: float, material: Material,
 			at: Vector3) -> MeshInstance3D:
@@ -158,6 +202,93 @@ class OceanHazard:
 		parent.add_child(light)
 		return light
 
+	## Aro que se usa como marco de los rápidos: queda mirando al eje de avance.
+	func _add_torus(parent: Node3D, ring_radius: float, material: Material) -> MeshInstance3D:
+		var mesh := TorusMesh.new()
+		mesh.inner_radius = ring_radius * 0.82
+		mesh.outer_radius = ring_radius
+		mesh.rings = 12
+		mesh.ring_segments = 6
+		var instance := MeshInstance3D.new()
+		instance.mesh = mesh
+		instance.material_override = material
+		instance.rotation_degrees = Vector3(90.0, 0.0, 0.0)
+		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(instance)
+		return instance
+
+	func _hazard_color() -> Color:
+		var kind := touch_override if touch_override != "" else touch_kind
+		match kind:
+			"kill":
+				return Color(1.0, 0.3, 0.38)
+			"push":
+				return Color(1.0, 0.66, 0.24)
+			"stun":
+				return Color(0.42, 0.88, 1.0)
+			_:
+				return Color(0.55, 1.0, 0.85)
+
+	## Caja translúcida del tamaño exacto del hitbox. Un solo `MeshInstance3D`
+	## por obstáculo, así que no cuesta nada de dibujar.
+	func _add_hitbox_ghost(box: Vector3,
+			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+		if not show_hitbox:
+			return null
+		var mesh := BoxMesh.new()
+		mesh.size = box
+		var ghost := MeshInstance3D.new()
+		ghost.name = "HitboxGhost"
+		ghost.mesh = mesh
+		ghost.material_override = OceanStyle.additive(_hazard_color(), 0.12)
+		ghost.position = at
+		ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(ghost)
+		if _hitbox_ghost == null:
+			_hitbox_ghost = ghost
+		return ghost
+
+	func _add_hitbox_sphere(radius: float,
+			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+		if not show_hitbox:
+			return null
+		var mesh := SphereMesh.new()
+		mesh.radius = radius
+		mesh.height = radius * 2.0
+		mesh.radial_segments = 18
+		mesh.rings = 9
+		var ghost := MeshInstance3D.new()
+		ghost.name = "HitboxGhost"
+		ghost.mesh = mesh
+		ghost.material_override = OceanStyle.additive(_hazard_color(), 0.12)
+		ghost.position = at
+		ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(ghost)
+		if _hitbox_ghost == null:
+			_hitbox_ghost = ghost
+		return ghost
+
+	func _add_hitbox_cylinder(radius: float, height_value: float,
+			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+		if not show_hitbox:
+			return null
+		var mesh := CylinderMesh.new()
+		mesh.top_radius = radius
+		mesh.bottom_radius = radius
+		mesh.height = height_value
+		mesh.radial_segments = 20
+		mesh.rings = 1
+		var ghost := MeshInstance3D.new()
+		ghost.name = "HitboxGhost"
+		ghost.mesh = mesh
+		ghost.material_override = OceanStyle.additive(_hazard_color(), 0.12)
+		ghost.position = at
+		ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(ghost)
+		if _hitbox_ghost == null:
+			_hitbox_ghost = ghost
+		return ghost
+
 
 ## Erizo de mar: bola de púas que gira y no deja pasar por el centro.
 class Urchin extends OceanHazard:
@@ -166,7 +297,9 @@ class Urchin extends OceanHazard:
 
 	func _ready() -> void:
 		touch_kind = "kill"
-		_setup(Vector3.ONE * radius * 2.4, 7.5, 0.45)
+		# Esfera de 1,25 por el radio: la caja de 2,4 golpeaba en las esquinas
+		# casi un metro fuera de las púas.
+		_setup_sphere(radius * 1.25, 7.5, 0.45)
 		_add_sphere(self, radius, OceanStyle.matte(OceanStyle.CORAL, 0.4), Vector3.ZERO)
 		_add_sphere(self, radius * 1.75, OceanStyle.additive(OceanStyle.CORAL, 0.08), Vector3.ZERO)
 		for i in 14:
@@ -229,7 +362,7 @@ class BubbleMine extends OceanHazard:
 	func _ready() -> void:
 		touch_kind = "push"
 		push_force = 16.0
-		_setup(Vector3.ONE * radius * 2.9, 8.0, 0.4)
+		_setup_sphere(radius * 1.45, 8.0, 0.4)
 		_base_y = position.y
 		_add_sphere(self, radius, OceanStyle.matte(OceanStyle.ROCK_DARK, 0.55), Vector3.ZERO)
 		_add_sphere(self, radius * 1.3, OceanStyle.glass(OceanStyle.GLOW, 0.22), Vector3.ZERO)
@@ -254,7 +387,9 @@ class CurrentRibbon extends OceanHazard:
 	var _arrows: Array[MeshInstance3D] = []
 
 	func _ready() -> void:
-		_setup(Vector3(25.0, 9.0, 3.6))
+		# Es una franja de empuje continuo: el volumen entero es el efecto y ya
+		# se ve con las cintas, así que no lleva recuadro.
+		_setup(Vector3(25.0, 9.0, 3.6), 6.0, 0.0, Vector3.ZERO, false)
 		for i in 7:
 			var ribbon := _add_box(self, Vector3(23.0, 0.12, 0.5),
 				OceanStyle.additive(OceanStyle.GLOW, 0.14),
@@ -286,7 +421,10 @@ class Jellyfish extends OceanHazard:
 	var _light: OmniLight3D
 
 	func _ready() -> void:
-		_setup(Vector3(4.2, 6.4, 4.2), 5.2, 0.65)
+		# Caja pegada a la campana y a los tentáculos: 4,6 m de alto (antes 6,4)
+		# y desplazada hacia abajo, que es donde cuelgan.
+		_setup(Vector3(bell_size * 2.1, 4.6, bell_size * 2.1), 5.2, 0.65,
+			Vector3(0.0, -1.3, 0.0))
 		_base_y = position.y
 		_bell = Node3D.new()
 		add_child(_bell)
@@ -318,12 +456,20 @@ class AnglerLure extends OceanHazard:
 	var _hook: Node3D
 
 	func _ready() -> void:
-		_setup(Vector3(5.4, 7.0, 5.4), 6.0, 0.55)
+		# El área es del tamaño del farol, no del arco que describe: antes
+		# cubría toda la oscilación y se golpeaba con el aire del balanceo.
+		_setup(Vector3.ONE * 1.8, 6.0, 0.55)
 		_add_box(self, Vector3(0.06, 6.0, 0.06), OceanStyle.matte(OceanStyle.ROCK_DARK),
 			Vector3(0.0, 3.0, 0.0))
 		_hook = Node3D.new()
 		_hook.position = Vector3(0.0, 0.4, 0.0)
 		add_child(_hook)
+		# El recuadro cuelga del farol; el área lo sigue cada fotograma (una
+		# `CollisionShape3D` solo puede ser hija directa del `Area3D`).
+		if _hitbox_ghost != null:
+			remove_child(_hitbox_ghost)
+			_hitbox_ghost.position = Vector3.ZERO
+			_hook.add_child(_hitbox_ghost)
 		_add_sphere(_hook, 0.5, OceanStyle.glow(OceanStyle.CORAL_ALT, 2.4), Vector3.ZERO)
 		_add_sphere(_hook, 0.95, OceanStyle.additive(OceanStyle.CORAL_ALT, 0.12), Vector3.ZERO)
 		_add_light(_hook, OceanStyle.CORAL_ALT, 1.6, 8.0)
@@ -332,6 +478,8 @@ class AnglerLure extends OceanHazard:
 		phase += delta * 1.1
 		_hook.position.x = sin(phase) * swing
 		_hook.position.y = 0.4 - cos(phase) * 0.12
+		if _collision_shape != null:
+			_collision_shape.position = _hook.position
 
 
 ## Remolino: succiona hacia el ojo y hace girar al corredor.
@@ -344,7 +492,7 @@ class Whirlpool extends OceanHazard:
 	var _time: float = 0.0
 
 	func _ready() -> void:
-		_setup(Vector3(radius * 2.0, radius * 2.8, radius * 2.0))
+		_setup(Vector3(radius * 2.0, radius * 2.8, radius * 2.0), 6.0, 0.0, Vector3.ZERO, false)
 		for i in 4:
 			var ring := Node3D.new()
 			add_child(ring)
@@ -385,9 +533,15 @@ class Pufferfish extends OceanHazard:
 	func _ready() -> void:
 		touch_kind = "push"
 		push_force = 14.0
-		_setup(Vector3(2.6, 2.6, 2.6), 8.5, 0.5)
+		# El recuadro va dentro del cuerpo: al hincharse crecen a la vez.
+		_setup(Vector3.ONE * 2.4, 8.5, 0.5, Vector3.ZERO, false)
 		_body = Node3D.new()
 		add_child(_body)
+		var ghost := _add_hitbox_ghost(Vector3.ONE * 2.4)
+		if ghost != null:
+			remove_child(ghost)
+			ghost.position = Vector3.ZERO
+			_body.add_child(ghost)
 		_add_sphere(_body, 0.9, OceanStyle.matte(OceanStyle.SAND, 0.55), Vector3.ZERO)
 		for i in 12:
 			var y := 1.0 - 2.0 * (float(i) + 0.5) / 12.0
@@ -405,7 +559,7 @@ class Pufferfish extends OceanHazard:
 		var puff := 0.55 + 0.75 * (0.5 + 0.5 * sin(_time * puff_speed))
 		_body.scale = Vector3.ONE * puff
 		if _collision_shape != null:
-			_collision_shape.scale = Vector3.ONE * (0.55 + puff * 0.55)
+			_collision_shape.scale = Vector3.ONE * (puff * 0.95)
 		rotation.y += delta * 0.4
 
 
@@ -419,7 +573,8 @@ class ClamSnap extends OceanHazard:
 
 	func _ready() -> void:
 		touch_kind = "kill"
-		_setup(Vector3(5.6, 4.6, 3.4), 9.5, 0.6)
+		# Solo las valvas: 2,2 m de alto y 3,4 de fondo, que es lo que ocupan.
+		_setup(Vector3(4.6, 2.2, 3.4), 9.5, 0.6)
 		_top = Node3D.new()
 		_top.position = Vector3(0.0, 0.35, -1.7)
 		add_child(_top)
@@ -451,7 +606,8 @@ class CoralFan extends OceanHazard:
 
 	func _ready() -> void:
 		touch_kind = "kill"
-		_setup(Vector3(7.4, 7.4, 1.8), 7.0, 0.4)
+		# Aspas de 3,2 m: el volumen es el disco que barren, no un cuadrado de 7.
+		_setup_cylinder(3.2, 1.2, 7.0, 0.4)
 		_rotor = Node3D.new()
 		add_child(_rotor)
 		for i in blade_count:
@@ -479,7 +635,7 @@ class ThermalVent extends OceanHazard:
 	var _bubbles: CPUParticles3D
 
 	func _ready() -> void:
-		_setup(Vector3(3.4, 16.0, 3.4))
+		_setup(Vector3(2.6, 14.0, 2.6), 6.0, 0.0, Vector3.ZERO, false)
 		_add_box(self, Vector3(2.0, 1.2, 2.0), OceanStyle.matte(OceanStyle.ROCK_DARK),
 			Vector3(0.0, -7.4, 0.0))
 		_jet = Node3D.new()
@@ -535,7 +691,8 @@ class DriftIce extends OceanHazard:
 	func _ready() -> void:
 		touch_kind = "push"
 		push_force = 13.0
-		_setup(Vector3(4.4, 3.4, 4.4), 8.0, 0.45)
+		# El témpano visible llega a 1,5 m del centro.
+		_setup(Vector3(3.2, 3.2, 3.2), 8.0, 0.45)
 		_base_x = position.x
 		_add_sphere(self, 1.5, OceanStyle.glass(OceanStyle.ICE, 0.75), Vector3.ZERO)
 		_add_box(self, Vector3(2.4, 1.4, 2.4), OceanStyle.glass(OceanStyle.ICE, 0.55), Vector3(0.2, 0.9, 0.0))
@@ -557,7 +714,9 @@ class InkCloud extends OceanHazard:
 
 	func _ready() -> void:
 		touch_kind = "kill"
-		_setup(Vector3(5.6, 5.6, 5.6), 3.4, 0.9)
+		# La nube es redonda: esfera de 0,85 por el radio. Antes la caja medía
+		# siempre 4,8 m aunque el generador cambiara el radio.
+		_setup_sphere(radius * 0.85, 3.4, 0.9)
 		for i in 7:
 			var angle := float(i) * TAU / 7.0
 			var puff := _add_sphere(self, 1.05 + float(i % 3) * 0.22,
@@ -580,25 +739,46 @@ class InkCloud extends OceanHazard:
 class MineChain extends OceanHazard:
 	var count: int = 6
 	var span: float = 13.0
+	var hit_radius: float = 0.7
 
 	var _time: float = 0.0
 	var _mines: Array[Node3D] = []
+	var _mine_shapes: Array[CollisionShape3D] = []
+	var _mine_ghosts: Array = []
 
 	func _ready() -> void:
 		touch_kind = "kill"
-		_setup(Vector3(span, 2.8, 2.8), 7.5, 0.5)
+		# Una bola de detección por mina en vez de una barra sólida de 14 m:
+		# antes se moría en el hueco vacío que hay entre dos esferas.
+		_setup(Vector3.ZERO, 7.5, 0.5)
 		for i in count:
+			var at := Vector3(-span * 0.5 + float(i) * span / float(maxi(count - 1, 1)), 0.0, 0.0)
 			var mine := Node3D.new()
-			mine.position = Vector3(-span * 0.5 + float(i) * span / float(maxi(count - 1, 1)), 0.0, 0.0)
+			mine.position = at
 			add_child(mine)
 			_add_sphere(mine, 0.28, OceanStyle.glow(OceanStyle.CORAL_ALT, 2.0), Vector3.ZERO)
 			_add_sphere(mine, 0.5, OceanStyle.additive(OceanStyle.CORAL_ALT, 0.14), Vector3.ZERO)
 			_mines.append(mine)
+			var shape := CollisionShape3D.new()
+			var ball := SphereShape3D.new()
+			ball.radius = hit_radius
+			shape.shape = ball
+			shape.position = at
+			add_child(shape)
+			_mine_shapes.append(shape)
+			_mine_ghosts.append(_add_hitbox_ghost(Vector3.ONE * hit_radius * 2.0, at))
 
 	func _process(delta: float) -> void:
 		_time += delta
 		for i in _mines.size():
-			_mines[i].position.y = sin(_time * 1.4 + float(i) * 0.7) * 0.55
+			var bob := sin(_time * 1.4 + float(i) * 0.7) * 0.55
+			_mines[i].position.y = bob
+			_mine_shapes[i].position.y = bob
+			# Sin `:=`: el array guarda nodos o `null`, así que el tipo no se
+			# puede inferir (y el `null` hay que descartarlo igual).
+			var ghost = _mine_ghosts[i]
+			if ghost != null:
+				ghost.position.y = bob
 
 
 ## Estrella de mar giratoria: cinco brazos que barren el carril.
@@ -610,7 +790,9 @@ class StarfishSpinner extends OceanHazard:
 	func _ready() -> void:
 		touch_kind = "push"
 		push_force = 12.0
-		_setup(Vector3(6.6, 6.6, 2.0), 8.0, 0.45)
+		# Los brazos barren un disco de 3,15 m: la caja de 6,6 tenía las
+		# esquinas a 4,6 m del centro y se golpeaba en el aire.
+		_setup_cylinder(3.15, 1.5, 8.0, 0.45)
 		_star = Node3D.new()
 		add_child(_star)
 		for i in 5:
@@ -625,3 +807,115 @@ class StarfishSpinner extends OceanHazard:
 
 	func _process(delta: float) -> void:
 		_star.rotate_z(delta * spin_speed)
+
+
+## Rápidos de burbujas: un aro que acelera hacia delante al corredor que lo
+## cruza por dentro. No golpea, no aturde y no frena: es el premio por salir
+## limpio de una compuerta y la forma de enganchar el túnel de un tirón.
+class BoostRing extends OceanHazard:
+	var radius: float = 2.8
+	var boost: float = 12.0
+
+	var _time: float = 0.0
+	var _torus: MeshInstance3D
+	var _sparks: Array[MeshInstance3D] = []
+
+	func _ready() -> void:
+		touch_kind = "boost"
+		# El volumen es el hueco del aro: se puede bordear sin más.
+		_setup(Vector3(radius * 2.0, radius * 2.0, 3.0), 0.0, 0.0, Vector3.ZERO, false)
+		_torus = _add_torus(self, radius, OceanStyle.glow(OceanStyle.GLOW, 2.2))
+		_add_torus(self, radius * 1.18, OceanStyle.additive(OceanStyle.GLOW, 0.16))
+		for i in 8:
+			var angle := float(i) * TAU / 8.0
+			_sparks.append(_add_sphere(self, 0.16, OceanStyle.glow(OceanStyle.GLOW, 1.6),
+				Vector3(cos(angle) * radius, sin(angle) * radius, 0.0)))
+		_add_light(self, OceanStyle.GLOW, 1.1, radius * 3.0)
+
+	func _process(delta: float) -> void:
+		_time += delta
+		for i in _sparks.size():
+			var angle := float(i) * TAU / float(_sparks.size()) + _time * 1.6
+			_sparks[i].position = Vector3(cos(angle) * radius, sin(angle) * radius,
+				sin(_time * 2.0 + float(i)) * 0.25)
+		if _torus != null:
+			_torus.scale = Vector3.ONE * (1.0 + 0.04 * sin(_time * 3.0))
+
+	func _physics_process(_delta: float) -> void:
+		var forward := -global_transform.basis.z
+		for body in _bodies:
+			if not is_instance_valid(body):
+				continue
+			if body.has_method("add_belt_velocity"):
+				body.add_belt_velocity(forward * boost)
+
+
+## Corriente ascendente: columna de burbujas al final de cada tramo inundado
+## que sube al corredor hasta la superficie. Sin ella, salir del agua a la isla
+## es nadar a ciegas contra 24 m de pared y en la meta no se llega a la
+## plataforma. No golpea ni frena: solo empuja hacia arriba y hacia delante.
+class Updraft extends OceanHazard:
+	var radius: float = 3.6
+	## Subida mientras se está dentro, en m/s (la natación admite hasta 11).
+	var lift: float = 10.0
+	## Empuje hacia delante (−Z): deja al corredor sobre la isla, no contra ella.
+	var forward: float = 3.2
+	var column_height: float = 25.0
+
+	var _time: float = 0.0
+	var _rings: Array[MeshInstance3D] = []
+	var _light: OmniLight3D
+
+	func _ready() -> void:
+		touch_kind = "boost"
+		# Volumen de empuje continuo: no hay golpe, así que no lleva recuadro.
+		_setup(Vector3(radius * 2.0, column_height, radius * 2.0), 0.0, 0.0,
+			Vector3.ZERO, false)
+		for i in 4:
+			var ring := _add_torus(self, radius * (0.55 + 0.11 * float(i)),
+				OceanStyle.glow(OceanStyle.GLOW, 1.7))
+			ring.position = Vector3(0.0, column_height * 0.5 - 0.4 - float(i) * 1.8, 0.0)
+			_rings.append(ring)
+		_add_sphere(self, radius * 0.9, OceanStyle.additive(OceanStyle.GLOW, 0.05),
+			Vector3(0.0, column_height * 0.5 - 0.2, 0.0))
+		_light = _add_light(self, OceanStyle.GLOW, 1.2, radius * 3.6)
+
+		var bubble_mesh := SphereMesh.new()
+		bubble_mesh.radius = 0.11
+		bubble_mesh.height = 0.22
+		bubble_mesh.radial_segments = 6
+		bubble_mesh.rings = 3
+		bubble_mesh.material = OceanStyle.glass(OceanStyle.GLOW, 0.5)
+		var bubbles := CPUParticles3D.new()
+		bubbles.amount = 110
+		bubbles.lifetime = 2.2
+		bubbles.preprocess = 2.0
+		bubbles.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+		bubbles.emission_sphere_radius = radius * 0.8
+		bubbles.position = Vector3(0.0, -column_height * 0.5 + 1.0, 0.0)
+		bubbles.direction = Vector3.UP
+		bubbles.spread = 8.0
+		bubbles.gravity = Vector3(0.0, 12.0, 0.0)
+		bubbles.initial_velocity_min = 5.0
+		bubbles.initial_velocity_max = 11.0
+		bubbles.scale_amount_min = 0.5
+		bubbles.scale_amount_max = 1.5
+		bubbles.color = Color(0.75, 1.0, 1.0, 0.8)
+		bubbles.mesh = bubble_mesh
+		bubbles.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(bubbles)
+
+	func _physics_process(delta: float) -> void:
+		_time += delta
+		for i in _rings.size():
+			var pulse := 1.0 + 0.07 * sin(_time * 2.6 + float(i) * 0.9)
+			_rings[i].scale = Vector3(pulse, 1.0, pulse)
+		if _light != null:
+			_light.light_energy = 1.1 + 0.25 * sin(_time * 3.1)
+		for body in _bodies:
+			if not is_instance_valid(body):
+				continue
+			if body.has_method("add_belt_velocity"):
+				body.add_belt_velocity(Vector3(0.0, lift, -forward))
+			else:
+				_push_body(body, Vector3(0.0, lift, -forward))

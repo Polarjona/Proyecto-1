@@ -31,6 +31,11 @@ var _spawn_origin: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
 	add_to_group("race_director")
+	# Igual que RaceManager: dentro del editor solo se hornea la escena.
+	if Engine.is_editor_hint():
+		set_process(false)
+		set_physics_process(false)
+		return
 	if not GameSession.is_bot_race():
 		set_process(false)
 		set_physics_process(false)

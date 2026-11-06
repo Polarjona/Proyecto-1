@@ -131,6 +131,8 @@ func _push(body: Node3D) -> void:
 	else:
 		direction = direction.normalized()
 	body.apply_push(direction * push_force + Vector3.UP * push_lift)
+	if body.has_method("slow"):
+		body.slow(0.85, 0.55)
 	if stuns and body.has_method("stun"):
 		body.stun()
 	AudioManager.play_sfx_at("impact", ball.global_position, 0.25, -4.0)

@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## Géiser de lava: la grieta del suelo se enciende, la luz parpadea y, un

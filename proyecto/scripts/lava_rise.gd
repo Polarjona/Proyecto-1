@@ -1,3 +1,4 @@
+@tool
 extends Area3D
 
 ## Mar de lava del volcán. La superficie sube sola y persigue al corredor
@@ -112,6 +113,9 @@ func _build_surface() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# En el editor la lava se queda quieta: solo se usa como vista previa.
+	if Engine.is_editor_hint():
+		return
 	_cooldown = maxf(0.0, _cooldown - delta)
 	# Sube sin pausas hasta cubrir la montaña. No persigue al jugador: si se
 	# queda quieto o pierde tiempo, la lava le alcanza de verdad.
