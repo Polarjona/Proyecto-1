@@ -6,6 +6,13 @@ extends SceneTree
 ## plataforma de llegada. También comprueba que el balancín empuja a los bots
 ## igual que al jugador.
 
+## Personaje de pago con el que se prueba la compra (y la fila del roster que
+## le corresponde).
+const PAID_ID := "worker"
+const PAID_ROW := "Worker"
+## Última fila del roster, para comprobar que la lista entera cabe en el panel.
+const LAST_ROW := "Caballero"
+
 var _failures := 0
 var _last_results: Dictionary = {}
 
@@ -145,16 +152,29 @@ func _run() -> void:
 	_check(character_panel.visible, "El botón PERSONAJE abre su submenú")
 	var panel_rect := character_panel.get_global_rect()
 	var last_row: Control = menu.get_node(
-		"CharacterPanel/VBox/Body/Roster/BarbarianRow/BarbarianStatus")
-	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y
-		and panel_rect.encloses(last_row.get_global_rect()),
-		"El submenú y su lista de personajes caben en el panel")
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sStatus" % [LAST_ROW, LAST_ROW])
+	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y,
+		"El submenú cabe en la pantalla")
+	# Con diez personajes la lista es más alta que su ventana: se baja hasta el
+	# final y se comprueba que el último también queda dentro del panel.
+	var scroll: ScrollContainer = menu.get_node("CharacterPanel/VBox/Body/RosterScroll")
+	var roster_box: Control = menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster")
+	_check(roster_box.size.y > scroll.size.y,
+		"La lista de personajes se desplaza dentro del submenú (%.0f px en %.0f px)" % [
+			roster_box.size.y, scroll.size.y])
+	scroll.scroll_vertical = int(roster_box.size.y)
+	await process_frame
+	await process_frame
+	_check(panel_rect.encloses(last_row.get_global_rect()),
+		"Al bajar del todo, el último personaje sigue dentro del panel")
+	scroll.scroll_vertical = 0
+	await process_frame
 
+	# Cuenta las filas del roster en vez de una lista fija: añadir personajes al
+	# catálogo no debe obligar a tocar el test.
 	var roster := 0
-	var names := ["RogueRow/RogueButton", "HoodedRow/HoodedButton", "KnightRow/KnightButton",
-		"MageRow/MageButton", "BarbarianRow/BarbarianButton"]
-	for row_name in names:
-		if menu.get_node_or_null("CharacterPanel/VBox/Body/Roster/%s" % row_name) != null:
+	for row in menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster").get_children():
+		if row is HBoxContainer and (row as HBoxContainer).get_child_count() == 2:
 			roster += 1
 	_check(roster == CharacterCatalog.CHARACTERS.size(),
 		"El submenú lista los %d personajes (%d)" % [CharacterCatalog.CHARACTERS.size(), roster])
@@ -184,20 +204,20 @@ func _run() -> void:
 	profile["character"] = CharacterCatalog.default_id()
 	save.call("save_profile")
 
-	_check(bool(save.call("is_character_unlocked", "rogue")),
-		"Chispa viene desbloqueada de fábrica")
-	_check(not bool(save.call("is_character_unlocked", "mage")),
-		"Tornillo empieza bloqueado")
-	save.call("set_character", "mage")
-	_check(String(save.call("character_id")) == "rogue",
+	_check(bool(save.call("is_character_unlocked", CharacterCatalog.default_id())),
+		"El personaje gratis viene desbloqueado de fábrica")
+	_check(not bool(save.call("is_character_unlocked", PAID_ID)),
+		"%s empieza bloqueado" % CharacterCatalog.display_name(PAID_ID))
+	save.call("set_character", PAID_ID)
+	_check(String(save.call("character_id")) == CharacterCatalog.default_id(),
 		"No se puede equipar un personaje bloqueado")
-	_check(not bool(save.call("buy_character", "mage")),
-		"Sin monedas suficientes no se desbloquea Tornillo")
+	_check(not bool(save.call("buy_character", PAID_ID)),
+		"Sin monedas suficientes no se desbloquea %s" % CharacterCatalog.display_name(PAID_ID))
 
 	menu.call("_refresh_character_panel")
-	var mage_button: Button = menu.get_node(
-		"CharacterPanel/VBox/Body/Roster/MageRow/MageButton")
-	mage_button.pressed.emit()
+	var paid_button: Button = menu.get_node(
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [PAID_ROW, PAID_ROW])
+	paid_button.pressed.emit()
 	await process_frame
 	var buy_button: Button = menu.get_node("CharacterPanel/VBox/Body/PreviewBox/BuyButton")
 	_check(buy_button.disabled and buy_button.text.begins_with("NECESITAS"),
@@ -210,21 +230,22 @@ func _run() -> void:
 		"Con monedas suficientes se puede comprar (%s)" % buy_button.text)
 	buy_button.pressed.emit()
 	await process_frame
-	_check(bool(save.call("is_character_unlocked", "mage")), "Tornillo queda desbloqueado al comprarlo")
-	_check(int(save.call("coins")) == 1000 - int(save.call("character_price", "mage")),
+	_check(bool(save.call("is_character_unlocked", PAID_ID)),
+		"%s queda desbloqueado al comprarlo" % CharacterCatalog.display_name(PAID_ID))
+	_check(int(save.call("coins")) == 1000 - int(save.call("character_price", PAID_ID)),
 		"La compra descuenta su precio (%d monedas)" % int(save.call("coins")))
-	_check(String(save.call("character_id")) == "mage", "El personaje comprado queda equipado")
-	var mage_status: Label = menu.get_node(
-		"CharacterPanel/VBox/Body/Roster/MageRow/MageStatus")
-	_check(mage_status.text == "ELEGIDO", "El submenú marca el personaje elegido (%s)" % mage_status.text)
+	_check(String(save.call("character_id")) == PAID_ID, "El personaje comprado queda equipado")
+	var paid_status: Label = menu.get_node(
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sStatus" % [PAID_ROW, PAID_ROW])
+	_check(paid_status.text == "ELEGIDO", "El submenú marca el personaje elegido (%s)" % paid_status.text)
 	var preview_model: Node3D = preview_stage.get_node_or_null("PreviewModel")
-	_check(preview_model != null and String(menu.get("_preview_id")) == "mage",
+	_check(preview_model != null and String(menu.get("_preview_id")) == PAID_ID,
 		"La vista previa muestra el personaje comprado (%s)" % String(menu.get("_preview_id")))
 
 	# El elegido se guarda en el perfil y sobrevive a una recarga.
 	save.call("load_profile")
-	_check(String(save.call("character_id")) == "mage"
-		and bool(save.call("is_character_unlocked", "mage")),
+	_check(String(save.call("character_id")) == PAID_ID
+		and bool(save.call("is_character_unlocked", PAID_ID)),
 		"El desbloqueo y el personaje se conservan en el perfil")
 
 	# Restaura el perfil de quien ejecuta el test.
@@ -295,10 +316,16 @@ func _run() -> void:
 	player.call("respawn_at", Transform3D(Basis.IDENTITY, Vector3(0, 1.0, -45.5)))
 	await physics_frame
 	Input.action_press("move_forward")
-	for i in 360:
+	# Se para al pisar la landing: seguir andando acaba en las rampas de bolas y
+	# la comprobación miraba un estado de la carrera que no es el del balancín.
+	var crossed := false
+	for i in 480:
 		await physics_frame
+		if player.global_position.z < -62.0:
+			crossed = player.is_on_floor() and player.global_position.y > -3.5
+			break
 	Input.action_release("move_forward")
-	_check(player.global_position.z < -62.0 and player.is_on_floor() and player.global_position.y > -3.5,
+	_check(crossed,
 		"Se puede cruzar del balancín a su landing (z=%.2f, y=%.2f)" % [
 			player.global_position.z, player.global_position.y])
 
@@ -399,11 +426,48 @@ func _run() -> void:
 	var victory_length := victory_stream.get_length() if victory_stream else 0.0
 	_check(victory_stream != null and victory_length > 20.0 and victory_length < 24.0,
 		"La fanfarria está recortada a ~22 s (%.1f s)" % victory_length)
-	_check(audio.get_node("VictoryPlayer").bus == "Victory",
+	var victory_player: AudioStreamPlayer = audio.get_node("VictoryPlayer")
+	_check(victory_player.bus == "Victory",
 		"La fanfarria suena en su propio bus, sin depender del volumen de música")
+	_check(victory_player.volume_db <= -6.0,
+		"La fanfarria deja margen en el Master (%.1f dB)" % victory_player.volume_db)
 	audio.call("play_music", false)
 	_check(not bool(audio.call("is_victory_playing")) and bool(audio.call("is_music_playing")),
 		"Volver al lobby corta la fanfarria y recupera la música")
+
+	# --- Carrera clásica: el circuito se elige en el menú ----------------
+	# El circuito vive en el perfil, así que se deja en el primero para que el
+	# test no dependa de lo que guardara la partida anterior.
+	save.call("set_setting", "classic_level", 0)
+	session.set("classic_level", 0)
+	var menu3 := (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate() as Control
+	root.add_child(menu3)
+	current_scene = menu3
+	await process_frame
+	await process_frame
+	var level_row: Control = menu3.get_node("ModePanel/VBox/LevelPicker/LevelRow")
+	var level_one := level_row.get_node("Level1") as Button
+	var level_two := level_row.get_node("Level2") as Button
+	(menu3.get_node("PlayButton") as Button).pressed.emit()
+	await process_frame
+	var level_count := (session.get("LEVELS") as Array).size()
+	_check(level_row.get_child_count() == level_count,
+		"El menú ofrece los %d circuitos (%d botones)" % [level_count, level_row.get_child_count()])
+	_check(level_two.text == String(session.call("level_name", 1)) and level_one.button_pressed,
+		"La carrera clásica empieza en %s y el elegido está marcado" % level_one.text)
+	level_two.pressed.emit()
+	await process_frame
+	_check(int(session.get("classic_level")) == 1 and level_two.button_pressed
+		and not level_one.button_pressed,
+		"Elegir circuito marca el botón y lo recuerda en la sesión")
+	_check(int(save.call("get_setting", "classic_level", -1)) == 1,
+		"El circuito elegido se guarda en el perfil")
+	(menu3.get_node("ModePanel/VBox/ClassicCard") as Button).pressed.emit()
+	await create_timer(1.2).timeout
+	_check(String(session.get("mode")) == "classic" and current_scene != null
+		and current_scene.scene_file_path.ends_with("scenes/levels/spin_go_round.tscn"),
+		"La carrera clásica arranca en el circuito elegido (%s)"
+			% (current_scene.scene_file_path if current_scene else "sin escena"))
 
 	# Deja el perfil como estaba antes de ejecutar el test.
 	save.set("data", original_profile)

@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://spike_trap_obs"]
+
+[ext_resource type="Script" path="res://scripts/spike_trap.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="2_plate"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_plate"]
+size = Vector3(2.6, 0.08, 2.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_push"]
+size = Vector3(2.4, 1.1, 2.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_frame"]
+size = Vector3(2.8, 0.12, 2.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frame"]
+albedo_color = Color(0.09, 0.12, 0.28, 1)
+metallic = 0.4
+roughness = 0.5
+
+[node name="SpikeTrap" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+mesh = SubResource("BoxMesh_plate")
+surface_material_override/0 = ExtResource("2_plate")
+cast_shadow = 0
+
+[node name="Frame" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("BoxMesh_frame")
+material_override = SubResource("StandardMaterial3D_frame")
+cast_shadow = 0
+
+[node name="Spikes" type="Node3D" parent="."]
+
+[node name="PushArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="PushShape" type="CollisionShape3D" parent="PushArea"]
+shape = SubResource("BoxShape3D_push")
+
+[node name="Warning" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+light_color = Color(1, 0.28, 0.16, 1)
+light_energy = 0.0
+omni_range = 5.5
+shadow_enabled = false

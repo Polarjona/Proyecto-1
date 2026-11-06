@@ -25,10 +25,17 @@ var _player_finished: bool = false
 var _manager: Node
 var _player: Node3D
 var _rank_timer: float = 0.0
+var _level_info: LevelInfo
+var _spawn_origin: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
 	add_to_group("race_director")
+	# Igual que RaceManager: dentro del editor solo se hornea la escena.
+	if Engine.is_editor_hint():
+		set_process(false)
+		set_physics_process(false)
+		return
 	if not GameSession.is_bot_race():
 		set_process(false)
 		set_physics_process(false)
@@ -36,6 +43,12 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_manager = get_tree().get_first_node_in_group("race_manager")
 	_player = get_tree().get_first_node_in_group("player") as Node3D
+	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
+	if _level_info != null:
+		start_z = _level_info.start_z
+		finish_z = _level_info.finish_z
+		course_length = _level_info.course_length
+		_spawn_origin = _level_info.start_position
 	bot_count = GameSession.bot_count
 	qualifiers = GameSession.qualifiers
 	total_racers = bot_count + 1
@@ -52,10 +65,22 @@ func _spawn_bots() -> void:
 		if bot == null:
 			continue
 		bot.set("speed_scale", GameSession.bot_speed_scale())
+		# El mismo bot recorre todos los circuitos: la ruta y la meta viven en
+		# LevelInfo. Sin ruta (main.tscn) conserva su tabla por defecto.
+		if _level_info != null:
+			bot.set("finish_z", finish_z)
+			bot.set("path_corridor", _level_info.path_corridor)
+			if _level_info.has_bot_path():
+				bot.set("waypoints", _level_info.waypoints)
+				bot.set("lane_widths", _level_info.lane_widths)
 		add_child(bot)
-		var x := -4.0 + fmod(float(i) * 2.2, 8.0)
-		var z := 1.4 + float(i % 3) * 1.1
-		bot.global_position = Vector3(x, 1.0, z)
+		# Parrilla de salida ancha: cuatro columnas de 3 m y filas cada 2,2 m.
+		# Con ocho corredores la piña del pistoletazo ya no se ve apelmazada.
+		var column := i % 4
+		var row := floori(float(i) / 4.0)
+		var x := -4.5 + float(column) * 3.0
+		var z := 0.8 + float(row) * 2.2
+		bot.global_position = _spawn_origin + Vector3(x, 1.0, z)
 		if bot.has_signal("finished"):
 			bot.connect("finished", Callable(self, "_on_bot_finished"))
 		_bots.append(bot)
@@ -91,6 +116,20 @@ func _live_rank() -> int:
 func _progress_of(racer: Node3D) -> float:
 	if racer == null or not is_instance_valid(racer):
 		return -1.0
+	# Los circuitos con ruta propia (la espiral del volcán) no pueden medirse
+	# por Z: el recorrido vuelve sobre sus pasos muchas veces. En esos niveles
+	# se compara el punto de la ruta más cercano a cada corredor.
+	if _level_info != null and _level_info.has_bot_path():
+		var points: PackedVector3Array = _level_info.waypoints
+		if points.size() > 1:
+			var best_distance := INF
+			var best_index := 0
+			for i in points.size():
+				var distance := points[i].distance_squared_to(racer.global_position)
+				if distance < best_distance:
+					best_distance = distance
+					best_index = i
+			return float(best_index) / float(points.size() - 1)
 	if racer.global_position.z <= finish_z:
 		return 2.0
 	return clampf((start_z - racer.global_position.z) / maxf(course_length, 1.0), 0.0, 1.0)

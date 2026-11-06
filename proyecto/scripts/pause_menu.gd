@@ -37,8 +37,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_resume_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
-	get_tree().paused = false
-	hide()
+	hide_menu()
 
 
 func _on_checkpoint_pressed() -> void:
@@ -61,6 +60,8 @@ func _on_settings_pressed() -> void:
 
 func _on_main_menu_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
+	# El menú se maneja con el cursor: se suelta antes de cambiar de escena.
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameSession.reset()
 	TransitionManager.change_scene("res://scenes/menu/main_menu.tscn")
 
@@ -70,6 +71,8 @@ func show_menu() -> void:
 		return
 	show()
 	get_tree().paused = true
+	# Con la pausa el cursor vuelve a verse para poder pulsar los botones.
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	resume_button.grab_focus()
 
 
@@ -79,3 +82,5 @@ func hide_menu() -> void:
 	settings_menu.hide()
 	hide()
 	get_tree().paused = false
+	# Al volver a la carrera el ratón queda bloqueado otra vez para la cámara.
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

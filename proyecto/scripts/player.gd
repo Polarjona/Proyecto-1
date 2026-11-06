@@ -1,16 +1,16 @@
 extends CharacterBody3D
 
 ## Stumble-style player: inertia, coyote time, jump buffer, variable jump,
-## dive/prone, platform momentum, procedural animation and a collision-aware
-## third-person camera with FOV kick and shake.
+## platform momentum, procedural animation and a collision-aware third-person
+## camera with FOV kick and shake.
 
 @export_group("Movement")
 @export var max_speed: float = 6.5
 @export var acceleration: float = 28.0
 @export var friction: float = 18.0
-@export var jump_velocity: float = 7.5
+@export var jump_velocity: float = 6.0
 ## Upward speed kept when the jump button is released early.
-@export var min_jump_velocity: float = 2.6
+@export var min_jump_velocity: float = 2.2
 @export var air_control: float = 0.35
 @export var gravity_scale: float = 1.15
 @export var fall_gravity_scale: float = 1.4
@@ -24,19 +24,13 @@ extends CharacterBody3D
 ## Maximum horizontal speed inherited from a moving platform on jump.
 @export var platform_jump_cap: float = 6.0
 
-@export_group("Dive")
-## Short lunge: the slide is meant to dodge one hazard, not cross the map.
-@export var dive_speed: float = 6.0
-@export var dive_hop: float = 1.2
-@export var prone_time: float = 0.35
-## Time before the next dive, counted from the start of the previous one.
-@export var dive_cooldown: float = 2.0
-## Control left while lying on the ground.
-@export var prone_control: float = 0.2
-
 @export_group("Camera")
-@export var camera_distance: float = 4.7
-@export var camera_height: float = 1.5
+## Un poco más lejos que antes: el corredor es más alto y así se ve más mapa
+## alrededor de la parrilla de salida.
+@export var camera_distance: float = 5.6
+## Altura del pivote sobre los pies. Va con la estatura del catálogo
+## (`CharacterCatalog.CHARACTER_HEIGHT`): la cámara mira al cuerpo del corredor.
+@export var camera_height: float = 1.12
 ## Downward pitch of the camera, in degrees. Negative looks down.
 @export var camera_pitch: float = -15.0
 @export var camera_lerp: float = 7.0
@@ -44,10 +38,15 @@ extends CharacterBody3D
 ## drag the camera along the floor.
 @export var camera_height_lerp: float = 5.0
 ## Minimum distance between the pivot and the ground below it.
-@export var camera_min_clearance: float = 1.2
+@export var camera_min_clearance: float = 0.85
 @export var camera_look_ahead: float = 0.12
 @export var camera_fov_base: float = 55.0
 @export var camera_fov_max: float = 70.0
+## Sensibilidad del ratón al girar la cámara (radianes por píxel).
+@export var mouse_sensitivity: float = 0.0028
+## Límites del cabeceo manual, en grados.
+@export var camera_pitch_min: float = -75.0
+@export var camera_pitch_max: float = 15.0
 
 @export_group("Reactions")
 ## How long the player staggers after a hard hit.
@@ -59,18 +58,54 @@ extends CharacterBody3D
 @export var shadow_max_distance: float = 8.0
 @export var dust_speed_threshold: float = 3.0
 
+@export_group("Animation")
+## El pack solo trae el clip de andar: se acelera para que lea como esprint.
+@export var run_clip_speed: float = 2.4
+## Fotograma del andar que se congela en el aire (el pack no trae salto).
+@export var jump_pose_time: float = 0.42
+
+@export_group("Swimming")
+## Velocidad de nado del circuito abisal.
+@export var swim_speed: float = 7.4
+@export var swim_acceleration: float = 24.0
+## Flotabilidad tenue: sin tocar nada el corredor sube muy despacio.
+@export var swim_buoyancy: float = 0.35
+## Arrastre del agua, por segundo. Frena la inercia al soltar el stick.
+@export var swim_drag: float = 0.9
+## Inclinación del cuerpo mientras nada, en grados.
+@export var swim_pitch_degrees: float = 64.0
+
+## Lo activan las zonas de agua (`scripts/water_zone.gd`).
+var swimming: bool = false
+## Cota de crucero de la zona: al entrar, el corredor baja solo hasta ella.
+var _swim_depth: float = 0.0
+var _has_swim_depth: bool = false
+## Franja vertical del tramo de agua: sin salirse por arriba ni por abajo.
+var _swim_band_min: float = -1.0e9
+var _swim_band_max: float = 1.0e9
+var _has_swim_band: bool = false
+## Cadencia del andar a poca marcha. Sube sin escalones hasta `run_clip_speed`
+## conforme el corredor acelera, así la zancada no se corta al pasar de andar
+## a esprintar.
+@export var walk_clip_speed: float = 1.0
+## Suavizado con el que la cadencia sigue a la velocidad real.
+@export var stride_blend_speed: float = 9.0
+
 ## Set by a bot driver (future split-screen / network input).
 @export var is_bot: bool = false
 ## Id del personaje que se está usando (expuesto para tests y HUD).
 var character_id: String = ""
 
-## While true the player keeps standing: no walk, jump or dive input.
+## While true the player keeps standing: no walk or jump input.
 var input_locked: bool = false
 
 @onready var mesh: MeshInstance3D = $MeshInstance3D
 ## El modelo 3D se instancia en runtime según el personaje elegido en el menú.
 var model: Node3D
 var anim: AnimationPlayer
+## Capa procedural sobre el clip: inclinación de esprint, salto recogido y
+## aterrizaje con flexión.
+var rig: CharacterRig
 @onready var marker: Node3D = $Marker
 @onready var dizzy: Node3D = $Dizzy
 @onready var shadow: MeshInstance3D = $Shadow
@@ -80,11 +115,16 @@ var anim: AnimationPlayer
 @onready var camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
 
 var _spawn_transform: Transform3D
+## Giro y cabeceo manuales de la cámara: los mueve el ratón bloqueado.
+var _orbit_yaw: float = 0.0
+var _orbit_pitch: float = 0.0
+## Sensibilidad de fábrica; el ajuste del menú la multiplica.
+var _mouse_sensitivity_base: float = 0.0028
 ## Player-driven XZ velocity (friction/accel apply here only).
 var _control_velocity: Vector3 = Vector3.ZERO
 ## Per-frame belt/wind contribution (not cancelled by friction).
 var _external_velocity: Vector3 = Vector3.ZERO
-## Animation state: "idle" | "run" | "jump" | "stun" | "prone".
+## Animation state: "idle" | "run" | "jump" | "stun" | "land".
 var _anim_state: String = "idle"
 var _anim_time: float = 0.0
 var _mesh_base_y: float = 0.0
@@ -92,16 +132,18 @@ var _anim_was_on_floor: bool = true
 var _land_squash_timer: float = 0.0
 var _jump_cut_available: bool = false
 var _stun_timer: float = 0.0
+## Ralentización que dejan los hazards al tocarte.
+var _slow_timer: float = 0.0
+var _slow_factor: float = 1.0
 var _shadow_material: StandardMaterial3D
 var _dust_burst_timer: float = 0.0
 var _marker_base_y: float = 0.0
+var _dizzy_base_y: float = 0.0
 var _step_timer: float = 0.0
 var _step_side: float = 1.0
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
-var _prone_timer: float = 0.0
-var _dive_cooldown_timer: float = 0.0
 var _fall_speed: float = 0.0
 var _impact_speed: float = 0.0
 var _wish_dir: Vector3 = Vector3.ZERO
@@ -113,7 +155,6 @@ var _clear_platform_on_next_frame: bool = false
 ## Bot input mirror (world-space).
 var _bot_wish: Vector3 = Vector3.ZERO
 var _bot_jump_pressed: bool = false
-var _bot_dive_pressed: bool = false
 
 
 func _ready() -> void:
@@ -125,14 +166,25 @@ func _ready() -> void:
 	camera_pivot.top_level = true
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)
 	camera_pivot.visible = not is_bot
+	# Ratón bloqueado durante la carrera: es el mando de la cámara.
+	if not is_bot and DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_mouse_sensitivity_base = mouse_sensitivity
+	_apply_mouse_sensitivity()
+	if not is_bot:
+		# El ajuste del menú se aplica en caliente, sin reiniciar la carrera.
+		SaveManager.settings_changed.connect(_apply_mouse_sensitivity)
 	spring_arm.spring_length = camera_distance
-	spring_arm.rotation.x = deg_to_rad(camera_pitch)
+	_orbit_pitch = deg_to_rad(camera_pitch)
+	spring_arm.rotation.x = _orbit_pitch
 	spring_arm.add_excluded_object(get_rid())
 	camera.fov = camera_fov_base
 	_mesh_base_y = mesh.position.y
 	_setup_character()
 	_setup_animations()
 	_play_animation("idle", 0.0)
+	if rig:
+		rig.set_state(_anim_state)
 	if marker:
 		_marker_base_y = marker.position.y
 		# La flecha FIFA solo marca al jugador, nunca a los bots.
@@ -141,26 +193,40 @@ func _ready() -> void:
 		_shadow_material = (shadow.material_override as StandardMaterial3D).duplicate()
 		shadow.material_override = _shadow_material
 	if dizzy:
+		_dizzy_base_y = dizzy.position.y
 		dizzy.visible = false
 
 
 ## Instancia el personaje elegido en el menú (o uno aleatorio si este cuerpo
 ## lo conduce un bot). El catálogo también oculta armas y capas.
 func _setup_character() -> void:
-	character_id = CharacterCatalog.random_id() if is_bot else SaveManager.character_id()
-	model = CharacterCatalog.build_model(character_id, "Model")
+	# El jugador corre siempre con el mismo cuerpo de su personaje (se sortea
+	# una vez por sesión); los bots se reparten entre los dos cuerpos, así que
+	# en la parrilla se ven las dos versiones de cada personaje.
+	var variant := -1
+	if is_bot:
+		character_id = CharacterCatalog.random_id()
+		# Generador aparte para no mover la secuencia aleatoria que ya usan
+		# los bots para carriles y tropiezos.
+		var body_rng := RandomNumberGenerator.new()
+		body_rng.randomize()
+		variant = body_rng.randi_range(0, CharacterCatalog.variant_count(character_id) - 1)
+	else:
+		character_id = SaveManager.character_id()
+	model = CharacterCatalog.build_model(character_id, "Model", variant)
 	if model == null:
 		push_warning("Player: no se pudo cargar el personaje '%s'" % character_id)
 		return
 	mesh.add_child(model)
 	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	rig = CharacterCatalog.rig_of(model)
 
 
 ## Locomotion clips loop; one-shots (landing, hit) play once.
 func _setup_animations() -> void:
 	if anim == null:
 		return
-	for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Lie_Idle"]:
+	for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle"]:
 		var clip := anim.get_animation(clip_name)
 		if clip:
 			clip.loop_mode = Animation.LOOP_LINEAR
@@ -187,16 +253,25 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		platform_floor_layers = saved_layers
 	_tick_timers(delta)
-	_apply_gravity(delta)
-	_handle_jump()
-	_handle_movement(delta)
-	_handle_dive()
-	velocity.x = _control_velocity.x + _external_velocity.x
-	velocity.z = _control_velocity.z + _external_velocity.z
-	velocity.y += _external_velocity.y
-	_external_velocity = Vector3.ZERO
+	if swimming:
+		_swim(delta)
+	else:
+		_apply_gravity(delta)
+		_handle_jump()
+		_handle_movement(delta)
+	if swimming:
+		velocity = _control_velocity + _external_velocity
+		velocity.y = clampf(velocity.y, -swim_speed * 1.5, swim_speed * 1.5)
+		_external_velocity = Vector3.ZERO
+	else:
+		velocity.x = _control_velocity.x + _external_velocity.x
+		velocity.z = _control_velocity.z + _external_velocity.z
+		velocity.y += _external_velocity.y
+		_external_velocity = Vector3.ZERO
 	var was_on_floor := is_on_floor()
 	move_and_slide()
+	if swimming:
+		_clamp_swim_band()
 	if not is_on_floor():
 		_fall_speed = minf(_fall_speed, velocity.y)
 	else:
@@ -214,9 +289,9 @@ func _physics_process(delta: float) -> void:
 ## Pisadas sincronizadas con la velocidad: suenan al correr, no al quedarse
 ## quieto ni en el aire.
 func _update_footsteps(delta: float) -> void:
-	if is_bot:
+	if is_bot or swimming:
 		return
-	if not is_on_floor() or _stun_timer > 0.0 or _prone_timer > 0.0:
+	if not is_on_floor() or _stun_timer > 0.0:
 		_step_timer = 0.0
 		return
 	var speed := Vector3(velocity.x, 0.0, velocity.z).length()
@@ -246,13 +321,13 @@ func _update_marker(delta: float) -> void:
 func _tick_timers(delta: float) -> void:
 	if _stun_timer > 0.0:
 		_stun_timer = maxf(0.0, _stun_timer - delta)
+	if _slow_timer > 0.0:
+		_slow_timer = maxf(0.0, _slow_timer - delta)
 	if is_on_floor():
 		_coyote_timer = coyote_time
 	elif _coyote_timer > 0.0:
 		_coyote_timer = maxf(0.0, _coyote_timer - delta)
 	_jump_buffer_timer = maxf(0.0, _jump_buffer_timer - delta)
-	_prone_timer = maxf(0.0, _prone_timer - delta)
-	_dive_cooldown_timer = maxf(0.0, _dive_cooldown_timer - delta)
 
 
 func _apply_gravity(delta: float) -> void:
@@ -276,11 +351,8 @@ func _handle_jump() -> void:
 		_bot_jump_pressed = false
 	if pressed:
 		_jump_buffer_timer = jump_buffer_time
-		if _prone_timer > 0.0:
-			# Getting up is instant when jumping from the floor.
-			_prone_timer = 0.0
 
-	var can_jump := _jump_buffer_timer > 0.0 and _prone_timer <= 0.0 and (_coyote_timer > 0.0 or is_on_floor())
+	var can_jump := _jump_buffer_timer > 0.0 and (_coyote_timer > 0.0 or is_on_floor())
 	if can_jump:
 		velocity.y = jump_velocity
 		_jump_buffer_timer = 0.0
@@ -320,50 +392,134 @@ func _handle_movement(delta: float) -> void:
 		wish = wish.normalized()
 	_wish_dir = wish
 
-	var target := wish * max_speed
+	var target := wish * max_speed * _slow_scale()
 	var control := 1.0 if is_on_floor() else air_control
 	if _stun_timer > 0.0:
 		control *= stun_control
-	if _prone_timer > 0.0:
-		control *= prone_control
 
 	if wish.length_squared() > 0.01:
 		_control_velocity = _control_velocity.move_toward(target, acceleration * control * delta)
 	else:
-		var current_friction := friction * (0.7 if _prone_timer > 0.0 else 1.0)
-		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, current_friction * control * delta)
+		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, friction * control * delta)
 
 
-## Dive: forward burst + belly flop. In the air it drops fast, on the ground
-## it leaves the player prone and vulnerable for a moment.
-func _handle_dive() -> void:
-	var pressed := Input.is_action_just_pressed("dive")
-	if is_bot:
-		pressed = _bot_dive_pressed
-		_bot_dive_pressed = false
-	if not pressed or not can_dive():
+## Entra o sale del agua. Lo llaman las zonas de agua del circuito abisal.
+func set_swimming(value: bool) -> void:
+	if swimming == value:
 		return
-	var direction := _wish_dir
-	if direction.length_squared() < 0.01:
-		direction = -mesh.global_transform.basis.z
-	direction.y = 0.0
-	if direction.length_squared() < 0.01:
-		return
-	direction = direction.normalized()
-
-	_dive_cooldown_timer = dive_cooldown
-	_prone_timer = prone_time
-	# Replace the run speed instead of adding to it: the dive is a short
-	# dodge, not a free boost across the map.
-	_control_velocity = direction * dive_speed
-	if is_on_floor():
-		velocity.y = maxf(velocity.y, dive_hop)
+	swimming = value
+	if swimming:
+		velocity.y = minf(velocity.y, 1.5)
+		_fall_speed = 0.0
+		_land_squash_timer = 0.0
+		_jump_cut_available = false
 	else:
-		velocity.y = minf(velocity.y, 0.5)
-	_jump_cut_available = false
-	AudioManager.play_sfx("dive", 0.12)
-	GameFeel.shake(1.6)
-	_burst_dust()
+		_has_swim_depth = false
+		clear_swim_band()
+	if not swimming and velocity.y > 0.0:
+		velocity.y = minf(velocity.y, 2.0)
+
+
+func is_swimming() -> bool:
+	return swimming
+
+
+func set_swim_depth(target_y: float) -> void:
+	_swim_depth = target_y
+	_has_swim_depth = true
+
+
+func clear_swim_depth() -> void:
+	_has_swim_depth = false
+
+
+## Franja vertical del tramo de agua. Mientras se nada no se sale por arriba ni
+## por abajo: el corredor se queda en el pasillo donde están los obstáculos.
+func set_swim_band(min_y: float, max_y: float) -> void:
+	_swim_band_min = min_y
+	_swim_band_max = maxf(min_y, max_y)
+	_has_swim_band = true
+
+
+func clear_swim_band() -> void:
+	_has_swim_band = false
+	_swim_band_min = -1.0e9
+	_swim_band_max = 1.0e9
+
+
+func _clamp_swim_band() -> void:
+	if not _has_swim_band:
+		return
+	var y := global_position.y
+	if y > _swim_band_max:
+		global_position.y = _swim_band_max
+		velocity.y = minf(velocity.y, 0.0)
+		_control_velocity.y = minf(_control_velocity.y, 0.0)
+	elif y < _swim_band_min:
+		global_position.y = _swim_band_min
+		velocity.y = maxf(velocity.y, 0.0)
+		_control_velocity.y = maxf(_control_velocity.y, 0.0)
+
+
+## Natación en tres dimensiones: la cámara marca el rumbo, `jump` sube y
+## `dive` (Shift/Ctrl) baja. Sin gravedad y con arrastre corto.
+func _swim(delta: float) -> void:
+	if input_locked:
+		_control_velocity = _control_velocity.move_toward(Vector3.ZERO, swim_acceleration * delta)
+		_wish_dir = Vector3.ZERO
+		return
+
+	var wish := Vector3.ZERO
+	if is_bot:
+		wish = _bot_wish
+	else:
+		var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+		var cam_basis := camera.global_transform.basis
+		var forward := -cam_basis.z
+		var right := cam_basis.x
+		wish = right * input_dir.x + forward * -input_dir.y
+		var vertical := 0.0
+		if Input.is_action_pressed("jump"):
+			vertical += 1.0
+		if InputMap.has_action("dive") and Input.is_action_pressed("dive"):
+			vertical -= 1.0
+		wish += Vector3.UP * vertical
+		if wish.length_squared() > 1.0:
+			wish = wish.normalized()
+
+	# Cota de crucero de la zona: al entrar en el agua el corredor baja solo
+	# hasta la altura del tramo. Space y dive mandan siempre, así se puede
+	# subir o bajar cuando haga falta.
+	var manual_vertical := false
+	if not is_bot:
+		manual_vertical = Input.is_action_pressed("jump") \
+			or (InputMap.has_action("dive") and Input.is_action_pressed("dive"))
+	_wish_dir = wish
+	# Bajo el agua el frenazo de los hazards también cuenta: si no, en Abyss Run
+	# ningún obstáculo marino ralentizaría al corredor.
+	_control_velocity = _control_velocity.move_toward(wish * swim_speed * _slow_scale(),
+		swim_acceleration * delta)
+	if _has_swim_depth and not manual_vertical:
+		var depth_error := _swim_depth - global_position.y
+		_control_velocity.y = move_toward(_control_velocity.y,
+			clampf(depth_error * 1.5, -2.6, 2.6), 8.0 * delta)
+	_control_velocity += Vector3.UP * swim_buoyancy * delta
+	_control_velocity *= maxf(0.0, 1.0 - swim_drag * delta)
+	_control_velocity.y = clampf(_control_velocity.y, -swim_speed, swim_speed)
+
+
+## Reaplica el estado de agua al reaparecer: el `body_exited` del `Area3D` no
+## siempre se emite cuando el cuerpo se teletransporta al checkpoint.
+func _refresh_water_state() -> void:
+	var inside := false
+	for zone in get_tree().get_nodes_in_group("water_zones"):
+		if zone.has_method("contains_point") and zone.contains_point(global_position):
+			inside = true
+			if zone.has_method("apply_to"):
+				zone.apply_to(self)
+			break
+	if not inside:
+		set_swimming(false)
 
 
 func _update_facing(delta: float) -> void:
@@ -376,7 +532,28 @@ func _update_facing(delta: float) -> void:
 
 ## Third-person camera behind the player with spring-arm collision, FOV kick,
 ## look-ahead and shake. The pivot keeps a world-fixed yaw so input stays stable.
+## Sensibilidad efectiva = base del jugador × ajuste del menú (100 % = 1,0).
+func _apply_mouse_sensitivity() -> void:
+	var multiplier := clampf(float(SaveManager.get_setting("sensitivity", 1.0)), 0.05, 5.0)
+	mouse_sensitivity = _mouse_sensitivity_base * multiplier
+
+
+## Cámara manual: con el ratón bloqueado, mover izquierda/derecha gira el pivote
+## y arriba/abajo inclina el muelle. El movimiento sigue leyendo la cámara, así
+## que mirar hacia donde corres sigue funcionando.
+func _unhandled_input(event: InputEvent) -> void:
+	if is_bot:
+		return
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		var motion := event as InputEventMouseMotion
+		_orbit_yaw = wrapf(_orbit_yaw - motion.relative.x * mouse_sensitivity, -PI, PI)
+		_orbit_pitch = clampf(_orbit_pitch - motion.relative.y * mouse_sensitivity,
+			deg_to_rad(camera_pitch_min), deg_to_rad(camera_pitch_max))
+
+
 func _update_camera(delta: float) -> void:
+	camera_pivot.rotation.y = _orbit_yaw
+	spring_arm.rotation.x = _orbit_pitch
 	if is_bot:
 		return
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
@@ -427,6 +604,10 @@ func _keep_camera_above_ground() -> void:
 func _update_shadow() -> void:
 	if shadow == null:
 		return
+	# Bajo el agua no hay sombra de contacto: la mancha del suelo se lee mal.
+	if swimming:
+		shadow.visible = false
+		return
 	var space := get_world_3d().direct_space_state
 	if space == null:
 		return
@@ -454,7 +635,7 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 	var on_floor := is_on_floor()
 	var horizontal_speed := Vector3(velocity.x, 0.0, velocity.z).length()
 
-	if on_floor and not _anim_was_on_floor:
+	if on_floor and not _anim_was_on_floor and not swimming:
 		_land_squash_timer = 0.18
 		_burst_dust()
 		if _impact_speed < -7.0:
@@ -468,10 +649,10 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		_dust_burst_timer -= delta
 
 	var new_state := "idle"
-	if _prone_timer > 0.0:
-		new_state = "prone"
-	elif _stun_timer > 0.0:
+	if _stun_timer > 0.0:
 		new_state = "stun"
+	elif swimming:
+		new_state = "swim"
 	elif not on_floor:
 		new_state = "jump"
 	elif _land_squash_timer > 0.0:
@@ -484,9 +665,23 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		_anim_state = new_state
 		_anim_time = 0.0
 		_play_animation(new_state)
+		if rig:
+			rig.set_state(new_state)
 
 	_anim_time += delta
-	if _anim_state != "stun" and _anim_state != "prone":
+	# La cadencia sigue a la velocidad real: la zancada se acelera de forma
+	# continua en vez de saltar de golpe entre andar y esprintar, y los pies
+	# dejan de patinar. En el aire se frena hasta congelar la postura.
+	if anim != null:
+		var stride := 1.0
+		if _anim_state == "jump":
+			stride = 0.0
+		elif _anim_state == "swim":
+			stride = clampf(_control_velocity.length() * 0.35, 0.5, 1.7)
+		elif _anim_state == "walk" or _anim_state == "run":
+			stride = clampf(horizontal_speed * (run_clip_speed / maxf(max_speed, 0.01)), walk_clip_speed, run_clip_speed)
+		anim.speed_scale = lerpf(anim.speed_scale, stride, clampf(stride_blend_speed * delta, 0.0, 1.0))
+	if _anim_state != "stun":
 		mesh.rotation.z = lerpf(mesh.rotation.z, 0.0, 12.0 * delta)
 
 	match _anim_state:
@@ -505,6 +700,13 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			var stretch := 1.05 if rising else 1.03
 			mesh.scale = Vector3(1.0 / stretch, stretch, 1.0 / stretch)
 			mesh.position.y = _mesh_base_y
+		"swim":
+			# El cuerpo se tumba hacia delante: se lee como brazada, no como salto.
+			mesh.rotation.x = lerpf(mesh.rotation.x, deg_to_rad(swim_pitch_degrees), 5.0 * delta)
+			var swim_bob := sin(_anim_time * 3.2) * 0.035
+			var stroke := 1.0 + sin(_anim_time * 6.4) * 0.02
+			mesh.scale = Vector3(1.0 / stroke, stroke, 1.0 / stroke)
+			mesh.position.y = _mesh_base_y + swim_bob
 		"land":
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
@@ -513,13 +715,12 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
 			mesh.rotation.z = wobble
-		"prone":
-			mesh.scale = Vector3.ONE
-			mesh.position.y = _mesh_base_y
-			mesh.rotation.z = lerpf(mesh.rotation.z, 0.0, 10.0 * delta)
+
+	if _anim_state != "swim":
+		mesh.rotation.x = lerpf(mesh.rotation.x, 0.0, 10.0 * delta)
 
 	# Landing squash overrides for a few frames after touching the ground.
-	if _land_squash_timer > 0.0 and _prone_timer <= 0.0:
+	if _land_squash_timer > 0.0:
 		var strength := _land_squash_timer / 0.18
 		var squash := 1.0 - 0.12 * strength
 		mesh.scale = Vector3(1.0 + (1.0 - squash) * 0.5, squash, 1.0 + (1.0 - squash) * 0.5)
@@ -531,29 +732,30 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		dizzy.visible = _stun_timer > 0.0
 		if dizzy.visible:
 			dizzy.rotate_y(delta * 7.0)
-			dizzy.position.y = 1.6 + sin(Time.get_ticks_msec() * 0.006) * 0.08
+			dizzy.position.y = _dizzy_base_y + sin(Time.get_ticks_msec() * 0.006) * 0.08
 
 
-func _play_animation(state: String, blend: float = 0.15) -> void:
+func _play_animation(state: String, blend: float = 0.2) -> void:
 	if anim == null:
 		return
 	var clip := "Idle"
 	match state:
-		"walk":
+		"walk", "run", "jump", "swim":
+			# El pack no trae clip de carrera ni de salto: el andar se reproduce
+			# más o menos rápido según la velocidad (ver `_update_animation`) y
+			# en el aire se congela una de sus zancadas.
 			clip = "Walking_A"
-		"run":
-			clip = "Running_A"
-		"jump":
-			clip = "Jump_Idle"
 		"land":
 			clip = "Jump_Land"
-		"prone":
-			clip = "Lie_Idle"
 		"stun":
 			clip = "Hit_A"
 	if anim.current_animation != clip:
 		anim.play(clip, blend)
-	anim.speed_scale = 1.3 if clip == "Running_A" else 1.0
+	if state == "jump":
+		# En el aire se congela una zancada, que lee mucho mejor que el idle de
+		# pie. El rig le suma encima la pose recogida de salto.
+		anim.seek(jump_pose_time, true)
+		anim.speed_scale = 0.0
 
 
 func _update_dust(horizontal_speed: float) -> void:
@@ -586,6 +788,9 @@ func apply_push(force: Vector3) -> void:
 	_control_velocity.x += force.x
 	_control_velocity.z += force.z
 	velocity.y += force.y
+	# Todo hazard que te alcanza deja el frenazo puesto aquí: así ninguno se
+	# queda sin ralentizar aunque su script no lo pida explícitamente.
+	slow(0.8, 0.6)
 	var horizontal_strength := Vector2(force.x, force.z).length()
 	if horizontal_strength >= stun_push_threshold:
 		stun()
@@ -603,6 +808,7 @@ func apply_push_soft(force: Vector3) -> void:
 	_control_velocity.x += force.x
 	_control_velocity.z += force.z
 	velocity.y += force.y
+	slow(0.6, 0.72)
 	if Vector2(force.x, force.z).length() > 2.0:
 		GameFeel.shake(0.5)
 		AudioManager.play_sfx("impact", 0.25, -6.0)
@@ -612,7 +818,6 @@ func apply_push_soft(force: Vector3) -> void:
 func launch(impulse: Vector3) -> void:
 	_control_velocity += Vector3(impulse.x, 0.0, impulse.z)
 	velocity.y = maxf(velocity.y, impulse.y)
-	_prone_timer = 0.0
 	_jump_cut_available = false
 	GameFeel.shake(2.0)
 
@@ -622,7 +827,6 @@ func bounce(strength: float) -> void:
 	velocity.y = strength
 	_jump_cut_available = false
 	_land_squash_timer = 0.0
-	_prone_timer = 0.0
 
 
 ## Make the player stagger for `duration` seconds (default: stun_time).
@@ -630,32 +834,40 @@ func stun(duration: float = -1.0) -> void:
 	_stun_timer = maxf(_stun_timer, stun_time if duration < 0.0 else duration)
 
 
-## True when the dive can be used again: the cooldown is over, the player is
-## not lying on the floor and input is not locked by the countdown.
-func can_dive() -> bool:
-	return not input_locked and _dive_cooldown_timer <= 0.0 and _prone_timer <= 0.0
+## Los hazards pegajosos frenan al corredor durante un momento en vez de
+## lanzarlo. Lo llaman los obstáculos justo después de empujar, y las zonas
+## (vórtices, corrientes, viento) mientras el corredor está dentro.
+func slow(duration: float = 0.85, factor: float = 0.55) -> void:
+	# Varios hazards pueden solaparse: mientras dura el frenazo se conserva el
+	# factor más fuerte, para que una zona suave no anule el golpe de un martillo.
+	var clamped := clampf(factor, 0.2, 1.0)
+	_slow_factor = minf(_slow_factor, clamped) if _slow_timer > 0.0 else clamped
+	_slow_timer = maxf(_slow_timer, duration)
 
 
-## Seconds left on the dive cooldown (0 when ready).
-func dive_cooldown_remaining() -> float:
-	return _dive_cooldown_timer
+func _slow_scale() -> float:
+	return _slow_factor if _slow_timer > 0.0 else 1.0
+
+
+## Para el HUD y los tests: ¿arrastra el frenazo de un hazard ahora mismo?
+func is_slowed() -> bool:
+	return _slow_timer > 0.0
+
+
+## 1.0 sin frenazo; el factor activo mientras dura (tests/depuración).
+func slow_ratio() -> float:
+	return _slow_scale()
 
 
 func is_stunned() -> bool:
 	return _stun_timer > 0.0
 
 
-func is_prone() -> bool:
-	return _prone_timer > 0.0
-
-
-## Bot input: world-space direction + one-frame jump/dive flags.
-func set_bot_drive(direction: Vector3, jump: bool = false, dive: bool = false) -> void:
+## Bot input: world-space direction + one-frame jump flag.
+func set_bot_drive(direction: Vector3, jump: bool = false) -> void:
 	_bot_wish = direction
 	if jump:
 		_bot_jump_pressed = true
-	if dive:
-		_bot_dive_pressed = true
 
 
 func respawn_at(checkpoint_transform: Transform3D) -> void:
@@ -664,15 +876,16 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	_control_velocity = Vector3.ZERO
 	_external_velocity = Vector3.ZERO
 	_stun_timer = 0.0
+	_slow_timer = 0.0
 	_jump_cut_available = false
 	_land_squash_timer = 0.0
 	_coyote_timer = 0.0
 	_jump_buffer_timer = 0.0
-	_prone_timer = 0.0
-	_dive_cooldown_timer = 0.0
 	_fall_speed = 0.0
 	_anim_state = "idle"
 	_anim_time = 0.0
+	if rig:
+		rig.set_state("idle")
 	mesh.rotation = Vector3.ZERO
 	mesh.position.y = _mesh_base_y
 	mesh.scale = Vector3.ONE
@@ -681,6 +894,7 @@ func respawn_at(checkpoint_transform: Transform3D) -> void:
 	if dizzy:
 		dizzy.visible = false
 	camera_pivot.global_position = global_position + Vector3(0.0, camera_height, 0.0)
+	_refresh_water_state()
 	_clear_platform_on_next_frame = true
 
 

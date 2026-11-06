@@ -10,15 +10,17 @@ const MUSIC_PATH := "res://audio/music/menu_theme.wav"
 const VICTORY_PATH := "res://audio/music/victory.mp3"
 ## La fanfarria tiene su propio bus: se oye siempre, aunque la música del
 ## menú esté baja, pero el volumen maestro la sigue controlando.
+## El archivo viene masterizado a tope (-7.8 LUFS, picos a 0 dBFS), así que el
+## reproductor lo baja 9 dB: queda ~12 dB por encima del menú y con aire de
+## sobra para que el Master no recorte.
 const VICTORY_BUS := "Victory"
-const VICTORY_VOLUME_DB := 0.0
+const VICTORY_VOLUME_DB := -9.0
 const SFX_PATHS := {
 	"jump": "res://audio/sfx/jump.wav",
 	"step": "res://audio/sfx/step.wav",
 	"checkpoint": "res://audio/sfx/checkpoint.wav",
 	"finish": "res://audio/sfx/finish.wav",
 	"fall": "res://audio/sfx/fall.wav",
-	"dive": "res://audio/sfx/dive.wav",
 	"land": "res://audio/sfx/land.wav",
 	"impact": "res://audio/sfx/impact.wav",
 	"coin": "res://audio/sfx/coin.wav",
@@ -200,9 +202,13 @@ func is_music_playing() -> bool:
 	return _music_player != null and _music_player.playing
 
 
-## Fanfarria de meta. Suena una sola vez y respeta el volumen de música.
+## Fanfarria de meta. Suena una sola vez. Tiene bus propio para oírse aunque
+## la música esté baja, pero respeta el silencio: con la música a cero no suena.
 func play_victory() -> void:
 	if _victory_player == null or not _load_victory_stream():
+		return
+	var music_index := AudioServer.get_bus_index("Music")
+	if music_index >= 0 and AudioServer.is_bus_mute(music_index):
 		return
 	stop_music(false)
 	_victory_player.stream = _victory_stream

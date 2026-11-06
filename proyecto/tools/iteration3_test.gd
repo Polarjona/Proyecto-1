@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Iteration 3 checks: new movement (dive), wind tunnel, launcher, see-saw,
+## Iteration 3 checks: new movement, wind tunnel, launcher, see-saw,
 ## profile/settings, new scenes and results UI. Headless integration.
 
 var _failures := 0
@@ -93,26 +93,24 @@ func _run() -> void:
 	_check(save.medal_for(85.0) == "silver", "85 s da medalla de plata")
 	_check(save.medal_for(120.0) == "bronze", "120 s da medalla de bronce")
 
-	# --- Dive -------------------------------------------------------------
+	# --- Dash/slide eliminado ---------------------------------------------
+	# Ya no hay dive: ni acción de entrada, ni API en el jugador, ni aviso en el
+	# HUD. El jugador se mueve, salta y ya está.
+	_check(not InputMap.has_action("dive"), "La acción de dive ya no existe")
+	_check(not player.has_method("can_dive") and not player.has_method("is_prone")
+		and not player.has_method("dive_cooldown_remaining")
+		and player.get("dive_speed") == null and player.get("prone_time") == null,
+		"El jugador ya no sabe deslizarse ni quedarse tumbado")
+	var hud_nodes: Node = game.get_node_or_null("HUD")
+	_check(hud_nodes != null and hud_nodes.get_node_or_null("Root/DiveLabel") == null,
+		"El HUD ya no anuncia el cooldown del deslizamiento")
 	await _place(player, Vector3(0.0, 0.6, 0.0))
-	var dive_from: Vector3 = player.global_position
-	Input.action_press("dive")
-	await physics_frame
-	await physics_frame
-	Input.action_release("dive")
-	_check(player.is_prone(), "El dive deja al jugador tumbado y deslizando")
-	_check(not player.can_dive(), "El dive entra en cooldown al usarse")
-	var dive_distance := 0.0
-	for i in 24:
+	Input.action_press("move_forward")
+	for i in 45:
 		await physics_frame
-		dive_distance = (player.global_position - dive_from).length()
-	_check(dive_distance < 3.0, "El dive recorre una distancia corta (%.2f m)" % dive_distance)
-	for i in 40:
-		await physics_frame
-	_check(not player.can_dive(), "El cooldown sobrevive al final del deslizamiento")
-	for i in 90:
-		await physics_frame
-	_check(player.can_dive(), "El dive vuelve a estar disponible tras el cooldown")
+	Input.action_release("move_forward")
+	_check(player.global_position.z < -1.0 and player.is_on_floor(),
+		"Sin dive el jugador sigue corriendo normal (z=%.1f)" % player.global_position.z)
 
 	# --- Flechas del conveyor ---------------------------------------------
 	var conveyor: Area3D = game.get_node("Course/ConveyorA1")
@@ -162,6 +160,9 @@ func _run() -> void:
 		"El viento empuja lateralmente al jugador (x=%.2f)" % player.global_position.x)
 
 	# --- Cañón ------------------------------------------------------------
+	var launcher: Area3D = game.get_node("Course/Launcher")
+	_check(launcher.get("cooldown") == null and not launcher.has_method("is_ready"),
+		"El cañón ya no tiene cooldown")
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.9, -139.2)))
 	var launched := false
 	for i in 8:
@@ -169,6 +170,36 @@ func _run() -> void:
 		if player.velocity.y > 2.0:
 			launched = true
 	_check(launched, "El cañón lanza al jugador por los aires")
+
+	# Sin cooldown, un grupo que llega junto sale entero de una vez: tres
+	# cuerpos dentro del gatillo tienen que volar los tres.
+	var batch: Array[CharacterBody3D] = []
+	for i in 3:
+		var dummy := CharacterBody3D.new()
+		dummy.collision_layer = 2
+		dummy.collision_mask = 0
+		dummy.add_to_group("bot")
+		var shape := CollisionShape3D.new()
+		var capsule := CapsuleShape3D.new()
+		capsule.radius = 0.2
+		capsule.height = 0.8
+		shape.shape = capsule
+		shape.position.y = 0.4
+		dummy.add_child(shape)
+		game.add_child(dummy)
+		dummy.global_position = launcher.global_position + Vector3(-0.5 + float(i) * 0.5, 0.5, 0.0)
+		batch.append(dummy)
+	await physics_frame
+	await physics_frame
+	var flying := 0
+	for dummy in batch:
+		if dummy.velocity.y > 2.0:
+			flying += 1
+	_check(flying == batch.size(),
+		"Tres cuerpos en el gatillo salen disparados a la vez (%d de %d)" % [flying, batch.size()])
+	for dummy in batch:
+		dummy.queue_free()
+	await physics_frame
 
 	# --- Balancín ---------------------------------------------------------
 	var saw: AnimatableBody3D = game.get_node("Course/SeeSaw")

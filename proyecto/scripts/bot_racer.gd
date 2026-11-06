@@ -58,6 +58,16 @@ const WAYPOINTS: Array[Vector3] = [
 	Vector3(0.0, 4.2, -209.0),
 ]
 
+## Parte del empuje lateral que un bot compensa inclinándose hacia el viento.
+## 0 = vuela con la ráfaga, 1 = la anula por completo.
+const WIND_LEAN := 0.6
+
+## Intentos que hace un bot en un mismo tramo antes de que se le empuje al
+## punto siguiente. La carrera nunca se queda colgada por un bot al que se le
+## atraganta una sección, pero el empujón es el último recurso: lo normal es
+## que una caída cueste el tramo, como le cuesta al jugador.
+const MAX_RETRIES := 2
+
 ## Maximum lateral distance from the centre line at each waypoint. Narrow
 ## bridges get almost none, open halls get room for the pack to spread.
 const LANE_HALF_WIDTH: Array[float] = [
@@ -65,14 +75,28 @@ const LANE_HALF_WIDTH: Array[float] = [
 	1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6,
 ]
 
+## El pack solo trae el clip de andar: se acelera para que lea como esprint.
+const RUN_CLIP_SPEED := 2.4
+## Fotograma del andar que se congela en el aire (el pack no trae salto).
+const JUMP_POSE_TIME := 0.42
+## Suavizado con el que la cadencia del clip sigue a la velocidad.
+const STRIDE_BLEND_SPEED := 10.0
+
 @export var speed_min: float = 4.8
 @export var speed_max: float = 6.4
 @export var speed_scale: float = 1.0
 @export var finish_z: float = -209.0
 @export var respawn_below_y: float = -5.0
+## Ruta opcional por nivel. Si está vacía se usa la tabla WAYPOINTS de abajo
+## (el circuito original), para no romper tests ni previews sueltas.
+@export var waypoints: PackedVector3Array = PackedVector3Array()
+@export var lane_widths: PackedFloat32Array = PackedFloat32Array()
 @export var body_color: Color = Color(0.95, 0.4, 0.55)
 @export var jump_velocity: float = 6.2
 @export var look_ahead: float = 1.8
+## En circuitos que giran sobre sí mismos hay que corregir el rumbo contra la
+## propia ruta, no contra el eje X, porque la pista ya no está centrada en x=0.
+@export var path_corridor: bool = false
 
 var _index: int = 0
 var _speed: float = 5.5
@@ -80,6 +104,10 @@ var _lane: float = 0.0
 var _finished: bool = false
 var _stumble_time: float = 0.0
 var _stumble_cooldown: float = 0.0
+## Frenazo de los hazards (misma regla que el jugador): los bots cruzan los
+## mismos charcos y martillos, así que la carrera no se desequilibra.
+var _slow_timer: float = 0.0
+var _slow_factor: float = 1.0
 var _start_ms: int = 0
 var _jump_cooldown: float = 0.0
 var _jump_request: float = 0.0
@@ -90,7 +118,14 @@ var _progress_time: float = 0.0
 ## Once a bot sees a safe gap in a sweeper/pendulum it commits to crossing.
 var _sweeper_commits: Dictionary = {}
 var _pendulum_commits: Dictionary = {}
+var _rotor_commits: Dictionary = {}
 var _rescue_count: int = 0
+## Caídas al vacío y tramos perdidos por ellas (expuesto para tests).
+var _fall_count: int = 0
+## Veces que un tramo se le ha atragantado y ha habido que empujarlo.
+var _shortcut_count: int = 0
+## Intentos seguidos en el tramo actual, sin alcanzar el checkpoint siguiente.
+var _retries: int = 0
 var _was_on_floor: bool = true
 var _step_timer: float = 0.0
 ## Personaje aleatorio asignado al bot (expuesto para tests).
@@ -99,6 +134,13 @@ var character_id: String = ""
 var _waiting_for_start: bool = true
 var _wait_elapsed: float = 0.0
 var _anim: AnimationPlayer
+## Cadencia a la que debe ir el clip; se interpola para no cortar la zancada.
+var _stride_target: float = 1.0
+## Capa procedural de animación (inclinación al correr, salto recogido).
+var _rig: CharacterRig
+## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
+var _path: Array[Vector3] = []
+var _path_widths: Array[float] = []
 
 @onready var body: MeshInstance3D = $Body
 
@@ -112,22 +154,29 @@ func _ready() -> void:
 	# pendulum heads are most dangerous. The sign gives each bot a side.
 	_lane = randf_range(0.55, 1.0) * (-1.0 if randf() < 0.5 else 1.0)
 	_stumble_cooldown = randf_range(6.0, 12.0)
+	_cache_path()
 	_setup_model()
 
 
-## Elige un personaje al azar del catálogo (los cinco del pack), lo instancia
-## con su escala y esconde las armas. Cada bot tiene su propio AnimationPlayer.
+## Elige un personaje al azar del catálogo y uno de sus dos cuerpos, lo
+## instancia con su escala. Cada bot tiene su propio AnimationPlayer.
 func _setup_model() -> void:
 	# `randf()` (y no `randi()`) para no cambiar la secuencia aleatoria que ya
 	# usan los carriles, las velocidades y los tropiezos de los bots.
 	var index := mini(int(randf() * float(CharacterCatalog.CHARACTERS.size())), CharacterCatalog.CHARACTERS.size() - 1)
 	character_id = String(CharacterCatalog.CHARACTERS[index]["id"])
-	var model := CharacterCatalog.build_model(character_id, "Model")
+	# El cuerpo se sortea con un generador aparte para no mover la secuencia
+	# aleatoria de los carriles, las velocidades y los tropiezos.
+	var body_rng := RandomNumberGenerator.new()
+	body_rng.randomize()
+	var variant := body_rng.randi_range(0, CharacterCatalog.variant_count(character_id) - 1)
+	var model := CharacterCatalog.build_model(character_id, "Model", variant)
 	if model == null:
 		return
 	model.scale *= randf_range(0.95, 1.05)
 	body.add_child(model)
 	_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	_rig = CharacterCatalog.rig_of(model)
 	if _anim:
 		for clip_name in ["Idle", "Walking_A", "Running_A", "Jump_Idle", "Cheer", "Jump_Land"]:
 			var clip := _anim.get_animation(clip_name)
@@ -137,21 +186,47 @@ func _setup_model() -> void:
 
 
 func _play_anim(clip: String, blend: float = 0.15) -> void:
-	if _anim == null or _anim.current_animation == clip:
+	if _anim == null:
 		return
-	_anim.play(clip, blend)
-	_anim.speed_scale = 1.2 if clip == "Running_A" else 1.0
+	if _anim.current_animation != clip:
+		_anim.play(clip, blend)
+	_stride_target = RUN_CLIP_SPEED if clip == "Running_A" else 1.0
 
 
-func _update_animation(walking: bool) -> void:
+## La cadencia persigue su objetivo en vez de cambiar de golpe: entrar y salir
+## de la carrera no corta la zancada del bot.
+func _apply_stride(delta: float) -> void:
+	if _anim == null:
+		return
+	_anim.speed_scale = lerpf(_anim.speed_scale, _stride_target, clampf(STRIDE_BLEND_SPEED * delta, 0.0, 1.0))
+
+
+## En el aire se congela una zancada de la carrera: el pack no trae salto y el
+## idle de pie dejaba al bot tieso. El rig le suma la pose recogida.
+func _play_air_pose(blend: float = 0.1) -> void:
+	if _anim != null:
+		if _anim.current_animation != "Running_A":
+			_anim.play("Running_A", blend)
+		_anim.seek(JUMP_POSE_TIME, true)
+		_anim.speed_scale = 0.0
+		_stride_target = 0.0
+	if _rig:
+		_rig.set_state("jump")
+
+
+func _update_animation(walking: bool, delta: float) -> void:
+	_apply_stride(delta)
+	if not is_on_floor():
+		_play_air_pose()
+		return
 	var clip := "Idle"
 	if _stumble_time > 0.0:
 		clip = "Hit_A"
-	elif not is_on_floor():
-		clip = "Jump_Idle"
 	elif walking:
 		clip = "Running_A"
 	_play_anim(clip)
+	if _rig:
+		_rig.set_state("stun" if _stumble_time > 0.0 else ("run" if walking else "idle"))
 
 
 func _physics_process(delta: float) -> void:
@@ -160,11 +235,12 @@ func _physics_process(delta: float) -> void:
 	if _waiting_for_start and not _wait_for_start(delta):
 		return
 	if global_position.y < respawn_below_y:
-		_rescue()
+		_rescue(true)
 
 	_jump_cooldown = maxf(0.0, _jump_cooldown - delta)
 	_jump_request = maxf(0.0, _jump_request - delta)
 	_tick_stumble(delta)
+	_tick_slow(delta)
 
 	var target := _target_position()
 	var to_target := target - global_position
@@ -190,7 +266,7 @@ func _physics_process(delta: float) -> void:
 		if not _near_cannon() and not _ground_ahead(direction):
 			_jump_request = 0.3
 
-	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed
+	var walk_speed := 0.0 if holding or _stumble_time > 0.0 else _speed * _slow_scale()
 	velocity.x = direction.x * walk_speed + _knockback.x + _external.x
 	velocity.z = direction.z * walk_speed + _knockback.z + _external.z
 	velocity.y += _external.y
@@ -204,15 +280,17 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 		_jump_request = 0.0
 		_jump_cooldown = 0.45
-		_play_anim("Jump_Idle", 0.08)
+		_play_air_pose(0.08)
 		AudioManager.play_sfx_at("jump", global_position, 0.14, -11.0)
 
 	move_and_slide()
 	_face(direction, delta)
-	_update_animation(walk_speed > 0.0 and is_on_floor())
+	_update_animation(walk_speed > 0.0 and is_on_floor(), delta)
 	_update_audio(delta)
 	_tick_progress(delta, flat.length(), holding)
-	if global_position.z <= finish_z:
+	# En una ruta propia la meta es el último waypoint: comprobar Z haría que
+	# un bot terminase al pasar por el punto más bajo de la espiral.
+	if _path.is_empty() and global_position.z <= finish_z:
 		_finish()
 
 
@@ -243,19 +321,48 @@ func _near_cannon() -> bool:
 	return false
 
 
+## Copia la ruta del nivel una sola vez. Si no hay LevelInfo con waypoints,
+## usa la tabla histórica de main.tscn.
+func _cache_path() -> void:
+	_path.clear()
+	_path_widths.clear()
+	if waypoints.is_empty():
+		return
+	for point in waypoints:
+		_path.append(point)
+	for width in lane_widths:
+		_path_widths.append(width)
+
+
+func _path_points() -> Array:
+	return _path if not _path.is_empty() else WAYPOINTS
+
+
+func _path_lane_width(index: int) -> float:
+	if _path_widths.is_empty():
+		if _path.is_empty():
+			return LANE_HALF_WIDTH[mini(index, LANE_HALF_WIDTH.size() - 1)]
+		return 1.5
+	return _path_widths[mini(index, _path_widths.size() - 1)]
+
+
 func _target_position() -> Vector3:
-	var index := mini(_index, WAYPOINTS.size() - 1)
-	var width: float = LANE_HALF_WIDTH[index]
-	return WAYPOINTS[index] + Vector3(_lane * width, 0.0, 0.0)
+	var points := _path_points()
+	var index := mini(_index, points.size() - 1)
+	var width := _path_lane_width(index)
+	return (points[index] as Vector3) + Vector3(_lane * width, 0.0, 0.0)
 
 
 func _advance_waypoint() -> void:
 	_index += 1
-	if _index >= WAYPOINTS.size():
+	if _index >= _path_points().size():
 		_finish()
 		return
 	_best_distance = 9999.0
 	_progress_time = 0.0
+	# Checkpoint nuevo: el tramo queda cerrado y el bot vuelve a tener todos
+	# sus intentos para el siguiente.
+	_retries = 0
 
 
 func _tick_stumble(delta: float) -> void:
@@ -269,6 +376,32 @@ func _tick_stumble(delta: float) -> void:
 	# seconds for no reason.
 	if randf() < 0.35:
 		_stumble_time = randf_range(0.15, 0.35)
+
+
+## Los hazards frenan a los bots igual que al corredor. Se queda el factor más
+## fuerte mientras dura el frenazo, para que una zona suave no anule el golpe
+## de un martillo.
+func slow(duration: float = 0.8, factor: float = 0.6) -> void:
+	var clamped := clampf(factor, 0.2, 1.0)
+	_slow_factor = minf(_slow_factor, clamped) if _slow_timer > 0.0 else clamped
+	_slow_timer = maxf(_slow_timer, duration)
+
+
+func _tick_slow(delta: float) -> void:
+	_slow_timer = maxf(0.0, _slow_timer - delta)
+
+
+func _slow_scale() -> float:
+	return _slow_factor if _slow_timer > 0.0 else 1.0
+
+
+## Para el HUD y los tests.
+func is_slowed() -> bool:
+	return _slow_timer > 0.0
+
+
+func slow_ratio() -> float:
+	return _slow_scale()
 
 
 ## Returns true once the race is running. Until then the bot just stands on
@@ -306,7 +439,7 @@ func _avoidance() -> Vector3:
 		if not (ball is Node3D) or not is_instance_valid(ball):
 			continue
 		var delta: Vector3 = (ball as Node3D).global_position - global_position
-		if delta.z > 1.5 or delta.z < -4.5 or absf(delta.x) > 3.0:
+		if delta.z > 1.5 or delta.z < -4.5 or absf(delta.x) > 3.0 or absf(delta.y) > 4.0:
 			continue
 		var side := signf(global_position.x - (ball as Node3D).global_position.x)
 		if absf(side) < 0.1:
@@ -314,8 +447,13 @@ func _avoidance() -> Vector3:
 		var urgency := 1.0 - clampf(Vector2(delta.x, delta.z).length() / 5.0, 0.0, 1.0)
 		avoid.x += side * (0.8 + urgency * 1.6)
 
-	var corridor: float = LANE_HALF_WIDTH[mini(_index, WAYPOINTS.size() - 1)]
-	if absf(global_position.x) > corridor + 0.8:
+	var corridor := _path_lane_width(mini(_index, _path_points().size() - 1))
+	if path_corridor:
+		var target := _target_position()
+		var to_path := Vector3(target.x - global_position.x, 0.0, target.z - global_position.z)
+		if to_path.length() > corridor + 0.8:
+			avoid += to_path.normalized() * 2.0
+	elif absf(global_position.x) > corridor + 0.8:
 		avoid.x += -signf(global_position.x) * 2.0
 
 	if avoid.length_squared() > 2.25:
@@ -335,7 +473,7 @@ func _should_hold() -> bool:
 		if not (platform is Node3D) or not is_instance_valid(platform):
 			continue
 		var delta: Vector3 = (platform as Node3D).global_position - global_position
-		if absf(delta.x) > 2.5 or delta.z > 0.5 or delta.z < -14.0:
+		if absf(delta.x) > 2.5 or delta.z > 0.5 or delta.z < -14.0 or absf(delta.y) > 2.5:
 			continue
 		var progress := float((platform as Node3D).call("get_progress"))
 		var riding := absf(delta.z) < 2.4 and absf(delta.y) < 1.3 and absf(delta.x) < 2.4
@@ -347,23 +485,12 @@ func _should_hold() -> bool:
 		if not riding and delta.z < -1.2 and progress > 0.15:
 			return true
 
-	# Queue before the cannon while it is on cooldown; otherwise six bots
-	# would follow the first one straight into the gap.
-	for launcher in get_tree().get_nodes_in_group("launchers"):
-		if not (launcher is Node3D) or not is_instance_valid(launcher):
-			continue
-		var delta: Vector3 = (launcher as Node3D).global_position - global_position
-		if delta.z > -0.5 or delta.z < -3.5:
-			continue
-		if not bool((launcher as Node3D).call("is_ready")):
-			return true
-
 	for sweeper in get_tree().get_nodes_in_group("sweepers"):
 		if not (sweeper is Node3D) or not is_instance_valid(sweeper):
 			continue
 		var delta: Vector3 = (sweeper as Node3D).global_position - global_position
 		var id := (sweeper as Node3D).get_instance_id()
-		if delta.z > 1.5 or delta.z < -7.0 or absf(delta.x) > 5.0:
+		if delta.z > 1.5 or delta.z < -7.0 or absf(delta.x) > 5.0 or absf(delta.y) > 3.0:
 			_sweeper_commits.erase(id)
 			continue
 		if delta.z > -0.6:
@@ -377,12 +504,34 @@ func _should_hold() -> bool:
 			return true
 		_sweeper_commits[id] = true
 
+	# Aspas giratorias: el brazo solo deja paso cuando apunta hacia arriba. El
+	# bot espera a media distancia y cruza de una vez, sin saltar (saltar lo
+	# dejaba a merced del brazo en el aire).
+	for rotor in get_tree().get_nodes_in_group("rotors"):
+		if not (rotor is Node3D) or not is_instance_valid(rotor):
+			continue
+		var rotor_node := rotor as Node3D
+		var rotor_delta: Vector3 = rotor_node.global_position - global_position
+		var rotor_id := rotor_node.get_instance_id()
+		if rotor_delta.z > 1.5 or rotor_delta.z < -6.5 or absf(rotor_delta.x) > 3.0 or absf(rotor_delta.y) > 3.0:
+			_rotor_commits.erase(rotor_id)
+			continue
+		if rotor_delta.z > -1.4:
+			_rotor_commits[rotor_id] = true
+			continue
+		if bool(_rotor_commits.get(rotor_id, false)):
+			continue
+		var rotor_body := rotor_node.get_node_or_null("Rotor") as Node3D
+		if rotor_body != null and cos(rotor_body.rotation.z) < 0.45:
+			return true
+		_rotor_commits[rotor_id] = true
+
 	for pendulum in get_tree().get_nodes_in_group("pendulums"):
 		if not (pendulum is Node3D) or not is_instance_valid(pendulum):
 			continue
 		var delta: Vector3 = (pendulum as Node3D).global_position - global_position
 		var id := (pendulum as Node3D).get_instance_id()
-		if delta.z > 1.5 or delta.z < -5.5:
+		if delta.z > 1.5 or delta.z < -5.5 or absf(delta.y) > 3.0:
 			_pendulum_commits.erase(id)
 			continue
 		if delta.z > -0.5:
@@ -436,15 +585,35 @@ func _tick_progress(delta: float, distance: float, holding: bool) -> void:
 		_best_distance = distance
 		_progress_time = 0.0
 	elif _progress_time > 6.0:
-		_rescue()
+		_rescue(false)
 		_progress_time = 0.0
 
 
-func _rescue() -> void:
+## Último checkpoint que el bot ya pisó: el waypoint anterior al que persigue.
+## Si todavía no ha llegado a ninguno es el primero, que está en la salida.
+func _checkpoint_index() -> int:
+	return clampi(_index - 1, 0, _path_points().size() - 1)
+
+
+## Devuelve al bot al último checkpoint que alcanzó, nunca al siguiente: una
+## caída cuesta el tramo entero, igual que al jugador. Solo si el tramo se le
+## atraganta (`MAX_RETRIES` intentos) se le empuja al punto siguiente, para que
+## la carrera no se quede colgada con un bot que nunca aprende a pasarlo.
+func _rescue(from_fall: bool) -> void:
 	_rescue_count += 1
-	print("BOT RESCUE id=%d from=%s wp=%d" % [get_instance_id(), global_position, _index])
-	var target := _target_position()
-	global_position = target + Vector3(randf_range(-0.5, 0.5), 0.7, 0.0)
+	if from_fall:
+		_fall_count += 1
+	_retries += 1
+	var point := _checkpoint_index()
+	_slow_timer = 0.0
+	if _retries >= MAX_RETRIES:
+		_shortcut_count += 1
+		_retries = 0
+		point = mini(point + 1, _path_points().size() - 1)
+	print("BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d" % [
+		get_instance_id(), global_position, _index, point])
+	var target: Vector3 = _path_points()[point]
+	global_position = target + Vector3(0.0, 0.7, 0.0)
 	velocity = Vector3.ZERO
 	_knockback = Vector3.ZERO
 	_external = Vector3.ZERO
@@ -462,6 +631,8 @@ func _finish() -> void:
 	velocity = Vector3.ZERO
 	set_physics_process(false)
 	_play_anim("Cheer", 0.2)
+	if _rig:
+		_rig.set_state("idle")
 	var elapsed := float(Time.get_ticks_msec() - _start_ms) / 1000.0
 	finished.emit(self, elapsed)
 
@@ -473,6 +644,7 @@ func apply_push(force: Vector3) -> void:
 	_knockback += Vector3(force.x, 0.0, force.z).limit_length(6.0)
 	velocity.y = maxf(velocity.y, force.y)
 	_stumble_time = maxf(_stumble_time, 0.25)
+	slow(0.8, 0.6)
 
 
 ## Trampoline launch. Kept explicit so the bot cancels any pending ledge
@@ -493,13 +665,21 @@ func launch(impulse: Vector3) -> void:
 func apply_push_soft(force: Vector3) -> void:
 	_knockback += Vector3(force.x, 0.0, force.z)
 	velocity.y = maxf(velocity.y, force.y)
+	slow(0.6, 0.72)
 
 
+## Empujes externos que van enteros (el balancín, por ejemplo): el bot recibe
+## el mismo deslizamiento que el jugador.
 func add_external_velocity(velocity_delta: Vector3) -> void:
-	# Bots resist wind and belts a little so their path stays viable. Lateral
-	# wind is ignored: they have no dedicated wind compensation and would be
-	# blown off the narrow bridge every single time.
-	_external += Vector3(0.0, velocity_delta.y, velocity_delta.z) * 0.4
+	_external += velocity_delta
+
+
+## El viento entra por su propio canal para que el bot pueda inclinarse hacia
+## él: recibe el empuje entero y devuelve `WIND_LEAN` con su velocidad, igual
+## que un jugador que empuja el stick a contraviento. Con el resto del empuje
+## sigue siendo arrastrado de lado y puede acabar tirándose del puente.
+func add_wind_velocity(push: Vector3) -> void:
+	_external += push + Vector3(-push.x, 0.0, -push.z) * WIND_LEAN
 
 
 ## Deslizamiento del balancín: se aplica entero, como al jugador, para que la
@@ -517,10 +697,6 @@ func is_stunned() -> bool:
 	return _stumble_time > 0.0
 
 
-func is_prone() -> bool:
-	return false
-
-
 ## Exposed for diagnostics/tests.
 func get_lane() -> float:
 	return _lane
@@ -530,6 +706,20 @@ func get_waypoint_index() -> int:
 	return _index
 
 
+func get_waypoint_count() -> int:
+	return _path_points().size()
+
+
 ## Number of times the watchdog had to put the bot back on the course.
 func get_rescue_count() -> int:
 	return _rescue_count
+
+
+## Caídas al vacío del bot.
+func get_fall_count() -> int:
+	return _fall_count
+
+
+## Veces que ha habido que empujarlo hacia delante (último recurso).
+func get_shortcut_count() -> int:
+	return _shortcut_count

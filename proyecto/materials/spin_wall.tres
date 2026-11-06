@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/toy.gdshader" id="1_toy"]
+
+[resource]
+shader = ExtResource("1_toy")
+shader_parameter/base_color = Color(0.04, 0.16, 0.68, 1)
+shader_parameter/rim_color = Color(0.42, 0.78, 1, 1)
+shader_parameter/shadow_tint = Color(0.4, 0.55, 0.95, 1)
+shader_parameter/rim_strength = 0.5
+shader_parameter/rim_power = 2.6
+shader_parameter/emission_strength = 0.05
+shader_parameter/gloss = 0.9
+shader_parameter/gradient_amount = 0.12

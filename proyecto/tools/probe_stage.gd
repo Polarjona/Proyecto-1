@@ -17,8 +17,8 @@ func _run() -> void:
 	var stage := menu.get_node("LobbyStage/SubViewport/Stage") as Node3D
 	for ch in stage.get_children():
 		print("  stage child ", ch.name, " scale ", (ch as Node3D).scale, " pos ", (ch as Node3D).position)
-	print("roster buttons: ", (menu.get_node("CharacterPanel/VBox/Body/Roster") as Control).get_child_count())
-	for row in menu.get_node("CharacterPanel/VBox/Body/Roster").get_children():
+	print("roster buttons: ", (menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster") as Control).get_child_count())
+	for row in menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster").get_children():
 		if row is HBoxContainer:
 			print("  ", row.name, " -> ", (row.get_child(0) as Button).text)
 	quit(0)

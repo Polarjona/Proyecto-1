@@ -45,10 +45,10 @@ void fragment() {
 
 	ALBEDO = color;
 	// Glossy, inflatable plastic: tight specular and a soft fresnel sheen.
-	ROUGHNESS = 0.14;
-	SPECULAR = 0.95;
+	ROUGHNESS = 0.26;
+	SPECULAR = 0.78;
 	float fresnel = pow(1.0 - clamp(dot(n, normalize(VIEW)), 0.0, 1.0), 3.0);
 	EMISSION = accent_color * (lines * 0.25 + sweep * sweep_strength) * glow_strength;
 	EMISSION *= 0.72 + 0.28 * ripple;
-	EMISSION += accent_color * fresnel * 0.22;
+	EMISSION += accent_color * fresnel * 0.12;
 }

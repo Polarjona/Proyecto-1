@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
-radius = 0.28
-height = 1.0
+radius = 0.2
+height = 0.74
 
 [sub_resource type="SphereMesh" id="SphereMesh_dizzy"]
-radius = 0.07
-height = 0.14
+radius = 0.045
+height = 0.09
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dizzy"]
 albedo_color = Color(1, 0.9, 0.3, 1)
@@ -17,8 +17,8 @@ emission = Color(1, 0.8, 0.2, 1)
 emission_energy_multiplier = 1.6
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_shadow"]
-top_radius = 0.4
-bottom_radius = 0.4
+top_radius = 0.3
+bottom_radius = 0.3
 height = 0.02
 radial_segments = 24
 
@@ -35,17 +35,17 @@ albedo_color = Color(0.88, 0.94, 1, 0.3)
 cull_mode = 2
 
 [sub_resource type="SphereMesh" id="SphereMesh_dust"]
-radius = 0.045
-height = 0.09
+radius = 0.03
+height = 0.06
 material = SubResource("StandardMaterial3D_dust")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cam"]
-radius = 0.25
+radius = 0.22
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker"]
 top_radius = 0.0
-bottom_radius = 0.17
-height = 0.28
+bottom_radius = 0.13
+height = 0.21
 radial_segments = 4
 rings = 1
 
@@ -66,13 +66,13 @@ floor_snap_length = 0.35
 script = ExtResource("1_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, 0)
 shape = SubResource("CapsuleShape3D_body")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
 [node name="Marker" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.72, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.32, 0)
 
 [node name="Arrow" type="MeshInstance3D" parent="Marker"]
 transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0)
@@ -81,21 +81,21 @@ material_override = SubResource("StandardMaterial3D_marker")
 cast_shadow = 0
 
 [node name="Dizzy" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.24, 0)
 visible = false
 
 [node name="StarA" type="MeshInstance3D" parent="Dizzy"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 0, 0)
 mesh = SubResource("SphereMesh_dizzy")
 surface_material_override/0 = SubResource("StandardMaterial3D_dizzy")
 
 [node name="StarB" type="MeshInstance3D" parent="Dizzy"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.03, 0.33)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.02, 0.21)
 mesh = SubResource("SphereMesh_dizzy")
 surface_material_override/0 = SubResource("StandardMaterial3D_dizzy")
 
 [node name="StarC" type="MeshInstance3D" parent="Dizzy"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.03, -0.33)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.02, -0.21)
 mesh = SubResource("SphereMesh_dizzy")
 surface_material_override/0 = SubResource("StandardMaterial3D_dizzy")
 
@@ -105,7 +105,7 @@ material_override = SubResource("StandardMaterial3D_shadow")
 cast_shadow = 0
 
 [node name="Dust" type="CPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 emitting = false
 amount = 18
 lifetime = 0.45
@@ -120,17 +120,17 @@ scale_amount_max = 1.0
 color = Color(1, 1, 1, 0.4)
 
 [node name="CameraPivot" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
 transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0)
 shape = SubResource("SphereShape3D_cam")
-spring_length = 4.7
+spring_length = 5.6
 margin = 0.2
 collision_mask = 1
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.6)
 current = true
 fov = 55.0
 near = 0.05

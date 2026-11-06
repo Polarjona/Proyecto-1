@@ -1,0 +1,25 @@
+Ultimate Animated Character Pack (los 20 cuerpos de assets/characters/ultimate)
+
+- Author: Quaternius — https://quaternius.com
+- Pack: https://quaternius.com/packs/ultimatedanimatedcharacter.html
+- License: CC0 / Public Domain (the pack is published as CC0 by its author).
+- Download used: the copy Quaternius published on OpenGameArt
+  (https://opengameart.org/content/animated-characters-pack,
+  ultimate_animated_character_pack_by_quaternius.zip), because the Google Drive
+  folder linked from his site was over its download quota.
+- The zip only ships FBX/OBJ/Blend. The files here are the FBX models converted
+  to binary glTF with FBX2glTF 0.9.7 (`-b`), one file per body. Geometry,
+  materials and the eleven animation takes are unchanged; only the container
+  format differs so Godot can import them directly.
+
+Bodies included (10 characters, male and female each):
+
+  chef_male / chef_female                    worker_male / worker_female
+  cowboy_male / cowboy_female                ninja_male / ninja_female
+  pirate_male / pirate_female                viking_male / viking_female
+  kimono_male / kimono_female                soldier_male / soldier_female
+  suit_male / suit_female                    knight_golden_male / knight_golden_female
+
+Quaternius releases his 3D packs as CC0, so they can be used, modified and
+redistributed in this project. Crediting him is not required, but it is done
+anyway in the repository README.

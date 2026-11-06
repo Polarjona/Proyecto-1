@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://m8h3qvxjkxmy"]
+[gd_scene load_steps=30 format=3 uid="uid://m8h3qvxjkxmy"]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
@@ -13,7 +13,7 @@ variation_opentype = {
 
 [sub_resource type="Gradient" id="Gradient_bg"]
 offsets = PackedFloat32Array(0, 0.4, 0.72, 1)
-colors = PackedColorArray(1, 0.176, 0.608, 1, 0.765, 0.157, 1, 1, 0.427, 0.161, 1, 1, 0, 0.82, 1, 1)
+colors = PackedColorArray(0.36, 0.28, 0.46, 1, 0.5, 0.36, 0.52, 1, 0.74, 0.46, 0.44, 1, 0.93, 0.75, 0.55, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
 gradient = SubResource("Gradient_bg")
@@ -350,8 +350,6 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 12
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_character"]
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_cushion"]
 top_radius = 1.02
 bottom_radius = 1.1
@@ -379,6 +377,8 @@ roughness = 0.4
 emission_enabled = true
 emission = Color(0, 0.7, 1, 1)
 emission_energy_multiplier = 0.5
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_levels"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -428,12 +428,12 @@ theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="TopBar/HBox/Logo"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0.102, 0, 0.169, 1)
-theme_override_constants/outline_size = 12
+theme_override_colors/font_color = Color(0.98, 0.89, 0.68, 1)
+theme_override_colors/font_outline_color = Color(0.17, 0.09, 0.15, 1)
+theme_override_colors/font_shadow_color = Color(0.09, 0.04, 0.09, 0.55)
+theme_override_constants/outline_size = 7
 theme_override_constants/shadow_offset_x = 0
-theme_override_constants/shadow_offset_y = 6
+theme_override_constants/shadow_offset_y = 4
 theme_override_font_sizes/font_size = 38
 text = "TUMBLE RUSH"
 
@@ -654,19 +654,19 @@ far = 20.0
 [node name="KeyLight" type="DirectionalLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
 light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.6
+light_energy = 0.85
 shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.6, 2.4)
-light_color = Color(0.72, 0.92, 1, 1)
-light_energy = 2.2
+light_color = Color(0.72, 0.86, 0.98, 1)
+light_energy = 0.8
 omni_range = 7.0
 
 [node name="RimLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 2.0, -1.6)
-light_color = Color(1, 0.7, 0.74, 1)
-light_energy = 2.4
+light_color = Color(1, 0.84, 0.82, 1)
+light_energy = 0.75
 omni_range = 7.0
 
 [node name="PlayerBadge" type="PanelContainer" parent="."]
@@ -702,7 +702,7 @@ theme_override_constants/separation = 0
 layout_mode = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 1)
 theme_override_font_sizes/font_size = 19
-text = "Chispa"
+text = "Chef"
 
 [node name="PlayerTagLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
 layout_mode = 2
@@ -784,9 +784,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = -226.0
+offset_top = -262.0
 offset_right = 340.0
-offset_bottom = 226.0
+offset_bottom = 262.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -863,7 +863,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Todo el circuito contra el cronómetro. Persigue tu récord y las medallas."
+text = "Los cuatro circuitos, contra el cronómetro. Persigue tu récord y las medallas."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/ClassicCard"]
@@ -882,6 +882,71 @@ theme_override_font_sizes/font_size = 15
 text = "SOLO"
 horizontal_alignment = 2
 vertical_alignment = 1
+
+[node name="LevelPicker" type="VBoxContainer" parent="ModePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LevelLabel" type="Label" parent="ModePanel/VBox/LevelPicker"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_font_sizes/font_size = 13
+text = "CIRCUITO DE LA CARRERA CLÁSICA"
+
+[node name="LevelRow" type="HBoxContainer" parent="ModePanel/VBox/LevelPicker"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Level1" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+button_pressed = true
+theme_override_font_sizes/font_size = 15
+text = "Pivot Push"
+
+[node name="Level2" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Spin Go Round"
+
+[node name="Level3" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Glacier Gallop"
+
+[node name="Level4" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 15
+text = "Lava Vortex"
+
+[node name="Level5" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_levels")
+theme_override_font_sizes/font_size = 14
+text = "Abyss Run"
 
 [node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
@@ -924,7 +989,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Rondas contra 7 bots. Clasifícate en el top 3 y sube de ronda."
+text = "4 rondas, 4 circuitos. Clasifícate en el top 3 y llega a la final."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/TournamentCard"]
@@ -940,7 +1005,7 @@ grow_horizontal = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.792, 0.267, 0.2, 1)
 theme_override_font_sizes/font_size = 15
-text = "+ BOTS"
+text = "4 RONDAS"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -948,7 +1013,7 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 12
-text = "Cada modo guarda tu récord y reparte monedas según tiempo y puesto."
+text = "El torneo recorre los cuatro circuitos en orden. Cada modo guarda su récord y reparte monedas."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -1010,132 +1075,23 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body"]
+[node name="RosterScroll" type="ScrollContainer" parent="CharacterPanel/VBox/Body"]
 custom_minimum_size = Vector2(352, 0)
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="RogueRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="RogueButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
-custom_minimum_size = Vector2(0, 54)
+[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll"]
+custom_minimum_size = Vector2(352, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-toggle_mode = true
-button_pressed = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Chispa"
-alignment = 0
-
-[node name="RogueStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/RogueRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.016, 0.478, 0.322, 1)
-theme_override_font_sizes/font_size = 12
-text = "ELEGIDO"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="HoodedRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HoodedButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Uva"
-alignment = 0
-
-[node name="HoodedStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/HoodedRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "100"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="KnightRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="KnightButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Robot"
-alignment = 0
-
-[node name="KnightStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/KnightRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "200"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="MageRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="MageButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Tornillo"
-alignment = 0
-
-[node name="MageStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/MageRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "300"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="BarbarianRow" type="HBoxContainer" parent="CharacterPanel/VBox/Body/Roster"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="BarbarianButton" type="Button" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("ButtonGroup_character")
-theme_override_font_sizes/font_size = 17
-text = "Jefe"
-alignment = 0
-
-[node name="BarbarianStatus" type="Label" parent="CharacterPanel/VBox/Body/Roster/BarbarianRow"]
-custom_minimum_size = Vector2(104, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.451, 0.027, 1)
-theme_override_font_sizes/font_size = 12
-text = "500"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/Roster"]
+[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
 theme_override_font_sizes/font_size = 12
@@ -1186,26 +1142,26 @@ far = 20.0
 [node name="KeyLight" type="DirectionalLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 0.643, -0.766, 0, 0.766, 0.643, 0, 3, 3)
 light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.6
+light_energy = 0.85
 shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.4, 2.4)
 light_color = Color(0.65, 0.85, 1, 1)
-light_energy = 2.2
+light_energy = 0.75
 omni_range = 6.0
 
 [node name="RimLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.9, -1.6)
-light_color = Color(1, 0.68, 0.8, 1)
-light_energy = 2.6
+light_color = Color(1, 0.84, 0.86, 1)
+light_energy = 0.8
 omni_range = 6.0
 
 [node name="SelectedCharacterLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
 theme_override_font_sizes/font_size = 23
-text = "Chispa"
+text = "Chef"
 horizontal_alignment = 1
 
 [node name="PriceLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
@@ -1262,11 +1218,6 @@ text = "Moverte:  W A S D  o  flechas"
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Saltar:  Espacio  (mantén para saltar más alto)"
-
-[node name="DiveLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "Dive:  Shift  (lanzamiento corto y deslizamiento)"
 
 [node name="PauseLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2

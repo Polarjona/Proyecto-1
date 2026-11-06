@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/hazard_stripes.gdshader" id="1_hazard"]
+
+[resource]
+shader = ExtResource("1_hazard")
+shader_parameter/color_a = Color(1, 0.4, 0.03, 1)
+shader_parameter/color_b = Color(1, 0.94, 0.74, 1)
+shader_parameter/stripe_width = 0.5
+shader_parameter/angle = 0.785
+shader_parameter/emission_strength = 0.16

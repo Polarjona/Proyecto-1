@@ -12,8 +12,42 @@ proyecto/exports/
 
 .freebuff/
 
+# Herramientas locales (no forman parte del juego)
+.tools/
+.agents/
+skills-lock.json
+
+# Datos de usuario y artefactos de ejecución
+*.save
+profile.json
+*.log
+*.tmp
+*.bak
+
+.obsidian/
+
 .DS_Store
 Thumbs.db
 desktop.ini
 *.swp
 *~
+
+# Vault sensible
+# Notas con secretos, rutas locales, credenciales, datos personales, sesiones, claves de API o tokens.
+# No subir archivos de configuración privada, navegadores o cualquier dato que no sea de conocimiento público.
+*_secreto*/*
+*_privado*/*
+secrets*/*
+secrets*.*
+*.secret*
+*.credentials*
+*.token*
+*.key*
+*.pem
+*.env*
+.env*
+credentials*
+-secrets*/*
+privado*/*
+_key*/*
+

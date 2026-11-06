@@ -13,7 +13,6 @@ Salidas:
     audio/sfx/checkpoint.wav
     audio/sfx/finish.wav
     audio/sfx/fall.wav
-    audio/sfx/dive.wav
     audio/sfx/land.wav
     audio/sfx/impact.wav
     audio/sfx/coin.wav
@@ -283,24 +282,6 @@ def sfx_fall():
         phase += (660.0 * math.exp(-2.3 * t) + 70.0) / SR
         env = math.sin(math.pi * min(1.0, t * 1.18)) ** 0.7
         out[i] = (y * 1.6 + math.sin(2.0 * math.pi * phase) * 0.35) * env
-    return out
-
-
-def sfx_dive():
-    """Whoosh corto con caída de tono para el dive."""
-    dur = 0.28
-    n = int(dur * SR)
-    out = _empty(n)
-    y = 0.0
-    phase = 0.0
-    for i in range(n):
-        t = i / n
-        fc = 2600.0 * math.exp(-4.0 * t) + 320.0
-        alpha = 1.0 - math.exp(-2.0 * math.pi * fc / SR)
-        y += alpha * (random.uniform(-1.0, 1.0) - y)
-        phase += (430.0 * math.exp(-3.0 * t) + 95.0) / SR
-        env = math.sin(math.pi * min(1.0, t * 1.2)) ** 0.6
-        out[i] = (y * 1.2 + math.sin(2.0 * math.pi * phase) * 0.25) * env
     return out
 
 
@@ -604,7 +585,6 @@ def main():
     write_wav(SFX_DIR / "checkpoint.wav", sfx_checkpoint(), peak=0.92)
     write_wav(SFX_DIR / "finish.wav", sfx_finish(), peak=0.95)
     write_wav(SFX_DIR / "fall.wav", sfx_fall(), peak=0.90)
-    write_wav(SFX_DIR / "dive.wav", sfx_dive(), peak=0.85)
     write_wav(SFX_DIR / "land.wav", sfx_land(), peak=0.86)
     write_wav(SFX_DIR / "impact.wav", sfx_impact(), peak=0.9)
     write_wav(SFX_DIR / "coin.wav", sfx_coin(), peak=0.9)
