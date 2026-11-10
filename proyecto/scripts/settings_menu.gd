@@ -3,14 +3,14 @@ extends CanvasLayer
 ## Ajustes persistentes: volumen de música/SFX, intensidad de sacudida y
 ## pantalla completa. Se puede abrir desde el menú y desde la pausa.
 
-@onready var music_slider: HSlider = $Panel/VBox/MusicSlider
-@onready var sfx_slider: HSlider = $Panel/VBox/SfxSlider
-@onready var shake_slider: HSlider = $Panel/VBox/ShakeSlider
-@onready var sens_slider: HSlider = $Panel/VBox/SensSlider
-@onready var music_value: Label = $Panel/VBox/MusicValue
-@onready var sfx_value: Label = $Panel/VBox/SfxValue
-@onready var shake_value: Label = $Panel/VBox/ShakeValue
-@onready var sens_value: Label = $Panel/VBox/SensValue
+@onready var music_slider: HSlider = $Panel/VBox/MusicRow/MusicSlider
+@onready var sfx_slider: HSlider = $Panel/VBox/SfxRow/SfxSlider
+@onready var shake_slider: HSlider = $Panel/VBox/ShakeRow/ShakeSlider
+@onready var sens_slider: HSlider = $Panel/VBox/SensRow/SensSlider
+@onready var music_value: Label = $Panel/VBox/MusicRow/MusicValue
+@onready var sfx_value: Label = $Panel/VBox/SfxRow/SfxValue
+@onready var shake_value: Label = $Panel/VBox/ShakeRow/ShakeValue
+@onready var sens_value: Label = $Panel/VBox/SensRow/SensValue
 @onready var fullscreen_check: Button = $Panel/VBox/FullscreenCheck
 @onready var back_button: Button = $Panel/VBox/BackButton
 
@@ -18,6 +18,7 @@ extends CanvasLayer
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 20
+	UITheme.apply($Panel)
 	hide()
 	music_slider.value_changed.connect(_on_music_changed)
 	sfx_slider.value_changed.connect(_on_sfx_changed)

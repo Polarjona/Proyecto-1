@@ -12,6 +12,7 @@ extends CanvasLayer
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	UITheme.apply($PanelContainer)
 	add_to_group("pause_menu")
 	_connect_buttons()
 	hide()
@@ -28,6 +29,9 @@ func _connect_buttons() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	# PROCESS_MODE_ALWAYS: receives input even while the tree is paused.
 	if event.is_action_pressed("pause"):
+		var hud := get_tree().get_first_node_in_group("hud")
+		if hud != null and hud.has_method("is_tutorial_open") and hud.is_tutorial_open():
+			return
 		get_viewport().set_input_as_handled()
 		if visible:
 			hide_menu()
@@ -41,10 +45,12 @@ func _on_resume_pressed() -> void:
 
 
 func _on_checkpoint_pressed() -> void:
+	var manager := get_tree().get_first_node_in_group("race_manager")
+	if not _checkpoint_available(manager):
+		return
 	AudioManager.play_sfx("ui", 0.05)
 	hide_menu()
-	var manager := get_tree().get_first_node_in_group("race_manager")
-	if manager and manager.has_method("respawn_player"):
+	if manager.has_method("respawn_player"):
 		manager.respawn_player()
 
 
@@ -69,6 +75,12 @@ func _on_main_menu_pressed() -> void:
 func show_menu() -> void:
 	if visible:
 		return
+	# Sin checkpoints (Lava Vortex) el botón no puede hacer nada: se oculta en
+	# vez de dejar un botón muerto.
+	var manager := get_tree().get_first_node_in_group("race_manager")
+	var can_checkpoint := _checkpoint_available(manager)
+	checkpoint_button.visible = can_checkpoint
+	checkpoint_button.disabled = not can_checkpoint
 	show()
 	get_tree().paused = true
 	# Con la pausa el cursor vuelve a verse para poder pulsar los botones.
@@ -84,3 +96,9 @@ func hide_menu() -> void:
 	get_tree().paused = false
 	# Al volver a la carrera el ratón queda bloqueado otra vez para la cámara.
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _checkpoint_available(manager: Node) -> bool:
+	return (manager != null
+		and int(manager.get("checkpoints_total")) > 0
+		and bool(manager.get("has_checkpoint")))
