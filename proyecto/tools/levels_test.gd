@@ -19,6 +19,33 @@ func _check(condition: bool, label: String) -> void:
 		_failures += 1
 
 
+func _check_pause_checkpoint(expected: bool, label: String) -> void:
+	var pause := get_first_node_in_group("pause_menu")
+	_check(pause != null, label)
+	if pause == null:
+		return
+	pause.call("show_menu")
+	var button := pause.get_node_or_null("PanelContainer/VBoxContainer/CheckpointButton") as Button
+	_check(button != null and button.visible == expected, label)
+	pause.call("hide_menu")
+
+
+func _check_tutorial_blocks_pause() -> void:
+	var hud := get_first_node_in_group("hud")
+	var pause := get_first_node_in_group("pause_menu")
+	_check(hud != null and pause != null, "HUD y pausa disponibles para probar el tutorial")
+	if hud == null or pause == null:
+		return
+	var tutorial := hud.get_node("Root/TutorialPanel") as Control
+	tutorial.show()
+	var event := InputEventAction.new()
+	event.action = "pause"
+	event.pressed = true
+	pause.call("_unhandled_input", event)
+	_check(not pause.visible, "El tutorial bloquea la apertura de la pausa")
+	tutorial.hide()
+
+
 func _run() -> void:
 	# Espera a que los autoloads existan antes de cargar escenas con scripts
 	# que usan AudioManager, SaveManager, etc.
@@ -123,12 +150,13 @@ func _run() -> void:
 			_check(course.get_node_or_null("ChimneyBridge") != null
 				and get_nodes_in_group("rotors").size() == 3,
 				"Pivot Push tiene el puente de las aspas")
-			_check(get_nodes_in_group("spike_traps").size() == 14,
-				"Pivot Push tiene sus catorce trampas de pinchos")
+			_check(get_nodes_in_group("spike_traps").size() == 12,
+				"Pivot Push tiene sus doce trampas de pinchos")
 			_check(course.get_node_or_null("ForgeSummit") != null
 				and course.get_node_or_null("ForgeDrop") != null
 				and course.get_node_or_null("ForgePlaza") != null,
 				"Pivot Push sube a la cima y baja a la meta")
+			_check_pause_checkpoint(true, "Pivot Push ofrece reiniciar desde checkpoint")
 		elif i == 1:
 			_check(course.get_node_or_null("SweeperA") != null,
 				"Spin Go Round tiene barridos")
@@ -148,8 +176,8 @@ func _run() -> void:
 			_check(get_nodes_in_group("crumble_tiles").size() == 12,
 				"Spin Go Round tiene el puente de 12 losas frágiles")
 			_check(course.get_node_or_null("BoulderDeck") != null
-				and get_nodes_in_group("boulders").size() == 3,
-				"Spin Go Round tiene el descenso de rocas")
+				and get_nodes_in_group("boulders").size() == 4,
+				"Spin Go Round tiene el descenso de cuatro rocas")
 			_check(course.get_node_or_null("SpikeDeck") != null
 				and get_nodes_in_group("spike_traps").size() == 16,
 				"Spin Go Round tiene la galería de 16 pinchos")
@@ -162,9 +190,6 @@ func _run() -> void:
 		elif i == 2:
 			_check(course.get_node_or_null("IceLift") != null,
 				"Glacier Gallop tiene la plataforma móvil del lago")
-			_check(course.get_node_or_null("Centrifuge") != null
-				and course.get_node_or_null("BallRain") != null,
-				"Glacier Gallop tiene la arena giratoria con lluvia de bolas")
 			_check(course.get_node_or_null("BallRain0") != null
 				and course.get_node_or_null("BallRain17") != null,
 				"Glacier Gallop reparte dieciocho lanzadores de bolas")
@@ -208,8 +233,10 @@ func _run() -> void:
 				"Lava Vortex termina en la plataforma de la cumbre")
 			_check(get_nodes_in_group("checkpoints").is_empty(),
 				"Lava Vortex no tiene checkpoints: la lava termina la carrera")
-			_check(get_nodes_in_group("ball_droppers").size() >= 4,
-				"Lava Vortex añade lluvia de bolas a la espiral")
+			_check(get_nodes_in_group("ball_droppers").size() == 3,
+				"Lava Vortex añade tres lanzadores de bolas a la espiral")
+			_check_pause_checkpoint(false, "Lava Vortex no ofrece checkpoint en pausa")
+			_check_tutorial_blocks_pause()
 
 		if i < 2:
 			var arena := level.get_node_or_null("ArenaDecor") as Node3D

@@ -27,6 +27,7 @@ const FINISH_Z := -205.0
 @onready var menu_button: Button = $Root/ResultsPanel/VBox/Buttons/MenuButton
 @onready var tutorial_panel: PanelContainer = $Root/TutorialPanel
 @onready var tutorial_button: Button = $Root/TutorialPanel/VBox/TutorialButton
+@onready var scrim: ColorRect = $Root/Scrim
 
 var _manager: Node
 var _director: Node
@@ -37,18 +38,24 @@ var _finish_z: float = FINISH_Z
 var _results_shown: bool = false
 var _qualified: bool = true
 var _headless: bool = false
+var _tutorial_paused: bool = false
 
 
 func _ready() -> void:
 	_headless = DisplayServer.get_name() == "headless"
+	add_to_group("hud")
+	UITheme.apply($Root)
 	message_label.text = ""
 	checkpoints_label.text = "0/0"
+	checkpoints_label.visible = false
 	best_time_label.text = "Récord: --"
-	medal_label.text = "Oro ≤ %.1f s" % SaveManager.medal_target("gold")
+	medal_label.text = "Oro ≤ --"
 	rank_label.text = ""
 	results_panel.hide()
+	scrim.hide()
 	countdown_label.hide()
 	tutorial_panel.hide()
+	tutorial_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	progress_bar.value = 0.0
 	retry_button.pressed.connect(_on_retry_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
@@ -67,7 +74,7 @@ func _ready() -> void:
 	_connect_manager()
 	_connect_director()
 	if not _headless and not SaveManager.has_seen_tutorial():
-		tutorial_panel.show()
+		_show_tutorial()
 
 
 func _process(delta: float) -> void:
@@ -193,21 +200,21 @@ func _on_countdown_tick(value: int) -> void:
 
 func _on_rank_updated(rank: int, total: int) -> void:
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · Puesto %d/%d" % [
+		rank_label.text = "Ronda %d/%d · %d.º/%d" % [
 			GameSession.round, GameSession.total_rounds(), rank, total]
 	else:
-		rank_label.text = "Puesto %d/%d" % [rank, total]
+		rank_label.text = "%d.º/%d" % [rank, total]
 
 
 func _on_qualification_result(qualified: bool, rank: int, qualifiers: int) -> void:
 	_qualified = qualified
 	var total := int(_director.total_racers if _director else 0)
+	var state := "CLASIFICADO" if qualified else "ELIMINADO"
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · Puesto %d/%d  ·  %s" % [
-			GameSession.round, GameSession.total_rounds(), rank, total,
-			"CLASIFICADO" if qualified else "ELIMINADO"]
+		rank_label.text = "Ronda %d/%d · %d.º/%d · %s" % [
+			GameSession.round, GameSession.total_rounds(), rank, total, state]
 	else:
-		rank_label.text = "Puesto %d/%d  ·  %s" % [rank, total, "CLASIFICADO" if qualified else "ELIMINADO"]
+		rank_label.text = "%d.º/%d · %s" % [rank, total, state]
 	if results_rank:
 		results_rank.text = "Puesto %d de %d · clasifican %d" % [rank, total, qualifiers]
 
@@ -231,8 +238,9 @@ func _on_results_ready(data: Dictionary) -> void:
 	results_medal.modulate = _medal_color(medal)
 
 	var falls := int(data.get("falls", 0))
-	results_coins.text = "+%d monedas (total %d)   ·   %d caída(s)" % [
-		int(data.get("coins", 0)), int(data.get("coins_total", 0)), falls
+	var fall_text := "sin caídas" if falls == 0 else ("1 caída" if falls == 1 else "%d caídas" % falls)
+	results_coins.text = "+%d monedas (total %d) · %s" % [
+		int(data.get("coins", 0)), int(data.get("coins_total", 0)), fall_text
 	]
 	if results_coin_breakdown != null:
 		var breakdown: Dictionary = data.get("coins_breakdown", {})
@@ -275,6 +283,7 @@ func _on_results_ready(data: Dictionary) -> void:
 	# La carrera termina: suena la fanfarria de meta mientras se lee el
 	# resultado. Cambiar de escena o reintentar la corta.
 	AudioManager.play_victory()
+	scrim.show()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
@@ -303,6 +312,7 @@ func _on_failed(reason: String) -> void:
 	retry_button.visible = false
 	next_round_button.visible = false
 	menu_button.text = "VOLVER AL LOBBY"
+	scrim.show()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
@@ -343,10 +353,30 @@ func _medal_color(medal: String) -> Color:
 			return Color(0.75, 0.78, 0.85)
 
 
+## El tutorial se lee con el juego congelado: antes corría el cronómetro y el
+## panel tapaba la salida. Al cerrarlo se devuelve el control al jugador.
+func _show_tutorial() -> void:
+	scrim.show()
+	tutorial_panel.show()
+	get_tree().paused = true
+	_tutorial_paused = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	tutorial_button.grab_focus()
+
+
+func is_tutorial_open() -> bool:
+	return tutorial_panel.visible
+
+
 func _on_tutorial_closed() -> void:
 	SaveManager.mark_tutorial_seen()
 	AudioManager.play_sfx("ui", 0.05)
 	tutorial_panel.hide()
+	scrim.hide()
+	if _tutorial_paused:
+		_tutorial_paused = false
+		get_tree().paused = false
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 func _on_retry_pressed() -> void:

@@ -23,6 +23,7 @@ GameSession="*res://scripts/game_session.gd"
 GameFeel="*res://scripts/game_feel.gd"
 AudioManager="*res://scripts/audio_manager.gd"
 TransitionManager="*res://scripts/transition_manager.gd"
+UITheme="*res://scripts/ui_theme.gd"
 
 [display]
 

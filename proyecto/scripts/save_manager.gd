@@ -370,7 +370,7 @@ func coin_reward(time: float, medal: String, position: int = 0, bronze_time: flo
 
 
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
-## `level_id` separa los records de los cuatro circuitos; los tiempos de medalla
+## `level_id` separa los records de los cinco circuitos; los tiempos de medalla
 ## y la moneda por tiempo se calculan con los del nivel.
 func register_finish(time: float, falls: int, splits: Array, position: int = 0,
 		level_id: String = "", gold: float = MEDAL_GOLD,
