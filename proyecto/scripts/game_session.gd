@@ -32,6 +32,8 @@ const LEVEL_MEDALS := [
 	{"gold": 112.0, "silver": 138.0, "bronze": 172.0},
 ]
 const TOTAL_ROUNDS := 4
+## Plazas que clasifican en cada ronda: 3 → 3 → 2 → 1.
+const QUALIFIERS_BY_ROUND := [3, 3, 2, 1]
 
 var mode: String = "classic"
 var round: int = 1
@@ -106,7 +108,7 @@ func advance_round() -> void:
 		return
 	round += 1
 	bot_count = mini(bot_count + 1, 11)
-	qualifiers = maxi(1, 3 - int((round - 1) / 2))
+	qualifiers = QUALIFIERS_BY_ROUND[clampi(round - 1, 0, QUALIFIERS_BY_ROUND.size() - 1)]
 	level_path = LEVELS[clampi(round - 1, 0, LEVELS.size() - 1)]
 	mode_changed.emit(mode)
 

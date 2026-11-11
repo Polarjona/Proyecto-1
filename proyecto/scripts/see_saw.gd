@@ -131,7 +131,7 @@ func _rider_bodies() -> Array[Node3D]:
 	var riders: Array[Node3D] = []
 	for group in ["player", "bot"]:
 		for body in get_tree().get_nodes_in_group(group):
-			if not (body is Node3D) or not is_instance_valid(body):
+			if not is_instance_valid(body) or not (body is Node3D):
 				continue
 			# Only grounded riders tip the deck: a body still jumping towards the
 			# board would otherwise make it drop before it can land on the edge.

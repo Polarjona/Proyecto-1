@@ -29,7 +29,7 @@ const FINISH_Z := -205.0
 @onready var tutorial_button: Button = $Root/TutorialPanel/VBox/TutorialButton
 @onready var scrim: ColorRect = $Root/Scrim
 
-var _manager: Node
+var _manager: RaceManager
 var _director: Node
 var _player: Node3D
 var _level_info: LevelInfo
@@ -63,7 +63,7 @@ func _ready() -> void:
 	tutorial_button.pressed.connect(_on_tutorial_closed)
 
 	await get_tree().process_frame
-	_manager = get_tree().get_first_node_in_group("race_manager")
+	_manager = get_tree().get_first_node_in_group("race_manager") as RaceManager
 	_director = get_tree().get_first_node_in_group("race_director")
 	_player = get_tree().get_first_node_in_group("player") as Node3D
 	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
@@ -90,30 +90,20 @@ func _process(delta: float) -> void:
 func _connect_manager() -> void:
 	if _manager == null:
 		return
-	if _manager.has_signal("time_updated"):
-		_manager.time_updated.connect(_on_time_updated)
-	if _manager.has_signal("finished"):
-		_manager.finished.connect(_on_finished)
-	if _manager.has_signal("respawned"):
-		_manager.respawned.connect(_on_respawned)
-	if _manager.has_signal("checkpoint_reached"):
-		_manager.checkpoint_reached.connect(_on_checkpoint)
-	if _manager.has_signal("checkpoints_updated"):
-		_manager.checkpoints_updated.connect(_on_checkpoints_updated)
-	if _manager.has_signal("best_time_updated"):
-		_manager.best_time_updated.connect(_on_best_time_updated)
-	if _manager.has_signal("split_reached"):
-		_manager.split_reached.connect(_on_split)
-	if _manager.has_signal("countdown_tick"):
-		_manager.countdown_tick.connect(_on_countdown_tick)
-	if _manager.has_signal("results_ready"):
-		_manager.results_ready.connect(_on_results_ready)
-	if _manager.has_signal("failed"):
-		_manager.failed.connect(_on_failed)
+	_manager.time_updated.connect(_on_time_updated)
+	_manager.finished.connect(_on_finished)
+	_manager.respawned.connect(_on_respawned)
+	_manager.checkpoint_reached.connect(_on_checkpoint)
+	_manager.checkpoints_updated.connect(_on_checkpoints_updated)
+	_manager.best_time_updated.connect(_on_best_time_updated)
+	_manager.split_reached.connect(_on_split)
+	_manager.countdown_tick.connect(_on_countdown_tick)
+	_manager.results_ready.connect(_on_results_ready)
+	_manager.failed.connect(_on_failed)
 	# Sync state emitted before the HUD connected.
-	if "best_time" in _manager and _manager.best_time > 0.0:
+	if _manager.best_time > 0.0:
 		_on_best_time_updated(_manager.best_time)
-	if "checkpoints_total" in _manager and _manager.checkpoints_total > 0:
+	if _manager.checkpoints_total > 0:
 		_on_checkpoints_updated(_manager.checkpoints_completed, _manager.checkpoints_total)
 
 
@@ -302,14 +292,15 @@ func _on_failed(reason: String) -> void:
 	results_title.modulate = Color(1.0, 0.42, 0.34)
 	results_time.text = "La lava te alcanzó" if reason == "lava" else "Caíste al vacío"
 	results_time.modulate = Color(1.0, 1.0, 1.0, 0.92)
-	var elapsed := float(_manager.get("elapsed_time")) if _manager != null else 0.0
+	var elapsed := _manager.elapsed_time if _manager != null else 0.0
 	results_best.text = "Tiempo: %.2f s" % elapsed
 	results_medal.text = ""
-	results_rank.text = "Vuelve al lobby para volver a intentarlo."
+	results_rank.text = "Pulsa REINTENTAR para volver a la salida."
 	results_coins.text = ""
 	results_coin_breakdown.text = ""
 	results_coin_breakdown.visible = false
-	retry_button.visible = false
+	# Perder no debe costar volver a navegar el menu: se puede reintentar en el sitio.
+	retry_button.visible = true
 	next_round_button.visible = false
 	menu_button.text = "VOLVER AL LOBBY"
 	scrim.show()

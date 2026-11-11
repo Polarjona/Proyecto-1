@@ -113,5 +113,9 @@ func _run() -> void:
 	_check(manager.elapsed_time >= penalty_before + manager.time_penalty - 0.5,
 		"La caída aplica la penalización de +%.1f s" % manager.time_penalty)
 
+	if is_instance_valid(race):
+		root.remove_child(race)
+		race.free()
+		await process_frame
 	print("RESULT: %s" % ("TODO OK" if _failures == 0 else "%d FALLOS" % _failures))
 	quit(1 if _failures > 0 else 0)

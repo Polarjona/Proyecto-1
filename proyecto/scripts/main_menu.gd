@@ -74,10 +74,10 @@ func _ready() -> void:
 	# Las cámaras apuntan al centro del cuerpo, no a la altura de la cabeza: el
 	# escaparate del lobby y la vista previa tienen que enseñar al personaje
 	# entero.
-	# El encuadre incluye la peana entera: si apuntamos solo al cuerpo, la base
-	# cian se corta por abajo.
-	lobby_camera.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
-	preview_camera.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
+	# El encuadre incluye la peana entera: apuntando a 0.5 la base se sale por
+	# abajo (medido: 114..515 de 480 px).
+	lobby_camera.look_at(Vector3(0.0, 0.03, 0.0), Vector3.UP)
+	preview_camera.look_at(Vector3(0.0, 0.12, 0.0), Vector3.UP)
 	_build_roster()
 	_connect_buttons()
 	_connect_character_buttons()

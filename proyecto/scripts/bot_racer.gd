@@ -75,10 +75,9 @@ const LANE_HALF_WIDTH: Array[float] = [
 	1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6,
 ]
 
-## El pack solo trae el clip de andar: se acelera para que lea como esprint.
-const RUN_CLIP_SPEED := 2.4
-## Fotograma del andar que se congela en el aire (el pack no trae salto).
-const JUMP_POSE_TIME := 0.42
+## Compartidos con el jugador (`scripts/runner_tuning.gd`).
+const RUN_CLIP_SPEED := RunnerTuning.RUN_CLIP_SPEED
+const JUMP_POSE_TIME := RunnerTuning.JUMP_POSE_TIME
 ## Suavizado con el que la cadencia del clip sigue a la velocidad.
 const STRIDE_BLEND_SPEED := 10.0
 
@@ -115,6 +114,7 @@ var _knockback: Vector3 = Vector3.ZERO
 var _external: Vector3 = Vector3.ZERO
 var _best_distance: float = 9999.0
 var _progress_time: float = 0.0
+var _hold_time: float = 0.0
 ## Once a bot sees a safe gap in a sweeper/pendulum it commits to crossing.
 var _sweeper_commits: Dictionary = {}
 var _pendulum_commits: Dictionary = {}
@@ -142,18 +142,39 @@ var _rig: CharacterRig
 var _path: Array[Vector3] = []
 var _path_widths: Array[float] = []
 
+## Cada cuanto se refresca la lista de hazards. Las bolas se crean en runtime,
+## asi que no vale con cachearlas una sola vez al aparecer.
+const HAZARD_SCAN_INTERVAL := 0.25
+
+## RNG propio: la camara del jugador y los efectos tambien consumen el RNG
+## global, asi que los bots no deben depender de el. Se siembra desde `randi()`
+## para que `seed()` en los tests siga dando carreras reproducibles.
+var _rng := RandomNumberGenerator.new()
+var _hazard_scan_timer: float = 0.0
+var _hazard_balls: Array[Node] = []
+var _hazard_platforms: Array[Node] = []
+var _hazard_sweepers: Array[Node] = []
+var _hazard_rotors: Array[Node] = []
+var _hazard_pendulums: Array[Node] = []
+var _hazard_launchers: Array[Node] = []
+var _hazard_geysers: Array[Node] = []
+
 @onready var body: MeshInstance3D = $Body
 
 
 func _ready() -> void:
 	add_to_group("bot")
 	add_to_group("bots")
+	_rng.seed = randi()
 	_start_ms = Time.get_ticks_msec()
-	_speed = randf_range(speed_min, speed_max) * speed_scale
+	_speed = _rng.randf_range(speed_min, speed_max) * speed_scale
 	# Keep bots off the exact centre line: that is where the sweeper bars and
 	# pendulum heads are most dangerous. The sign gives each bot a side.
-	_lane = randf_range(0.55, 1.0) * (-1.0 if randf() < 0.5 else 1.0)
-	_stumble_cooldown = randf_range(6.0, 12.0)
+	_lane = _rng.randf_range(0.55, 1.0) * (-1.0 if _rng.randf() < 0.5 else 1.0)
+	_stumble_cooldown = _rng.randf_range(6.0, 12.0)
+	# Escaneo escalonado: que los once bots no refresquen en el mismo frame.
+	_hazard_scan_timer = _rng.randf_range(0.0, HAZARD_SCAN_INTERVAL)
+	_refresh_hazard_cache()
 	_cache_path()
 	_setup_model()
 
@@ -161,9 +182,7 @@ func _ready() -> void:
 ## Elige un personaje al azar del catálogo y uno de sus dos cuerpos, lo
 ## instancia con su escala. Cada bot tiene su propio AnimationPlayer.
 func _setup_model() -> void:
-	# `randf()` (y no `randi()`) para no cambiar la secuencia aleatoria que ya
-	# usan los carriles, las velocidades y los tropiezos de los bots.
-	var index := mini(int(randf() * float(CharacterCatalog.CHARACTERS.size())), CharacterCatalog.CHARACTERS.size() - 1)
+	var index := mini(int(_rng.randf() * float(CharacterCatalog.CHARACTERS.size())), CharacterCatalog.CHARACTERS.size() - 1)
 	character_id = String(CharacterCatalog.CHARACTERS[index]["id"])
 	# El cuerpo se sortea con un generador aparte para no mover la secuencia
 	# aleatoria de los carriles, las velocidades y los tropiezos.
@@ -173,7 +192,7 @@ func _setup_model() -> void:
 	var model := CharacterCatalog.build_model(character_id, "Model", variant)
 	if model == null:
 		return
-	model.scale *= randf_range(0.95, 1.05)
+	model.scale *= _rng.randf_range(0.95, 1.05)
 	body.add_child(model)
 	_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	_rig = CharacterCatalog.rig_of(model)
@@ -241,11 +260,14 @@ func _physics_process(delta: float) -> void:
 	_jump_request = maxf(0.0, _jump_request - delta)
 	_tick_stumble(delta)
 	_tick_slow(delta)
+	_tick_hazard_cache(delta)
 
 	var target := _target_position()
 	var to_target := target - global_position
 	var flat := Vector3(to_target.x, 0.0, to_target.z)
-	if flat.length() < 1.25:
+	# El radio de llegada era menor que el ancho útil de las cornisas: el bot
+	# orbitaba el waypoint sin pisarlo (Glacier wp96).
+	if flat.length() < 2.0:
 		_advance_waypoint()
 		if _finished:
 			return
@@ -257,6 +279,12 @@ func _physics_process(delta: float) -> void:
 	direction = (direction + _avoidance() * 0.7).limit_length(1.0)
 
 	var holding := _should_hold()
+	if holding:
+		# Un hazard mal sincronizado (o parado) no puede dejar al bot
+		# esperando para siempre: tras 2,5 s cruza aunque venga el golpe.
+		_hold_time += delta
+		if _hold_time > 2.5:
+			holding = false
 	if holding:
 		_play_anim("Idle")
 
@@ -275,7 +303,7 @@ func _physics_process(delta: float) -> void:
 
 	if not is_on_floor():
 		var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-		velocity.y -= gravity * 1.15 * delta
+		velocity.y -= gravity * RunnerTuning.GRAVITY_SCALE * delta
 	elif _jump_request > 0.0 and _jump_cooldown <= 0.0:
 		velocity.y = jump_velocity
 		_jump_request = 0.0
@@ -311,9 +339,33 @@ func _update_audio(delta: float) -> void:
 	_was_on_floor = grounded
 
 
+## Refresca las listas de hazards cada `HAZARD_SCAN_INTERVAL` segundos. Antes
+## cada bot recorría el arbol cinco veces por frame; ahora son cinco consultas
+## cada 0,25 s por bot.
+func _tick_hazard_cache(delta: float) -> void:
+	_hazard_scan_timer -= delta
+	if _hazard_scan_timer > 0.0:
+		return
+	_hazard_scan_timer = HAZARD_SCAN_INTERVAL
+	_refresh_hazard_cache()
+
+
+func _refresh_hazard_cache() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	_hazard_balls = tree.get_nodes_in_group("hazard_balls")
+	_hazard_platforms = tree.get_nodes_in_group("moving_platforms")
+	_hazard_sweepers = tree.get_nodes_in_group("sweepers")
+	_hazard_rotors = tree.get_nodes_in_group("rotors")
+	_hazard_pendulums = tree.get_nodes_in_group("pendulums")
+	_hazard_launchers = tree.get_nodes_in_group("launchers")
+	_hazard_geysers = tree.get_nodes_in_group("lava_geysers")
+
+
 func _near_cannon() -> bool:
-	for launcher in get_tree().get_nodes_in_group("launchers"):
-		if not (launcher is Node3D) or not is_instance_valid(launcher):
+	for launcher in _hazard_launchers:
+		if not is_instance_valid(launcher) or not (launcher is Node3D):
 			continue
 		var delta: Vector3 = (launcher as Node3D).global_position - global_position
 		if delta.z < 2.5 and delta.z > -4.5 and absf(delta.x) < 3.0:
@@ -349,8 +401,23 @@ func _path_lane_width(index: int) -> float:
 func _target_position() -> Vector3:
 	var points := _path_points()
 	var index := mini(_index, points.size() - 1)
-	var width := _path_lane_width(index)
+	# En una plataforma móvil o giratoria (4 m o menos) el carril lateral deja
+	# al bot fuera del borde; en el cañón, un carril lo hace fallar el gatillo.
+	var centered := _near_moving_platform() or _near_cannon() \
+		or get_platform_velocity().length_squared() > 0.01
+	var width := 0.0 if centered else _path_lane_width(index)
 	return (points[index] as Vector3) + Vector3(_lane * width, 0.0, 0.0)
+
+
+func _near_moving_platform() -> bool:
+	for platform in _hazard_platforms:
+		if not is_instance_valid(platform) or not (platform is Node3D):
+			continue
+		var delta: Vector3 = (platform as Node3D).global_position - global_position
+		if absf(delta.x) < 3.0 and absf(delta.y) < 2.5 \
+			and (absf(delta.z) < 3.0 or (delta.z < 0.5 and delta.z > -8.0)):
+			return true
+	return false
 
 
 func _advance_waypoint() -> void:
@@ -360,6 +427,7 @@ func _advance_waypoint() -> void:
 		return
 	_best_distance = 9999.0
 	_progress_time = 0.0
+	_hold_time = 0.0
 	# Checkpoint nuevo: el tramo queda cerrado y el bot vuelve a tener todos
 	# sus intentos para el siguiente.
 	_retries = 0
@@ -371,11 +439,11 @@ func _tick_stumble(delta: float) -> void:
 	_stumble_cooldown -= delta
 	if _stumble_cooldown > 0.0:
 		return
-	_stumble_cooldown = randf_range(8.0, 16.0)
+	_stumble_cooldown = _rng.randf_range(8.0, 16.0)
 	# Bots are allowed the occasional stumble, but no longer stop every few
 	# seconds for no reason.
-	if randf() < 0.35:
-		_stumble_time = randf_range(0.15, 0.35)
+	if _rng.randf() < 0.35:
+		_stumble_time = _rng.randf_range(0.15, 0.35)
 
 
 ## Los hazards frenan a los bots igual que al corredor. Se queda el factor más
@@ -425,7 +493,7 @@ func _wait_for_start(delta: float) -> bool:
 	velocity.z = 0.0
 	if not is_on_floor():
 		var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-		velocity.y -= gravity * 1.15 * delta
+		velocity.y -= gravity * RunnerTuning.GRAVITY_SCALE * delta
 	move_and_slide()
 	return false
 
@@ -435,8 +503,12 @@ func _wait_for_start(delta: float) -> bool:
 func _avoidance() -> Vector3:
 	var avoid := Vector3.ZERO
 
-	for ball in get_tree().get_nodes_in_group("hazard_balls"):
-		if not (ball is Node3D) or not is_instance_valid(ball):
+	for ball in _hazard_balls:
+		if not is_instance_valid(ball) or not (ball is Node3D):
+			continue
+		# El géiser solo quema al jugador y no empuja: tratarlo como bola
+		# apartaba al bot del waypoint que pasa por encima de la grieta.
+		if ball.is_in_group("lava_geysers"):
 			continue
 		var delta: Vector3 = (ball as Node3D).global_position - global_position
 		if delta.z > 1.5 or delta.z < -4.5 or absf(delta.x) > 3.0 or absf(delta.y) > 4.0:
@@ -469,15 +541,19 @@ func _should_hold() -> bool:
 
 	# Ride moving platforms instead of running off their front edge, and wait
 	# at the boarding edge until the platform is close enough.
-	for platform in get_tree().get_nodes_in_group("moving_platforms"):
-		if not (platform is Node3D) or not is_instance_valid(platform):
+	for platform in _hazard_platforms:
+		if not is_instance_valid(platform) or not (platform is Node3D):
 			continue
 		var delta: Vector3 = (platform as Node3D).global_position - global_position
 		if absf(delta.x) > 2.5 or delta.z > 0.5 or delta.z < -14.0 or absf(delta.y) > 2.5:
 			continue
 		var progress := float((platform as Node3D).call("get_progress"))
-		var riding := absf(delta.z) < 2.4 and absf(delta.y) < 1.3 and absf(delta.x) < 2.4
-		if riding and progress < 0.85:
+		# La plataforma mide 4 m: con 2,4 el bot ya no se consideraba encima
+		# en el borde delantero y caminaba al hueco.
+		var riding := absf(delta.z) < 4.0 and absf(delta.y) < 1.3 and absf(delta.x) < 2.4
+		# Primero camina al centro de la plataforma; una vez centrado espera
+		# a que llegue al final y sale desde el medio.
+		if riding and progress < 0.95:
 			return true
 		# The extra edge waypoints mean the bot only has a short hop left;
 		# waiting for the platform to come near is enough. It then rides it to
@@ -485,8 +561,8 @@ func _should_hold() -> bool:
 		if not riding and delta.z < -1.2 and progress > 0.15:
 			return true
 
-	for sweeper in get_tree().get_nodes_in_group("sweepers"):
-		if not (sweeper is Node3D) or not is_instance_valid(sweeper):
+	for sweeper in _hazard_sweepers:
+		if not is_instance_valid(sweeper) or not (sweeper is Node3D):
 			continue
 		var delta: Vector3 = (sweeper as Node3D).global_position - global_position
 		var id := (sweeper as Node3D).get_instance_id()
@@ -507,8 +583,8 @@ func _should_hold() -> bool:
 	# Aspas giratorias: el brazo solo deja paso cuando apunta hacia arriba. El
 	# bot espera a media distancia y cruza de una vez, sin saltar (saltar lo
 	# dejaba a merced del brazo en el aire).
-	for rotor in get_tree().get_nodes_in_group("rotors"):
-		if not (rotor is Node3D) or not is_instance_valid(rotor):
+	for rotor in _hazard_rotors:
+		if not is_instance_valid(rotor) or not (rotor is Node3D):
 			continue
 		var rotor_node := rotor as Node3D
 		var rotor_delta: Vector3 = rotor_node.global_position - global_position
@@ -517,6 +593,11 @@ func _should_hold() -> bool:
 			_rotor_commits.erase(rotor_id)
 			continue
 		if rotor_delta.z > -1.4:
+			# No colarse con el brazo abajo: acababa subido encima del aspa
+			# y sin poder avanzar hacia el waypoint.
+			var arm := rotor_node.get_node_or_null("Rotor") as Node3D
+			if arm != null and cos(arm.rotation.z) < 0.45:
+				return true
 			_rotor_commits[rotor_id] = true
 			continue
 		if bool(_rotor_commits.get(rotor_id, false)):
@@ -526,8 +607,18 @@ func _should_hold() -> bool:
 			return true
 		_rotor_commits[rotor_id] = true
 
-	for pendulum in get_tree().get_nodes_in_group("pendulums"):
-		if not (pendulum is Node3D) or not is_instance_valid(pendulum):
+	# Géiser: solo pasa mientras está inactivo; durante la erupción espera.
+	for geyser in _hazard_geysers:
+		if not is_instance_valid(geyser) or not (geyser is Node3D):
+			continue
+		var geyser_delta: Vector3 = (geyser as Node3D).global_position - global_position
+		if geyser_delta.z > 2.0 or geyser_delta.z < -4.5 or absf(geyser_delta.x) > 2.5 or absf(geyser_delta.y) > 2.0:
+			continue
+		if bool((geyser as Node3D).call("is_erupting")):
+			return true
+
+	for pendulum in _hazard_pendulums:
+		if not is_instance_valid(pendulum) or not (pendulum is Node3D):
 			continue
 		var delta: Vector3 = (pendulum as Node3D).global_position - global_position
 		var id := (pendulum as Node3D).get_instance_id()
@@ -609,9 +700,13 @@ func _rescue(from_fall: bool) -> void:
 	if _retries >= MAX_RETRIES:
 		_shortcut_count += 1
 		_retries = 0
+		# Se le deja en el waypoint que perseguia (el siguiente checkpoint): al
+		# llegar, `_advance_waypoint` mueve el objetivo. Avanzar tambien
+		# `_index` saltaba un tramo entero y provocaba mas caidas.
 		point = mini(point + 1, _path_points().size() - 1)
-	print("BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d" % [
-		get_instance_id(), global_position, _index, point])
+	if OS.is_debug_build():
+		print("BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d" % [
+			get_instance_id(), global_position, _index, point])
 	var target: Vector3 = _path_points()[point]
 	global_position = target + Vector3(0.0, 0.7, 0.0)
 	velocity = Vector3.ZERO
@@ -620,6 +715,7 @@ func _rescue(from_fall: bool) -> void:
 	_jump_request = 0.0
 	_best_distance = 9999.0
 	_progress_time = 0.0
+	_hold_time = 0.0
 	_sweeper_commits.clear()
 	_pendulum_commits.clear()
 

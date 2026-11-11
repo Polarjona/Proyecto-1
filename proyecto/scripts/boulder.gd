@@ -98,7 +98,7 @@ func _restart() -> void:
 func _spawn_is_clear() -> bool:
 	for group in ["player", "bot"]:
 		for body in get_tree().get_nodes_in_group(group):
-			if not (body is Node3D) or not is_instance_valid(body):
+			if not is_instance_valid(body) or not (body is Node3D):
 				continue
 			var delta: Vector3 = (body as Node3D).global_position - global_position
 			if Vector2(delta.x, delta.z).length() < clear_radius:

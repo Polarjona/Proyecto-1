@@ -135,11 +135,11 @@ proyecto/
 
 ## Verificación
 
-Los tests headless se ejecutan desde `proyecto/`:
+Los tests headless se ejecutan desde `proyecto/` (o todos de una vez con `tools/run_tests.sh`):
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # RESULT: 30/30 scenes OK
+godot --headless -s res://tools/check_scenes.gd       # RESULT: 31/31 scenes OK
 godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
 godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
 godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
@@ -147,6 +147,9 @@ godot --headless -s res://tools/iteration3_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/levels_test.gd        # RESULT: TODO OK
+godot --headless -s res://tools/persistence_test.gd   # RESULT: TODO OK
+godot --headless -s res://tools/progression_test.gd   # RESULT: TODO OK
+godot --headless -s res://tools/settings_test.gd      # RESULT: TODO OK
 godot --headless -s res://tools/levels_bots_test.gd   # no termina en 280 s (ver abajo)
 godot --headless -s res://tools/bots_test.gd          # no re-ejecutado en esta pasada
 ```
