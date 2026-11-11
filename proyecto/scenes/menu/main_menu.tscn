@@ -620,7 +620,7 @@ material_override = SubResource("StandardMaterial3D_cushion")
 cast_shadow = 0
 
 [node name="Camera3D" type="Camera3D" parent="LobbyStage/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 4.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 5.6)
 current = true
 fov = 34.0
 near = 0.05
@@ -1079,7 +1079,7 @@ material_override = SubResource("StandardMaterial3D_cushion")
 cast_shadow = 0
 
 [node name="Camera3D" type="Camera3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 4.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 5.15)
 current = true
 fov = 32.0
 near = 0.05

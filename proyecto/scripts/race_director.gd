@@ -22,7 +22,7 @@ var bot_count: int = 7
 var _bots: Array[Node3D] = []
 var _finish_order: Array[Node] = []
 var _player_finished: bool = false
-var _manager: Node
+var _manager: RaceManager
 var _player: Node3D
 var _rank_timer: float = 0.0
 var _level_info: LevelInfo
@@ -41,7 +41,7 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	await get_tree().process_frame
-	_manager = get_tree().get_first_node_in_group("race_manager")
+	_manager = get_tree().get_first_node_in_group("race_manager") as RaceManager
 	_player = get_tree().get_first_node_in_group("player") as Node3D
 	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
 	if _level_info != null:
@@ -53,7 +53,7 @@ func _ready() -> void:
 	qualifiers = GameSession.qualifiers
 	total_racers = bot_count + 1
 	_spawn_bots()
-	if _manager and _manager.has_signal("finished"):
+	if _manager != null:
 		_manager.finished.connect(_on_player_finished)
 
 

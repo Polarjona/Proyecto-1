@@ -1,0 +1,26 @@
+name: tests
+
+"on":
+  push:
+  pull_request:
+
+jobs:
+  headless:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Godot 4.7.2
+        run: |
+          curl -sSLo godot.zip \
+            https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          echo "GODOT=$PWD/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Importar recursos
+        run: cd proyecto && "$GODOT" --headless --editor --quit
+
+      - name: Tests headless
+        # Con `bash` el bit ejecutable no depende de cómo se clonó el repo.
+        run: cd proyecto && bash tools/run_tests.sh

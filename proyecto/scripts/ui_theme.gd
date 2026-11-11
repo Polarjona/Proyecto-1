@@ -168,7 +168,10 @@ func _variation(result: Theme, name: String, normal: Color, hover: Color, ink: C
 func _button_styles(result: Theme, type: String, normal: Color, hover: Color, pressed: Color, ink: Color, font_size: int) -> void:
 	result.set_stylebox("normal", type, _box(normal, 4, CREAM, 17, 20, 10))
 	result.set_stylebox("hover", type, _box(hover, 5, CREAM, 17, 20, 10))
-	result.set_stylebox("pressed", type, _box(pressed, 4, CREAM, 17, 20, 10))
+	# Al pulsar, el texto baja y la sombra desaparece: el botón se hunde.
+	var down := _box(pressed, 4, CREAM, 17, 20, 16)
+	down.shadow_offset = Vector2(0, 0)
+	result.set_stylebox("pressed", type, down)
 	result.set_stylebox("focus", type, _focus())
 	result.set_color("font_color", type, ink)
 	result.set_color("font_hover_color", type, ink)

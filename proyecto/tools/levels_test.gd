@@ -94,6 +94,13 @@ func _run() -> void:
 				"%s muestra su nombre de ronda" % names[i])
 			_check(int(info.get("round_index")) == i + 1,
 				"%s es la ronda %d" % [names[i], i + 1])
+			# GameSession y LevelInfo guardan los mismos tiempos: si divergen, el
+			# menu ensena una medalla y la carrera reparte otra.
+			var medals: Dictionary = session.call("level_medals", i)
+			_check(is_equal_approx(float(info.get("gold_time")), float(medals["gold"]))
+				and is_equal_approx(float(info.get("silver_time")), float(medals["silver"]))
+				and is_equal_approx(float(info.get("bronze_time")), float(medals["bronze"])),
+				"%s comparte tiempos de medalla con GameSession" % names[i])
 			var waypoints: PackedVector3Array = info.get("waypoints")
 			var lanes: PackedFloat32Array = info.get("lane_widths")
 			_check(waypoints.size() >= 15,

@@ -14,6 +14,12 @@ extends CanvasLayer
 @onready var fullscreen_check: Button = $Panel/VBox/FullscreenCheck
 @onready var back_button: Button = $Panel/VBox/BackButton
 
+## Fila de accesibilidad, creada en codigo para no tocar la escena compartida
+## por el menu y la pausa.
+var motion_row: HBoxContainer
+var motion_label: Label
+var motion_check: CheckButton
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -26,6 +32,7 @@ func _ready() -> void:
 	sens_slider.value_changed.connect(_on_sens_changed)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	back_button.pressed.connect(close)
+	_build_motion_row()
 	_sync_from_settings()
 
 
@@ -47,8 +54,34 @@ func _input(event: InputEvent) -> void:
 		close()
 
 
+func _build_motion_row() -> void:
+	motion_row = HBoxContainer.new()
+	motion_row.name = "MotionRow"
+	motion_row.add_theme_constant_override("separation", 12)
+	motion_label = Label.new()
+	motion_label.name = "MotionLabel"
+	motion_label.text = "REDUCIR MOVIMIENTO"
+	motion_label.custom_minimum_size = Vector2(154, 0)
+	motion_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	motion_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	motion_label.add_theme_font_size_override("font_size", 17)
+	motion_check = CheckButton.new()
+	motion_check.name = "MotionCheck"
+	motion_check.text = "NO"
+	motion_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	motion_check.alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	motion_check.toggled.connect(_on_motion_toggled)
+	motion_row.add_child(motion_label)
+	motion_row.add_child(motion_check)
+	var box := $Panel/VBox
+	box.add_child(motion_row)
+	box.move_child(motion_row, back_button.get_index())
+
+
 func _sync_from_settings() -> void:
 	# no_signal evita guardar el perfil cuatro veces al abrir el panel.
+	motion_check.set_pressed_no_signal(bool(SaveManager.get_setting("reduced_motion", false)))
+	_update_motion_label()
 	music_slider.set_value_no_signal(float(SaveManager.get_setting("music", 0.75)))
 	sfx_slider.set_value_no_signal(float(SaveManager.get_setting("sfx", 0.9)))
 	shake_slider.set_value_no_signal(float(SaveManager.get_setting("shake", 1.0)))
@@ -90,6 +123,15 @@ func _on_sens_changed(value: float) -> void:
 func _on_fullscreen_toggled(pressed: bool) -> void:
 	SaveManager.set_setting("fullscreen", pressed)
 	_update_fullscreen_label()
+
+
+func _on_motion_toggled(pressed: bool) -> void:
+	SaveManager.set_setting("reduced_motion", pressed)
+	_update_motion_label()
+
+
+func _update_motion_label() -> void:
+	motion_check.text = "SÍ" if motion_check.button_pressed else "NO"
 
 
 ## El botón no lleva icono de check: el estado se lee en el propio texto.
