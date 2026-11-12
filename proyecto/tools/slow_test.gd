@@ -15,7 +15,7 @@ const BOT_SCENE := "res://scenes/race/bot_racer.tscn"
 const TOUCH_HAZARDS := [
 	"piston.gd", "spike_trap.gd", "boulder.gd", "rotor_gate.gd", "ball.gd",
 	"pendulum.gd", "sweeper.gd", "meteor.gd", "ash_vortex.gd",
-	"magma_curtain.gd", "ocean_hazards.gd", "wind_tunnel.gd",
+	"magma_curtain.gd", "ocean/ocean_hazard.gd", "wind_tunnel.gd",
 ]
 
 var _failures := 0

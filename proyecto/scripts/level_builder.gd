@@ -156,8 +156,20 @@ func _build_editor_preview() -> void:
 		_build_ocean()
 	else:
 		_build_glacier()
-	if get_tree().edited_scene_root == self:
-		_own_generated(self)
+	_own_generated_when_ready()
+
+
+## `edited_scene_root` puede seguir sin fijar durante `_ready`, y sin él los
+## nodos generados no salen en el árbol de escenas ni se pueden seleccionar. Se
+## reintenta unos fotogramas hasta que el editor lo tenga listo.
+func _own_generated_when_ready() -> void:
+	for _attempt in 8:
+		if not is_inside_tree():
+			return
+		if get_tree().edited_scene_root == self:
+			_own_generated(self)
+			return
+		await get_tree().process_frame
 
 
 ## Da `owner` a lo que crea el generador para que se guarde al salvar la escena.
