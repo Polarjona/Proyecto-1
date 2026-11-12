@@ -94,9 +94,9 @@ func _run() -> void:
 	_check(save.medal_for(120.0) == "bronze", "120 s da medalla de bronce")
 
 	# --- Dash/slide eliminado ---------------------------------------------
-	# Ya no hay dive: ni acción de entrada, ni API en el jugador, ni aviso en el
-	# HUD. El jugador se mueve, salta y ya está.
-	_check(not InputMap.has_action("dive"), "La acción de dive ya no existe")
+	# Dive vuelve solo para nadar hacia abajo en Abyss Run; no hay dash ni API
+	# de deslizamiento en el jugador.
+	_check(InputMap.has_action("dive"), "La acción de dive existe para nadar hacia abajo")
 	_check(not player.has_method("can_dive") and not player.has_method("is_prone")
 		and not player.has_method("dive_cooldown_remaining")
 		and player.get("dive_speed") == null and player.get("prone_time") == null,
@@ -245,8 +245,7 @@ func _run() -> void:
 		"El HUD incluye tutorial de primera vez")
 	_check(hud != null and hud.get_node_or_null("Root/ProgressBar") != null,
 		"El HUD incluye barra de progreso")
-	var splits_label: Label = hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsSplits")
-	_check(splits_label != null and not splits_label.visible,
+	_check(hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsSplits") == null,
 		"La pantalla de victoria no muestra los tiempos de los checkpoints")
 
 	# --- Modos ------------------------------------------------------------

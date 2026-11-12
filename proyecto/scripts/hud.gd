@@ -27,8 +27,9 @@ const FINISH_Z := -205.0
 @onready var menu_button: Button = $Root/ResultsPanel/VBox/Buttons/MenuButton
 @onready var tutorial_panel: PanelContainer = $Root/TutorialPanel
 @onready var tutorial_button: Button = $Root/TutorialPanel/VBox/TutorialButton
+@onready var scrim: ColorRect = $Root/Scrim
 
-var _manager: Node
+var _manager: RaceManager
 var _director: Node
 var _player: Node3D
 var _level_info: LevelInfo
@@ -37,18 +38,24 @@ var _finish_z: float = FINISH_Z
 var _results_shown: bool = false
 var _qualified: bool = true
 var _headless: bool = false
+var _tutorial_paused: bool = false
 
 
 func _ready() -> void:
 	_headless = DisplayServer.get_name() == "headless"
+	add_to_group("hud")
+	UITheme.apply($Root)
 	message_label.text = ""
 	checkpoints_label.text = "0/0"
+	checkpoints_label.visible = false
 	best_time_label.text = "Récord: --"
-	medal_label.text = "Oro ≤ %.1f s" % SaveManager.medal_target("gold")
+	medal_label.text = "Oro ≤ --"
 	rank_label.text = ""
 	results_panel.hide()
+	scrim.hide()
 	countdown_label.hide()
 	tutorial_panel.hide()
+	tutorial_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	progress_bar.value = 0.0
 	retry_button.pressed.connect(_on_retry_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
@@ -56,7 +63,7 @@ func _ready() -> void:
 	tutorial_button.pressed.connect(_on_tutorial_closed)
 
 	await get_tree().process_frame
-	_manager = get_tree().get_first_node_in_group("race_manager")
+	_manager = get_tree().get_first_node_in_group("race_manager") as RaceManager
 	_director = get_tree().get_first_node_in_group("race_director")
 	_player = get_tree().get_first_node_in_group("player") as Node3D
 	_level_info = get_tree().get_first_node_in_group("level_info") as LevelInfo
@@ -67,7 +74,7 @@ func _ready() -> void:
 	_connect_manager()
 	_connect_director()
 	if not _headless and not SaveManager.has_seen_tutorial():
-		tutorial_panel.show()
+		_show_tutorial()
 
 
 func _process(delta: float) -> void:
@@ -83,30 +90,20 @@ func _process(delta: float) -> void:
 func _connect_manager() -> void:
 	if _manager == null:
 		return
-	if _manager.has_signal("time_updated"):
-		_manager.time_updated.connect(_on_time_updated)
-	if _manager.has_signal("finished"):
-		_manager.finished.connect(_on_finished)
-	if _manager.has_signal("respawned"):
-		_manager.respawned.connect(_on_respawned)
-	if _manager.has_signal("checkpoint_reached"):
-		_manager.checkpoint_reached.connect(_on_checkpoint)
-	if _manager.has_signal("checkpoints_updated"):
-		_manager.checkpoints_updated.connect(_on_checkpoints_updated)
-	if _manager.has_signal("best_time_updated"):
-		_manager.best_time_updated.connect(_on_best_time_updated)
-	if _manager.has_signal("split_reached"):
-		_manager.split_reached.connect(_on_split)
-	if _manager.has_signal("countdown_tick"):
-		_manager.countdown_tick.connect(_on_countdown_tick)
-	if _manager.has_signal("results_ready"):
-		_manager.results_ready.connect(_on_results_ready)
-	if _manager.has_signal("failed"):
-		_manager.failed.connect(_on_failed)
+	_manager.time_updated.connect(_on_time_updated)
+	_manager.finished.connect(_on_finished)
+	_manager.respawned.connect(_on_respawned)
+	_manager.checkpoint_reached.connect(_on_checkpoint)
+	_manager.checkpoints_updated.connect(_on_checkpoints_updated)
+	_manager.best_time_updated.connect(_on_best_time_updated)
+	_manager.split_reached.connect(_on_split)
+	_manager.countdown_tick.connect(_on_countdown_tick)
+	_manager.results_ready.connect(_on_results_ready)
+	_manager.failed.connect(_on_failed)
 	# Sync state emitted before the HUD connected.
-	if "best_time" in _manager and _manager.best_time > 0.0:
+	if _manager.best_time > 0.0:
 		_on_best_time_updated(_manager.best_time)
-	if "checkpoints_total" in _manager and _manager.checkpoints_total > 0:
+	if _manager.checkpoints_total > 0:
 		_on_checkpoints_updated(_manager.checkpoints_completed, _manager.checkpoints_total)
 
 
@@ -193,21 +190,21 @@ func _on_countdown_tick(value: int) -> void:
 
 func _on_rank_updated(rank: int, total: int) -> void:
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · Puesto %d/%d" % [
+		rank_label.text = "Ronda %d/%d · %d.º/%d" % [
 			GameSession.round, GameSession.total_rounds(), rank, total]
 	else:
-		rank_label.text = "Puesto %d/%d" % [rank, total]
+		rank_label.text = "%d.º/%d" % [rank, total]
 
 
 func _on_qualification_result(qualified: bool, rank: int, qualifiers: int) -> void:
 	_qualified = qualified
 	var total := int(_director.total_racers if _director else 0)
+	var state := "CLASIFICADO" if qualified else "ELIMINADO"
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · Puesto %d/%d  ·  %s" % [
-			GameSession.round, GameSession.total_rounds(), rank, total,
-			"CLASIFICADO" if qualified else "ELIMINADO"]
+		rank_label.text = "Ronda %d/%d · %d.º/%d · %s" % [
+			GameSession.round, GameSession.total_rounds(), rank, total, state]
 	else:
-		rank_label.text = "Puesto %d/%d  ·  %s" % [rank, total, "CLASIFICADO" if qualified else "ELIMINADO"]
+		rank_label.text = "%d.º/%d · %s" % [rank, total, state]
 	if results_rank:
 		results_rank.text = "Puesto %d de %d · clasifican %d" % [rank, total, qualifiers]
 
@@ -231,8 +228,9 @@ func _on_results_ready(data: Dictionary) -> void:
 	results_medal.modulate = _medal_color(medal)
 
 	var falls := int(data.get("falls", 0))
-	results_coins.text = "+%d monedas (total %d)   ·   %d caída(s)" % [
-		int(data.get("coins", 0)), int(data.get("coins_total", 0)), falls
+	var fall_text := "sin caídas" if falls == 0 else ("1 caída" if falls == 1 else "%d caídas" % falls)
+	results_coins.text = "+%d monedas (total %d) · %s" % [
+		int(data.get("coins", 0)), int(data.get("coins_total", 0)), fall_text
 	]
 	if results_coin_breakdown != null:
 		var breakdown: Dictionary = data.get("coins_breakdown", {})
@@ -275,6 +273,7 @@ func _on_results_ready(data: Dictionary) -> void:
 	# La carrera termina: suena la fanfarria de meta mientras se lee el
 	# resultado. Cambiar de escena o reintentar la corta.
 	AudioManager.play_victory()
+	scrim.show()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
@@ -293,16 +292,18 @@ func _on_failed(reason: String) -> void:
 	results_title.modulate = Color(1.0, 0.42, 0.34)
 	results_time.text = "La lava te alcanzó" if reason == "lava" else "Caíste al vacío"
 	results_time.modulate = Color(1.0, 1.0, 1.0, 0.92)
-	var elapsed := float(_manager.get("elapsed_time")) if _manager != null else 0.0
+	var elapsed := _manager.elapsed_time if _manager != null else 0.0
 	results_best.text = "Tiempo: %.2f s" % elapsed
 	results_medal.text = ""
-	results_rank.text = "Vuelve al lobby para volver a intentarlo."
+	results_rank.text = "Pulsa REINTENTAR para volver a la salida."
 	results_coins.text = ""
 	results_coin_breakdown.text = ""
 	results_coin_breakdown.visible = false
-	retry_button.visible = false
+	# Perder no debe costar volver a navegar el menu: se puede reintentar en el sitio.
+	retry_button.visible = true
 	next_round_button.visible = false
 	menu_button.text = "VOLVER AL LOBBY"
+	scrim.show()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
 	var tween := create_tween()
@@ -343,10 +344,30 @@ func _medal_color(medal: String) -> Color:
 			return Color(0.75, 0.78, 0.85)
 
 
+## El tutorial se lee con el juego congelado: antes corría el cronómetro y el
+## panel tapaba la salida. Al cerrarlo se devuelve el control al jugador.
+func _show_tutorial() -> void:
+	scrim.show()
+	tutorial_panel.show()
+	get_tree().paused = true
+	_tutorial_paused = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	tutorial_button.grab_focus()
+
+
+func is_tutorial_open() -> bool:
+	return tutorial_panel.visible
+
+
 func _on_tutorial_closed() -> void:
 	SaveManager.mark_tutorial_seen()
 	AudioManager.play_sfx("ui", 0.05)
 	tutorial_panel.hide()
+	scrim.hide()
+	if _tutorial_paused:
+		_tutorial_paused = false
+		get_tree().paused = false
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 func _on_retry_pressed() -> void:

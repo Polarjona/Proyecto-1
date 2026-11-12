@@ -1,3 +1,4 @@
+class_name RaceManager
 extends Node
 
 ## Tracks race time, checkpoints, splits, medal and finish state.
@@ -85,14 +86,16 @@ func _process(delta: float) -> void:
 func _run_intro() -> void:
 	is_running = false
 	_set_player_locked(true)
-	# Give the HUD one beat to connect before the first number.
-	await get_tree().create_timer(0.2).timeout
+	# Give the HUD one beat to connect before the first number. Los temporizadores
+	# son pausables: si el tutorial congela el arbol (primera partida), la cuenta
+	# atras espera en vez de consumirse detras del panel.
+	await get_tree().create_timer(0.2, false).timeout
 	if not is_inside_tree():
 		return
 	for value in [3, 2, 1]:
 		countdown_tick.emit(value)
 		AudioManager.play_sfx("countdown", 0.0)
-		await get_tree().create_timer(0.65).timeout
+		await get_tree().create_timer(0.65, false).timeout
 		if not is_inside_tree():
 			return
 	elapsed_time = 0.0
@@ -150,6 +153,7 @@ func fail_race(reason: String = "lava") -> void:
 	is_finished = true
 	is_running = false
 	fall_count += 1
+	SaveManager.register_fall()
 	_set_player_locked(true)
 	if not _headless:
 		# La pantalla de derrota tiene botones: el cursor vuelve a verse.

@@ -41,6 +41,15 @@ func _run() -> void:
 		quit(1)
 		return
 
+	# El RNG global no aísla la carrera de la cámara/efectos, así que `seed()`
+	# no basta: se fija el escenario (carriles y velocidades) y se sigue midiendo
+	# la navegación real. Con valores aleatorios el presupuesto oscilaba 3-5.
+	var fixed_lanes := [-0.82, -0.63, 0.56, 0.71, 0.72, 0.84, 0.97]
+	var fixed_speeds := [5.6, 5.75, 5.9, 6.05, 6.2, 6.35, 6.5]
+	for i in bots.size():
+		bots[i].set("_lane", fixed_lanes[i])
+		bots[i].set("_speed", fixed_speeds[i])
+
 	var lanes: Array[int] = []
 	for bot in bots:
 		lanes.append(int(round(float(bot.call("get_lane")) * 10.0)))
@@ -140,6 +149,29 @@ func _run() -> void:
 	_check(int(faller.call("get_shortcut_count")) == 0,
 		"Una caída sola no le regala el tramo")
 	faller.queue_free()
+	await process_frame
+
+	# El empujon tras agotar los intentos tiene que saltarse el tramo. Antes
+	# volvia al mismo waypoint y el bot quedaba en bucle.
+	var skipper := (load("res://scenes/race/bot_racer.tscn") as PackedScene).instantiate() as Node3D
+	skipper.set("waypoints", fall_path)
+	skipper.set("lane_widths", PackedFloat32Array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
+	skipper.set("finish_z", -100.0)
+	game.add_child(skipper)
+	skipper.set("_waiting_for_start", false)
+	skipper.set("_lane", 0.0)
+	skipper.set("_index", 2)
+	skipper.set("_retries", 1)
+	var before_index := int(skipper.call("get_waypoint_index"))
+	skipper.call("_rescue", false)
+	# El empujón deja al bot en el waypoint que perseguía; el avance ocurre
+	# al pisarlo en el siguiente frame de física, no dentro de _rescue.
+	await physics_frame
+	await physics_frame
+	var after_index := int(skipper.call("get_waypoint_index"))
+	_check(after_index == before_index + 1,
+		"El empujon avanza al siguiente waypoint (%d -> %d)" % [before_index, after_index])
+	skipper.queue_free()
 	await process_frame
 
 	print("RESULT: %s" % ("TODO OK" if _failures == 0 else "%d FALLOS" % _failures))

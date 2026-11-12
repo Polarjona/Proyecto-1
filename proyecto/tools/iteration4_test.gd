@@ -70,7 +70,7 @@ func _run() -> void:
 	current_scene = menu
 	await process_frame
 	await process_frame
-	_check(menu.get_node_or_null("CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [STARTER_ROW, STARTER_ROW]) != null,
+	_check(menu.get_node_or_null("CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton" % STARTER_ROW) != null,
 		"El submenú de personaje incluye el selector")
 	_check(menu.get_node_or_null(
 		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage") != null,
@@ -82,7 +82,7 @@ func _run() -> void:
 		"El tema del menú está en bucle")
 
 	var starter_button: Button = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [STARTER_ROW, STARTER_ROW])
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton" % STARTER_ROW)
 	starter_button.pressed.emit()
 	await process_frame
 	_check(String(_save.call("character_id")) == CharacterCatalog.default_id(),

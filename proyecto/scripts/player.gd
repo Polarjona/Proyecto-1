@@ -12,7 +12,7 @@ extends CharacterBody3D
 ## Upward speed kept when the jump button is released early.
 @export var min_jump_velocity: float = 2.2
 @export var air_control: float = 0.35
-@export var gravity_scale: float = 1.15
+@export var gravity_scale: float = RunnerTuning.GRAVITY_SCALE
 @export var fall_gravity_scale: float = 1.4
 ## Grace period to still jump after walking off a ledge.
 @export var coyote_time: float = 0.12
@@ -60,9 +60,9 @@ extends CharacterBody3D
 
 @export_group("Animation")
 ## El pack solo trae el clip de andar: se acelera para que lea como esprint.
-@export var run_clip_speed: float = 2.4
+@export var run_clip_speed: float = RunnerTuning.RUN_CLIP_SPEED
 ## Fotograma del andar que se congela en el aire (el pack no trae salto).
-@export var jump_pose_time: float = 0.42
+@export var jump_pose_time: float = RunnerTuning.JUMP_POSE_TIME
 
 @export_group("Swimming")
 ## Velocidad de nado del circuito abisal.
@@ -87,7 +87,7 @@ var _has_swim_band: bool = false
 ## Cadencia del andar a poca marcha. Sube sin escalones hasta `run_clip_speed`
 ## conforme el corredor acelera, así la zancada no se corta al pasar de andar
 ## a esprintar.
-@export var walk_clip_speed: float = 1.0
+@export var walk_clip_speed: float = RunnerTuning.WALK_CLIP_SPEED
 ## Suavizado con el que la cadencia sigue a la velocidad real.
 @export var stride_blend_speed: float = 9.0
 

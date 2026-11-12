@@ -1,40 +1,18 @@
 extends SceneTree
 
-## Temporary check: verifies every .tscn in the project parses correctly.
+## Comprueba que todas las escenas de `res://scenes` cargan como PackedScene.
+## La lista se descubre del sistema de ficheros: una escena nueva entra sola en
+## la prueba, sin tener que apuntarla a mano.
+
+const SCENES_ROOT := "res://scenes"
+
 
 func _initialize() -> void:
-	var scenes := [
-		"res://scenes/main.tscn",
-		"res://scenes/levels/spin_go_round.tscn",
-		"res://scenes/levels/glacier_gallop.tscn",
-		"res://scenes/levels/lava_vortex.tscn",
-		"res://scenes/menu/main_menu.tscn",
-		"res://scenes/menu/pause_menu.tscn",
-		"res://scenes/player/player.tscn",
-		"res://scenes/obstacles/conveyor.tscn",
-		"res://scenes/obstacles/pendulum.tscn",
-		"res://scenes/obstacles/spinning_platform.tscn",
-		"res://scenes/obstacles/piston.tscn",
-		"res://scenes/obstacles/crumble_tile.tscn",
-		"res://scenes/obstacles/boulder.tscn",
-		"res://scenes/obstacles/spike_trap.tscn",
-		"res://scenes/obstacles/rotor_gate.tscn",
-		"res://scenes/obstacles/wall.tscn",
-		"res://scenes/obstacles/bounce_pad.tscn",
-		"res://scenes/obstacles/sweeper.tscn",
-		"res://scenes/obstacles/moving_platform.tscn",
-		"res://scenes/obstacles/ball.tscn",
-		"res://scenes/obstacles/ball_dropper.tscn",
-		"res://scenes/race/checkpoint.tscn",
-		"res://scenes/race/finish_line.tscn",
-		"res://scenes/race/hud.tscn",
-		"res://scenes/race/kill_plane.tscn",
-		"res://scenes/race/bot_racer.tscn",
-		"res://scenes/obstacles/wind_tunnel.tscn",
-		"res://scenes/obstacles/launcher.tscn",
-		"res://scenes/obstacles/see_saw.tscn",
-		"res://scenes/menu/settings_menu.tscn",
-	]
+	var scenes := _collect_scenes(SCENES_ROOT)
+	if scenes.is_empty():
+		print("FAIL: no se encontró ninguna escena en ", SCENES_ROOT)
+		quit(1)
+		return
 	var failed := 0
 	for path in scenes:
 		if load(path) == null:
@@ -44,3 +22,25 @@ func _initialize() -> void:
 			print("OK:   ", path)
 	print("RESULT: %d/%d scenes OK" % [scenes.size() - failed, scenes.size()])
 	quit(1 if failed > 0 else 0)
+
+
+func _collect_scenes(dir_path: String) -> Array[String]:
+	var found: Array[String] = []
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return found
+	dir.list_dir_begin()
+	var entry := dir.get_next()
+	while not entry.is_empty():
+		if entry.begins_with("."):
+			entry = dir.get_next()
+			continue
+		var full := dir_path.path_join(entry)
+		if dir.current_is_dir():
+			found.append_array(_collect_scenes(full))
+		elif entry.ends_with(".tscn"):
+			found.append(full)
+		entry = dir.get_next()
+	dir.list_dir_end()
+	found.sort()
+	return found
