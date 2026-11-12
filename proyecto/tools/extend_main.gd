@@ -194,7 +194,7 @@ func _build_course() -> void:
 	_ramp("ForgeRampDown", -214.0, -220.0, 4.0, 2.0, 9.4, mat_floor)
 	_slab("ForgeDeck", -232.0, 13.0, 24.0, 2.0, mat_alt)
 	_ramp("ForgeRampUp", -244.0, -250.0, 2.0, 4.8, 9.4, mat_floor)
-	_slab("ChimneyBridge", -260.0, 4.6, 20.0, 4.8, mat_alt)
+	_slab("ChimneyBridge", -260.0, 6.4, 20.0, 4.8, mat_alt)
 	_slab("ChimneyLanding", -275.0, 9.0, 10.0, 4.8, mat_floor)
 	_ramp("ForgeClimb", -280.0, -298.0, 4.8, 9.2, 9.4, mat_alt)
 	_slab("ForgeSummit", -305.0, 13.0, 14.0, 9.2, mat_floor)

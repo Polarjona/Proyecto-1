@@ -135,26 +135,27 @@ proyecto/
 
 ## Verificación
 
-Los tests headless se ejecutan desde `proyecto/`:
+Los tests headless se ejecutan desde `proyecto/` (o todos de una vez con `tools/run_tests.sh`):
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # RESULT: 30/30 scenes OK
+godot --headless -s res://tools/check_scenes.gd       # RESULT: 31/31 scenes OK
 godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
 godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
 godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
-godot --headless -s res://tools/iteration3_test.gd    # RESULT: 1 fallo (aviso conocido)
+godot --headless -s res://tools/iteration3_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
 godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/levels_test.gd        # 4 fallos conocidos (ver abajo)
+godot --headless -s res://tools/levels_test.gd        # RESULT: TODO OK
+godot --headless -s res://tools/persistence_test.gd   # RESULT: TODO OK
+godot --headless -s res://tools/progression_test.gd   # RESULT: TODO OK
+godot --headless -s res://tools/settings_test.gd      # RESULT: TODO OK
 godot --headless -s res://tools/levels_bots_test.gd   # no termina en 280 s (ver abajo)
 godot --headless -s res://tools/bots_test.gd          # no re-ejecutado en esta pasada
 ```
 
 **Fallos conocidos de la batería** (comprobaciones desfasadas, no regresiones del juego):
 
-- `iteration3_test.gd` — «La acción de dive ya no existe»: el test espera que `dive` se haya eliminado, pero la acción volvió para **nadar hacia abajo** en Abyss Run (`Shift`/`Ctrl` y gatillo derecho). El resto de la suite pasa.
-- `levels_test.gd` — 4 comprobaciones: espera 14 trampas de pinchos en Pivot Push, un descenso de rocas en Spin Go Round, una arena giratoria con lluvia de bolas en Glacier Gallop y lluvia de bolas en Lava Vortex. Esos elementos se movieron o se retiraron al ajustar los mapas; el resto de la suite (circuitos, `LevelInfo`, checkpoints, metas, rutas y plataformas) pasa.
 - `levels_bots_test.gd` — lanza el test de bots de los circuitos nuevos, pero no termina dentro de 280 s en esta máquina (código 124) y al salir deja avisos de RIDs de `NavMesh` sin liberar. No se considera un test en verde.
 - `bots_test.gd` — no se ha vuelto a ejecutar en esta pasada; su última referencia es la del informe anterior.
 

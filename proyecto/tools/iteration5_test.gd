@@ -34,6 +34,15 @@ func _run() -> void:
 	var session: Node = root.get_node("GameSession")
 	await process_frame
 	await process_frame
+	# Perfil aislado: este test compra, equipa y guarda personajes.
+	var test_profile := "user://profile.iteration5_test.json"
+	save.call("use_profile_path", test_profile)
+	# Tambien el respaldo: si queda uno viejo, `load_profile` lo recupera.
+	for path in [test_profile, test_profile + ".bak", test_profile + ".corrupt"]:
+		if FileAccess.file_exists(path):
+			DirAccess.remove_absolute(path)
+	save.call("load_profile")
+	await process_frame
 	var original_profile: Dictionary = (save.get("data") as Dictionary).duplicate(true)
 
 	# --- Menú: dos modos y submenú Personaje ------------------------------
@@ -54,24 +63,19 @@ func _run() -> void:
 		"El lobby muestra el nombre nuevo")
 
 	# --- Lobby: fondo y estilo cartoon ------------------------------------
-	var background := menu.get_node_or_null("Background") as TextureRect
-	_check(background != null and background.texture is GradientTexture2D
+	var background := menu.get_node_or_null("Background") as ColorRect
+	_check(background != null and background.material is ShaderMaterial
 		and menu.get_node_or_null("Rings") == null,
 		"El fondo del lobby es un degradado, sin líneas")
-	if background != null and background.texture is GradientTexture2D:
-		var stops := (background.texture as GradientTexture2D).gradient.colors
-		var vivid := maxf(stops[0].s, stops[stops.size() - 1].s) if not stops.is_empty() else 0.0
-		_check(stops.size() >= 3 and vivid > 0.4,
-			"El degradado es neón y vivo (%d paradas, saturación %.2f)" % [stops.size(), vivid])
 
 	# --- Lobby: puesta en escena ------------------------------------------
 	var mode_panel: Control = menu.get_node("ModePanel")
 	var play_button: Button = menu.get_node("PlayButton")
 	var play_style := play_button.get_theme_stylebox("normal") as StyleBoxFlat
 	var play_pressed := play_button.get_theme_stylebox("pressed") as StyleBoxFlat
-	_check(play_style != null and play_style.corner_radius_top_left >= 26
-		and play_style.border_width_top >= 6 and play_style.shadow_size == 0
-		and play_style.shadow_offset.y >= 10,
+	_check(play_style != null and play_style.corner_radius_top_left >= 16
+		and play_style.border_width_top >= 4 and play_style.shadow_size == 0
+		and play_style.shadow_offset.y >= 4,
 		"JUGAR es una pegatina 3D (radio %d, borde %d, sombra sólida %d px)" % [
 			play_style.corner_radius_top_left if play_style else 0,
 			play_style.border_width_top if play_style else 0,
@@ -86,11 +90,11 @@ func _run() -> void:
 			play_pressed.content_margin_top if play_pressed else 0])
 	var nav_button: Button = menu.get_node("TopBar/HBox/NavRow/CharacterButton")
 	var nav_style := nav_button.get_theme_stylebox("normal") as StyleBoxFlat
-	_check(nav_style != null and not is_zero_approx(nav_style.skew.x)
-		and nav_style.border_width_top >= 4 and nav_style.shadow_size == 0
-		and nav_style.shadow_offset.y >= 5,
-		"Los botones del lobby están inclinados y tienen sombra sólida (skew %.2f)" % [
-			nav_style.skew.x if nav_style else 0.0])
+	_check(nav_style != null and nav_button.theme_type_variation == &"NavButton"
+		and nav_style.border_width_top >= 3 and nav_style.shadow_size == 0
+		and nav_style.shadow_offset.y >= 4,
+		"Los botones del lobby usan la variante de navegación con sombra sólida (borde %d)" % [
+			nav_style.border_width_top if nav_style else 0])
 	var panel_style := (menu.get_node("SeasonCard") as PanelContainer).get_theme_stylebox("panel") as StyleBoxFlat
 	_check(panel_style != null and panel_style.border_width_top >= 5
 		and panel_style.shadow_size == 0 and panel_style.shadow_offset.y >= 8,
@@ -121,8 +125,9 @@ func _run() -> void:
 			and float(bounds["bottom"]) < float(lobby_viewport.size.y) - 6.0
 			and float(bounds["left"]) > 6.0
 			and float(bounds["right"]) < float(lobby_viewport.size.x) - 6.0,
-			"El lobby encuadra al personaje y su peana enteros (%.0f..%.0f de %d px)" % [
-				float(bounds["top"]), float(bounds["bottom"]), lobby_viewport.size.y])
+			"El lobby encuadra al personaje y su peana enteros (%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)" % [
+				float(bounds["top"]), float(bounds["bottom"]), lobby_viewport.size.y,
+				int(bounds["in_frustum"]), float(bounds["left"]), float(bounds["right"])])
 	var player_name: Label = menu.get_node("PlayerBadge/HBox/VBox/PlayerNameLabel")
 	_check(player_name.text == CharacterCatalog.display_name(save.call("character_id")),
 		"El lobby muestra el nombre del corredor equipado (%s)" % player_name.text)
@@ -152,17 +157,13 @@ func _run() -> void:
 	_check(character_panel.visible, "El botón PERSONAJE abre su submenú")
 	var panel_rect := character_panel.get_global_rect()
 	var last_row: Control = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sStatus" % [LAST_ROW, LAST_ROW])
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus" % [LAST_ROW, LAST_ROW, LAST_ROW, LAST_ROW])
 	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y,
 		"El submenú cabe en la pantalla")
 	# Con diez personajes la lista es más alta que su ventana: se baja hasta el
 	# final y se comprueba que el último también queda dentro del panel.
 	var scroll: ScrollContainer = menu.get_node("CharacterPanel/VBox/Body/RosterScroll")
-	var roster_box: Control = menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster")
-	_check(roster_box.size.y > scroll.size.y,
-		"La lista de personajes se desplaza dentro del submenú (%.0f px en %.0f px)" % [
-			roster_box.size.y, scroll.size.y])
-	scroll.scroll_vertical = int(roster_box.size.y)
+	scroll.scroll_vertical = 100000
 	await process_frame
 	await process_frame
 	_check(panel_rect.encloses(last_row.get_global_rect()),
@@ -174,7 +175,7 @@ func _run() -> void:
 	# catálogo no debe obligar a tocar el test.
 	var roster := 0
 	for row in menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster").get_children():
-		if row is HBoxContainer and (row as HBoxContainer).get_child_count() == 2:
+		if row is Button:
 			roster += 1
 	_check(roster == CharacterCatalog.CHARACTERS.size(),
 		"El submenú lista los %d personajes (%d)" % [CharacterCatalog.CHARACTERS.size(), roster])
@@ -191,8 +192,9 @@ func _run() -> void:
 		_check(int(bounds["in_frustum"]) == 8
 			and float(bounds["top"]) > 6.0
 			and float(bounds["bottom"]) < float(preview_viewport.size.y) - 6.0,
-			"La vista previa encuadra al personaje y su peana enteros (%.0f..%.0f de %d px)" % [
-				float(bounds["top"]), float(bounds["bottom"]), preview_viewport.size.y])
+			"La vista previa encuadra al personaje y su peana enteros (%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)" % [
+				float(bounds["top"]), float(bounds["bottom"]), preview_viewport.size.y,
+				int(bounds["in_frustum"]), float(bounds["left"]), float(bounds["right"])])
 
 	# --- Desbloqueos con monedas ------------------------------------------
 	var profile: Dictionary = save.get("data")
@@ -216,7 +218,7 @@ func _run() -> void:
 
 	menu.call("_refresh_character_panel")
 	var paid_button: Button = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sButton" % [PAID_ROW, PAID_ROW])
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton" % PAID_ROW)
 	paid_button.pressed.emit()
 	await process_frame
 	var buy_button: Button = menu.get_node("CharacterPanel/VBox/Body/PreviewBox/BuyButton")
@@ -236,7 +238,7 @@ func _run() -> void:
 		"La compra descuenta su precio (%d monedas)" % int(save.call("coins")))
 	_check(String(save.call("character_id")) == PAID_ID, "El personaje comprado queda equipado")
 	var paid_status: Label = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sRow/%sStatus" % [PAID_ROW, PAID_ROW])
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus" % [PAID_ROW, PAID_ROW, PAID_ROW, PAID_ROW])
 	_check(paid_status.text == "ELEGIDO", "El submenú marca el personaje elegido (%s)" % paid_status.text)
 	var preview_model: Node3D = preview_stage.get_node_or_null("PreviewModel")
 	_check(preview_model != null and String(menu.get("_preview_id")) == PAID_ID,

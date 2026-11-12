@@ -10,6 +10,14 @@ signal settings_changed
 signal medal_unlocked(medal: String)
 
 const SAVE_PATH := "user://profile.json"
+const SAVE_TMP_PATH := "user://profile.json.tmp"
+const SAVE_BACKUP_PATH := "user://profile.json.bak"
+## En headless (la bateria de tests) se usa un perfil aparte: correr los tests
+## no debe tocar records, monedas ni personajes del jugador.
+const HEADLESS_SAVE_PATH := "user://profile.headless.json"
+## Los ajustes se guardan en diferido: arrastrar un slider no debe escribir en
+## disco una vez por píxel.
+const SAVE_DEBOUNCE := 0.4
 const LEGACY_BEST_PATH := "user://best_time.save"
 ## Carpetas de datos que usaba el juego antes de llamarse Tumble Rush.
 ## Se prueban en orden: primero el nombre inmediatamente anterior.
@@ -34,9 +42,24 @@ const COIN_PLACE_OTHER := 5
 
 var data: Dictionary = {}
 
+var _save_timer: Timer
+var _pending_save: bool = false
+var _save_path := SAVE_PATH
+var _save_tmp_path := SAVE_TMP_PATH
+var _save_backup_path := SAVE_BACKUP_PATH
+var _test_path_resolved: bool = false
+var _forced_path: String = ""
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_save_timer = Timer.new()
+	_save_timer.name = "SaveDebounce"
+	_save_timer.one_shot = true
+	_save_timer.wait_time = SAVE_DEBOUNCE
+	_save_timer.process_mode = Node.PROCESS_MODE_ALWAYS
+	_save_timer.timeout.connect(_on_save_timer)
+	add_child(_save_timer)
 	load_profile()
 	apply_settings()
 
@@ -48,16 +71,22 @@ func load_profile() -> void:
 	# elegido se conserva como desbloqueado en vez de perderse.
 	var had_unlocks := false
 	var legacy_character := CharacterCatalog.default_id()
-	if FileAccess.file_exists(SAVE_PATH):
-		var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
-		if file != null:
-			var text := file.get_as_text()
-			file.close()
-			var parsed: Variant = JSON.parse_string(text)
-			if parsed is Dictionary:
-				had_unlocks = (parsed as Dictionary).has("unlocked_characters")
-				legacy_character = String((parsed as Dictionary).get("character", legacy_character))
-				_merge_into(data, parsed as Dictionary)
+	# Si el perfil principal no se puede leer, se aparta el fichero y se recupera
+	# el respaldo de la última escritura buena en vez de perder todo el progreso.
+	var parsed := _read_profile(_save_path)
+	if parsed.is_empty():
+		if FileAccess.file_exists(_save_path):
+			_quarantine_corrupt(_save_path)
+		# Tambien sin fichero principal (cierre entre borrar y renombrar) el
+		# respaldo es la ultima copia buena; antes solo se recuperaba si el
+		# principal existia pero estaba corrupto.
+		parsed = _read_profile(_save_backup_path)
+		if not parsed.is_empty():
+			push_warning("SaveManager: perfil recuperado desde %s" % _save_backup_path)
+	if not parsed.is_empty():
+		had_unlocks = parsed.has("unlocked_characters")
+		legacy_character = String(parsed.get("character", legacy_character))
+		_merge_into(data, parsed)
 	else:
 		_migrate_legacy_best()
 	# Asegura que una version antigua del perfil incorpora las claves nuevas
@@ -74,7 +103,8 @@ func load_profile() -> void:
 ## copia el perfil de la carpeta anterior para conservar récord, monedas y
 ## personajes desbloqueados.
 func _migrate_legacy_app_dir() -> void:
-	if FileAccess.file_exists(SAVE_PATH):
+	# En headless no se importa nada de las carpetas del jugador.
+	if _save_path != SAVE_PATH or FileAccess.file_exists(_save_path):
 		return
 	var current := OS.get_user_data_dir()
 	for legacy_name: String in LEGACY_APP_DIRS:
@@ -87,7 +117,7 @@ func _migrate_legacy_app_dir() -> void:
 		var text := source.get_as_text()
 		source.close()
 		DirAccess.make_dir_recursive_absolute(current)
-		var target := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+		var target := FileAccess.open(_save_path, FileAccess.WRITE)
 		if target == null:
 			return
 		target.store_string(text)
@@ -95,14 +125,100 @@ func _migrate_legacy_app_dir() -> void:
 		return
 
 
+## Escribe el perfil de forma atomica: primero un temporal, luego se rota el
+## respaldo y por ultimo se reemplaza el original. Un cierre a mitad de escritura
+## deja intacto el perfil anterior.
 func save_profile() -> void:
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	_resolve_test_path()
+	if _save_timer != null:
+		_save_timer.stop()
+	_pending_save = false
+	var file := FileAccess.open(_save_tmp_path, FileAccess.WRITE)
 	if file == null:
-		push_warning("SaveManager: no se pudo escribir %s" % SAVE_PATH)
+		push_warning("SaveManager: no se pudo escribir %s" % _save_tmp_path)
 		return
 	file.store_string(JSON.stringify(data, "\t"))
 	file.close()
+	if FileAccess.file_exists(_save_path):
+		DirAccess.copy_absolute(_save_path, _save_backup_path)
+	var err := DirAccess.rename_absolute(_save_tmp_path, _save_path)
+	if err != OK:
+		# Windows no reemplaza al renombrar: se quita el original (ya hay copia).
+		DirAccess.remove_absolute(_save_path)
+		err = DirAccess.rename_absolute(_save_tmp_path, _save_path)
+	if err != OK:
+		push_warning("SaveManager: no se pudo reemplazar %s (error %d)" % [_save_path, err])
+		return
 	profile_saved.emit()
+
+
+## Guardado diferido. Los ajustes y los contadores de carrera lo usan para no
+## escribir en disco en cada cambio de slider o cada caida.
+func _request_save() -> void:
+	_pending_save = true
+	if _save_timer == null:
+		save_profile()
+		return
+	_save_timer.start()
+
+
+func _on_save_timer() -> void:
+	if _pending_save:
+		save_profile()
+
+
+func _exit_tree() -> void:
+	if _pending_save:
+		save_profile()
+
+
+## Un test corre con `-s` y debe escribir en un perfil aparte. Se resuelve en el
+## primer guardado, no en `_ready`: cuando arranca el autoload ni el display
+## server ni los argumentos están disponibles, y por eso el primer intento podía
+## acabar escribiendo en el perfil del jugador.
+func _resolve_test_path() -> void:
+	if _test_path_resolved or not _forced_path.is_empty():
+		return
+	_test_path_resolved = true
+	var args := OS.get_cmdline_args()
+	if args.has("-s") or args.has("--script") or DisplayServer.get_name() == "headless":
+		_apply_path(HEADLESS_SAVE_PATH)
+
+
+## Solo para tests: fuerza un fichero de perfil concreto.
+func use_profile_path(path: String) -> void:
+	_forced_path = path
+	_test_path_resolved = true
+	_apply_path(path)
+
+
+func _apply_path(path: String) -> void:
+	_save_path = path
+	_save_tmp_path = path + ".tmp"
+	_save_backup_path = path + ".bak"
+
+
+## Lee un perfil. Devuelve {} si no existe, no se puede abrir o no es JSON valido.
+func _read_profile(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {}
+	var text := file.get_as_text()
+	file.close()
+	if text.strip_edges().is_empty():
+		return {}
+	var parsed: Variant = JSON.parse_string(text)
+	return parsed if parsed is Dictionary else {}
+
+
+## Aparta un perfil ilegible en vez de dejar que la siguiente escritura lo pise.
+func _quarantine_corrupt(path: String) -> void:
+	var corrupt := path + ".corrupt"
+	DirAccess.remove_absolute(corrupt)
+	DirAccess.rename_absolute(path, corrupt)
+	push_warning("SaveManager: perfil ilegible apartado en %s" % corrupt)
 
 
 func _default_data() -> Dictionary:
@@ -127,6 +243,7 @@ func _default_data() -> Dictionary:
 			"shake": 1.0,
 			"sensitivity": 1.0,
 			"fullscreen": false,
+			"reduced_motion": false,
 		},
 		"stats": {
 			"best_falls": 0,
@@ -185,6 +302,10 @@ func _repair_types() -> void:
 		data["settings"] = _default_data()["settings"]
 	if not data.get("stats") is Dictionary:
 		data["stats"] = _default_data()["stats"]
+	var stats: Dictionary = data["stats"]
+	stats["runs"] = int(stats.get("runs", 0))
+	stats["best_falls"] = int(stats.get("best_falls", 0))
+	data["stats"] = stats
 	data["character"] = String(data.get("character", CharacterCatalog.default_id()))
 	var unlocks: Variant = data.get("unlocked_characters", [])
 	var clean: Array = []
@@ -229,7 +350,7 @@ func set_setting(key: String, value: Variant) -> void:
 	settings[key] = value
 	data["settings"] = settings
 	apply_settings()
-	save_profile()
+	_request_save()
 	settings_changed.emit()
 
 
@@ -334,12 +455,15 @@ func medal_target(medal: String) -> float:
 			return MEDAL_BRONZE
 
 
+## Se guarda al empezar: una carrera abandonada o perdida tambien cuenta.
 func register_start() -> void:
 	data["races"] = int(data.get("races", 0)) + 1
+	_request_save()
 
 
 func register_fall() -> void:
 	data["falls"] = int(data.get("falls", 0)) + 1
+	_request_save()
 
 
 ## Monedas de una carrera: tiempo (cuanto mejor que el bronce, más), medalla
@@ -370,7 +494,7 @@ func coin_reward(time: float, medal: String, position: int = 0, bronze_time: flo
 
 
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
-## `level_id` separa los records de los cuatro circuitos; los tiempos de medalla
+## `level_id` separa los records de los cinco circuitos; los tiempos de medalla
 ## y la moneda por tiempo se calculan con los del nivel.
 func register_finish(time: float, falls: int, splits: Array, position: int = 0,
 		level_id: String = "", gold: float = MEDAL_GOLD,
@@ -419,8 +543,14 @@ func register_finish(time: float, falls: int, splits: Array, position: int = 0,
 	info["position"] = position
 	info["best"] = best_time(level_id)
 	data["finishes"] = int(data.get("finishes", 0)) + 1
-	if falls == 0:
-		data["stats"]["best_falls"] = int(data.get("stats", {}).get("best_falls", 0)) + 1
+	# `best_falls` es la carrera con menos caidas, no un contador de carreras
+	# limpias (eso es lo que medía antes).
+	var stats: Dictionary = data.get("stats", {})
+	var runs := int(stats.get("runs", 0)) + 1
+	var previous_best := int(stats.get("best_falls", falls))
+	stats["runs"] = runs
+	stats["best_falls"] = falls if runs <= 1 else mini(previous_best, falls)
+	data["stats"] = stats
 	save_profile()
 	return info
 

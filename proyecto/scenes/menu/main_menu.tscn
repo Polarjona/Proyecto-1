@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/menu/settings_menu.tscn" id="3_settings"]
 [ext_resource type="FontFile" path="res://ui/fonts/Baloo2-Variable.ttf" id="4_font"]
+[ext_resource type="Shader" path="res://shaders/lobby_background.gdshader" id="5_bg"]
 
 [sub_resource type="FontVariation" id="FontVariation_display"]
 base_font = ExtResource("4_font")
@@ -11,23 +12,15 @@ variation_opentype = {
 "wght": 800
 }
 
-[sub_resource type="Gradient" id="Gradient_bg"]
-offsets = PackedFloat32Array(0, 0.4, 0.72, 1)
-colors = PackedColorArray(0.36, 0.28, 0.46, 1, 0.5, 0.36, 0.52, 1, 0.74, 0.46, 0.44, 1, 0.93, 0.75, 0.55, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
-gradient = SubResource("Gradient_bg")
-width = 512
-height = 512
-fill_from = Vector2(0.05, 0)
-fill_to = Vector2(0.95, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lobby"]
+shader = ExtResource("5_bg")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
 content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 10.0
-bg_color = Color(1, 0.831, 0, 1)
+bg_color = Color(1, 0.824, 0.247, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -38,7 +31,7 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 22
 skew = Vector2(0.05, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 7)
 
@@ -47,7 +40,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 10.0
-bg_color = Color(1, 0.894, 0.302, 1)
+bg_color = Color(1, 0.878, 0.478, 1)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -58,7 +51,7 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 22
 skew = Vector2(0.05, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 8)
 
@@ -67,7 +60,7 @@ content_margin_left = 24.0
 content_margin_top = 18.0
 content_margin_right = 24.0
 content_margin_bottom = 10.0
-bg_color = Color(1, 0.176, 0.608, 1)
+bg_color = Color(1, 0.357, 0.102, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -78,7 +71,7 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 22
 skew = Vector2(0.05, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 2)
 
@@ -87,7 +80,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 10.0
-bg_color = Color(0.353, 0.278, 0.451, 1)
+bg_color = Color(0.071, 0.133, 0.243, 1)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -98,7 +91,7 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 22
 skew = Vector2(0.05, 0)
-shadow_color = Color(0.102, 0, 0.169, 0.7)
+shadow_color = Color(0.027, 0.078, 0.247, 0.7)
 shadow_size = 0
 shadow_offset = Vector2(0, 4)
 
@@ -109,10 +102,10 @@ thickness = 3
 [sub_resource type="Theme" id="Theme_sticker"]
 default_font = SubResource("FontVariation_display")
 default_font_size = 18
-Button/colors/font_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_color = Color(0.024, 0.071, 0.173, 1)
 Button/colors/font_disabled_color = Color(0.82, 0.8, 0.9, 0.85)
-Button/colors/font_focus_color = Color(0.043, 0.063, 0.188, 1)
-Button/colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
+Button/colors/font_focus_color = Color(0.024, 0.071, 0.173, 1)
+Button/colors/font_hover_color = Color(0.024, 0.071, 0.173, 1)
 Button/colors/font_pressed_color = Color(1, 1, 1, 1)
 Button/font_sizes/font_size = 17
 Button/styles/disabled = SubResource("StyleBoxFlat_button_disabled")
@@ -128,7 +121,7 @@ content_margin_left = 18.0
 content_margin_top = 7.0
 content_margin_right = 18.0
 content_margin_bottom = 5.0
-bg_color = Color(0, 0.898, 1, 1)
+bg_color = Color(0.086, 0.851, 0.945, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -139,7 +132,7 @@ corner_radius_top_right = 27
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 25
 skew = Vector2(0.07, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 6)
 
@@ -148,7 +141,7 @@ content_margin_left = 18.0
 content_margin_top = 7.0
 content_margin_right = 18.0
 content_margin_bottom = 5.0
-bg_color = Color(0.435, 0.973, 1, 1)
+bg_color = Color(0.424, 0.94, 1, 1)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -159,7 +152,7 @@ corner_radius_top_right = 27
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 25
 skew = Vector2(0.07, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 7)
 
@@ -168,7 +161,7 @@ content_margin_left = 22.0
 content_margin_top = 9.0
 content_margin_right = 22.0
 content_margin_bottom = 9.0
-bg_color = Color(1, 0.831, 0, 1)
+bg_color = Color(1, 0.824, 0.247, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -179,7 +172,7 @@ corner_radius_top_right = 22
 corner_radius_bottom_right = 28
 corner_radius_bottom_left = 24
 skew = Vector2(-0.04, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 6)
 
@@ -188,7 +181,7 @@ content_margin_left = 26.0
 content_margin_top = 22.0
 content_margin_right = 26.0
 content_margin_bottom = 22.0
-bg_color = Color(0.2, 0.063, 0.36, 0.97)
+bg_color = Color(0.039, 0.157, 0.373, 0.97)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -198,12 +191,12 @@ corner_radius_top_left = 30
 corner_radius_top_right = 22
 corner_radius_bottom_right = 34
 corner_radius_bottom_left = 26
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 10)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play"]
-bg_color = Color(1, 0.176, 0.608, 1)
+bg_color = Color(1, 0.357, 0.102, 1)
 border_width_left = 8
 border_width_top = 8
 border_width_right = 8
@@ -214,12 +207,12 @@ corner_radius_top_right = 26
 corner_radius_bottom_right = 38
 corner_radius_bottom_left = 28
 skew = Vector2(0.03, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 14)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_hover"]
-bg_color = Color(1, 0.361, 0.706, 1)
+bg_color = Color(1, 0.51, 0.239, 1)
 border_width_left = 8
 border_width_top = 8
 border_width_right = 8
@@ -230,13 +223,13 @@ corner_radius_top_right = 26
 corner_radius_bottom_right = 38
 corner_radius_bottom_left = 28
 skew = Vector2(0.03, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 15)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_pressed"]
 content_margin_top = 8.0
-bg_color = Color(0.851, 0.11, 0.51, 1)
+bg_color = Color(0.82, 0.22, 0.06, 1)
 border_width_left = 7
 border_width_top = 7
 border_width_right = 7
@@ -247,7 +240,7 @@ corner_radius_top_right = 26
 corner_radius_bottom_right = 38
 corner_radius_bottom_left = 28
 skew = Vector2(0.03, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 4)
 
@@ -256,7 +249,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 12.0
-bg_color = Color(1, 0.831, 0, 1)
+bg_color = Color(1, 0.824, 0.247, 1)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -267,7 +260,7 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 30
 corner_radius_bottom_left = 22
 skew = Vector2(0.06, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 9)
 
@@ -276,7 +269,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 12.0
-bg_color = Color(1, 0.894, 0.302, 1)
+bg_color = Color(1, 0.878, 0.478, 1)
 border_width_left = 7
 border_width_top = 7
 border_width_right = 7
@@ -287,7 +280,7 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 30
 corner_radius_bottom_left = 22
 skew = Vector2(0.06, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 10)
 
@@ -296,7 +289,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 12.0
-bg_color = Color(0, 0.898, 1, 1)
+bg_color = Color(0.086, 0.851, 0.945, 1)
 border_width_left = 6
 border_width_top = 6
 border_width_right = 6
@@ -307,7 +300,7 @@ corner_radius_top_right = 28
 corner_radius_bottom_right = 22
 corner_radius_bottom_left = 32
 skew = Vector2(-0.06, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 9)
 
@@ -316,7 +309,7 @@ content_margin_left = 24.0
 content_margin_top = 12.0
 content_margin_right = 24.0
 content_margin_bottom = 12.0
-bg_color = Color(0.435, 0.973, 1, 1)
+bg_color = Color(0.424, 0.94, 1, 1)
 border_width_left = 7
 border_width_top = 7
 border_width_right = 7
@@ -327,12 +320,12 @@ corner_radius_top_right = 28
 corner_radius_bottom_right = 22
 corner_radius_bottom_left = 32
 skew = Vector2(-0.06, 0)
-shadow_color = Color(0.102, 0, 0.169, 1)
+shadow_color = Color(0.024, 0.094, 0.22, 1)
 shadow_size = 0
 shadow_offset = Vector2(0, 10)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_bg"]
-bg_color = Color(0.145, 0.027, 0.243, 1)
+bg_color = Color(0.024, 0.094, 0.22, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -344,7 +337,7 @@ corner_radius_bottom_right = 16
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_fill"]
-bg_color = Color(1, 0.882, 0.302, 1)
+bg_color = Color(0.086, 0.851, 0.945, 1)
 corner_radius_top_left = 14
 corner_radius_top_right = 10
 corner_radius_bottom_right = 16
@@ -357,11 +350,11 @@ height = 0.22
 radial_segments = 48
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cushion"]
-albedo_color = Color(1, 0.24, 0.62, 1)
+albedo_color = Color(1, 0.357, 0.102, 1)
 metallic = 0.05
 roughness = 0.35
 emission_enabled = true
-emission = Color(1, 0.18, 0.55, 1)
+emission = Color(1, 0.824, 0.247, 1)
 emission_energy_multiplier = 0.55
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_base"]
@@ -371,12 +364,12 @@ height = 0.45
 radial_segments = 48
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
-albedo_color = Color(0.1, 0.78, 1, 1)
+albedo_color = Color(0.047, 0.235, 0.518, 1)
 metallic = 0.05
 roughness = 0.4
 emission_enabled = true
-emission = Color(0, 0.7, 1, 1)
-emission_energy_multiplier = 0.5
+emission = Color(0.086, 0.851, 0.945, 1)
+emission_energy_multiplier = 0.55
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_levels"]
 
@@ -390,7 +383,7 @@ grow_vertical = 2
 theme = SubResource("Theme_sticker")
 script = ExtResource("1_main")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -398,15 +391,35 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_bg")
-expand_mode = 1
-stretch_mode = 0
+material = SubResource("ShaderMaterial_lobby")
+color = Color(1, 1, 1, 1)
 
 [node name="TopBar" type="Control" parent="."]
 layout_mode = 1
 anchor_right = 1.0
 offset_bottom = 92.0
 grow_horizontal = 2
+
+[node name="Backdrop" type="ColorRect" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.024, 0.094, 0.22, 0.97)
+
+[node name="AccentLine" type="ColorRect" parent="TopBar"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.086, 0.851, 0.945, 1)
 
 [node name="HBox" type="HBoxContainer" parent="TopBar"]
 layout_mode = 1
@@ -419,7 +432,7 @@ offset_right = -32.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
 [node name="Logo" type="VBoxContainer" parent="TopBar/HBox"]
 layout_mode = 2
@@ -428,22 +441,14 @@ theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="TopBar/HBox/Logo"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.89, 0.68, 1)
-theme_override_colors/font_outline_color = Color(0.17, 0.09, 0.15, 1)
-theme_override_colors/font_shadow_color = Color(0.09, 0.04, 0.09, 0.55)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
+theme_override_colors/font_outline_color = Color(0.937, 0.98, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.027, 0.078, 0.247, 0.9)
 theme_override_constants/outline_size = 7
 theme_override_constants/shadow_offset_x = 0
 theme_override_constants/shadow_offset_y = 4
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 40
 text = "TUMBLE RUSH"
-
-[node name="Subtitle" type="Label" parent="TopBar/HBox/Logo"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.102, 0, 0.169, 0.9)
-theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 11
-text = "CARRERA DE OBSTÁCULOS · TEMPORADA 1"
 
 [node name="SpacerLeft" type="Control" parent="TopBar/HBox"]
 layout_mode = 2
@@ -455,77 +460,39 @@ size_flags_vertical = 4
 theme_override_constants/separation = 8
 
 [node name="CharacterButton" type="Button" parent="TopBar/HBox/NavRow"]
-custom_minimum_size = Vector2(108, 40)
+custom_minimum_size = Vector2(94, 40)
 layout_mode = 2
+theme_type_variation = &"NavButton"
 focus_mode = 2
-theme_override_font_sizes/font_size = 13
-theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
-theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
-theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
 text = "PERSONAJE"
 
 [node name="SettingsButton" type="Button" parent="TopBar/HBox/NavRow"]
-custom_minimum_size = Vector2(98, 40)
+custom_minimum_size = Vector2(82, 40)
 layout_mode = 2
+theme_type_variation = &"NavButton"
 focus_mode = 2
-theme_override_font_sizes/font_size = 13
-theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
-theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
-theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
 text = "AJUSTES"
 
 [node name="ControlsButton" type="Button" parent="TopBar/HBox/NavRow"]
-custom_minimum_size = Vector2(108, 40)
+custom_minimum_size = Vector2(98, 40)
 layout_mode = 2
+theme_type_variation = &"NavButton"
 focus_mode = 2
-theme_override_font_sizes/font_size = 13
-theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
-theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
-theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
 text = "CONTROLES"
 
 [node name="CreditsButton" type="Button" parent="TopBar/HBox/NavRow"]
-custom_minimum_size = Vector2(98, 40)
-layout_mode = 2
-focus_mode = 2
-theme_override_font_sizes/font_size = 13
-theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
-theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
-theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
-text = "CRÉDITOS"
-
-[node name="QuitButton" type="Button" parent="TopBar/HBox/NavRow"]
 custom_minimum_size = Vector2(86, 40)
 layout_mode = 2
+theme_type_variation = &"NavButton"
 focus_mode = 2
-theme_override_colors/font_color = Color(0.071, 0.231, 0.302, 0.7)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/focus = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pill_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pill")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pill_hover")
-theme_override_colors/font_pressed_color = Color(0.043, 0.063, 0.188, 1)
-theme_override_colors/font_hover_color = Color(0.043, 0.063, 0.188, 1)
-text = "SALIR"
+text = "CRÉDITOS"
 
 [node name="SpacerRight" type="Control" parent="TopBar/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="CoinsBadge" type="PanelContainer" parent="TopBar/HBox"]
-custom_minimum_size = Vector2(168, 44)
+custom_minimum_size = Vector2(146, 44)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -533,11 +500,19 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 
 [node name="CoinsLabel" type="Label" parent="TopBar/HBox/CoinsBadge"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.071, 0.231, 0.302, 1)
+theme_override_colors/font_color = Color(0.024, 0.094, 0.22, 1)
 theme_override_font_sizes/font_size = 16
 text = "0 monedas"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="QuitButton" type="Button" parent="TopBar/HBox"]
+custom_minimum_size = Vector2(74, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"DangerButton"
+focus_mode = 2
+text = "SALIR"
 
 [node name="SeasonCard" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -553,9 +528,9 @@ theme_override_constants/separation = 6
 
 [node name="SeasonKicker" type="Label" parent="SeasonCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_font_sizes/font_size = 12
-text = "TEMPORADA 1"
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
+theme_override_font_sizes/font_size = 14
+text = "PIVOT PUSH"
 
 [node name="SeasonTitle" type="Label" parent="SeasonCard/VBox"]
 layout_mode = 2
@@ -601,8 +576,8 @@ text = "Medalla de oro: 70.0 s"
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(1, 1, 1, 0.72)
-theme_override_font_sizes/font_size = 11
-text = "Corre, gana monedas y desbloquea a los 5 corredores."
+theme_override_font_sizes/font_size = 14
+text = "Corre, gana monedas y desbloquea los 10 corredores."
 autowrap_mode = 2
 vertical_alignment = 2
 
@@ -613,10 +588,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -235.0
-offset_top = -238.0
-offset_right = 235.0
-offset_bottom = 232.0
+offset_left = -260.0
+offset_top = -250.0
+offset_right = 260.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -626,7 +601,7 @@ stretch = true
 own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(470, 470)
+size = Vector2i(520, 480)
 render_target_update_mode = 4
 msaa_3d = 2
 
@@ -645,7 +620,7 @@ material_override = SubResource("StandardMaterial3D_cushion")
 cast_shadow = 0
 
 [node name="Camera3D" type="Camera3D" parent="LobbyStage/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 6.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 5.6)
 current = true
 fov = 34.0
 near = 0.05
@@ -659,15 +634,26 @@ shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.6, 2.4)
-light_color = Color(0.72, 0.86, 0.98, 1)
-light_energy = 0.8
+light_color = Color(0.45, 0.86, 1, 1)
+light_energy = 0.85
 omni_range = 7.0
 
 [node name="RimLight" type="OmniLight3D" parent="LobbyStage/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 2.0, -1.6)
-light_color = Color(1, 0.84, 0.82, 1)
-light_energy = 0.75
+light_color = Color(1, 0.55, 0.16, 1)
+light_energy = 0.85
 omni_range = 7.0
+
+[node name="Scrim" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.027, 0.078, 0.247, 0.72)
 
 [node name="PlayerBadge" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -687,7 +673,7 @@ theme_override_constants/separation = 12
 [node name="Crown" type="Label" parent="PlayerBadge/HBox"]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_colors/font_color = Color(1, 0.176, 0.608, 1)
+theme_override_colors/font_color = Color(1, 0.357, 0.102, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 30
@@ -700,34 +686,9 @@ theme_override_constants/separation = 0
 
 [node name="PlayerNameLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 1)
+theme_override_colors/font_color = Color(0.024, 0.094, 0.22, 1)
 theme_override_font_sizes/font_size = 19
 text = "Chef"
-
-[node name="PlayerTagLabel" type="Label" parent="PlayerBadge/HBox/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.66)
-theme_override_font_sizes/font_size = 10
-text = "TU CORREDOR"
-
-[node name="PlayHint" type="Label" parent="."]
-layout_mode = 1
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -164.0
-offset_right = -40.0
-offset_bottom = -140.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.102, 0, 0.169, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 13
-text = "Carrera clásica o torneo con bots"
-horizontal_alignment = 2
 
 [node name="PlayButton" type="Button" parent="."]
 custom_minimum_size = Vector2(304, 88)
@@ -742,6 +703,7 @@ offset_right = -40.0
 offset_bottom = -44.0
 grow_horizontal = 0
 grow_vertical = 0
+theme_type_variation = &"PrimaryButton"
 focus_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -757,24 +719,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_play")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_play_pressed")
 text = "JUGAR!"
 
-[node name="VersionLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -180.0
-offset_top = -26.0
-offset_right = 180.0
-offset_bottom = -6.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 0.62)
-theme_override_font_sizes/font_size = 11
-text = "Godot 4.7  ·  Temporada 1"
-horizontal_alignment = 1
-
 [node name="ModePanel" type="PanelContainer" parent="."]
 visible = false
 layout_mode = 1
@@ -784,9 +728,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = -262.0
+offset_top = -280.0
 offset_right = 340.0
-offset_bottom = 262.0
+offset_bottom = 280.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -801,7 +745,7 @@ theme_override_constants/separation = 12
 
 [node name="ModeTitle" type="Label" parent="ModePanel/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 30
@@ -815,6 +759,7 @@ size_flags_horizontal = 3
 [node name="ModeBackButton" type="Button" parent="ModePanel/VBox/Header"]
 custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 focus_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "VOLVER"
@@ -825,6 +770,7 @@ layout_mode = 2
 [node name="ClassicCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxFlat_classic_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_classic_hover")
@@ -863,7 +809,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.055, 0.204, 0.27, 0.8)
 theme_override_font_sizes/font_size = 12
-text = "Los cuatro circuitos, contra el cronómetro. Persigue tu récord y las medallas."
+text = "Los cinco circuitos, contra el cronómetro. Persigue tu récord y las medallas."
 vertical_alignment = 1
 
 [node name="CardTag" type="Label" parent="ModePanel/VBox/ClassicCard"]
@@ -877,7 +823,7 @@ offset_right = -24.0
 offset_bottom = 70.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.016, 0.478, 0.322, 1)
+theme_override_colors/font_color = Color(0.024, 0.071, 0.173, 1)
 theme_override_font_sizes/font_size = 15
 text = "SOLO"
 horizontal_alignment = 2
@@ -889,18 +835,21 @@ theme_override_constants/separation = 6
 
 [node name="LevelLabel" type="Label" parent="ModePanel/VBox/LevelPicker"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_font_sizes/font_size = 13
 text = "CIRCUITO DE LA CARRERA CLÁSICA"
 
-[node name="LevelRow" type="HBoxContainer" parent="ModePanel/VBox/LevelPicker"]
+[node name="LevelRow" type="GridContainer" parent="ModePanel/VBox/LevelPicker"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 3
 
 [node name="Level1" type="Button" parent="ModePanel/VBox/LevelPicker/LevelRow"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
@@ -912,6 +861,7 @@ text = "Pivot Push"
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
@@ -922,6 +872,7 @@ text = "Spin Go Round"
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
@@ -932,6 +883,7 @@ text = "Glacier Gallop"
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
@@ -942,6 +894,7 @@ text = "Lava Vortex"
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChipButton"
 focus_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_levels")
@@ -951,6 +904,7 @@ text = "Abyss Run"
 [node name="TournamentCard" type="Button" parent="ModePanel/VBox"]
 custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
+theme_type_variation = &"InfoButton"
 focus_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxFlat_tournament_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_tournament_hover")
@@ -1003,7 +957,7 @@ offset_right = -24.0
 offset_bottom = 70.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.792, 0.267, 0.2, 1)
+theme_override_colors/font_color = Color(0.024, 0.071, 0.173, 1)
 theme_override_font_sizes/font_size = 15
 text = "4 RONDAS"
 horizontal_alignment = 2
@@ -1013,7 +967,7 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 12
-text = "El torneo recorre los cuatro circuitos en orden. Cada modo guarda su récord y reparte monedas."
+text = "El torneo recorre cuatro circuitos en orden; el quinto es solo para la carrera clásica."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -1025,10 +979,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -470.0
-offset_top = -290.0
-offset_right = 470.0
-offset_bottom = 290.0
+offset_left = -490.0
+offset_top = -300.0
+offset_right = 490.0
+offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -1043,7 +997,7 @@ theme_override_constants/separation = 12
 
 [node name="PanelTitle" type="Label" parent="CharacterPanel/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 30
@@ -1056,7 +1010,7 @@ size_flags_horizontal = 3
 
 [node name="PanelCoins" type="Label" parent="CharacterPanel/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_font_sizes/font_size = 17
 text = "0 monedas"
 vertical_alignment = 1
@@ -1064,6 +1018,7 @@ vertical_alignment = 1
 [node name="BackButton" type="Button" parent="CharacterPanel/VBox/Header"]
 custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 theme_override_font_sizes/font_size = 14
 text = "VOLVER"
 
@@ -1076,27 +1031,18 @@ size_flags_vertical = 3
 theme_override_constants/separation = 20
 
 [node name="RosterScroll" type="ScrollContainer" parent="CharacterPanel/VBox/Body"]
-custom_minimum_size = Vector2(352, 0)
+custom_minimum_size = Vector2(470, 0)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Roster" type="VBoxContainer" parent="CharacterPanel/VBox/Body/RosterScroll"]
-custom_minimum_size = Vector2(352, 0)
+[node name="Roster" type="GridContainer" parent="CharacterPanel/VBox/Body/RosterScroll"]
+custom_minimum_size = Vector2(470, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
-
-[node name="RosterSpacer" type="Control" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="RosterHint" type="Label" parent="CharacterPanel/VBox/Body/RosterScroll/Roster"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 12
-text = "Los personajes bloqueados se compran con monedas ganadas en carrera."
-autowrap_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
 
 [node name="PreviewBox" type="VBoxContainer" parent="CharacterPanel/VBox/Body"]
 layout_mode = 2
@@ -1104,7 +1050,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="CharacterPreview" type="SubViewportContainer" parent="CharacterPanel/VBox/Body/PreviewBox"]
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(0, 330)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
@@ -1114,7 +1060,7 @@ stretch = true
 own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(460, 300)
+size = Vector2i(460, 330)
 render_target_update_mode = 4
 msaa_3d = 2
 
@@ -1133,7 +1079,7 @@ material_override = SubResource("StandardMaterial3D_cushion")
 cast_shadow = 0
 
 [node name="Camera3D" type="Camera3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 6.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 5.15)
 current = true
 fov = 32.0
 near = 0.05
@@ -1147,19 +1093,19 @@ shadow_enabled = true
 
 [node name="FillLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 1.4, 2.4)
-light_color = Color(0.65, 0.85, 1, 1)
-light_energy = 0.75
+light_color = Color(0.45, 0.86, 1, 1)
+light_energy = 0.85
 omni_range = 6.0
 
 [node name="RimLight" type="OmniLight3D" parent="CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.9, -1.6)
-light_color = Color(1, 0.84, 0.86, 1)
-light_energy = 0.8
+light_color = Color(1, 0.55, 0.16, 1)
+light_energy = 0.85
 omni_range = 6.0
 
 [node name="SelectedCharacterLabel" type="Label" parent="CharacterPanel/VBox/Body/PreviewBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_font_sizes/font_size = 23
 text = "Chef"
 horizontal_alignment = 1
@@ -1174,6 +1120,7 @@ horizontal_alignment = 1
 [node name="BuyButton" type="Button" parent="CharacterPanel/VBox/Body/PreviewBox"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 16
 text = "ELEGIDO"
 
@@ -1199,7 +1146,7 @@ theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 28
@@ -1228,12 +1175,13 @@ text = "Pausa:  Escape  o  Start del mando"
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 14
-text = "Objetivo: sobrevive al circuito y baja de 70 s para el oro."
+text = "Objetivo: cruza el circuito y persigue la medalla de oro."
 autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="ControlsPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 text = "VOLVER"
 
 [node name="CreditsPanel" type="PanelContainer" parent="."]
@@ -1258,7 +1206,7 @@ theme_override_constants/separation = 10
 
 [node name="Label" type="Label" parent="CreditsPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
+theme_override_colors/font_color = Color(1, 0.824, 0.247, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 28
@@ -1293,6 +1241,7 @@ autowrap_mode = 2
 [node name="BackButton" type="Button" parent="CreditsPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
+theme_type_variation = &"GhostButton"
 text = "VOLVER"
 
 [node name="SettingsMenu" parent="." instance=ExtResource("3_settings")]

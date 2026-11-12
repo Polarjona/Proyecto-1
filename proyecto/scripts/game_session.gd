@@ -19,7 +19,21 @@ const LEVELS := [
 const LEVEL_NAMES := [
 	"Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex", "Abyss Run",
 ]
+const LEVEL_IDS := [
+	"pivot_push", "spin_go_round", "glacier_gallop", "lava_vortex", "abyss_run",
+]
+## Tiempos de medalla de cada circuito, en el mismo orden que LEVELS. El menú
+## los usa para no enseñar los 70/95/130 genéricos en mapas cortos o largos.
+const LEVEL_MEDALS := [
+	{"gold": 130.0, "silver": 170.0, "bronze": 215.0},
+	{"gold": 115.0, "silver": 145.0, "bronze": 185.0},
+	{"gold": 145.0, "silver": 180.0, "bronze": 225.0},
+	{"gold": 84.0, "silver": 100.0, "bronze": 116.0},
+	{"gold": 112.0, "silver": 138.0, "bronze": 172.0},
+]
 const TOTAL_ROUNDS := 4
+## Plazas que clasifican en cada ronda: 3 → 3 → 2 → 1.
+const QUALIFIERS_BY_ROUND := [3, 3, 2, 1]
 
 var mode: String = "classic"
 var round: int = 1
@@ -50,6 +64,14 @@ func level_count() -> int:
 
 func level_name(index: int) -> String:
 	return String(LEVEL_NAMES[clampi(index, 0, LEVEL_NAMES.size() - 1)])
+
+
+func level_id(index: int) -> String:
+	return String(LEVEL_IDS[clampi(index, 0, LEVEL_IDS.size() - 1)])
+
+
+func level_medals(index: int) -> Dictionary:
+	return (LEVEL_MEDALS[clampi(index, 0, LEVEL_MEDALS.size() - 1)] as Dictionary).duplicate()
 
 
 func classic_level_path() -> String:
@@ -86,7 +108,7 @@ func advance_round() -> void:
 		return
 	round += 1
 	bot_count = mini(bot_count + 1, 11)
-	qualifiers = maxi(1, 3 - int((round - 1) / 2))
+	qualifiers = QUALIFIERS_BY_ROUND[clampi(round - 1, 0, QUALIFIERS_BY_ROUND.size() - 1)]
 	level_path = LEVELS[clampi(round - 1, 0, LEVELS.size() - 1)]
 	mode_changed.emit(mode)
 
