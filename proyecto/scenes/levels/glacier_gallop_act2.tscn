@@ -1,0 +1,557 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="1_5b8pk"]
+[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="2_6p58t"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="3_yxnls"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="4_ngxnl"]
+[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="5_2gds0"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="6_s4d0n"]
+[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="7_vvup2"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="8_q8ags"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="9_qjmni"]
+[ext_resource type="Shader" path="res://shaders/platform.gdshader" id="10_sujpy"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/piston.tscn" id="11_nsv4j"]
+[ext_resource type="Script" path="res://scripts/piston.gd" id="12_tyysx"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="13_6r2dd"]
+[ext_resource type="Script" path="res://scripts/conveyor.gd" id="14_38cql"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="15_4diyl"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/crumble_tile.tscn" id="16_xrum2"]
+[ext_resource type="Script" path="res://scripts/crumble_tile.gd" id="17_12ps8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b5ycs"]
+albedo_color = Color(0.58, 0.8, 0.82, 1)
+roughness = 0.5
+emission_enabled = true
+emission = Color(0.58, 0.8, 0.82, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_6lm0k"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x8c5x"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jmdo1"]
+albedo_color = Color(0.2, 0.3, 0.36, 1)
+roughness = 0.92
+emission_enabled = true
+emission = Color(0.06, 0.14, 0.18, 1)
+emission_energy_multiplier = 0.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_8dop7"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s2w44"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g4hxw"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_qatwa"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gwpno"]
+size = Vector3(10, 0.5, 8.944272)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tgjyh"]
+render_priority = 0
+shader = ExtResource("10_sujpy")
+shader_parameter/base_color = Color(0.27, 0.43, 0.5, 1)
+shader_parameter/accent_color = Color(0.85, 0.95, 0.95, 1)
+shader_parameter/grout_color = Color(0.08, 0.15, 0.19, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.1
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_t7e28"]
+size = Vector3(10, 0.5, 8.944272)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ty2hh"]
+size = Vector3(12, 0.5, 26)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dy2te"]
+render_priority = 0
+shader = ExtResource("10_sujpy")
+shader_parameter/base_color = Color(0.19, 0.33, 0.4, 1)
+shader_parameter/accent_color = Color(0.72, 0.88, 0.9, 1)
+shader_parameter/grout_color = Color(0.06, 0.12, 0.16, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.12
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_0xr14"]
+size = Vector3(12, 0.5, 26)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n4y3p"]
+render_priority = 0
+shader = ExtResource("10_sujpy")
+shader_parameter/base_color = Color(0.55, 0.67, 0.7, 1)
+shader_parameter/accent_color = Color(0.9, 0.96, 0.95, 1)
+shader_parameter/grout_color = Color(0.25, 0.35, 0.4, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.05
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[node name="Act2" type="Node3D" unique_id=379361970]
+
+[node name="BallRain13" type="Node3D" parent="." unique_id=1493079398 instance=ExtResource("1_5b8pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -120)
+script = ExtResource("2_6p58t")
+ball_scene = ExtResource("3_yxnls")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.3
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile13" type="AnimatableBody3D" parent="." unique_id=1123153519 instance=ExtResource("4_ngxnl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -120)
+collision_mask = 0
+script = ExtResource("5_2gds0")
+spin_speed = -1.35
+glow = false
+
+[node name="SpinGust4" type="Area3D" parent="." unique_id=32699242 instance=ExtResource("6_s4d0n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, -120)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("7_vvup2")
+wind_direction = Vector3(-1, 0, 0)
+strength = 4.6000000000000005
+gust_amplitude = 1.8
+show_fan = false
+
+[node name="BallRain12" type="Node3D" parent="." unique_id=1471115927 instance=ExtResource("1_5b8pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -120)
+script = ExtResource("2_6p58t")
+ball_scene = ExtResource("3_yxnls")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.2
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="Centrifuge" type="AnimatableBody3D" parent="." unique_id=690218990 instance=ExtResource("4_ngxnl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -120)
+collision_mask = 0
+script = ExtResource("5_2gds0")
+spin_speed = 1.1
+glow = false
+
+[node name="SeamPoleL124Cap" type="MeshInstance3D" parent="." unique_id=457382911]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.25, -124)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_6lm0k")
+
+[node name="SeamPoleL124" type="StaticBody3D" parent="." unique_id=922741018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.1, -124)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23376" type="CollisionShape3D" parent="SeamPoleL124" unique_id=1268046225]
+shape = SubResource("BoxShape3D_x8c5x")
+
+[node name="@MeshInstance3D@23377" type="MeshInstance3D" parent="SeamPoleL124" unique_id=1878812822]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_8dop7")
+
+[node name="SeamPoleR124" type="StaticBody3D" parent="." unique_id=1951034766]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.1, -124)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23386" type="CollisionShape3D" parent="SeamPoleR124" unique_id=161407608]
+shape = SubResource("BoxShape3D_s2w44")
+
+[node name="@MeshInstance3D@23387" type="MeshInstance3D" parent="SeamPoleR124" unique_id=1756055343]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_g4hxw")
+
+[node name="SeamPoleR124Cap" type="MeshInstance3D" parent="." unique_id=12776495]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.25, -124)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_qatwa")
+
+[node name="SpinTile15" type="AnimatableBody3D" parent="." unique_id=502700601 instance=ExtResource("4_ngxnl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -128)
+collision_mask = 0
+script = ExtResource("5_2gds0")
+spin_speed = -1.1
+glow = false
+
+[node name="BallRain15" type="Node3D" parent="." unique_id=421562536 instance=ExtResource("1_5b8pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -128)
+script = ExtResource("2_6p58t")
+ball_scene = ExtResource("3_yxnls")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.5
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile16" type="AnimatableBody3D" parent="." unique_id=2073613097 instance=ExtResource("4_ngxnl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -128)
+collision_mask = 0
+script = ExtResource("5_2gds0")
+spin_speed = 1.35
+glow = false
+
+[node name="BallRain16" type="Node3D" parent="." unique_id=1951310448 instance=ExtResource("1_5b8pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -128)
+script = ExtResource("2_6p58t")
+ball_scene = ExtResource("3_yxnls")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.6
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile17" type="AnimatableBody3D" parent="." unique_id=1989542524 instance=ExtResource("4_ngxnl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -128)
+collision_mask = 0
+script = ExtResource("5_2gds0")
+spin_speed = -1.6
+glow = false
+
+[node name="BallRain17" type="Node3D" parent="." unique_id=1714005193 instance=ExtResource("1_5b8pk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -128)
+script = ExtResource("2_6p58t")
+ball_scene = ExtResource("3_yxnls")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.7
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinGust5" type="Area3D" parent="." unique_id=824895772 instance=ExtResource("6_s4d0n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, -128)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("7_vvup2")
+strength = 5.0
+gust_amplitude = 1.8
+show_fan = false
+
+[node name="CP4" type="Area3D" parent="." unique_id=90021179 instance=ExtResource("8_q8ags")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -135)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("9_qjmni")
+checkpoint_name = "Checkpoint 4"
+
+[node name="ClimbB" type="StaticBody3D" parent="." unique_id=282371365]
+transform = Transform3D(1, 0, 0, 0, 0.8944272, -0.4472136, 0, 0.4472136, 0.8944272, 0, 4.7763934, -140.1118)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23340" type="CollisionShape3D" parent="ClimbB" unique_id=2133233849]
+shape = SubResource("BoxShape3D_gwpno")
+
+[node name="@MeshInstance3D@23341" type="MeshInstance3D" parent="ClimbB" unique_id=180116177]
+material_override = SubResource("ShaderMaterial_tgjyh")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_t7e28")
+
+[node name="PistonR" type="Node3D" parent="." unique_id=1663971636 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 8.2, -146)
+script = ExtResource("12_tyysx")
+travel = Vector3(-5.4, 0, 0)
+push_force = 7.2
+phase_offset = 1.73
+
+[node name="PistonL" type="Node3D" parent="." unique_id=2006466999 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 8.2, -146)
+script = ExtResource("12_tyysx")
+travel = Vector3(5.4, 0, 0)
+push_force = 7.2
+
+[node name="PistonR2" type="Node3D" parent="." unique_id=210751373 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 8.2, -150.5)
+script = ExtResource("12_tyysx")
+travel = Vector3(-5.4, 0, 0)
+push_force = 7.2
+phase_offset = 2.4299999999999997
+
+[node name="PistonL2" type="Node3D" parent="." unique_id=653353407 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 8.2, -150.5)
+script = ExtResource("12_tyysx")
+travel = Vector3(5.4, 0, 0)
+push_force = 7.2
+phase_offset = 0.7
+
+[node name="PistonL3" type="Node3D" parent="." unique_id=456452797 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 8.2, -155)
+script = ExtResource("12_tyysx")
+travel = Vector3(5.4, 0, 0)
+push_force = 7.2
+phase_offset = 1.4
+
+[node name="PistonR3" type="Node3D" parent="." unique_id=1381182669 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 8.2, -155)
+script = ExtResource("12_tyysx")
+travel = Vector3(-5.4, 0, 0)
+push_force = 7.2
+phase_offset = 3.13
+
+[node name="GalleryConveyor" type="Area3D" parent="." unique_id=416124714 instance=ExtResource("13_6r2dd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.87, -156)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_38cql")
+direction = Vector3(0, 0, 1)
+force = 3.4
+arrow_material = ExtResource("15_4diyl")
+arrow_count = 3
+arrow_span = 5.0
+belt_length = 12.0
+belt_width = 26.0
+
+[node name="IceGallery" type="StaticBody3D" parent="." unique_id=1222501386]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.75, -156)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23342" type="CollisionShape3D" parent="IceGallery" unique_id=470056767]
+shape = SubResource("BoxShape3D_ty2hh")
+
+[node name="@MeshInstance3D@23343" type="MeshInstance3D" parent="IceGallery" unique_id=938935882]
+material_override = SubResource("ShaderMaterial_dy2te")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_0xr14")
+
+[node name="PistonL4" type="Node3D" parent="." unique_id=399120511 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 8.2, -159.5)
+script = ExtResource("12_tyysx")
+travel = Vector3(5.4, 0, 0)
+push_force = 7.2
+phase_offset = 2.0999999999999996
+
+[node name="PistonR4" type="Node3D" parent="." unique_id=464543482 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 8.2, -159.5)
+script = ExtResource("12_tyysx")
+travel = Vector3(-5.4, 0, 0)
+push_force = 7.2
+phase_offset = 3.83
+
+[node name="PistonL5" type="Node3D" parent="." unique_id=752678234 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 8.2, -164)
+script = ExtResource("12_tyysx")
+travel = Vector3(5.4, 0, 0)
+push_force = 7.2
+phase_offset = 2.8
+
+[node name="PistonR5" type="Node3D" parent="." unique_id=1626833987 instance=ExtResource("11_nsv4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 8.2, -164)
+script = ExtResource("12_tyysx")
+travel = Vector3(-5.4, 0, 0)
+push_force = 7.2
+phase_offset = 4.529999999999999
+
+[node name="CP5" type="Area3D" parent="." unique_id=638194295 instance=ExtResource("8_q8ags")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -166)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("9_qjmni")
+checkpoint_name = "Checkpoint 5"
+
+[node name="Crumble0_2" type="Node3D" parent="." unique_id=1766147293 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -168)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble0_1" type="Node3D" parent="." unique_id=439681033 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -168)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble0_0" type="Node3D" parent="." unique_id=747263222 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -168)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble1_2" type="Node3D" parent="." unique_id=258962250 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -171)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble1_1" type="Node3D" parent="." unique_id=2145363931 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -171)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble1_0" type="Node3D" parent="." unique_id=1923397322 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -171)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble2_2" type="Node3D" parent="." unique_id=723064142 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -174)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble2_1" type="Node3D" parent="." unique_id=1472476028 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -174)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble2_0" type="Node3D" parent="." unique_id=1742058821 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -174)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble3_1" type="Node3D" parent="." unique_id=53539259 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -177)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble3_2" type="Node3D" parent="." unique_id=1962880229 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -177)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble4_0" type="Node3D" parent="." unique_id=1413999636 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -180)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble4_1" type="Node3D" parent="." unique_id=1318971370 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -180)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble5_1" type="Node3D" parent="." unique_id=1007497224 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -183)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble5_0" type="Node3D" parent="." unique_id=1476758889 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -183)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble5_2" type="Node3D" parent="." unique_id=1462100045 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -183)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble6_1" type="Node3D" parent="." unique_id=1174325931 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -186)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble6_2" type="Node3D" parent="." unique_id=2130107209 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -186)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble7_0" type="Node3D" parent="." unique_id=1029978679 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -189)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble7_1" type="Node3D" parent="." unique_id=452688121 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -189)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble7_2" type="Node3D" parent="." unique_id=516006939 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -189)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble8_0" type="Node3D" parent="." unique_id=771633965 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -192)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble8_1" type="Node3D" parent="." unique_id=1131665112 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -192)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble9_2" type="Node3D" parent="." unique_id=1310610562 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -195)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble9_1" type="Node3D" parent="." unique_id=362425344 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -195)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_tgjyh")
+
+[node name="Crumble9_0" type="Node3D" parent="." unique_id=175473361 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -195)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble10_1" type="Node3D" parent="." unique_id=2004874789 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -198)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble10_2" type="Node3D" parent="." unique_id=1716194205 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 7, -198)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")
+
+[node name="Crumble11_0" type="Node3D" parent="." unique_id=1576962490 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 7, -201)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_n4y3p")
+
+[node name="Crumble11_1" type="Node3D" parent="." unique_id=277121064 instance=ExtResource("16_xrum2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -201)
+script = ExtResource("17_12ps8")
+warn_time = 0.5
+tile_material = SubResource("ShaderMaterial_dy2te")

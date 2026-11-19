@@ -1,47 +1,66 @@
-[gd_scene format=3 uid="uid://bld2q12egd1bk"]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="2_pendulum"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="3_spin"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="4_conveyor"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/wall.tscn" id="4_wall"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="5_bouncepad"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="6_sweeper"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="7_moving"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="8_dropper"]
-[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="9_checkpoint"]
-[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="10_finish"]
-[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="11_kill"]
-[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="12_hud"]
-[ext_resource type="Script" uid="uid://bwr6qldar7jt8" path="res://scripts/race_manager.gd" id="13_race"]
-[ext_resource type="PackedScene" uid="uid://dak2m3n4p5q" path="res://scenes/menu/pause_menu.tscn" id="14_pause"]
-[ext_resource type="Material" uid="uid://dlyacafamweja" path="res://materials/yellow.tres" id="16_xhfw6"]
-[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="22_lime"]
-[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="25_purple"]
-[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="26_yellow"]
-[ext_resource type="Shader" uid="uid://dqef6rnww4juf" path="res://shaders/post_process.gdshader" id="30_post_shader"]
-[ext_resource type="Shader" uid="uid://bb6cbb224ree0" path="res://shaders/sky_clouds.gdshader" id="31_sky_shader"]
-[ext_resource type="Script" uid="uid://ctmm5mvgcr802" path="res://scripts/post_process.gd" id="32_post_script"]
-[ext_resource type="Script" uid="uid://jva0dcgxdfl2" path="res://scripts/crowd.gd" id="33_crowd"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="34_wind"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="35_seesaw"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="36_launcher"]
-[ext_resource type="Script" uid="uid://suj6vb0s2y30" path="res://scripts/race_director.gd" id="38_director"]
-[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="39_bot"]
-[ext_resource type="Material" path="res://materials/platform_purple.tres" id="39_j4bwh"]
-[ext_resource type="Material" path="res://materials/platform_pink.tres" id="40_ksmap"]
-[ext_resource type="Material" uid="uid://lmhy0bw4l6cb" path="res://materials/purple.tres" id="41_ygd8o"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/boulder.tscn" id="42_2s0kr"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/rotor_gate.tscn" id="44_ndrjj"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/spike_trap.tscn" id="46_11yus"]
-[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="50_155or"]
-[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="54_plat_pink"]
-[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="55_plat_purple"]
-[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="56_plat_yellow"]
-[ext_resource type="Script" uid="uid://dr0k0l4sm0sxw" path="res://scripts/arena_decor.gd" id="57_decor"]
-[ext_resource type="Script" uid="uid://tp7peuciitkj" path="res://scripts/level_info.gd" id="58_levelinfo"]
-
-[ext_resource type="Script" path="res://scripts/hazard_pad.gd" id="90_hazard_pad"]
+[ext_resource type="Shader" path="res://shaders/sky_clouds.gdshader" id="1_icf7d"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="2_r8bjs"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="3_ivcpc"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="4_m7n8b"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="5_s2fln"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="6_4o3bt"]
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="7_okrt3"]
+[ext_resource type="Material" path="res://materials/pivot_blue.tres" id="8_p35g8"]
+[ext_resource type="Material" path="res://materials/pivot_floor.tres" id="9_52tv3"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="10_t2k27"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="11_t5um5"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="12_pdtdj"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="13_5ojr7"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/conveyor.tscn" id="14_60mis"]
+[ext_resource type="Script" path="res://scripts/conveyor.gd" id="15_3se61"]
+[ext_resource type="Material" path="res://materials/yellow.tres" id="16_5kdog"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/see_saw.tscn" id="17_kaiom"]
+[ext_resource type="Script" path="res://scripts/see_saw.gd" id="18_pyf08"]
+[ext_resource type="Material" path="res://materials/pivot_wall.tres" id="19_2p80u"]
+[ext_resource type="Material" path="res://materials/pivot_floor_alt.tres" id="20_mj5c8"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/pendulum.tscn" id="21_cj4k0"]
+[ext_resource type="Script" path="res://scripts/pendulum.gd" id="22_2vb2j"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="23_go5ja"]
+[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="24_e64e5"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="25_iopqv"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="26_mqr3d"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="27_2hr6t"]
+[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="28_g2u2b"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="29_xkt82"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="30_38tl8"]
+[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="31_e4bs4"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/launcher.tscn" id="32_hb16x"]
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="33_1mhvx"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wall.tscn" id="34_6x5y6"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/bounce_pad.tscn" id="35_tjsml"]
+[ext_resource type="Script" path="res://scripts/bounce_pad.gd" id="36_jdpn7"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="37_ogygc"]
+[ext_resource type="Script" path="res://scripts/finish_line.gd" id="38_835l4"]
+[ext_resource type="Material" path="res://materials/platform_purple.tres" id="39_nul2r"]
+[ext_resource type="Material" path="res://materials/platform_pink.tres" id="40_6xdi2"]
+[ext_resource type="Material" path="res://materials/purple.tres" id="41_1y18k"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/boulder.tscn" id="42_6avp6"]
+[ext_resource type="Script" path="res://scripts/boulder.gd" id="43_2w70s"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spike_trap.tscn" id="44_61rsc"]
+[ext_resource type="Script" path="res://scripts/spike_trap.gd" id="45_w64rd"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/rotor_gate.tscn" id="46_1733i"]
+[ext_resource type="Script" path="res://scripts/rotor_gate.gd" id="47_1jx5q"]
+[ext_resource type="Material" path="res://materials/pivot_rail.tres" id="48_6s1te"]
+[ext_resource type="Material" path="res://materials/pivot_cream.tres" id="49_13dg7"]
+[ext_resource type="Material" path="res://materials/spin_hazard.tres" id="50_ehsty"]
+[ext_resource type="Script" path="res://scripts/hazard_pad.gd" id="51_54cam"]
+[ext_resource type="Script" path="res://scripts/arena_decor.gd" id="52_hhkct"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="53_4o43f"]
+[ext_resource type="Script" path="res://scripts/post_process.gd" id="54_3kvr3"]
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="55_swlvm"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="56_snd0e"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="57_4ifvm"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="58_26tvq"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="59_ch61h"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="60_fic6u"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="61_megd8"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 sky_top_color = Color(0.25, 0.5, 0.92, 1)
@@ -79,7 +98,7 @@ adjustment_saturation = 1.24
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
 render_priority = 0
-shader = ExtResource("31_sky_shader")
+shader = ExtResource("1_icf7d")
 shader_parameter/top_color = Color(0.05, 0.2, 0.7, 1)
 shader_parameter/horizon_color = Color(0.42, 0.6, 0.9, 1)
 shader_parameter/ground_color = Color(0.24, 0.34, 0.58, 1)
@@ -99,8 +118,203 @@ height = 760.0
 radial_segments = 32
 rings = 16
 
+[sub_resource type="BoxMesh" id="BoxMesh_syctv"]
+size = Vector3(17, 0.5, 13)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rl2qd"]
+size = Vector3(17, 0.5, 13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vl0km"]
+size = Vector3(9, 0.5, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mhhht"]
+size = Vector3(9, 0.5, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_q10lf"]
+size = Vector3(12, 0.5, 14.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_aw605"]
+size = Vector3(12, 0.5, 14.5)
+
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_board"]
 friction = 0.05
+
+[sub_resource type="BoxMesh" id="BoxMesh_h6tu2"]
+size = Vector3(1.4, 2.4, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nh0yo"]
+size = Vector3(10, 0.5, 6.264)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o5qyy"]
+size = Vector3(10, 0.5, 6.264)
+
+[sub_resource type="BoxMesh" id="BoxMesh_s8cg3"]
+size = Vector3(10, 0.5, 5.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mf5mj"]
+size = Vector3(10, 0.5, 5.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_j1ncq"]
+size = Vector3(5, 0.5, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s7csf"]
+size = Vector3(5, 0.5, 22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wlh8c"]
+size = Vector3(10, 0.5, 7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mqtby"]
+size = Vector3(10, 0.5, 7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3vui6"]
+size = Vector3(5.2, 0.5, 17)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cvb0s"]
+size = Vector3(5.2, 0.5, 17)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qev6u"]
+size = Vector3(12, 0.5, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_xp8sn"]
+size = Vector3(12, 0.5, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4o35i"]
+size = Vector3(7, 0.5, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4wa3h"]
+size = Vector3(7, 0.5, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6nh03"]
+size = Vector3(7, 0.5, 11.35)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8t8dv"]
+size = Vector3(7, 0.5, 11.35)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13ipx"]
+size = Vector3(7, 0.5, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bre1k"]
+size = Vector3(7, 0.5, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lqluo"]
+size = Vector3(7, 0.5, 5.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_siudr"]
+size = Vector3(7, 0.5, 5.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gpf3x"]
+size = Vector3(7, 0.5, 2.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5tjmi"]
+size = Vector3(7, 0.5, 2.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_snnr6"]
+size = Vector3(9, 0.5, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j35ss"]
+size = Vector3(9, 0.5, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wkc8h"]
+size = Vector3(14, 0.5, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vbmlh"]
+size = Vector3(14, 0.5, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hp2rv"]
+size = Vector3(9.4, 0.5, 6.3245554)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ohee0"]
+size = Vector3(9.4, 0.5, 6.3245554)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gqi54"]
+size = Vector3(13, 0.5, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_svdtk"]
+size = Vector3(13, 0.5, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ithh8"]
+size = Vector3(9.4, 0.5, 6.621178)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r4f6u"]
+size = Vector3(9.4, 0.5, 6.621178)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xumnf"]
+size = Vector3(6.4, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_okoni"]
+size = Vector3(6.4, 0.5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_u4mb2"]
+size = Vector3(9, 0.5, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hyv50"]
+size = Vector3(9, 0.5, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2in2x"]
+size = Vector3(9.4, 0.5, 18.529976)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d0nju"]
+size = Vector3(9.4, 0.5, 18.529976)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rsf8h"]
+size = Vector3(13, 0.5, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_avtua"]
+size = Vector3(13, 0.5, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_akmpi"]
+size = Vector3(9.4, 0.5, 18.850994)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h5qko"]
+size = Vector3(9.4, 0.5, 18.850994)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8ukax"]
+size = Vector3(13, 0.5, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vy3yb"]
+size = Vector3(13, 0.5, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tmac0"]
+size = Vector3(13.273193, 0.5, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p31on"]
+size = Vector3(13.273193, 0.5, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_b5fh1"]
+size = Vector3(0.9, 2.8, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_skqmy"]
+size = Vector3(0.9, 2.8, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7mbdw"]
+size = Vector3(0.9, 2.8, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_abo3n"]
+size = Vector3(0.9, 2.8, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yckll"]
+size = Vector3(0.2, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37iq7"]
+size = Vector3(0.2, 0.5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4pqrx"]
+size = Vector3(0.2, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dyds5"]
+size = Vector3(0.2, 0.5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y7t3i"]
+size = Vector3(0.9, 2.6, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7nis7"]
+size = Vector3(0.9, 2.6, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hdrp2"]
+size = Vector3(0.9, 2.6, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cja16"]
+size = Vector3(0.9, 2.6, 24)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
 size = Vector3(0.6, 3.2, 0.6)
@@ -169,7 +383,7 @@ size = Vector3(13.6, 0.02, 0.55)
 size = Vector3(13.6, 0.02, 0.55)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
-shader = ExtResource("30_post_shader")
+shader = ExtResource("55_swlvm")
 shader_parameter/aberration = 0.0015
 shader_parameter/vignette = 0.35
 shader_parameter/grain = 0.025
@@ -207,528 +421,820 @@ cast_shadow = 0
 mesh = SubResource("SphereMesh_sky")
 
 [node name="LevelInfo" type="Node" parent="." unique_id=758886858 groups=["level_info"]]
-script = ExtResource("58_levelinfo")
+script = ExtResource("2_r8bjs")
 finish_z = -363.0
 course_length = 368.0
 gold_time = 130.0
 silver_time = 170.0
 bronze_time = 215.0
 waypoints = PackedVector3Array(0, 0.2, 1, 0, 0.2, -4, 0, 0.2, -12, 0, 0.2, -20, 0, 0.2, -25, 0, 0.2, -33, 0, 0.2, -41, 0, 0.13, -47, 0, 0.13, -50.6, 0, 0.13, -55, 0, 0.2, -62, 0, 0.2, -70, 0, 0.2, -80, 0, 0.2, -88, 0, 0.2, -94, 0, 0.14, -97.5, 0, 0.14, -101, 0, 0.7, -112, 0, 0.7, -115.5, 0, 0.7, -119, 0, 0.7, -126, 0, 0.7, -139.5, 0, 1.1, -152, 0, 1.1, -160, 0, 2.2, -168, 0, 3.4, -177, 0, 1.1, -186, 0, 1.1, -190, 0, 1.1, -194, 0, 4.2, -206, 0, 4.2, -209, 0, 4.2, -212, 0, 4.2, -214, 0, 3, -217, 0, 2.2, -220, 0, 2.2, -224, 0, 2.2, -229, 0, 2.2, -234, 0, 2.2, -239, 0, 2.2, -244, 0, 3.5, -247, 0, 5, -250, 0, 5, -254, 0, 5, -258, 0, 5, -262, 0, 5, -266, 0, 5, -270, 0, 5, -274, 0, 5, -278, 0, 5, -280, 0, 6.2, -285, 0, 7.45, -290, 0, 8.65, -295, 0, 9.4, -298, 0, 9.4, -302, 0, 9.4, -306, 0, 9.4, -310, 0, 8.45, -315, 0, 6.9, -320, 0, 5.35, -325, 0, 3.8, -330, 0, 3.8, -334, 0, 3.8, -338, 0, 3.8, -343, 0, 3.8, -348, 0, 3.8, -354, 0, 3.8, -358, 0, 3.8, -363, 0, 3.8, -368)
-lane_widths = PackedFloat32Array(3.2, 3.2, 2, 2, 1.5, 2.4, 2, 1.6, 0.4, 1.6, 2.2, 0.5, 0.4, 0.5, 1.2, 0.4, 0.4, 1.0, 0.3, 0.3, 0.3, 0.5, 1.0, 1.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6, 2.8, 2.8, 2.4, 2.8, 2.6, 2.6, 2.6, 2.6, 2.8, 2.2, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 1, 2.2, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.4, 2.2, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.8, 3, 3, 3)
+lane_widths = PackedFloat32Array(3.2, 3.2, 2, 2, 1.5, 2.4, 2, 1.6, 0.4, 1.6, 2.2, 0.5, 0.4, 0.5, 1.2, 0.4, 0.4, 1, 0.3, 0.3, 0.3, 0.5, 1, 1, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6, 2.8, 2.8, 2.4, 2.8, 2.6, 2.6, 2.6, 2.6, 2.8, 2.2, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 1, 2.2, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.4, 2.2, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.8, 3, 3, 3)
 
 [node name="RaceManager" type="Node" parent="." unique_id=1204461491 groups=["race_manager"]]
-script = ExtResource("13_race")
+script = ExtResource("3_ivcpc")
 
-[node name="HUD" parent="." unique_id=699110431 instance=ExtResource("12_hud")]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=699110431 instance=ExtResource("4_m7n8b")]
+layer = 3
+script = ExtResource("5_s2fln")
 
-[node name="KillPlane" parent="." unique_id=1419531123 instance=ExtResource("11_kill")]
+[node name="KillPlane" type="Area3D" parent="." unique_id=1419531123 instance=ExtResource("6_4o3bt")]
 transform = Transform3D(1.25, 0, 0, 0, 1, 0, 0, 0, 3, 0, -10, -100)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("7_okrt3")
 
 [node name="Course" type="Node3D" parent="." unique_id=1607520208]
 
-[node name="StartPlatform" type="CSGBox3D" parent="Course" unique_id=327555681]
+[node name="StartPlatform" type="StaticBody3D" parent="Course" unique_id=1483199689]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 1.5)
-use_collision = true
-size = Vector3(17, 0.5, 13)
-material = ExtResource("55_plat_purple")
 
-[node name="SweeperHall" type="CSGBox3D" parent="Course" unique_id=981584738]
+[node name="Mesh" type="MeshInstance3D" parent="Course/StartPlatform" unique_id=1290278636]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_syctv")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/StartPlatform" unique_id=118485081]
+shape = SubResource("BoxShape3D_rl2qd")
+
+[node name="SweeperHall" type="StaticBody3D" parent="Course" unique_id=412858445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -15.5)
-use_collision = true
-size = Vector3(9, 0.5, 18)
-material = ExtResource("54_plat_pink")
 
-[node name="Sweeper" parent="Course" unique_id=93388107 instance=ExtResource("6_sweeper")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/SweeperHall" unique_id=732399051]
+material_override = ExtResource("9_52tv3")
+mesh = SubResource("BoxMesh_vl0km")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/SweeperHall" unique_id=495971463]
+shape = SubResource("BoxShape3D_mhhht")
+
+[node name="Sweeper" type="Node3D" parent="Course" unique_id=93388107 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10.5)
+script = ExtResource("11_t5um5")
 spin_speed = 1.5
+push_force = 11.0
 
-[node name="Sweeper3" parent="Course" unique_id=56085574 instance=ExtResource("6_sweeper")]
+[node name="Sweeper3" type="Node3D" parent="Course" unique_id=56085574 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -20.5)
+script = ExtResource("11_t5um5")
 spin_speed = 2.3
 push_force = 5.2
 spin_direction = -1.0
 
-[node name="Checkpoint1" parent="Course" unique_id=559320377 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint1" type="Area3D" parent="Course" unique_id=559320377 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 1"
 
-[node name="ConveyorHall" type="CSGBox3D" parent="Course" unique_id=418285387]
+[node name="ConveyorHall" type="StaticBody3D" parent="Course" unique_id=236508970]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -34.75)
-use_collision = true
-size = Vector3(12, 0.5, 14.5)
-material = ExtResource("54_plat_pink")
 
-[node name="ConveyorA1" parent="Course" unique_id=1118517262 instance=ExtResource("4_conveyor")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ConveyorHall" unique_id=2001791356]
+material_override = ExtResource("9_52tv3")
+mesh = SubResource("BoxMesh_q10lf")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ConveyorHall" unique_id=1329831733]
+shape = SubResource("BoxShape3D_aw605")
+
+[node name="ConveyorA1" type="Area3D" parent="Course" unique_id=1118517262 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -30.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
+direction = Vector3(1, 0, 0)
 force = 8.0
+arrow_material = ExtResource("16_5kdog")
 
-[node name="ConveyorA2" parent="Course" unique_id=1135987790 instance=ExtResource("4_conveyor")]
+[node name="ConveyorA2" type="Area3D" parent="Course" unique_id=1135987790 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -30.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
+direction = Vector3(1, 0, 0)
 force = 8.0
+arrow_material = ExtResource("16_5kdog")
 
-[node name="ConveyorB1" parent="Course" unique_id=177667009 instance=ExtResource("4_conveyor")]
+[node name="ConveyorB1" type="Area3D" parent="Course" unique_id=177667009 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.13, -38.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
 direction = Vector3(-1, 0, 0)
 force = 8.0
+arrow_material = ExtResource("16_5kdog")
 
-[node name="ConveyorB2" parent="Course" unique_id=750982850 instance=ExtResource("4_conveyor")]
+[node name="ConveyorB2" type="Area3D" parent="Course" unique_id=750982850 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, -38.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
 direction = Vector3(-1, 0, 0)
 force = 8.0
+arrow_material = ExtResource("16_5kdog")
 
-[node name="Checkpoint2" parent="Course" unique_id=1809009276 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint2" type="Area3D" parent="Course" unique_id=1809009276 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -35.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 2"
 
-[node name="SeeSaw" parent="Course" unique_id=1550683640 instance=ExtResource("35_seesaw")]
+[node name="SeeSaw" type="AnimatableBody3D" parent="Course" unique_id=1550683640 instance=ExtResource("17_kaiom")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, -51)
+collision_mask = 0
 physics_material_override = SubResource("PhysicsMaterial_board")
+sync_to_physics = false
+script = ExtResource("18_pyf08")
 
-[node name="SeeSawBase" type="CSGBox3D" parent="Course" unique_id=1931893746]
+[node name="SeeSawBase" type="MeshInstance3D" parent="Course" unique_id=818026023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.15, -51)
-size = Vector3(1.4, 2.4, 1.4)
-material = ExtResource("25_purple")
+material_override = ExtResource("19_2p80u")
+mesh = SubResource("BoxMesh_h6tu2")
 
-[node name="SeeSawRamp" type="CSGBox3D" parent="Course" unique_id=124937557]
+[node name="SeeSawRamp" type="StaticBody3D" parent="Course" unique_id=2072009105]
 transform = Transform3D(1, 0, 0, 0, 0.9098, -0.4152, 0, 0.4152, 0.9098, 0, -1.5275, -58.2538)
-use_collision = true
-size = Vector3(10, 0.5, 6.264)
-material = ExtResource("56_plat_yellow")
 
-[node name="SeeSawLanding" type="CSGBox3D" parent="Course" unique_id=495353163]
+[node name="Mesh" type="MeshInstance3D" parent="Course/SeeSawRamp" unique_id=843184361]
+material_override = ExtResource("20_mj5c8")
+mesh = SubResource("BoxMesh_nh0yo")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/SeeSawRamp" unique_id=1685272090]
+shape = SubResource("BoxShape3D_o5qyy")
+
+[node name="SeeSawLanding" type="StaticBody3D" parent="Course" unique_id=32807869]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -63.95)
-use_collision = true
-size = Vector3(10, 0.5, 5.9)
-material = ExtResource("56_plat_yellow")
 
-[node name="Checkpoint3" parent="Course" unique_id=1270513605 instance=ExtResource("9_checkpoint")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/SeeSawLanding" unique_id=985704863]
+material_override = ExtResource("20_mj5c8")
+mesh = SubResource("BoxMesh_s8cg3")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/SeeSawLanding" unique_id=1106458926]
+shape = SubResource("BoxShape3D_mf5mj")
+
+[node name="Checkpoint3" type="Area3D" parent="Course" unique_id=1270513605 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -63.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 3"
 
-[node name="PendulumBridge" type="CSGBox3D" parent="Course" unique_id=1408253480]
+[node name="PendulumBridge" type="StaticBody3D" parent="Course" unique_id=568300721]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -78)
-use_collision = true
-size = Vector3(5, 0.5, 22)
-material = ExtResource("54_plat_pink")
 
-[node name="Pendulum" parent="Course" unique_id=1828546740 instance=ExtResource("2_pendulum")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/PendulumBridge" unique_id=1123203207]
+material_override = ExtResource("9_52tv3")
+mesh = SubResource("BoxMesh_j1ncq")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/PendulumBridge" unique_id=520673372]
+shape = SubResource("BoxShape3D_s7csf")
+
+[node name="Pendulum" type="Node3D" parent="Course" unique_id=1828546740 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -71)
+script = ExtResource("22_2vb2j")
 swing_speed = 0.0018
 
-[node name="Pendulum2" parent="Course" unique_id=1049703201 instance=ExtResource("2_pendulum")]
+[node name="Pendulum2" type="Node3D" parent="Course" unique_id=1049703201 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -76.5)
+script = ExtResource("22_2vb2j")
 swing_speed = 0.0018
 phase_offset = 1.7
 
-[node name="Pendulum3" parent="Course" unique_id=1293782340 instance=ExtResource("2_pendulum")]
+[node name="Pendulum3" type="Node3D" parent="Course" unique_id=1293782340 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -82)
+script = ExtResource("22_2vb2j")
 swing_speed = 0.0018
 phase_offset = 3.4
 
-[node name="Pendulum4" parent="Course" unique_id=27180908 instance=ExtResource("2_pendulum")]
+[node name="Pendulum4" type="Node3D" parent="Course" unique_id=27180908 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -86.5)
+script = ExtResource("22_2vb2j")
 swing_speed = 0.0018
 phase_offset = 5.1
 
-[node name="SpinningPlatform" parent="Course" unique_id=98190501 instance=ExtResource("3_spin")]
+[node name="SpinningPlatform" type="AnimatableBody3D" parent="Course" unique_id=98190501 instance=ExtResource("23_go5ja")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -94)
+collision_mask = 0
+script = ExtResource("24_e64e5")
 spin_speed = 1.5
 
-[node name="MovingPlatform" parent="Course" unique_id=418534994 instance=ExtResource("7_moving")]
+[node name="MovingPlatform" type="AnimatableBody3D" parent="Course" unique_id=418534994 instance=ExtResource("25_iopqv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -101.5)
+collision_mask = 0
+script = ExtResource("26_mqr3d")
 travel = Vector3(0, 0, -5)
 speed = 2.4
 pause_time = 0.5
 
-[node name="BallDropperMoving" parent="Course/MovingPlatform" unique_id=1483783759 instance=ExtResource("8_dropper")]
+[node name="BallDropperMoving" type="Node3D" parent="Course/MovingPlatform" unique_id=1483783759 instance=ExtResource("27_2hr6t")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.7, 0)
+script = ExtResource("28_g2u2b")
+ball_scene = ExtResource("29_xkt82")
 interval = 3.0
 drop_radius = 1.4
 max_balls = 3
 start_delay = 2.0
 column_spread = 1.55
 
-[node name="LandingA" type="CSGBox3D" parent="Course" unique_id=770765397]
+[node name="LandingA" type="StaticBody3D" parent="Course" unique_id=443348605]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -112.5)
-use_collision = true
-size = Vector3(10, 0.5, 7)
-material = ExtResource("55_plat_purple")
 
-[node name="Checkpoint4" parent="Course" unique_id=1716453756 instance=ExtResource("9_checkpoint")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/LandingA" unique_id=1462706226]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_wlh8c")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/LandingA" unique_id=1908826887]
+shape = SubResource("BoxShape3D_mqtby")
+
+[node name="Checkpoint4" type="Area3D" parent="Course" unique_id=1716453756 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -114.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 4"
 
-[node name="MovingPlatform2" parent="Course" unique_id=1803679456 instance=ExtResource("7_moving")]
+[node name="MovingPlatform2" type="AnimatableBody3D" parent="Course" unique_id=1803679456 instance=ExtResource("25_iopqv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -118.5)
+collision_mask = 0
+script = ExtResource("26_mqr3d")
 travel = Vector3(0, 0, -2)
 speed = 2.0
 pause_time = 0.4
 
-[node name="WindBridge" type="CSGBox3D" parent="Course" unique_id=1388656792]
+[node name="WindBridge" type="StaticBody3D" parent="Course" unique_id=617984238]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -131.5)
-use_collision = true
-size = Vector3(5.2, 0.5, 17)
-material = ExtResource("55_plat_purple")
 
-[node name="WindTunnel" parent="Course" unique_id=352744461 instance=ExtResource("34_wind")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/WindBridge" unique_id=35029504]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_3vui6")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/WindBridge" unique_id=1934565671]
+shape = SubResource("BoxShape3D_cvb0s")
+
+[node name="WindTunnel" type="Area3D" parent="Course" unique_id=352744461 instance=ExtResource("30_38tl8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -126)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("31_e4bs4")
 strength = 4.6
 gust_amplitude = 1.4
 
-[node name="WindTunnel2" parent="Course" unique_id=1764378265 instance=ExtResource("34_wind")]
+[node name="WindTunnel2" type="Area3D" parent="Course" unique_id=1764378265 instance=ExtResource("30_38tl8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -137)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("31_e4bs4")
 wind_direction = Vector3(-1, 0, 0)
 strength = 4.6
 gust_amplitude = 1.4
 
-[node name="Launcher" parent="Course" unique_id=695700015 instance=ExtResource("36_launcher")]
+[node name="Launcher" type="Area3D" parent="Course" unique_id=695700015 instance=ExtResource("32_hb16x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -139.2)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("33_1mhvx")
 launch_force = 9.0
 launch_up = 8.5
 
-[node name="CannonLanding" type="CSGBox3D" parent="Course" unique_id=1733607437]
+[node name="CannonLanding" type="StaticBody3D" parent="Course" unique_id=324102240]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -154)
-use_collision = true
-size = Vector3(12, 0.5, 14)
-material = ExtResource("54_plat_pink")
 
-[node name="ConveyorC" parent="Course" unique_id=39339241 instance=ExtResource("4_conveyor")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/CannonLanding" unique_id=1078846793]
+material_override = ExtResource("9_52tv3")
+mesh = SubResource("BoxMesh_qev6u")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/CannonLanding" unique_id=530761418]
+shape = SubResource("BoxShape3D_xp8sn")
+
+[node name="ConveyorC" type="Area3D" parent="Course" unique_id=39339241 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, -157)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
+direction = Vector3(1, 0, 0)
 force = 5.0
+arrow_material = ExtResource("16_5kdog")
 arrow_span = 2.0
 
-[node name="BallApproach" type="CSGBox3D" parent="Course" unique_id=1741899455]
+[node name="BallApproach" type="StaticBody3D" parent="Course" unique_id=731994819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -162.5)
-use_collision = true
-size = Vector3(7, 0.5, 4)
-material = ExtResource("55_plat_purple")
 
-[node name="BallRampUp" type="CSGBox3D" parent="Course" unique_id=2131029406]
+[node name="Mesh" type="MeshInstance3D" parent="Course/BallApproach" unique_id=48570677]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_4o35i")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/BallApproach" unique_id=1736901554]
+shape = SubResource("BoxShape3D_4wa3h")
+
+[node name="BallRampUp" type="StaticBody3D" parent="Course" unique_id=1435888408]
 transform = Transform3D(1, 0, 0, 0, 0.9691, -0.2468, 0, 0.2468, 0.9691, 0, 2.1577, -169.5)
-use_collision = true
-size = Vector3(7, 0.5, 11.35)
-material = ExtResource("55_plat_purple")
 
-[node name="BallRampTop" type="CSGBox3D" parent="Course" unique_id=1751223653]
+[node name="Mesh" type="MeshInstance3D" parent="Course/BallRampUp" unique_id=17736227]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_6nh03")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/BallRampUp" unique_id=508078811]
+shape = SubResource("BoxShape3D_8t8dv")
+
+[node name="BallRampTop" type="StaticBody3D" parent="Course" unique_id=1254717929]
 transform = Transform3D(0.99719, 0.07493, 0, -0.07493, 0.99719, 0, 0, 0, 1, 0, 3.55, -175.75)
-use_collision = true
-size = Vector3(7, 0.5, 1.5)
-material = ExtResource("55_plat_purple")
 
-[node name="BallRampDown" type="CSGBox3D" parent="Course" unique_id=55775808]
+[node name="Mesh" type="MeshInstance3D" parent="Course/BallRampTop" unique_id=289711661]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_13ipx")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/BallRampTop" unique_id=227662392]
+shape = SubResource("BoxShape3D_bre1k")
+
+[node name="BallRampDown" type="StaticBody3D" parent="Course" unique_id=440217110]
 transform = Transform3D(1, 0, 0, 0, 0.849, 0.5285, 0, -0.5285, 0.849, 0, 2.1876, -178.75)
-use_collision = true
-size = Vector3(7, 0.5, 5.3)
-material = ExtResource("55_plat_purple")
 
-[node name="BallGapLanding" type="CSGBox3D" parent="Course" unique_id=1802876900]
+[node name="Mesh" type="MeshInstance3D" parent="Course/BallRampDown" unique_id=907346607]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_lqluo")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/BallRampDown" unique_id=1153876791]
+shape = SubResource("BoxShape3D_siudr")
+
+[node name="BallGapLanding" type="StaticBody3D" parent="Course" unique_id=610352577]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -181.3)
-use_collision = true
-size = Vector3(7, 0.5, 2.4)
-material = ExtResource("55_plat_purple")
 
-[node name="BallDropper" parent="Course" unique_id=1123578526 instance=ExtResource("8_dropper")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/BallGapLanding" unique_id=7185899]
+material_override = ExtResource("8_p35g8")
+mesh = SubResource("BoxMesh_gpf3x")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/BallGapLanding" unique_id=984410614]
+shape = SubResource("BoxShape3D_5tjmi")
+
+[node name="BallDropper" type="Node3D" parent="Course" unique_id=1123578526 instance=ExtResource("27_2hr6t")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -166)
+script = ExtResource("28_g2u2b")
+ball_scene = ExtResource("29_xkt82")
 interval = 1.7
 drop_radius = 2.4
 max_balls = 7
 despawn_below_y = -2.0
 start_delay = 1.2
 
-[node name="BallDropper2" parent="Course" unique_id=270263855 instance=ExtResource("8_dropper")]
+[node name="BallDropper2" type="Node3D" parent="Course" unique_id=270263855 instance=ExtResource("27_2hr6t")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, -174.5)
+script = ExtResource("28_g2u2b")
+ball_scene = ExtResource("29_xkt82")
 interval = 1.4
 drop_radius = 2.4
 max_balls = 7
 despawn_below_y = -2.0
 start_delay = 2.0
 
-[node name="WallBallLeftA" parent="Course" unique_id=441202033 instance=ExtResource("4_wall")]
+[node name="WallBallLeftA" type="StaticBody3D" parent="Course" unique_id=441202033 instance=ExtResource("34_6x5y6")]
 transform = Transform3D(1, 0, 0, 0, 0.9691, -0.2468, 0, 0.2468, 0.9691, -2.4, 2.808, -168)
+collision_mask = 0
 
-[node name="WallBallRightA" parent="Course" unique_id=488141695 instance=ExtResource("4_wall")]
+[node name="WallBallRightA" type="StaticBody3D" parent="Course" unique_id=488141695 instance=ExtResource("34_6x5y6")]
 transform = Transform3D(1, 0, 0, 0, 0.9691, -0.2468, 0, 0.2468, 0.9691, 2.4, 3.954, -172.5)
+collision_mask = 0
 
-[node name="WallBallLeftB" parent="Course" unique_id=1257219806 instance=ExtResource("4_wall")]
+[node name="WallBallLeftB" type="StaticBody3D" parent="Course" unique_id=1257219806 instance=ExtResource("34_6x5y6")]
 transform = Transform3D(1, 0, 0, 0, 0.849, 0.5285, 0, -0.5285, 0.849, -2.4, 3.334, -178.8)
+collision_mask = 0
 
-[node name="Checkpoint5" parent="Course" unique_id=1376745690 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint5" type="Area3D" parent="Course" unique_id=1376745690 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -182.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 5"
 
-[node name="FinalRun" type="CSGBox3D" parent="Course" unique_id=329845337]
+[node name="FinalRun" type="StaticBody3D" parent="Course" unique_id=147552314]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -189)
-use_collision = true
-size = Vector3(9, 0.5, 14)
-material = ExtResource("54_plat_pink")
 
-[node name="Sweeper4" parent="Course" unique_id=1908238811 instance=ExtResource("6_sweeper")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/FinalRun" unique_id=889897565]
+material_override = ExtResource("9_52tv3")
+mesh = SubResource("BoxMesh_snnr6")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/FinalRun" unique_id=1097400113]
+shape = SubResource("BoxShape3D_j35ss")
+
+[node name="Sweeper4" type="Node3D" parent="Course" unique_id=1908238811 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -186)
+script = ExtResource("11_t5um5")
 spin_speed = 2.4
 push_force = 5.6
 
-[node name="FinalConveyor" parent="Course" unique_id=1840840800 instance=ExtResource("4_conveyor")]
+[node name="FinalConveyor" type="Area3D" parent="Course" unique_id=1840840800 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83, -186)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
 direction = Vector3(0, 0, 1)
 force = 5.0
+arrow_material = ExtResource("16_5kdog")
 arrow_span = 2.0
 
-[node name="Pendulum5" parent="Course" unique_id=2136273283 instance=ExtResource("2_pendulum")]
+[node name="Pendulum5" type="Node3D" parent="Course" unique_id=2136273283 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.3, -192)
+script = ExtResource("22_2vb2j")
 max_angle = 1.25
 swing_speed = 0.0024
 push_force = 15.0
 phase_offset = 2.0
 
-[node name="WallFinalLeft" parent="Course" unique_id=1127967113 instance=ExtResource("4_wall")]
+[node name="WallFinalLeft" type="StaticBody3D" parent="Course" unique_id=1127967113 instance=ExtResource("34_6x5y6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 1.75, -189)
+collision_mask = 0
 
-[node name="WallFinalRight" parent="Course" unique_id=398559488 instance=ExtResource("4_wall")]
+[node name="WallFinalRight" type="StaticBody3D" parent="Course" unique_id=398559488 instance=ExtResource("34_6x5y6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 1.75, -189)
+collision_mask = 0
 
-[node name="BouncePadFinal" parent="Course" unique_id=1708000121 instance=ExtResource("5_bouncepad")]
+[node name="BouncePadFinal" type="Area3D" parent="Course" unique_id=1708000121 instance=ExtResource("35_tjsml")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -194)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("36_jdpn7")
 
-[node name="FinishPlatform" type="CSGBox3D" parent="Course" unique_id=1398893886]
+[node name="FinishPlatform" type="StaticBody3D" parent="Course" unique_id=1302801847]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.75, -206)
-use_collision = true
-size = Vector3(14, 0.5, 16)
-material = ExtResource("56_plat_yellow")
 
-[node name="FinishLine" parent="Course" unique_id=2113755696 instance=ExtResource("10_finish")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/FinishPlatform" unique_id=238749091]
+material_override = ExtResource("20_mj5c8")
+mesh = SubResource("BoxMesh_wkc8h")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/FinishPlatform" unique_id=214993157]
+shape = SubResource("BoxShape3D_vbmlh")
+
+[node name="FinishLine" type="Area3D" parent="Course" unique_id=2113755696 instance=ExtResource("37_ogygc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -363)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("38_835l4")
 
-[node name="ForgeRampDown" type="CSGBox3D" parent="Course" unique_id=2015054946]
+[node name="ForgeRampDown" type="StaticBody3D" parent="Course" unique_id=1134677924]
 transform = Transform3D(1, 0, 0, 0, 0.9486833, 0.31622776, 0, -0.31622776, 0.9486833, 0, 2.762829, -216.92094)
-use_collision = true
-size = Vector3(9.4, 0.5, 6.3245554)
-material = ExtResource("39_j4bwh")
 
-[node name="ForgeDeck" type="CSGBox3D" parent="Course" unique_id=1054767208]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeRampDown" unique_id=1308908624]
+material_override = ExtResource("39_nul2r")
+mesh = SubResource("BoxMesh_hp2rv")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeRampDown" unique_id=1871115661]
+shape = SubResource("BoxShape3D_ohee0")
+
+[node name="ForgeDeck" type="StaticBody3D" parent="Course" unique_id=514127545]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -232)
-use_collision = true
-size = Vector3(13, 0.5, 24)
-material = ExtResource("40_ksmap")
 
-[node name="ForgeRampUp" type="CSGBox3D" parent="Course" unique_id=701277917]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeDeck" unique_id=2037100340]
+material_override = ExtResource("40_6xdi2")
+mesh = SubResource("BoxMesh_gqi54")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeDeck" unique_id=632852246]
+shape = SubResource("BoxShape3D_svdtk")
+
+[node name="ForgeRampUp" type="StaticBody3D" parent="Course" unique_id=157855210]
 transform = Transform3D(1, 0, 0, 0, 0.9061831, -0.42288545, 0, 0.42288545, 0.9061831, 0, 3.1734543, -247.10573)
-use_collision = true
-size = Vector3(9.4, 0.5, 6.621178)
-material = ExtResource("39_j4bwh")
 
-[node name="ChimneyBridge" type="CSGBox3D" parent="Course" unique_id=1079509305]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeRampUp" unique_id=1844586249]
+material_override = ExtResource("39_nul2r")
+mesh = SubResource("BoxMesh_ithh8")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeRampUp" unique_id=508794888]
+shape = SubResource("BoxShape3D_r4f6u")
+
+[node name="ChimneyBridge" type="StaticBody3D" parent="Course" unique_id=214063057]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.55, -260)
-use_collision = true
-size = Vector3(6.4, 0.5, 20)
-material = ExtResource("40_ksmap")
 
-[node name="ChimneyLanding" type="CSGBox3D" parent="Course" unique_id=1843343114]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ChimneyBridge" unique_id=1039732527]
+material_override = ExtResource("40_6xdi2")
+mesh = SubResource("BoxMesh_xumnf")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ChimneyBridge" unique_id=1505959806]
+shape = SubResource("BoxShape3D_okoni")
+
+[node name="ChimneyLanding" type="StaticBody3D" parent="Course" unique_id=1560835412]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.55, -275)
-use_collision = true
-size = Vector3(9, 0.5, 10)
-material = ExtResource("39_j4bwh")
 
-[node name="ForgeClimb" type="CSGBox3D" parent="Course" unique_id=892639672]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ChimneyLanding" unique_id=2137879134]
+material_override = ExtResource("39_nul2r")
+mesh = SubResource("BoxMesh_u4mb2")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ChimneyLanding" unique_id=1812388043]
+shape = SubResource("BoxShape3D_hyv50")
+
+[node name="ForgeClimb" type="StaticBody3D" parent="Course" unique_id=1659226863]
 transform = Transform3D(1, 0, 0, 0, 0.971399, -0.23745309, 0, 0.23745309, 0.971399, 0, 6.75715, -289.05936)
-use_collision = true
-size = Vector3(9.4, 0.5, 18.529976)
-material = ExtResource("40_ksmap")
 
-[node name="ForgeSummit" type="CSGBox3D" parent="Course" unique_id=1283270056]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeClimb" unique_id=171408536]
+material_override = ExtResource("40_6xdi2")
+mesh = SubResource("BoxMesh_2in2x")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeClimb" unique_id=1019198691]
+shape = SubResource("BoxShape3D_d0nju")
+
+[node name="ForgeSummit" type="StaticBody3D" parent="Course" unique_id=1515411132]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.95, -305)
-use_collision = true
-size = Vector3(13, 0.5, 14)
-material = ExtResource("39_j4bwh")
 
-[node name="ForgeDrop" type="CSGBox3D" parent="Course" unique_id=704428422]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeSummit" unique_id=224503846]
+material_override = ExtResource("39_nul2r")
+mesh = SubResource("BoxMesh_rsf8h")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeSummit" unique_id=252033366]
+shape = SubResource("BoxShape3D_avtua")
+
+[node name="ForgeDrop" type="StaticBody3D" parent="Course" unique_id=1567952039]
 transform = Transform3D(1, 0, 0, 0, 0.95485675, 0.29706657, 0, -0.29706657, 0.95485675, 0, 6.161286, -320.92572)
-use_collision = true
-size = Vector3(9.4, 0.5, 18.850994)
-material = ExtResource("40_ksmap")
 
-[node name="ForgeFinal" type="CSGBox3D" parent="Course" unique_id=2117994956]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeDrop" unique_id=1678609180]
+material_override = ExtResource("40_6xdi2")
+mesh = SubResource("BoxMesh_akmpi")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeDrop" unique_id=1085342040]
+shape = SubResource("BoxShape3D_h5qko")
+
+[node name="ForgeFinal" type="StaticBody3D" parent="Course" unique_id=1004822315]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, -342)
-use_collision = true
-size = Vector3(13, 0.5, 24)
-material = ExtResource("39_j4bwh")
 
-[node name="ForgePlaza" type="CSGBox3D" parent="Course" unique_id=1901450151]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeFinal" unique_id=604250901]
+material_override = ExtResource("39_nul2r")
+mesh = SubResource("BoxMesh_8ukax")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeFinal" unique_id=380763569]
+shape = SubResource("BoxShape3D_vy3yb")
+
+[node name="ForgePlaza" type="StaticBody3D" parent="Course" unique_id=374174225]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.123413086, 3.35, -363)
-use_collision = true
-size = Vector3(13.273193, 0.5, 18)
-material = ExtResource("40_ksmap")
 
-[node name="ForgeWallLeft" type="CSGBox3D" parent="Course" unique_id=1351316284]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgePlaza" unique_id=935808776]
+material_override = ExtResource("40_6xdi2")
+mesh = SubResource("BoxMesh_tmac0")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgePlaza" unique_id=1331433178]
+shape = SubResource("BoxShape3D_p31on")
+
+[node name="ForgeWallLeft" type="StaticBody3D" parent="Course" unique_id=818988060]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 3.4, -232)
-use_collision = true
-size = Vector3(0.9, 2.8, 24)
-material = ExtResource("41_ygd8o")
 
-[node name="ForgeWallRight" type="CSGBox3D" parent="Course" unique_id=444297170]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeWallLeft" unique_id=836905548]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_b5fh1")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeWallLeft" unique_id=1527043580]
+shape = SubResource("BoxShape3D_skqmy")
+
+[node name="ForgeWallRight" type="StaticBody3D" parent="Course" unique_id=386024929]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 3.4, -232)
-use_collision = true
-size = Vector3(0.9, 2.8, 24)
-material = ExtResource("41_ygd8o")
 
-[node name="ChimneyCurbLeft" type="CSGBox3D" parent="Course" unique_id=67032578]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ForgeWallRight" unique_id=146388716]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_7mbdw")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ForgeWallRight" unique_id=1193268564]
+shape = SubResource("BoxShape3D_abo3n")
+
+[node name="ChimneyCurbLeft" type="StaticBody3D" parent="Course" unique_id=222220323]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05, 5.05, -260)
-use_collision = true
-size = Vector3(0.2, 0.5, 20)
-material = ExtResource("41_ygd8o")
 
-[node name="ChimneyCurbRight" type="CSGBox3D" parent="Course" unique_id=34400495]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ChimneyCurbLeft" unique_id=1861211787]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_yckll")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ChimneyCurbLeft" unique_id=1236185198]
+shape = SubResource("BoxShape3D_37iq7")
+
+[node name="ChimneyCurbRight" type="StaticBody3D" parent="Course" unique_id=1806726504]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05, 5.05, -260)
-use_collision = true
-size = Vector3(0.2, 0.5, 20)
-material = ExtResource("41_ygd8o")
 
-[node name="FinalWallLeft" type="CSGBox3D" parent="Course" unique_id=2015333976]
+[node name="Mesh" type="MeshInstance3D" parent="Course/ChimneyCurbRight" unique_id=1880524860]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_4pqrx")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/ChimneyCurbRight" unique_id=679128062]
+shape = SubResource("BoxShape3D_dyds5")
+
+[node name="FinalWallLeft" type="StaticBody3D" parent="Course" unique_id=343446242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8488207, 4.9, -342)
-use_collision = true
-size = Vector3(0.9, 2.6, 24)
-material = ExtResource("41_ygd8o")
 
-[node name="FinalWallRight" type="CSGBox3D" parent="Course" unique_id=317524123]
+[node name="Mesh" type="MeshInstance3D" parent="Course/FinalWallLeft" unique_id=631852912]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_y7t3i")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/FinalWallLeft" unique_id=987513825]
+shape = SubResource("BoxShape3D_7nis7")
+
+[node name="FinalWallRight" type="StaticBody3D" parent="Course" unique_id=1728256391]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.772153, 4.9, -342)
-use_collision = true
-size = Vector3(0.9, 2.6, 24)
-material = ExtResource("41_ygd8o")
 
-[node name="Checkpoint6" parent="Course" unique_id=519406178 instance=ExtResource("9_checkpoint")]
+[node name="Mesh" type="MeshInstance3D" parent="Course/FinalWallRight" unique_id=1487014172]
+material_override = ExtResource("41_1y18k")
+mesh = SubResource("BoxMesh_hdrp2")
+
+[node name="Shape" type="CollisionShape3D" parent="Course/FinalWallRight" unique_id=25014535]
+shape = SubResource("BoxShape3D_cja16")
+
+[node name="Checkpoint6" type="Area3D" parent="Course" unique_id=519406178 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -209)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 6"
 
-[node name="BoulderA" parent="Course" unique_id=1479485353 instance=ExtResource("42_2s0kr")]
+[node name="BoulderA" type="Node3D" parent="Course" unique_id=1479485353 instance=ExtResource("42_6avp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 3, -241)
+script = ExtResource("43_2w70s")
 travel = Vector3(0, 0, 19)
 speed = 5.2
 
-[node name="BoulderB" parent="Course" unique_id=1789975706 instance=ExtResource("42_2s0kr")]
+[node name="BoulderB" type="Node3D" parent="Course" unique_id=1789975706 instance=ExtResource("42_6avp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 3, -241)
+script = ExtResource("43_2w70s")
 travel = Vector3(0, 0, 19)
 speed = 5.8
 phase_offset = 2.6
 
-[node name="SpikeDeck0" parent="Course" unique_id=313891052 instance=ExtResource("46_11yus")]
+[node name="SpikeDeck0" type="Node3D" parent="Course" unique_id=313891052 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -227)
+script = ExtResource("45_w64rd")
 
-[node name="SpikeDeck1" parent="Course" unique_id=649759194 instance=ExtResource("46_11yus")]
+[node name="SpikeDeck1" type="Node3D" parent="Course" unique_id=649759194 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -235)
+script = ExtResource("45_w64rd")
 phase_offset = 1.3
 
-[node name="ForgeBelt" parent="Course" unique_id=1664756215 instance=ExtResource("4_conveyor")]
+[node name="ForgeBelt" type="Area3D" parent="Course" unique_id=1664756215 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.875, -232)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
 direction = Vector3(0, 0, 1)
 force = 3.2
+arrow_material = ExtResource("16_5kdog")
 arrow_span = 2.0
 
-[node name="Checkpoint7" parent="Course" unique_id=519741100 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint7" type="Area3D" parent="Course" unique_id=519741100 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -221.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 7"
 
-[node name="Checkpoint8" parent="Course" unique_id=1498408106 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint8" type="Area3D" parent="Course" unique_id=1498408106 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, -251.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 8"
 
-[node name="RotorA" parent="Course" unique_id=1299550702 instance=ExtResource("44_ndrjj")]
+[node name="RotorA" type="Node3D" parent="Course" unique_id=1299550702 instance=ExtResource("46_1733i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -254)
+script = ExtResource("47_1jx5q")
 spin_speed = 1.5
 
-[node name="RotorB" parent="Course" unique_id=1047499899 instance=ExtResource("44_ndrjj")]
+[node name="RotorB" type="Node3D" parent="Course" unique_id=1047499899 instance=ExtResource("46_1733i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -260)
+script = ExtResource("47_1jx5q")
 spin_speed = 1.7
 spin_direction = -1.0
 phase_offset = 2.1
 
-[node name="RotorC" parent="Course" unique_id=1688516224 instance=ExtResource("44_ndrjj")]
+[node name="RotorC" type="Node3D" parent="Course" unique_id=1688516224 instance=ExtResource("46_1733i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7, -266)
+script = ExtResource("47_1jx5q")
 spin_speed = 1.9
 phase_offset = 0.7
 
-[node name="Checkpoint9" parent="Course" unique_id=390979098 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint9" type="Area3D" parent="Course" unique_id=390979098 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, -271.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 9"
 
-[node name="Spike0_0" parent="Course" unique_id=1770096361 instance=ExtResource("46_11yus")]
+[node name="Spike0_0" type="Node3D" parent="Course" unique_id=1770096361 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0121908, 4.8, -274)
+script = ExtResource("45_w64rd")
 
-[node name="Spike0_1" parent="Course" unique_id=2146693043 instance=ExtResource("46_11yus")]
+[node name="Spike0_1" type="Node3D" parent="Course" unique_id=2146693043 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.012190819, 4.8, -274)
+script = ExtResource("45_w64rd")
 phase_offset = 0.55
 
-[node name="Spike0_2" parent="Course" unique_id=1033358096 instance=ExtResource("46_11yus")]
+[node name="Spike0_2" type="Node3D" parent="Course" unique_id=1033358096 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9878092, 4.8, -274)
+script = ExtResource("45_w64rd")
 phase_offset = 1.1
 
-[node name="Spike1_0" parent="Course" unique_id=699970722 instance=ExtResource("46_11yus")]
+[node name="Spike1_0" type="Node3D" parent="Course" unique_id=699970722 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0121908, 4.8, -278)
+script = ExtResource("45_w64rd")
 phase_offset = 1.6
 
-[node name="Spike1_1" parent="Course" unique_id=418666800 instance=ExtResource("46_11yus")]
+[node name="Spike1_1" type="Node3D" parent="Course" unique_id=418666800 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.012190819, 4.8, -278)
+script = ExtResource("45_w64rd")
 phase_offset = 2.1500000000000004
 
-[node name="Spike1_2" parent="Course" unique_id=758585792 instance=ExtResource("46_11yus")]
+[node name="Spike1_2" type="Node3D" parent="Course" unique_id=758585792 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1153522, 4.8, -278)
+script = ExtResource("45_w64rd")
 phase_offset = 2.7
 
-[node name="Checkpoint10" parent="Course" unique_id=957262020 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint10" type="Area3D" parent="Course" unique_id=957262020 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.2, -299.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 10"
 
-[node name="SweeperSummit" parent="Course" unique_id=991217913 instance=ExtResource("6_sweeper")]
+[node name="SweeperSummit" type="Node3D" parent="Course" unique_id=991217913 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.55, -302)
+script = ExtResource("11_t5um5")
 spin_speed = 2.5
 push_force = 6.8
 
-[node name="PendulumSummitA" parent="Course" unique_id=64241717 instance=ExtResource("2_pendulum")]
+[node name="PendulumSummitA" type="Node3D" parent="Course" unique_id=64241717 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.4, -305.5)
+script = ExtResource("22_2vb2j")
 max_angle = 1.05
 swing_speed = 0.0024
 push_force = 12.0
 phase_offset = 0.2
 
-[node name="PendulumSummitB" parent="Course" unique_id=841111870 instance=ExtResource("2_pendulum")]
+[node name="PendulumSummitB" type="Node3D" parent="Course" unique_id=841111870 instance=ExtResource("21_cj4k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.4, -310)
+script = ExtResource("22_2vb2j")
 max_angle = 1.05
 swing_speed = 0.0027
 push_force = 12.0
 phase_offset = 1.8
 
-[node name="Checkpoint11" parent="Course" unique_id=1696573640 instance=ExtResource("9_checkpoint")]
+[node name="Checkpoint11" type="Area3D" parent="Course" unique_id=1696573640 instance=ExtResource("12_pdtdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -331.5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_5ojr7")
 checkpoint_name = "Checkpoint 11"
 
-[node name="SweeperFinalA" parent="Course" unique_id=584866545 instance=ExtResource("6_sweeper")]
+[node name="SweeperFinalA" type="Node3D" parent="Course" unique_id=584866545 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -336)
+script = ExtResource("11_t5um5")
 spin_speed = 2.7
 push_force = 7.0
 
-[node name="SweeperFinalB" parent="Course" unique_id=1665247301 instance=ExtResource("6_sweeper")]
+[node name="SweeperFinalB" type="Node3D" parent="Course" unique_id=1665247301 instance=ExtResource("10_t2k27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -348)
+script = ExtResource("11_t5um5")
 spin_speed = 3.0
 push_force = 7.4
 spin_direction = -1.0
 
-[node name="FinalBelt" parent="Course" unique_id=1587084713 instance=ExtResource("4_conveyor")]
+[node name="FinalBelt" type="Area3D" parent="Course" unique_id=1587084713 instance=ExtResource("14_60mis")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.475, -342)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("15_3se61")
 direction = Vector3(0, 0, 1)
 force = 3.8
+arrow_material = ExtResource("16_5kdog")
 arrow_span = 4.0
 
-[node name="SpikeFinal0_0" parent="Course" unique_id=194166275 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal0_0" type="Node3D" parent="Course" unique_id=194166275 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.6, -339)
+script = ExtResource("45_w64rd")
 
-[node name="SpikeFinal0_1" parent="Course" unique_id=1465639095 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal0_1" type="Node3D" parent="Course" unique_id=1465639095 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3.6, -339)
+script = ExtResource("45_w64rd")
 phase_offset = 0.9
 
-[node name="SpikeFinal1_0" parent="Course" unique_id=950294266 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal1_0" type="Node3D" parent="Course" unique_id=950294266 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.6, -345)
+script = ExtResource("45_w64rd")
 phase_offset = 1.4
 
-[node name="SpikeFinal1_1" parent="Course" unique_id=369550510 instance=ExtResource("46_11yus")]
+[node name="SpikeFinal1_1" type="Node3D" parent="Course" unique_id=369550510 instance=ExtResource("44_61rsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3.6, -345)
+script = ExtResource("45_w64rd")
 phase_offset = 2.3
 
 [node name="Decor" type="Node3D" parent="." unique_id=386218001]
@@ -736,224 +1242,224 @@ phase_offset = 2.3
 [node name="StartGatePillarLeft" type="MeshInstance3D" parent="Decor" unique_id=146638144]
 transform = Transform3D(1, 0, 0, 0, 2.3, 0, 0, 0, 1, -8.4, 3.68, -3)
 mesh = SubResource("BoxMesh_pillar")
-surface_material_override/0 = ExtResource("25_purple")
+surface_material_override/0 = ExtResource("19_2p80u")
 
 [node name="StartGatePillarRight" type="MeshInstance3D" parent="Decor" unique_id=1119380423]
 transform = Transform3D(1, 0, 0, 0, 2.3, 0, 0, 0, 1, 8.4, 3.68, -3)
 mesh = SubResource("BoxMesh_pillar")
-surface_material_override/0 = ExtResource("25_purple")
+surface_material_override/0 = ExtResource("19_2p80u")
 
 [node name="StartGateBeam" type="MeshInstance3D" parent="Decor" unique_id=406084536]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.4, -3)
 mesh = SubResource("BoxMesh_beam")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="StartRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1612005899]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 0.35, 2)
 mesh = SubResource("BoxMesh_rail")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="StartRailRight" type="MeshInstance3D" parent="Decor" unique_id=766497020]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, 0.35, 2)
 mesh = SubResource("BoxMesh_rail")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="SideBlockA" type="MeshInstance3D" parent="Decor" unique_id=1502687493]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.5, -30)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("25_purple")
+surface_material_override/0 = ExtResource("19_2p80u")
 
 [node name="SideBlockB" type="MeshInstance3D" parent="Decor" unique_id=551999234]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 2.5, -44)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("54_plat_pink")
+surface_material_override/0 = ExtResource("9_52tv3")
 
 [node name="SideBlockC" type="MeshInstance3D" parent="Decor" unique_id=435146821]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1, -70)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("22_lime")
+surface_material_override/0 = ExtResource("49_13dg7")
 
 [node name="SideBlockD" type="MeshInstance3D" parent="Decor" unique_id=429855388]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 3.2, -95)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("25_purple")
+surface_material_override/0 = ExtResource("19_2p80u")
 
 [node name="SideBlockE" type="MeshInstance3D" parent="Decor" unique_id=175395455]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 2, -132)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="SideBlockF" type="MeshInstance3D" parent="Decor" unique_id=1900228361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 1.4, -168)
 mesh = SubResource("BoxMesh_side")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarLeftA" type="MeshInstance3D" parent="Decor" unique_id=628659562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -25)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarRightA" type="MeshInstance3D" parent="Decor" unique_id=1683655957]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -25)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarLeftB" type="MeshInstance3D" parent="Decor" unique_id=1603198668]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -70)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarRightB" type="MeshInstance3D" parent="Decor" unique_id=755361915]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -70)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarLeftC" type="MeshInstance3D" parent="Decor" unique_id=1937488930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -118)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarRightC" type="MeshInstance3D" parent="Decor" unique_id=1036955140]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -118)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("26_yellow")
+surface_material_override/0 = ExtResource("48_6s1te")
 
 [node name="DistantPillarLeftD" type="MeshInstance3D" parent="Decor" unique_id=653996811]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -166)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("54_plat_pink")
+surface_material_override/0 = ExtResource("9_52tv3")
 
 [node name="DistantPillarRightD" type="MeshInstance3D" parent="Decor" unique_id=1477456853]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -166)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("54_plat_pink")
+surface_material_override/0 = ExtResource("9_52tv3")
 
 [node name="DistantPillarLeftE" type="MeshInstance3D" parent="Decor" unique_id=1343594487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.25, -208)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("22_lime")
+surface_material_override/0 = ExtResource("49_13dg7")
 
 [node name="DistantPillarRightE" type="MeshInstance3D" parent="Decor" unique_id=1120494496]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.25, -208)
 mesh = SubResource("BoxMesh_tall")
-surface_material_override/0 = ExtResource("22_lime")
+surface_material_override/0 = ExtResource("49_13dg7")
 
 [node name="ForgeRailLeft" type="MeshInstance3D" parent="Decor" unique_id=2078473859]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 2.55, -232)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_kf5aa")
 
 [node name="ForgeRailRight" type="MeshInstance3D" parent="Decor" unique_id=1987517325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 2.55, -232)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_t5ykj")
 
 [node name="ChimneyRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1335749771]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 5.35, -260)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_e755i")
 
 [node name="ChimneyRailRight" type="MeshInstance3D" parent="Decor" unique_id=1351689012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 5.35, -260)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_ro3en")
 
 [node name="ChimneyLandingRailLeft" type="MeshInstance3D" parent="Decor" unique_id=1172551451]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 5.35, -275)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_od4ux")
 
 [node name="ChimneyLandingRailRight" type="MeshInstance3D" parent="Decor" unique_id=1792140747]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 5.35, -275)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xhfw6")
 
 [node name="SummitRailLeft" type="MeshInstance3D" parent="Decor" unique_id=934941677]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6, 9.75, -305)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_1epgm")
 
 [node name="SummitRailRight" type="MeshInstance3D" parent="Decor" unique_id=1218475425]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 9.75, -305)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_152kg")
 
 [node name="FinalRailLeftB" type="MeshInstance3D" parent="Decor" unique_id=1161930693]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 4.15, -342)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_r4e17")
 
 [node name="FinalRailRightB" type="MeshInstance3D" parent="Decor" unique_id=2051184324]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 4.15, -342)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_y57op")
 
 [node name="PlazaRailLeft" type="MeshInstance3D" parent="Decor" unique_id=127530268]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6264977, 4.15, -363)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_mlv25")
 
 [node name="PlazaRailRight" type="MeshInstance3D" parent="Decor" unique_id=1125902073]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5128994, 4.15, -363)
-material_override = ExtResource("16_xhfw6")
+material_override = ExtResource("16_5kdog")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_a82wo")
 
 [node name="HazardForge0" type="MeshInstance3D" parent="Decor" unique_id=1504652577]
-script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -226)
-material_override = ExtResource("50_155or")
+material_override = ExtResource("50_ehsty")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_gdvew")
+script = ExtResource("51_54cam")
 
 [node name="HazardForge1" type="MeshInstance3D" parent="Decor" unique_id=871528093]
-script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -232)
-material_override = ExtResource("50_155or")
+material_override = ExtResource("50_ehsty")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_kjtvk")
+script = ExtResource("51_54cam")
 
 [node name="HazardForge2" type="MeshInstance3D" parent="Decor" unique_id=1057385108]
-script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01, -238)
-material_override = ExtResource("50_155or")
+material_override = ExtResource("50_ehsty")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xrs0c")
+script = ExtResource("51_54cam")
 
 [node name="HazardPlaza0" type="MeshInstance3D" parent="Decor" unique_id=1769379076]
-script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.61, -358)
-material_override = ExtResource("50_155or")
+material_override = ExtResource("50_ehsty")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_xljpf")
+script = ExtResource("51_54cam")
 
 [node name="HazardPlaza1" type="MeshInstance3D" parent="Decor" unique_id=1637296946]
-script = ExtResource("90_hazard_pad")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.61, -361)
-material_override = ExtResource("50_155or")
+material_override = ExtResource("50_ehsty")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_j4bwh")
+script = ExtResource("51_54cam")
 
 [node name="ArenaDecor" type="Node3D" parent="." unique_id=713520192]
-script = ExtResource("57_decor")
+script = ExtResource("52_hhkct")
 section_centers = PackedVector3Array()
 section_sizes = PackedVector2Array()
 section_colors = PackedColorArray()
 island_palette = PackedColorArray()
 
 [node name="Crowd" type="Node3D" parent="." unique_id=552202240]
-script = ExtResource("33_crowd")
+script = ExtResource("53_4o43f")
 per_row = 50
 stand_offset = 17.0
 stand_length = 400.0
@@ -961,7 +1467,7 @@ stand_center_z = -175.0
 
 [node name="PostProcess" type="CanvasLayer" parent="." unique_id=842067529]
 layer = 0
-script = ExtResource("32_post_script")
+script = ExtResource("54_3kvr3")
 
 [node name="Rect" type="ColorRect" parent="PostProcess" unique_id=749610537]
 material = SubResource("ShaderMaterial_post")
@@ -973,15 +1479,23 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="RaceDirector" type="Node" parent="." unique_id=1911809945]
-script = ExtResource("38_director")
-bot_scene = ExtResource("39_bot")
+script = ExtResource("56_snd0e")
+bot_scene = ExtResource("57_4ifvm")
 finish_z = -363.0
 course_length = 368.0
 
-[node name="Player" parent="." unique_id=1803748887 instance=ExtResource("1_player")]
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1803748887 instance=ExtResource("58_26tvq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 5)
+collision_layer = 2
+collision_mask = 5
+floor_stop_on_slope = false
+floor_max_angle = 0.9
+floor_snap_length = 0.35
+script = ExtResource("59_ch61h")
 acceleration = 22.0
 friction = 12.0
 jump_velocity = 5.0
 
-[node name="PauseMenu" parent="." unique_id=973587988 instance=ExtResource("14_pause")]
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=973587988 instance=ExtResource("60_fic6u")]
+layer = 10
+script = ExtResource("61_megd8")

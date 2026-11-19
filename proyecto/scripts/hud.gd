@@ -77,14 +77,22 @@ func _ready() -> void:
 		_show_tutorial()
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player") as Node3D
 		if _player == null:
 			return
+	progress_bar.value = _progress() * 100.0
+
+
+## La barra mide el avance real del recorrido. En los circuitos con ruta propia
+## (la espiral del volcán vuelve sobre sus pasos) la Z no sirve: se pregunta al
+## LevelInfo, que mide por waypoint, igual que la clasificación en vivo.
+func _progress() -> float:
+	if _level_info != null:
+		return _level_info.progress_at(_player.global_position)
 	var span := maxf(_start_z - _finish_z, 0.01)
-	var progress := clampf((_start_z - _player.global_position.z) / span, 0.0, 1.0)
-	progress_bar.value = progress * 100.0
+	return clampf((_start_z - _player.global_position.z) / span, 0.0, 1.0)
 
 
 func _connect_manager() -> void:

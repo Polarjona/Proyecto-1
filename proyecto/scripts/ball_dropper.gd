@@ -23,6 +23,10 @@ extends Node3D
 
 var _timer: float = 0.0
 var _balls: Array[RigidBody3D] = []
+## Bolas aparcadas para volver a usarlas. Antes cada 1,8 s se instanciaba y se
+## liberaba un RigidBody3D: en un tramo largo eso es basura constante para la
+## memoria y para el servidor de física.
+var _pool: Array[RigidBody3D] = []
 ## Desplazamientos locales de los caños a lo largo de la viga.
 var _chute_offsets: Array[float] = [0.0]
 
@@ -54,16 +58,11 @@ func _drop_ball() -> void:
 		return
 	if _balls.size() >= max_balls:
 		_remove_ball(0)
-	var ball := ball_scene.instantiate() as RigidBody3D
+	var ball := _take_ball()
 	if ball == null:
 		return
-	# Keep the ball as a child (tests clean them up by node type) but make it
-	# top-level so a dropper mounted on a moving platform does not drag the
-	# ball along with it.
-	ball.top_level = true
 	if ball_color.a > 0.0 and "ball_color" in ball:
 		ball.set("ball_color", ball_color)
-	add_child(ball)
 	# Cada bola sale de uno de los caños, no siempre del centro.
 	var chute := _chute_offsets[randi() % _chute_offsets.size()]
 	var side_offset := global_transform.basis.x * chute
@@ -89,8 +88,39 @@ func _remove_ball(index: int) -> void:
 		return
 	var ball := _balls[index]
 	_balls.remove_at(index)
-	if is_instance_valid(ball):
-		ball.queue_free()
+	if not is_instance_valid(ball):
+		return
+	# Se aparca congelada y lejos del mapa en vez de liberarla: la siguiente
+	# bola la recicla y no hay que crear otra. Nunca hay más aparcadas que
+	# `max_balls`, porque solo se aparca lo que sale de `_balls`.
+	ball.freeze = true
+	ball.visible = false
+	ball.linear_velocity = Vector3.ZERO
+	ball.angular_velocity = Vector3.ZERO
+	ball.global_position = Vector3(global_position.x, -500.0, global_position.z)
+	_pool.append(ball)
+
+
+## Saca una bola del aparcamiento o, si está vacío, la instancia.
+func _take_ball() -> RigidBody3D:
+	while not _pool.is_empty():
+		var parked = _pool.pop_back()
+		if not is_instance_valid(parked):
+			continue
+		parked.freeze = false
+		parked.visible = true
+		return parked as RigidBody3D
+	if ball_scene == null:
+		return null
+	var ball := ball_scene.instantiate() as RigidBody3D
+	if ball == null:
+		return null
+	# Keep the ball as a child (tests clean them up by node type) but make it
+	# top-level so a dropper mounted on a moving platform does not drag the
+	# ball along with it.
+	ball.top_level = true
+	add_child(ball)
+	return ball
 
 
 ## Coloca los caños a lo largo de la viga y ensancha la viga hasta las patas.

@@ -24,10 +24,6 @@ const LEGACY_BEST_PATH := "user://best_time.save"
 const LEGACY_APP_DIRS := ["Trompicón", "Stumble Guys"]
 const PROFILE_VERSION := 2
 
-const MEDAL_GOLD := 70.0
-const MEDAL_SILVER := 95.0
-const MEDAL_BRONZE := 130.0
-
 # Recompensa en monedas: una parte fija, otra por medalla, otra por tiempo y,
 # en los modos con bots, otra por puesto en la clasificación.
 const COIN_BASE := 10
@@ -413,12 +409,8 @@ func best_splits(level_id: String = "") -> Array:
 	return splits if splits is Array else []
 
 
-func medal_for(time: float) -> String:
-	return medal_for_values(time, MEDAL_GOLD, MEDAL_SILVER, MEDAL_BRONZE)
-
-
-## Medallas con los tiempos de un circuito concreto (los mapas cortos no
-## pueden usar los 70/95/130 del circuito largo).
+## Medallas con los tiempos de un circuito concreto: no hay tiempos globales,
+## cada circuito trae los suyos en su `LevelInfo`.
 func medal_for_values(time: float, gold: float, silver: float, bronze: float) -> String:
 	if time <= 0.0:
 		return "none"
@@ -443,18 +435,6 @@ func medal_label(medal: String) -> String:
 			return "SIN MEDALLA"
 
 
-func medal_target(medal: String) -> float:
-	match medal:
-		"gold":
-			return MEDAL_GOLD
-		"silver":
-			return MEDAL_SILVER
-		"bronze":
-			return MEDAL_BRONZE
-		_:
-			return MEDAL_BRONZE
-
-
 ## Se guarda al empezar: una carrera abandonada o perdida tambien cuenta.
 func register_start() -> void:
 	data["races"] = int(data.get("races", 0)) + 1
@@ -468,7 +448,7 @@ func register_fall() -> void:
 
 ## Monedas de una carrera: tiempo (cuanto mejor que el bronce, más), medalla
 ## y puesto en la clasificación (0 = sin bots, no paga puesto).
-func coin_reward(time: float, medal: String, position: int = 0, bronze_time: float = MEDAL_BRONZE) -> Dictionary:
+func coin_reward(time: float, medal: String, position: int, bronze_time: float) -> Dictionary:
 	var medal_coins := 0
 	match medal:
 		"gold":
@@ -496,9 +476,8 @@ func coin_reward(time: float, medal: String, position: int = 0, bronze_time: flo
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
 ## `level_id` separa los records de los cinco circuitos; los tiempos de medalla
 ## y la moneda por tiempo se calculan con los del nivel.
-func register_finish(time: float, falls: int, splits: Array, position: int = 0,
-		level_id: String = "", gold: float = MEDAL_GOLD,
-		silver: float = MEDAL_SILVER, bronze: float = MEDAL_BRONZE) -> Dictionary:
+func register_finish(time: float, falls: int, splits: Array, position: int,
+		level_id: String, gold: float, silver: float, bronze: float) -> Dictionary:
 	var medal := medal_for_values(time, gold, silver, bronze)
 	var info := {
 		"time": time,

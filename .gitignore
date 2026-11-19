@@ -23,6 +23,7 @@ profile.json
 *.log
 *.tmp
 *.bak
+proyecto/tools/test-logs/
 
 .obsidian/
 

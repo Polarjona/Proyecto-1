@@ -98,7 +98,7 @@ El salto es de **altura variable**: mantener el botón salta más alto; soltarlo
   - **Glaciar**: muros de témpanos por carriles, nieve y niebla.
   - **Volcán**: lava que sube, géiseres, lluvia de meteoros, vórtice de ceniza y cortinas de magma.
   - **Abismo**: zonas de agua con franja de nado, erizos, medusas, minas de burbujas, estrellas giratorias y aros de impulso.
-- Los tres circuitos temáticos se generan con `scripts/level_builder.gd` (modo `@tool`): al abrir la escena se construye el mapa, y al guardarla queda horneado en el `.tscn` y se edita como cualquier otro. Abyss Run se genera en runtime porque su escena solo contiene el constructor.
+- Los tres circuitos temáticos se generan con `scripts/levels/level_builder.gd` (modo `@tool`), que delega en un **kit por tema** (`glacier_kit.gd`, `volcano_kit.gd`, `ocean_kit.gd`) sobre una base común (`level_kit.gd`). Abrir la escena construye el mapa y guardarla lo hornea en el `.tscn`: los tres circuitos se editan ya como cualquier otro y no se generan en runtime.
 
 ### Arte y presentación
 
@@ -122,7 +122,7 @@ proyecto/
 ├── ui/                     # tema compartido y tipografía Baloo 2 (OFL)
 ├── scenes/
 │   ├── main.tscn           # Pivot Push (ronda 1) + jugador + HUD + pausa
-│   ├── levels/             # Spin Go Round, Glacier Gallop, Lava Vortex y Abyss Run
+│   ├── levels/             # los cinco circuitos y los actos (_act1..3) de los generados
 │   ├── menu/               # menú principal, pausa y ajustes
 │   ├── obstacles/          # 17 obstáculos interactivos
 │   ├── player/player.tscn  # corredor con personaje 3D y cámara
@@ -130,36 +130,46 @@ proyecto/
 │   └── ui/                 # (reservada para UI adicional)
 ├── exports/                # Builds generados (excluido de Git)
 ├── scripts/                # Un script por responsabilidad + autoloads
+│   └── levels/             # Generador de circuitos y un kit por tema
 └── tools/                  # Tests headless, generador de audio y de niveles
 ```
 
 ## Verificación
 
-Los tests headless se ejecutan desde `proyecto/` (o todos de una vez con `tools/run_tests.sh`):
+La batería headless vive en `proyecto/tools/` y se ejecuta de una vez:
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # RESULT: 31/31 scenes OK
-godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
-godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
-godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
-godot --headless -s res://tools/iteration3_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/levels_test.gd        # RESULT: TODO OK
-godot --headless -s res://tools/persistence_test.gd   # RESULT: TODO OK
-godot --headless -s res://tools/progression_test.gd   # RESULT: TODO OK
-godot --headless -s res://tools/settings_test.gd      # RESULT: TODO OK
-godot --headless -s res://tools/levels_bots_test.gd   # no termina en 280 s (ver abajo)
-godot --headless -s res://tools/bots_test.gd          # no re-ejecutado en esta pasada
+bash tools/run_tests.sh          # suite obligatoria (12 tests)
+bash tools/run_tests.sh --long   # tests largos de bots
+bash tools/run_tests.sh --all    # todo
 ```
 
-**Fallos conocidos de la batería** (comprobaciones desfasadas, no regresiones del juego):
+Resultado de la última pasada con Godot 4.7.2 en esta máquina:
 
-- `levels_bots_test.gd` — lanza el test de bots de los circuitos nuevos, pero no termina dentro de 280 s en esta máquina (código 124) y al salir deja avisos de RIDs de `NavMesh` sin liberar. No se considera un test en verde.
-- `bots_test.gd` — no se ha vuelto a ejecutar en esta pasada; su última referencia es la del informe anterior.
+| Test | Resultado |
+| --- | --- |
+| `check_scenes` | 40/40 escenas |
+| `smoke_test`, `flow_test`, `features_test` | OK |
+| `levels_test`, `lod_test` | OK (0 fallos) |
+| `persistence`, `progression`, `settings`, `iteration3/4/5` | OK |
+| `bots_test`, `slow_test` (largos) | OK |
+| `levels_bots_test` (largo) | OK: los bots completan los tres circuitos generados |
 
-> Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar las escenas y los WAV nuevos. Ejecutar sin esa caché puede hacer que `ResourceLoader.exists()` no encuentre los SFX recién generados (el juego sigue funcionando, simplemente sin ese sonido).
+- Cada test corre con `timeout` (180 s la suite, 900 s los largos): un cuelgue **falla** en vez de colgar la máquina.
+- `proyecto/tools/test-logs/` guarda el log de cada test y un `summary.md` con la tabla de resultados.
+- Un test suelto: `godot --headless --path . -s res://tools/levels_test.gd`.
+- Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar las escenas y los WAV nuevos. Sin esa caché, `ResourceLoader.exists()` puede no encontrar los SFX recién generados (el juego sigue funcionando, solo sin ese sonido).
+- El test de bots de los circuitos corre sin jugador en la escena: si el jugador se queda quieto, la lava de Lava Vortex lo quema a los pocos segundos y la carrera se congela, que no es lo que la prueba mide.
+
+### CI
+
+`.github/workflows/tests.yml` corre en cada push y en cada pull request con dos jobs que comparten la acción `.github/actions/setup-godot`:
+
+- **Suite headless** — la batería obligatoria (`bash tools/run_tests.sh`), con `timeout-minutes: 20`. Si falla, la CI está en rojo.
+- **Tests largos (bots)** — `bash tools/run_tests.sh --long`: los bots recorren los tres circuitos generados. También bloquea si falla.
+
+El binario de Godot (~50 MB) se descarga una vez por versión y se reutiliza desde la caché; la importación del proyecto (`proyecto/.godot`) se cachea por huella de recursos. El resumen de cada job se publica en la página del workflow y los logs quedan como artefacto.
 
 ## Arquitectura
 
@@ -172,6 +182,8 @@ godot --headless -s res://tools/bots_test.gd          # no re-ejecutado en esta 
 - **Señales:** `RaceManager` emite `time_updated`, `split_reached`, `checkpoint_reached`, `finished`, `respawned`, `best_time_updated`, `checkpoints_updated`, `countdown_tick`, `race_started` y `results_ready`; el HUD se suscribe.
 - **Grupos:** `player`, `bot`, `bots`, `checkpoints`, `race_manager`, `race_director`, `pause_menu`, `wind_tunnels`, `launchers`, `see_saws`, `level_info`.
 - **Datos:** `user://profile.json` (perfil, personaje elegido, personajes desbloqueados, monedas, récords y splits por circuito, ajustes) y `user://best_time.save` (solo legado, se importa una vez).
+- **Generadores:** `scripts/levels/level_builder.gd` solo elige el tema y mantiene la cámara; `level_kit.gd` reúne materiales, escenario, actores y geometría compartida, y cada circuito aporta su kit (`glacier_kit.gd`, `volcano_kit.gd`, `ocean_kit.gd`) que solo describe su pista. Añadir un circuito nuevo es añadir un kit, no tocar un archivo de tres mil líneas.
+- **Rendimiento:** los dos mapas hechos a mano ya no usan CSG (33 y 45 cajas horneadas a `BoxMesh` + `BoxShape3D`, sin recálculo al arrancar); los tres circuitos generados se guardan en tres actos (`_act1.tscn`…`_act3.tscn`) que se instancian; la sombra de contacto y el raycast del suelo de la cámara se refrescan a 25 y 30 Hz en vez de a cada tick de física; el dispensador de bolas recicla sus `RigidBody3D`; el menú templa los shaders de los obstáculos antes de la primera carrera; y cada acto recorta su atrezo a distancia (unos 14 px, con desvanecido *dither*) y convierte sus losas grandes en occluders, sin tocar pista ni obstáculos.
 - **Circuitos:** cada escena lleva un nodo `LevelInfo` con id, nombre, ronda, longitud, tiempos de medalla, récord por nivel, ruta de bots y carriles. `RaceManager`, `RaceDirector` y el HUD leen ese contrato, así que el mismo jugador y el mismo bot funcionan en todos los mapas.
 
 ## Audio
@@ -191,6 +203,9 @@ Genera el tema alegre del menú (`menu_theme.wav`, 38 s en bucle) y **15 SFX**: 
 - `documentacion/Segunda_iteracio.md` — Informe de la segunda entrega de seguimiento: los cinco circuitos, el torneo de cuatro rondas y la verificación real.
 - `documentacion/Torneo_cuatro_circuitos.md` — Los cuatro circuitos del torneo, paletas, rutas, récords, verificación y créditos de las referencias.
 - `documentacion/Ideas_Mejora.md` — Banco de ideas para futuras iteraciones.
+- `CONTRIBUTING.md` — Convención de commits, tests, hooks de lint y qué documentación actualizar con cada cambio.
+
+El uso de inteligencia artificial está documentado en cada informe (`Primera_entrega.md` §5, `Segunda_iteracio.md` §7 y `Torneo_cuatro_circuitos.md` §11), no en un documento aparte.
 
 ## Créditos
 

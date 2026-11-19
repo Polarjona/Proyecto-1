@@ -27,6 +27,14 @@ func _run() -> void:
 		session.call("start_bots", false)
 		session.set("bot_count", 1)
 		var game: Node = (load(path) as PackedScene).instantiate()
+		# El jugador no interviene en esta prueba. Si se queda quieto, la lava de
+		# Lava Vortex lo quema a los pocos segundos y `fail_race()` congela la
+		# carrera entera: los bots dejan de moverse justo cuando empezaba lo que
+		# se quiere medir.
+		var player: Node = game.get_node_or_null("Player")
+		if player != null:
+			game.remove_child(player)
+			player.free()
 		root.add_child(game)
 		current_scene = game
 		for i in 3:

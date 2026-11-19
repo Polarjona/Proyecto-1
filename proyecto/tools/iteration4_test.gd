@@ -128,11 +128,11 @@ func _run() -> void:
 			"El túnel de viento tiene audio de viento")
 		# La base del balancín queda por debajo de la tabla incluso al volcar.
 		var saw: Node3D = game.get_node_or_null("Course/SeeSaw")
-		var base: CSGBox3D = game.get_node_or_null("Course/SeeSawBase")
+		var base: Node3D = game.get_node_or_null("Course/SeeSawBase")
 		if saw != null and base != null:
 			saw.set_physics_process(false)
 			saw.rotation = Vector3(0.5, 0.0, 0.16)
-			var base_top := base.global_position.y + base.size.y * 0.5
+			var base_top := base.global_position.y + BoxSize.of(base).y * 0.5
 			var lowest := 999.0
 			for x in [-0.7, 0.0, 0.7]:
 				for z in [-0.7, 0.0, 0.7]:

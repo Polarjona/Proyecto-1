@@ -5,32 +5,28 @@ extends Node
 
 signal mode_changed(mode: String)
 
-## Los circuitos, en orden de ronda. El torneo recorre los cuatro primeros;
-## la carrera clásica puede correr cualquiera, incluido el abisal (el quinto).
-const LEVELS := [
-	"res://scenes/main.tscn",
-	"res://scenes/levels/spin_go_round.tscn",
-	"res://scenes/levels/glacier_gallop.tscn",
-	"res://scenes/levels/lava_vortex.tscn",
-	"res://scenes/levels/abyss_run.tscn",
+## Registro único de circuitos, en orden de ronda. El torneo recorre los cuatro
+## primeros; la carrera clásica puede correr cualquiera, incluido el abisal.
+##
+## Antes había tres listas paralelas (rutas, nombres, ids y medallas) que podían
+## desincronizarse entre sí. Ahora todo sale de aquí, y `levels_test` comprueba
+## que cada escena declara lo mismo en su `LevelInfo`.
+const LEVEL_DEFINITIONS := [
+	{"path": "res://scenes/main.tscn", "id": "pivot_push", "name": "Pivot Push",
+		"gold": 130.0, "silver": 170.0, "bronze": 215.0},
+	{"path": "res://scenes/levels/spin_go_round.tscn", "id": "spin_go_round",
+		"name": "Spin Go Round", "gold": 115.0, "silver": 145.0, "bronze": 185.0},
+	{"path": "res://scenes/levels/glacier_gallop.tscn", "id": "glacier_gallop",
+		"name": "Glacier Gallop", "gold": 145.0, "silver": 180.0, "bronze": 225.0},
+	{"path": "res://scenes/levels/lava_vortex.tscn", "id": "lava_vortex",
+		"name": "Lava Vortex", "gold": 84.0, "silver": 100.0, "bronze": 116.0},
+	{"path": "res://scenes/levels/abyss_run.tscn", "id": "abyss_run",
+		"name": "Abyss Run", "gold": 112.0, "silver": 138.0, "bronze": 172.0},
 ]
-## Nombre de cada circuito para el menú. Es el `display_name` del LevelInfo de
-## su escena (lo comprueba `levels_test`).
-const LEVEL_NAMES := [
-	"Pivot Push", "Spin Go Round", "Glacier Gallop", "Lava Vortex", "Abyss Run",
-]
-const LEVEL_IDS := [
-	"pivot_push", "spin_go_round", "glacier_gallop", "lava_vortex", "abyss_run",
-]
-## Tiempos de medalla de cada circuito, en el mismo orden que LEVELS. El menú
-## los usa para no enseñar los 70/95/130 genéricos en mapas cortos o largos.
-const LEVEL_MEDALS := [
-	{"gold": 130.0, "silver": 170.0, "bronze": 215.0},
-	{"gold": 115.0, "silver": 145.0, "bronze": 185.0},
-	{"gold": 145.0, "silver": 180.0, "bronze": 225.0},
-	{"gold": 84.0, "silver": 100.0, "bronze": 116.0},
-	{"gold": 112.0, "silver": 138.0, "bronze": 172.0},
-]
+## Rutas de las escenas, derivadas del registro para no repetir la lista.
+## Se rellenan al construir el autoload: `level_path` se apoya en ellas y no
+## puede esperar a `_ready`.
+var LEVELS: Array[String] = _paths()
 const TOTAL_ROUNDS := 4
 ## Plazas que clasifican en cada ronda: 3 → 3 → 2 → 1.
 const QUALIFIERS_BY_ROUND := [3, 3, 2, 1]
@@ -42,6 +38,14 @@ var qualifiers: int = 3
 var level_path: String = LEVELS[0]
 ## Circuito elegido en el menú para la carrera clásica (índice de LEVELS).
 var classic_level: int = 0
+
+
+## Rutas del registro, en orden de ronda.
+static func _paths() -> Array[String]:
+	var paths: Array[String] = []
+	for definition: Dictionary in LEVEL_DEFINITIONS:
+		paths.append(String(definition["path"]))
+	return paths
 
 
 func _ready() -> void:
@@ -63,15 +67,25 @@ func level_count() -> int:
 
 
 func level_name(index: int) -> String:
-	return String(LEVEL_NAMES[clampi(index, 0, LEVEL_NAMES.size() - 1)])
+	return String(_definition(index)["name"])
 
 
 func level_id(index: int) -> String:
-	return String(LEVEL_IDS[clampi(index, 0, LEVEL_IDS.size() - 1)])
+	return String(_definition(index)["id"])
 
 
 func level_medals(index: int) -> Dictionary:
-	return (LEVEL_MEDALS[clampi(index, 0, LEVEL_MEDALS.size() - 1)] as Dictionary).duplicate()
+	var definition := _definition(index)
+	return {
+		"gold": float(definition["gold"]),
+		"silver": float(definition["silver"]),
+		"bronze": float(definition["bronze"]),
+	}
+
+
+## Entrada del registro, con el índice acotado al catálogo.
+func _definition(index: int) -> Dictionary:
+	return LEVEL_DEFINITIONS[clampi(index, 0, LEVEL_DEFINITIONS.size() - 1)] as Dictionary
 
 
 func classic_level_path() -> String:

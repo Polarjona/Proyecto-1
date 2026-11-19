@@ -113,6 +113,16 @@ func _set_player_locked(locked: bool) -> void:
 		player.call("set_input_locked", locked)
 
 
+## Se acabó la carrera: el jugador suelta el mando y los bots se congelan. Sin
+## esto el mundo seguía corriendo detrás del panel de resultados y el puesto
+## podía cambiar después de mostrarse.
+func _freeze_field() -> void:
+	_set_player_locked(true)
+	var director := get_tree().get_first_node_in_group("race_director")
+	if director != null and director.has_method("freeze_race"):
+		director.call("freeze_race")
+
+
 func register_checkpoint(checkpoint_transform: Transform3D, checkpoint_name: String = "") -> void:
 	if is_finished:
 		return
@@ -154,7 +164,7 @@ func fail_race(reason: String = "lava") -> void:
 	is_running = false
 	fall_count += 1
 	SaveManager.register_fall()
-	_set_player_locked(true)
+	_freeze_field()
 	if not _headless:
 		# La pantalla de derrota tiene botones: el cursor vuelve a verse.
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -216,6 +226,7 @@ func finish_race() -> void:
 		"silver_time": silver_time,
 		"bronze_time": bronze_time,
 	}
+	_freeze_field()
 	results_ready.emit(data)
 
 

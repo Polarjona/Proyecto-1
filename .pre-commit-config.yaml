@@ -1,0 +1,29 @@
+# Hooks que se ejecutan antes de cada commit.
+#
+# Instalación (una vez por máquina):
+#   pip install pre-commit
+#   pre-commit install
+#
+# Solo revisan los archivos que entran en el commit, así que el resto del
+# proyecto se puede ir limpiando sin bloquear el trabajo. Para pasar toda la
+# batería a mano: `pre-commit run --all-files` (al principio saldrán avisos de
+# código antiguo; no hace falta arreglarlo en el mismo commit).
+repos:
+  # Formato y estilo de GDScript (gdtoolkit 4.x, la rama de Godot 4).
+  - repo: https://github.com/Scony/godot-gdscript-toolkit
+    rev: 4.3.3
+    hooks:
+      - id: gdformat
+      - id: gdlint
+
+  - repo: local
+    hooks:
+      # gdlint no mira `print()`, así que los restos de depuración se filtran
+      # aquí. Los dos archivos excluidos avisan de assets que faltan o de
+      # rescates de bots en build de depuración: son diagnósticos a propósito.
+      - id: sin-prints-de-depuracion
+        name: sin print() de depuración en el código del juego
+        language: pygrep
+        entry: '\bprint\s*\('
+        files: '^proyecto/scripts/.*\.gd$'
+        exclude: '^proyecto/scripts/(audio_manager|bot_racer)\.gd$'

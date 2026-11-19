@@ -27,6 +27,9 @@ var _player: Node3D
 var _rank_timer: float = 0.0
 var _level_info: LevelInfo
 var _spawn_origin: Vector3 = Vector3.ZERO
+## La carrera terminó: los bots se quedan quietos y el puesto del panel deja de
+## moverse aunque el jugador tarde en cerrarlo.
+var _frozen: bool = false
 
 
 func _ready() -> void:
@@ -87,6 +90,8 @@ func _spawn_bots() -> void:
 
 
 func _process(delta: float) -> void:
+	if _frozen:
+		return
 	_rank_timer -= delta
 	if _rank_timer > 0.0:
 		return
@@ -116,23 +121,35 @@ func _live_rank() -> int:
 func _progress_of(racer: Node3D) -> float:
 	if racer == null or not is_instance_valid(racer):
 		return -1.0
-	# Los circuitos con ruta propia (la espiral del volcán) no pueden medirse
-	# por Z: el recorrido vuelve sobre sus pasos muchas veces. En esos niveles
-	# se compara el punto de la ruta más cercano a cada corredor.
-	if _level_info != null and _level_info.has_bot_path():
-		var points: PackedVector3Array = _level_info.waypoints
-		if points.size() > 1:
-			var best_distance := INF
-			var best_index := 0
-			for i in points.size():
-				var distance := points[i].distance_squared_to(racer.global_position)
-				if distance < best_distance:
-					best_distance = distance
-					best_index = i
-			return float(best_index) / float(points.size() - 1)
+	# El que ya ha cruzado no puede perder el puesto a manos de quien sigue en
+	# pista, por muy cerca que esté del último punto.
+	if racer in _finish_order:
+		return 2.0
+	# La medida del avance vive en LevelInfo (por waypoint cuando el circuito
+	# no es una línea recta); el HUD usa exactamente la misma.
+	if _level_info != null:
+		return _level_info.progress_at(racer.global_position)
 	if racer.global_position.z <= finish_z:
 		return 2.0
 	return clampf((start_z - racer.global_position.z) / maxf(course_length, 1.0), 0.0, 1.0)
+
+
+## Congela la carrera cuando el jugador llega a meta o pierde. Sin esto el
+## mundo seguía corriendo detrás del panel de resultados y el puesto que se
+## leía podía cambiar después de mostrarse.
+func freeze_race() -> void:
+	if _frozen:
+		return
+	_frozen = true
+	set_process(false)
+	for bot in _bots:
+		if is_instance_valid(bot):
+			bot.set_physics_process(false)
+			bot.set_process(false)
+
+
+func is_frozen() -> bool:
+	return _frozen
 
 
 func _on_bot_finished(bot: Node3D, _time: float) -> void:

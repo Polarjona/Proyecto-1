@@ -1,0 +1,807 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/platform.gdshader" id="1_5oev4"]
+[ext_resource type="PackedScene" path="res://scenes/race/checkpoint.tscn" id="2_ak0c2"]
+[ext_resource type="Script" path="res://scripts/checkpoint.gd" id="3_oq71j"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="4_4rrys"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="5_2yrc3"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/moving_platform.tscn" id="6_x8njx"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="7_dbu1i"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spinning_platform.tscn" id="8_4qpqd"]
+[ext_resource type="Script" path="res://scripts/spinning_platform.gd" id="9_qnv5g"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball_dropper.tscn" id="10_pbsl5"]
+[ext_resource type="Script" path="res://scripts/ball_dropper.gd" id="11_1o6g6"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/ball.tscn" id="12_cyein"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/wind_tunnel.tscn" id="13_ypfoq"]
+[ext_resource type="Script" path="res://scripts/wind_tunnel.gd" id="14_6ih6h"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sldbm"]
+size = Vector3(18, 0.5, 57.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dy2te"]
+render_priority = 0
+shader = ExtResource("1_5oev4")
+shader_parameter/base_color = Color(0.19, 0.33, 0.4, 1)
+shader_parameter/accent_color = Color(0.72, 0.88, 0.9, 1)
+shader_parameter/grout_color = Color(0.06, 0.12, 0.16, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.12
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_de2uq"]
+size = Vector3(18, 0.5, 57.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7cbwl"]
+size = Vector3(1.2, 3, 19)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eycx3"]
+render_priority = 0
+shader = ExtResource("1_5oev4")
+shader_parameter/base_color = Color(0.12, 0.22, 0.29, 1)
+shader_parameter/accent_color = Color(0.5, 0.7, 0.75, 1)
+shader_parameter/grout_color = Color(0.03, 0.07, 0.1, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.1
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_x1p4v"]
+size = Vector3(1.2, 3, 19)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_foa54"]
+size = Vector3(1.2, 3, 19)
+
+[sub_resource type="BoxMesh" id="BoxMesh_srf88"]
+size = Vector3(1.1028229, 3, 19)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_by8ts"]
+size = Vector3(10, 0.5, 8.5440035)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tgjyh"]
+render_priority = 0
+shader = ExtResource("1_5oev4")
+shader_parameter/base_color = Color(0.27, 0.43, 0.5, 1)
+shader_parameter/accent_color = Color(0.85, 0.95, 0.95, 1)
+shader_parameter/grout_color = Color(0.08, 0.15, 0.19, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.1
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_ownmy"]
+size = Vector3(10, 0.5, 8.5440035)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ifve5"]
+size = Vector3(12, 0.5, 13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_q6ine"]
+size = Vector3(12, 0.5, 13)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d1i43"]
+size = Vector3(12, 0.5, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vpmfa"]
+size = Vector3(12, 0.5, 11)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dfogs"]
+size = Vector3(8.5, 2.8, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_25esa"]
+size = Vector3(8.5, 2.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_q1uhq"]
+size = Vector3(8.5, 2.8, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_citno"]
+size = Vector3(8.5, 2.8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b5ycs"]
+albedo_color = Color(0.58, 0.8, 0.82, 1)
+roughness = 0.5
+emission_enabled = true
+emission = Color(0.58, 0.8, 0.82, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_kpssb"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_es3rt"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jmdo1"]
+albedo_color = Color(0.2, 0.3, 0.36, 1)
+roughness = 0.92
+emission_enabled = true
+emission = Color(0.06, 0.14, 0.18, 1)
+emission_energy_multiplier = 0.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_38og4"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_popb8"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_72mgq"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qtrw1"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_fnped"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_khtra"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dqgct"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_bv263"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f5itk"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rv31p"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_sj1ew"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8rbft"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2gr1d"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pqdpt"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nls1h"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_sivsi"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fuxxs"]
+size = Vector3(24, 0.5, 60)
+
+[sub_resource type="BoxMesh" id="BoxMesh_t22l1"]
+size = Vector3(24, 0.5, 60)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7fdit"]
+size = Vector3(0.8, 2.8, 60)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sqkvu"]
+size = Vector3(0.8, 2.8, 60)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_weq6n"]
+size = Vector3(0.8, 2.8, 60)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eca02"]
+size = Vector3(0.8, 2.8, 60)
+
+[sub_resource type="SphereMesh" id="SphereMesh_t3i1k"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_25b6o"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e3ab8"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="SphereMesh" id="SphereMesh_tnriu"]
+radius = 0.24
+height = 0.48
+radial_segments = 18
+rings = 9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nvcdq"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_s3hyq"]
+size = Vector3(0.34, 4.2, 0.34)
+
+[node name="Act1" type="Node3D" unique_id=709064165]
+
+[node name="StartPlatform" type="StaticBody3D" parent="." unique_id=333408915]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -14.75)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23318" type="CollisionShape3D" parent="StartPlatform" unique_id=1650131259]
+shape = SubResource("BoxShape3D_sldbm")
+
+[node name="@MeshInstance3D@23319" type="MeshInstance3D" parent="StartPlatform" unique_id=1996022516]
+material_override = SubResource("ShaderMaterial_dy2te")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_de2uq")
+
+[node name="CP1" type="Area3D" parent="." unique_id=1782039572 instance=ExtResource("2_ak0c2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -17.585829)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("3_oq71j")
+checkpoint_name = "Checkpoint 1"
+
+[node name="SweeperA" type="Node3D" parent="." unique_id=1832083890 instance=ExtResource("4_4rrys")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0.35, -26.594936)
+script = ExtResource("5_2yrc3")
+spin_speed = 2.1
+push_force = 6.4
+arm_length = 15.9
+
+[node name="ArenaWallR" type="StaticBody3D" parent="." unique_id=1896462150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.364505, 1.5, -34)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23322" type="CollisionShape3D" parent="ArenaWallR" unique_id=1765146899]
+shape = SubResource("BoxShape3D_7cbwl")
+
+[node name="_MeshInstance3D_23323" type="MeshInstance3D" parent="ArenaWallR" unique_id=850768478]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_x1p4v")
+
+[node name="ArenaWallL" type="StaticBody3D" parent="." unique_id=149346564]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.425238, 1.5, -34.01329)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23320" type="CollisionShape3D" parent="ArenaWallL" unique_id=1319631422]
+shape = SubResource("BoxShape3D_foa54")
+
+[node name="@MeshInstance3D@23321" type="MeshInstance3D" parent="ArenaWallL" unique_id=1066683571]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_srf88")
+
+[node name="SweeperB" type="Node3D" parent="." unique_id=1954212533 instance=ExtResource("4_4rrys")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0.35, -36.551277)
+script = ExtResource("5_2yrc3")
+spin_speed = 2.5
+push_force = 6.8
+spin_direction = -1.0
+arm_length = 15.9
+
+[node name="ClimbA" type="StaticBody3D" parent="." unique_id=1113754120]
+transform = Transform3D(1, 0, 0, 0, 0.9363292, -0.35112345, 0, 0.35112345, 0.9363292, 0, 1.2659177, -47.08778)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23324" type="CollisionShape3D" parent="ClimbA" unique_id=1345313386]
+shape = SubResource("BoxShape3D_by8ts")
+
+[node name="@MeshInstance3D@23325" type="MeshInstance3D" parent="ClimbA" unique_id=9526046]
+material_override = SubResource("ShaderMaterial_tgjyh")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ownmy")
+
+[node name="TerraceA" type="StaticBody3D" parent="." unique_id=1071500379]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -57.5)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23326" type="CollisionShape3D" parent="TerraceA" unique_id=357544106]
+shape = SubResource("BoxShape3D_ifve5")
+
+[node name="@MeshInstance3D@23327" type="MeshInstance3D" parent="TerraceA" unique_id=104678570]
+material_override = SubResource("ShaderMaterial_dy2te")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_q6ine")
+
+[node name="CP2" type="Area3D" parent="." unique_id=387691681 instance=ExtResource("2_ak0c2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -62)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("3_oq71j")
+checkpoint_name = "Checkpoint 2"
+
+[node name="IceLift" type="AnimatableBody3D" parent="." unique_id=1405892923 instance=ExtResource("6_x8njx")]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -66)
+collision_mask = 0
+script = ExtResource("7_dbu1i")
+travel = Vector3(0, 0, -6.5)
+speed = 2.6
+pause_time = 0.4
+
+[node name="MovingLanding" type="StaticBody3D" parent="." unique_id=1249379338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -80)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23328" type="CollisionShape3D" parent="MovingLanding" unique_id=1044466336]
+shape = SubResource("BoxShape3D_d1i43")
+
+[node name="@MeshInstance3D@23329" type="MeshInstance3D" parent="MovingLanding" unique_id=1875268888]
+material_override = SubResource("ShaderMaterial_tgjyh")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_vpmfa")
+
+[node name="SpinGateN_R" type="StaticBody3D" parent="." unique_id=137660659]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.75, 4.3, -81)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23338" type="CollisionShape3D" parent="SpinGateN_R" unique_id=1597690664]
+shape = SubResource("BoxShape3D_dfogs")
+
+[node name="@MeshInstance3D@23339" type="MeshInstance3D" parent="SpinGateN_R" unique_id=1469589848]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_25esa")
+
+[node name="SpinGateN_L" type="StaticBody3D" parent="." unique_id=1970805935]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.75, 4.3, -81)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23336" type="CollisionShape3D" parent="SpinGateN_L" unique_id=1725851335]
+shape = SubResource("BoxShape3D_q1uhq")
+
+[node name="@MeshInstance3D@23337" type="MeshInstance3D" parent="SpinGateN_L" unique_id=1350462226]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_citno")
+
+[node name="CP3" type="Area3D" parent="." unique_id=2076296449 instance=ExtResource("2_ak0c2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -84)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("3_oq71j")
+checkpoint_name = "Checkpoint 3"
+
+[node name="SpinTile0" type="AnimatableBody3D" parent="." unique_id=1658317288 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -88)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.1
+glow = false
+
+[node name="BallRain0" type="Node3D" parent="." unique_id=893266674 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -88)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile1" type="AnimatableBody3D" parent="." unique_id=1339842335 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -88)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.35
+glow = false
+
+[node name="BallRain1" type="Node3D" parent="." unique_id=2017247807 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -88)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.1
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile2" type="AnimatableBody3D" parent="." unique_id=466253219 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -88)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.6
+glow = false
+
+[node name="BallRain2" type="Node3D" parent="." unique_id=1578687475 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -88)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.2
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SeamPoleR92Cap" type="MeshInstance3D" parent="." unique_id=1329056547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.25, -92)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_kpssb")
+
+[node name="SeamPoleR92" type="StaticBody3D" parent="." unique_id=266193489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.1, -92)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23378" type="CollisionShape3D" parent="SeamPoleR92" unique_id=838982166]
+shape = SubResource("BoxShape3D_es3rt")
+
+[node name="@MeshInstance3D@23379" type="MeshInstance3D" parent="SeamPoleR92" unique_id=2128458564]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_38og4")
+
+[node name="SeamPoleL92Cap" type="MeshInstance3D" parent="." unique_id=2010837837]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.25, -92)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_popb8")
+
+[node name="SeamPoleL92" type="StaticBody3D" parent="." unique_id=10740588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.1, -92)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23368" type="CollisionShape3D" parent="SeamPoleL92" unique_id=2082361429]
+shape = SubResource("BoxShape3D_72mgq")
+
+[node name="@MeshInstance3D@23369" type="MeshInstance3D" parent="SeamPoleL92" unique_id=225863538]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_qtrw1")
+
+[node name="SpinGust1" type="Area3D" parent="." unique_id=229964218 instance=ExtResource("13_ypfoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, -96)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_6ih6h")
+strength = 4.6000000000000005
+gust_amplitude = 1.8
+show_fan = false
+
+[node name="BallRain5" type="Node3D" parent="." unique_id=551431905 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -96)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.5
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile5" type="AnimatableBody3D" parent="." unique_id=450980704 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -96)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.6
+glow = false
+
+[node name="BallRain4" type="Node3D" parent="." unique_id=267523195 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -96)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.4
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile4" type="AnimatableBody3D" parent="." unique_id=1685887342 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -96)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.35
+glow = false
+
+[node name="BallRain3" type="Node3D" parent="." unique_id=790352034 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -96)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.3
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile3" type="AnimatableBody3D" parent="." unique_id=1454076983 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -96)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.1
+glow = false
+
+[node name="SeamPoleR100Cap" type="MeshInstance3D" parent="." unique_id=1300943738]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.25, -100)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_fnped")
+
+[node name="SeamPoleL100" type="StaticBody3D" parent="." unique_id=1207724388]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.1, -100)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23370" type="CollisionShape3D" parent="SeamPoleL100" unique_id=870296224]
+shape = SubResource("BoxShape3D_khtra")
+
+[node name="@MeshInstance3D@23371" type="MeshInstance3D" parent="SeamPoleL100" unique_id=876644971]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_dqgct")
+
+[node name="SeamPoleL100Cap" type="MeshInstance3D" parent="." unique_id=1285457369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.25, -100)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_bv263")
+
+[node name="SeamPoleR100" type="StaticBody3D" parent="." unique_id=309986333]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.1, -100)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23380" type="CollisionShape3D" parent="SeamPoleR100" unique_id=740605760]
+shape = SubResource("BoxShape3D_f5itk")
+
+[node name="@MeshInstance3D@23381" type="MeshInstance3D" parent="SeamPoleR100" unique_id=672724284]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_rv31p")
+
+[node name="SpinTile7" type="AnimatableBody3D" parent="." unique_id=117455683 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -104)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.35
+glow = false
+
+[node name="BallRain7" type="Node3D" parent="." unique_id=1471942707 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -104)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.7000000000000002
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile8" type="AnimatableBody3D" parent="." unique_id=1466232736 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -104)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.6
+glow = false
+
+[node name="BallRain8" type="Node3D" parent="." unique_id=784434989 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -104)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.8
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinGust2" type="Area3D" parent="." unique_id=348517538 instance=ExtResource("13_ypfoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.6, -104)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_6ih6h")
+wind_direction = Vector3(-1, 0, 0)
+strength = 5.0
+gust_amplitude = 1.8
+show_fan = false
+
+[node name="BallRain6" type="Node3D" parent="." unique_id=418028428 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -104)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.6
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile6" type="AnimatableBody3D" parent="." unique_id=1660181245 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -104)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.1
+glow = false
+
+[node name="SeamPoleL108Cap" type="MeshInstance3D" parent="." unique_id=1538231191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.25, -108)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_sj1ew")
+
+[node name="SeamPoleL108" type="StaticBody3D" parent="." unique_id=937719636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.1, -108)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23372" type="CollisionShape3D" parent="SeamPoleL108" unique_id=1848982419]
+shape = SubResource("BoxShape3D_8rbft")
+
+[node name="@MeshInstance3D@23373" type="MeshInstance3D" parent="SeamPoleL108" unique_id=627192987]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_2gr1d")
+
+[node name="SeamPoleR108" type="StaticBody3D" parent="." unique_id=1642932946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.1, -108)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23382" type="CollisionShape3D" parent="SeamPoleR108" unique_id=1020347612]
+shape = SubResource("BoxShape3D_pqdpt")
+
+[node name="@MeshInstance3D@23383" type="MeshInstance3D" parent="SeamPoleR108" unique_id=1645621756]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_nls1h")
+
+[node name="SeamPoleR108Cap" type="MeshInstance3D" parent="." unique_id=649711121]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.25, -108)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_sivsi")
+
+[node name="SpinArena" type="StaticBody3D" parent="." unique_id=497099290]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -111)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23330" type="CollisionShape3D" parent="SpinArena" unique_id=226554929]
+shape = SubResource("BoxShape3D_fuxxs")
+
+[node name="@MeshInstance3D@23331" type="MeshInstance3D" parent="SpinArena" unique_id=62431966]
+material_override = SubResource("ShaderMaterial_dy2te")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_t22l1")
+
+[node name="SpinWallL" type="StaticBody3D" parent="." unique_id=1048581475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.4, 4.3, -111)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23332" type="CollisionShape3D" parent="SpinWallL" unique_id=1968074223]
+shape = SubResource("BoxShape3D_7fdit")
+
+[node name="@MeshInstance3D@23333" type="MeshInstance3D" parent="SpinWallL" unique_id=159101973]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_sqkvu")
+
+[node name="SpinWallR" type="StaticBody3D" parent="." unique_id=531415722]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.4, 4.3, -111)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23334" type="CollisionShape3D" parent="SpinWallR" unique_id=2091915240]
+shape = SubResource("BoxShape3D_weq6n")
+
+[node name="@MeshInstance3D@23335" type="MeshInstance3D" parent="SpinWallR" unique_id=36069531]
+material_override = SubResource("ShaderMaterial_eycx3")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_eca02")
+
+[node name="SpinTile9" type="AnimatableBody3D" parent="." unique_id=394299460 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2.845, -112)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.1
+glow = false
+
+[node name="BallRain9" type="Node3D" parent="." unique_id=614968851 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 9.5, -112)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 1.9
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile10" type="AnimatableBody3D" parent="." unique_id=2052839510 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -112)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.35
+glow = false
+
+[node name="BallRain10" type="Node3D" parent="." unique_id=756586169 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -112)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.0
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SpinTile11" type="AnimatableBody3D" parent="." unique_id=1427445749 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -112)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = -1.6
+glow = false
+
+[node name="BallRain11" type="Node3D" parent="." unique_id=1249660327 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -112)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.1
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)
+
+[node name="SeamPoleL116Cap" type="MeshInstance3D" parent="." unique_id=1611324151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.25, -116)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_t3i1k")
+
+[node name="SeamPoleL116" type="StaticBody3D" parent="." unique_id=1335507619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.1, -116)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23374" type="CollisionShape3D" parent="SeamPoleL116" unique_id=581720952]
+shape = SubResource("BoxShape3D_25b6o")
+
+[node name="@MeshInstance3D@23375" type="MeshInstance3D" parent="SeamPoleL116" unique_id=202509417]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_e3ab8")
+
+[node name="SeamPoleR116Cap" type="MeshInstance3D" parent="." unique_id=276722550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.25, -116)
+material_override = SubResource("StandardMaterial3D_b5ycs")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_tnriu")
+
+[node name="SeamPoleR116" type="StaticBody3D" parent="." unique_id=1016403546]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.1, -116)
+collision_mask = 0
+
+[node name="@CollisionShape3D@23384" type="CollisionShape3D" parent="SeamPoleR116" unique_id=1361398647]
+shape = SubResource("BoxShape3D_nvcdq")
+
+[node name="@MeshInstance3D@23385" type="MeshInstance3D" parent="SeamPoleR116" unique_id=18011751]
+material_override = SubResource("StandardMaterial3D_jmdo1")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_s3hyq")
+
+[node name="SpinTile14" type="AnimatableBody3D" parent="." unique_id=1397703409 instance=ExtResource("8_4qpqd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.845, -120)
+collision_mask = 0
+script = ExtResource("9_qnv5g")
+spin_speed = 1.6
+glow = false
+
+[node name="BallRain14" type="Node3D" parent="." unique_id=1576278469 instance=ExtResource("10_pbsl5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 9.5, -120)
+script = ExtResource("11_1o6g6")
+ball_scene = ExtResource("12_cyein")
+interval = 1.0
+interval_variance = 0.2
+max_balls = 3
+start_delay = 2.4000000000000004
+column_spread = 2.0
+ball_color = Color(0.8, 0.2, 0.26, 1)

@@ -280,7 +280,7 @@ func _physics_process(delta: float) -> void:
 		_fall_speed = 0.0
 	_update_facing(delta)
 	_update_camera(delta)
-	_update_shadow()
+	_update_shadow(delta)
 	_update_animation(delta, was_on_floor)
 	_update_footsteps(delta)
 	_update_marker(delta)
@@ -568,7 +568,7 @@ func _update_camera(delta: float) -> void:
 	current.z = lerpf(current.z, desired.z, flat_weight)
 	current.y = lerpf(current.y, desired.y, height_weight)
 	camera_pivot.global_position = current
-	_keep_camera_above_ground()
+	_keep_camera_above_ground(delta)
 
 	var speed_ratio := clampf(horizontal.length() / maxf(max_speed, 0.01), 0.0, 1.0)
 	var target_fov := camera_fov_base + speed_ratio * 9.0
@@ -581,9 +581,19 @@ func _update_camera(delta: float) -> void:
 	camera.v_offset = shake.y
 
 
+## El raycast del suelo bajo la cámara no necesita ir a la par del frame: a
+## 30 Hz la corrección llega igual de suave y se ahorra un raycast por frame.
+const CAMERA_GROUND_INTERVAL := 1.0 / 30.0
+var _camera_ground_clock := 0.0
+
+
 ## Keeps the pivot at least `camera_min_clearance` above whatever is below it,
 ## so the view never drags along the floor on downhill sections.
-func _keep_camera_above_ground() -> void:
+func _keep_camera_above_ground(delta: float) -> void:
+	_camera_ground_clock -= delta
+	if _camera_ground_clock > 0.0:
+		return
+	_camera_ground_clock = CAMERA_GROUND_INTERVAL
 	var space := get_world_3d().direct_space_state
 	if space == null:
 		return
@@ -600,14 +610,24 @@ func _keep_camera_above_ground() -> void:
 		camera_pivot.global_position.y = minimum
 
 
+## La sombra de contacto se refresca a 25 Hz: con doce corredores en pista,
+## hacerlo cada tick de física eran 720 raycasts por segundo que no se ven.
+const SHADOW_INTERVAL := 0.04
+var _shadow_clock := 0.0
+
+
 ## Blob shadow: casts a ray straight down and fades/grows the disc with height.
-func _update_shadow() -> void:
+func _update_shadow(delta: float) -> void:
 	if shadow == null:
 		return
 	# Bajo el agua no hay sombra de contacto: la mancha del suelo se lee mal.
 	if swimming:
 		shadow.visible = false
 		return
+	_shadow_clock -= delta
+	if _shadow_clock > 0.0:
+		return
+	_shadow_clock = SHADOW_INTERVAL
 	var space := get_world_3d().direct_space_state
 	if space == null:
 		return

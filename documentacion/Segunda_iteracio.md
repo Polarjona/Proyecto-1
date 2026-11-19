@@ -129,37 +129,43 @@ Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden script
 - **Autoloads:** `SaveManager` (perfil), `GameSession` (modo, ronda y circuito), `GameFeel` (hitstop/sacudida), `AudioManager` (música y SFX) y `TransitionManager` (fades).
 - **Contrato de circuito:** cada escena lleva un `LevelInfo` con id, nombre, ronda, longitud, tiempos de medalla, meta, ruta de bots, anchos de carril y punto de salida. `RaceManager`, `RaceDirector` y el HUD lo leen sin conocer el mapa.
 - **Escenas horneadas:** Pivot Push y Spin Go Round están construidas a mano y guardadas como `.tscn`.
-- **Generador `@tool`:** `scripts/level_builder.gd` construye Glacier Gallop, Lava Vortex y Abyss Run. Al abrir la escena en el editor se genera el mapa; al guardar, los nodos quedan marcados con `owner` y el `.tscn` queda horneado y editable. Si la escena ya tiene contenido, el generador no reconstruye nada.
-- **Abyss Run:** su escena solo contiene el constructor, así que el túnel se genera en runtime.
+- **Generador `@tool`:** `scripts/levels/level_builder.gd` construye Glacier Gallop, Lava Vortex y Abyss Run. Al abrir la escena en el editor se genera el mapa; al guardar, los nodos quedan marcados con `owner` y el `.tscn` queda horneado y editable. Si la escena ya tiene contenido, el generador no reconstruye nada.
+- **Abyss Run:** funciona como los demás circuitos generados: su escena instancia `abyss_run_act1..3.tscn`, que salen del generador horneado. El túnel no se genera en runtime.
+- **Rendimiento:** los dos mapas hechos a mano ya no usan CSG (33 y 45 cajas horneadas a `BoxMesh` + `BoxShape3D`); los tres circuitos generados se guardan en tres actos (`_act1..3.tscn`); la sombra de contacto y el raycast del suelo de la cámara se refrescan a 25 y 30 Hz; el dispensador de bolas recicla sus `RigidBody3D`; el menú templa los shaders de los obstáculos; y cada acto recorta su atrezo a distancia (~14 px, con desvanecido *dither*) y convierte sus losas grandes en occluders (`scripts/level_lod.gd`).
 - **Grupos:** `player`, `bot`, `bots`, `checkpoints`, `race_manager`, `race_director`, `pause_menu`, `wind_tunnels`, `launchers`, `see_saws` y `level_info`.
 
 ---
 
 ## 5. Verificación
 
-La batería se ha ejecutado con Godot 4.7.2 en esta máquina. Resultados reales:
+La batería se ejecuta desde `proyecto/` con `tools/run_tests.sh`, que corta cada test por tiempo (180 s la suite, 900 s los largos) y publica un resumen:
 
 ```bash
 cd proyecto
-godot --headless -s res://tools/check_scenes.gd       # RESULT: 30/30 scenes OK
-godot --headless -s res://tools/smoke_test.gd         # SMOKE OK
-godot --headless -s res://tools/flow_test.gd          # RESULT: TODO OK
-godot --headless -s res://tools/features_test.gd      # RESULT: TODO OK
-godot --headless -s res://tools/iteration3_test.gd    # RESULT: 1 fallo
-godot --headless -s res://tools/iteration4_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/iteration5_test.gd    # RESULT: TODO OK
-godot --headless -s res://tools/levels_test.gd        # 4 fallos
-godot --headless -s res://tools/levels_bots_test.gd   # no termina en 280 s
+bash tools/run_tests.sh          # suite obligatoria (12 tests)
+bash tools/run_tests.sh --long   # tests largos de bots
 ```
 
-**Fallos conocidos y su causa:**
+Resultados reales de la última pasada con Godot 4.7.2 en esta máquina:
 
-1. `iteration3_test.gd` — «La acción de dive ya no existe». El test se escribió cuando el dive se retiró, pero la acción volvió para **nadar hacia abajo** en Abyss Run y sigue en el `InputMap` (`Shift`/`Ctrl` y gatillo derecho). Es una expectativa desfasada, no una regresión.
-2. `levels_test.gd` — cuatro comprobaciones que piden elementos que los mapas ya no tienen en ese punto: 14 trampas de pinchos en Pivot Push, un descenso de rocas en Spin Go Round, una arena giratoria con lluvia de bolas en Glacier Gallop y lluvia de bolas en Lava Vortex. El resto de la suite (carga de circuitos, `LevelInfo`, checkpoints, meta, plataformas y rutas) pasa.
-3. `levels_bots_test.gd` — el recorrido de bots de los circuitos nuevos no termina dentro de 280 s en esta máquina (código 124) y al salir deja avisos de RIDs de `NavMesh` sin liberar. No se considera verde.
-4. `bots_test.gd` — no se ha vuelto a ejecutar en esta pasada; la última referencia válida es la del informe anterior.
+| Test | Resultado |
+| --- | --- |
+| `check_scenes` | 40/40 escenas OK |
+| `smoke_test` | SMOKE OK |
+| `flow_test` | TODO OK |
+| `features_test` | TODO OK |
+| `levels_test` | TODO OK (0 fallos) |
+| `lod_test` | TODO OK (0 fallos) |
+| `persistence_test`, `progression_test`, `settings_test` | TODO OK |
+| `iteration3_test`, `iteration4_test`, `iteration5_test` | TODO OK |
 
-Los tests siguen asumiendo que el proyecto ya se ha abierto una vez en Godot para importar escenas y WAV nuevos.
+**Tests largos** (`tools/run_tests.sh --long`, job aparte en la CI):
+
+- `bots_test.gd` — **TODO OK**: los siete bots se reparten en carriles, avanzan y completan el circuito.
+- `slow_test.gd` — **TODO OK**: los hazards frenan al corredor y al bot, y el frenazo caduca solo.
+- `levels_bots_test.gd` — **TODO OK**: el bot completa Spin Go Round (126,0 s), Glacier Gallop (183,0 s) y Lava Vortex (116,5 s). La prueba corre sin jugador en la escena: si se queda quieto, la lava lo quema a los pocos segundos, `fail_race()` congela la carrera y los bots se paran, que es justo lo que no se quiere medir.
+
+Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar escenas y WAV nuevos.
 
 ---
 
@@ -171,6 +177,8 @@ Los tests siguen asumiendo que el proyecto ya se ha abierto una vez en Godot par
 - **Saltos y alturas del glaciar.** El jugador lleva un impulso de salto recortado (5,02) para que el hielo se note; el resto del control no cambia.
 - **Generación y horneado.** El generador `@tool` permite reconstruir un circuito temático sin copiar escenas gigantes, y el horneado deja el mapa editable y estable para los tests.
 - **Documentación alineada.** README, este informe y el informe del torneo describen los cinco circuitos y el torneo de cuatro rondas; la Tercera Iteración se retira de la entrega y queda para una futura iteración.
+- **Documentación y CI puestas al día.** Los informes citaban cifras que ya no eran ciertas (30/30 escenas, fallos de `iteration3` y `levels_test`); ahora llevan los resultados de la batería actual y el recuento real de escenas (40/40). La CI ya no deja fuera ningún test: `tools/run_tests.sh` corta cada test por tiempo y el workflow tiene dos jobs (suite obligatoria y tests largos), además de caché de Godot y de la importación.
+- **El falso bucle del bot en Lava Vortex.** El test de bots de los circuitos dejaba al jugador quieto en la escena. La lava sube, lo quema hacia el segundo 9, `fail_race()` llama a `freeze_race()` y el director apaga la física de todos los bots: lo que parecía un bot atascado en el waypoint 17 de la espiral (z ≈ -107 m) era la carrera congelada esperando al tope de frames del test. Ahora la prueba quita el jugador de la escena y el bot sube la espiral entera (Lava Vortex, 116,5 s y un rescate).
 
 ---
 
@@ -182,6 +190,8 @@ En esta iteración la IA (Freebuff, de Codebuff) se ha utilizado para:
 - Revisar los circuitos nuevos y sus scripts (`level_builder.gd`, hazards de hielo, volcán y abismo) para describirlos con datos verificados.
 - Reescribir este informe, el README y el informe del torneo con los datos reales de escenas, `LevelInfo`, checkpoints y medallas.
 - Ejecutar la batería headless y documentar con precisión qué pasa, qué falla y por qué.
+- Implementar las mejoras de rendimiento (horneado de CSG a malla, división de los circuitos en actos, límites de raycasts, pool de bolas, templado de shaders y LOD/oclusión conservadores) y adaptar la batería a los actos.
+- Revisar la coherencia de la documentación y montar el proceso: convención de commits (`CONTRIBUTING.md`), `timeout` por test, caché y límites de tiempo en la CI, y hooks de `gdlint`/`gdformat` con pre-commit.
 
 Todo el código citado se ha revisado y los resultados de los tests son los que se muestran en la sección 5.
 
@@ -198,4 +208,4 @@ Todo el código citado se ha revisado y los resultados de los tests son los que 
 | Lobby, personajes, monedas y audio documentados    | ✅     |
 | README e informe del torneo alineados              | ✅     |
 | Tercera Iteración retirada de la entrega           | ✅     |
-| Tests en verde                                     | ⚠️ 5 comprobaciones desfasadas + un test que no termina |
+| Tests en verde                                     | ✅ Suite completa (12/12) y tests largos (3/3) |
