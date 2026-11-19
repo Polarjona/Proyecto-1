@@ -19,6 +19,30 @@ func _check(condition: bool, label: String) -> void:
 		_failures += 1
 
 
+## Nodo del circuito, esté en el propio `Course` o dentro de un acto
+## instanciado (los circuitos largos se guardan en `_act1..3.tscn`).
+func _course_node(course: Node, node_name: String) -> Node:
+	var direct := course.get_node_or_null(node_name)
+	if direct != null:
+		return direct
+	for act in course.get_children():
+		var found := act.get_node_or_null(node_name)
+		if found != null:
+			return found
+	return null
+
+
+## Piezas del circuito, aplanando los actos si el mapa está dividido.
+func _course_children(course: Node) -> Array[Node]:
+	var items: Array[Node] = []
+	for child in course.get_children():
+		if child.get_child_count() > 0 and String(child.name).begins_with("Act"):
+			items.append_array(child.get_children())
+		else:
+			items.append(child)
+	return items
+
+
 func _check_pause_checkpoint(expected: bool, label: String) -> void:
 	var pause := get_first_node_in_group("pause_menu")
 	_check(pause != null, label)
@@ -128,90 +152,97 @@ func _run() -> void:
 		var course := level.get_node_or_null("Course") as Node3D
 		_check(course != null, "%s tiene Course" % names[i])
 		if course != null:
-			_check(course.get_node_or_null("FinishLine") != null,
+			# Los circuitos largos viven dentro de actos instanciados: se busca en
+			# profundidad para que la prueba valga dividida o de una pieza.
+			_check(course.find_child("FinishLine", true, false) != null,
 				"%s tiene meta" % names[i])
-			_check(course.get_node_or_null("StartPlatform") != null,
+			_check(course.find_child("StartPlatform", true, false) != null,
 				"%s tiene salida" % names[i])
 			var platforms := 0
 			var bad_material := 0
-			for child in course.get_children():
-				if child is CSGBox3D:
+			for child in _course_children(course):
+				# Vale el CSG antiguo y la losa ya horneada a malla.
+				if child is CSGBox3D or child is StaticBody3D:
 					platforms += 1
-					var box := child as CSGBox3D
-					if box.material == null or box.size.y <= 0.0:
+					# Los obstáculos instanciados traen su material en su propia escena,
+					# y las mallas que no son cajas (el cono de la montaña) no son losas.
+					if not child.scene_file_path.is_empty():
+						continue
+					var slab_size := BoxSize.of(child)
+					if slab_size == Vector3.ZERO:
+						continue
+					if BoxSize.material_of(child) == null or slab_size.y <= 0.0:
 						bad_material += 1
-				elif child is StaticBody3D:
-					platforms += 1
 			_check(platforms >= 6, "%s tiene %d plataformas" % [names[i], platforms])
 			_check(bad_material == 0,
-				"%s tiene todas las plataformas CSG con material" % names[i])
+				"%s tiene todas las plataformas con material" % names[i])
 
 		if i == 0:
-			_check(course.get_node_or_null("SeeSaw") != null,
+			_check(_course_node(course, "SeeSaw") != null,
 				"Pivot Push conserva el balancín editado")
-			_check(course.get_node_or_null("Sweeper") != null,
+			_check(_course_node(course, "Sweeper") != null,
 				"Pivot Push conserva los barridos")
-			_check(course.get_node_or_null("ForgeDeck") != null
+			_check(_course_node(course, "ForgeDeck") != null
 				and get_nodes_in_group("boulders").size() == 2,
 				"Pivot Push tiene el pasillo de las rocas")
-			_check(course.get_node_or_null("ChimneyBridge") != null
+			_check(_course_node(course, "ChimneyBridge") != null
 				and get_nodes_in_group("rotors").size() == 3,
 				"Pivot Push tiene el puente de las aspas")
 			_check(get_nodes_in_group("spike_traps").size() == 12,
 				"Pivot Push tiene sus doce trampas de pinchos")
-			_check(course.get_node_or_null("ForgeSummit") != null
-				and course.get_node_or_null("ForgeDrop") != null
-				and course.get_node_or_null("ForgePlaza") != null,
+			_check(_course_node(course, "ForgeSummit") != null
+				and _course_node(course, "ForgeDrop") != null
+				and _course_node(course, "ForgePlaza") != null,
 				"Pivot Push sube a la cima y baja a la meta")
 			_check_pause_checkpoint(true, "Pivot Push ofrece reiniciar desde checkpoint")
 		elif i == 1:
-			_check(course.get_node_or_null("SweeperA") != null,
+			_check(_course_node(course, "SweeperA") != null,
 				"Spin Go Round tiene barridos")
-			_check(course.get_node_or_null("Centrifuge") != null,
+			_check(_course_node(course, "Centrifuge") != null,
 				"Spin Go Round tiene plataforma giratoria")
-			_check(course.get_node_or_null("MovingPlatform") != null,
+			_check(_course_node(course, "MovingPlatform") != null,
 				"Spin Go Round tiene plataforma móvil")
-			_check(course.get_node_or_null("BallRain") != null,
+			_check(_course_node(course, "BallRain") != null,
 				"Spin Go Round tiene lluvia de bolas")
-			_check(course.get_node_or_null("SpinClimb") != null
-				and course.get_node_or_null("SpinDrop") != null,
+			_check(_course_node(course, "SpinClimb") != null
+				and _course_node(course, "SpinDrop") != null,
 				"Spin Go Round tiene subida y bajada")
-			_check(course.get_node_or_null("PressDeck") != null
-				and course.get_node_or_null("PistonLeft") != null
-				and course.get_node_or_null("PistonRight") != null,
+			_check(_course_node(course, "PressDeck") != null
+				and _course_node(course, "PistonLeft") != null
+				and _course_node(course, "PistonRight") != null,
 				"Spin Go Round tiene la plataforma de los pistones")
 			_check(get_nodes_in_group("crumble_tiles").size() == 12,
 				"Spin Go Round tiene el puente de 12 losas frágiles")
-			_check(course.get_node_or_null("BoulderDeck") != null
+			_check(_course_node(course, "BoulderDeck") != null
 				and get_nodes_in_group("boulders").size() == 4,
 				"Spin Go Round tiene el descenso de cuatro rocas")
-			_check(course.get_node_or_null("SpikeDeck") != null
+			_check(_course_node(course, "SpikeDeck") != null
 				and get_nodes_in_group("spike_traps").size() == 16,
 				"Spin Go Round tiene la galería de 16 pinchos")
-			_check(course.get_node_or_null("GateBridge") != null
+			_check(_course_node(course, "GateBridge") != null
 				and get_nodes_in_group("rotors").size() == 3,
 				"Spin Go Round tiene el puente de las tres aspas")
-			_check(course.get_node_or_null("SummitClimb") != null
-				and course.get_node_or_null("SummitDeck") != null,
+			_check(_course_node(course, "SummitClimb") != null
+				and _course_node(course, "SummitDeck") != null,
 				"Spin Go Round sube al mirador")
 		elif i == 2:
-			_check(course.get_node_or_null("IceLift") != null,
+			_check(_course_node(course, "IceLift") != null,
 				"Glacier Gallop tiene la plataforma móvil del lago")
-			_check(course.get_node_or_null("BallRain0") != null
-				and course.get_node_or_null("BallRain17") != null,
+			_check(_course_node(course, "BallRain0") != null
+				and _course_node(course, "BallRain17") != null,
 				"Glacier Gallop reparte dieciocho lanzadores de bolas")
-			_check(course.get_node_or_null("IceGallery") != null
-				and course.get_node_or_null("PistonL") != null
-				and course.get_node_or_null("PistonR") != null
-				and course.get_node_or_null("GalleryConveyor") != null,
+			_check(_course_node(course, "IceGallery") != null
+				and _course_node(course, "PistonL") != null
+				and _course_node(course, "PistonR") != null
+				and _course_node(course, "GalleryConveyor") != null,
 				"Glacier Gallop tiene la galería de pistones con cinta")
 			_check(get_nodes_in_group("crumble_tiles").size() == 35,
 				"Glacier Gallop tiene el puente de 35 placas frágiles")
-			_check(course.get_node_or_null("GaleLedgeL") != null
-				and course.get_node_or_null("GaleLedgeR") != null
+			_check(_course_node(course, "GaleLedgeL") != null
+				and _course_node(course, "GaleLedgeR") != null
 				and get_nodes_in_group("rotors").size() == 2,
 				"Glacier Gallop tiene el puente del vendaval")
-			_check(course.get_node_or_null("BoulderDeck") != null
+			_check(_course_node(course, "BoulderDeck") != null
 				and get_nodes_in_group("boulders").size() == 5,
 				"Glacier Gallop tiene el pasillo de las cinco rocas")
 			_check(get_nodes_in_group("spike_traps").size() == 24,
@@ -220,11 +251,11 @@ func _run() -> void:
 			# del tramo final tienen que funcionar igual que los tres primeros.
 			_check(get_nodes_in_group("ice_ramparts").size() >= 2,
 				"Glacier Gallop cierra con dos muros de témpanos")
-			_check(course.get_node_or_null("SummitPlatform") != null,
+			_check(_course_node(course, "SummitPlatform") != null,
 				"Glacier Gallop acaba en la cumbre helada")
 		else:
-			_check(course.get_node_or_null("SpiralDeck0") != null
-				and course.get_node_or_null("SpiralDeck3") != null,
+			_check(_course_node(course, "SpiralDeck0") != null
+				and _course_node(course, "SpiralDeck3") != null,
 				"Lava Vortex construye la espiral completa")
 			_check(level.get_node_or_null("LavaSea") != null,
 				"Lava Vortex tiene el mar de lava")
@@ -236,7 +267,7 @@ func _run() -> void:
 				"Lava Vortex tiene al menos cuatro barridos en la espiral")
 			_check(get_nodes_in_group("spike_traps").size() >= 18,
 				"Lava Vortex tiene al menos dieciocho trampas de pinchos")
-			_check(course.get_node_or_null("SummitPlatform") != null,
+			_check(_course_node(course, "SummitPlatform") != null,
 				"Lava Vortex termina en la plataforma de la cumbre")
 			_check(get_nodes_in_group("checkpoints").is_empty(),
 				"Lava Vortex no tiene checkpoints: la lava termina la carrera")

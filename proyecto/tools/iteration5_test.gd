@@ -260,10 +260,13 @@ func _run() -> void:
 	await process_frame
 
 	# --- Monedas según tiempo y puesto ------------------------------------
-	var fast_win: Dictionary = save.call("coin_reward", 70.0, "gold", 1)
-	var slow_last: Dictionary = save.call("coin_reward", 150.0, "none", 8)
-	var slow_win: Dictionary = save.call("coin_reward", 125.0, "bronze", 1)
-	var no_bonus: Dictionary = save.call("coin_reward", 400.0, "none", 0)
+	# Umbral de bronce del circuito de prueba: el reparto ya no lleva un tiempo
+	# global por defecto, cada circuito pasa el suyo.
+	var bronze := 130.0
+	var fast_win: Dictionary = save.call("coin_reward", 70.0, "gold", 1, bronze)
+	var slow_last: Dictionary = save.call("coin_reward", 150.0, "none", 8, bronze)
+	var slow_win: Dictionary = save.call("coin_reward", 125.0, "bronze", 1, bronze)
+	var no_bonus: Dictionary = save.call("coin_reward", 400.0, "none", 0, bronze)
 	_check(int(fast_win["total"]) > int(slow_last["total"]),
 		"Una carrera rápida y ganada paga más que una lenta y última (%d vs %d)" % [
 			int(fast_win["total"]), int(slow_last["total"])])
@@ -408,6 +411,14 @@ func _run() -> void:
 		race_manager.results_ready.connect(_on_results)
 		race_manager.call("finish_race")
 		await process_frame
+	# Al acabar, el mundo se congela: el corredor suelta el mando y los bots
+	# dejan de correr, así el puesto del panel no cambia después de mostrarse.
+	var racing_player := get_first_node_in_group("player")
+	var director := get_first_node_in_group("race_director")
+	_check(racing_player != null and bool(racing_player.get("input_locked")),
+		"Al terminar, el jugador deja de responder")
+	_check(director != null and bool(director.call("is_frozen")),
+		"Al terminar, los bots se congelan")
 	_check(int(_last_results.get("position", 0)) >= 1,
 		"La carrera con bots registra el puesto (%d)" % int(_last_results.get("position", 0)))
 	_check(int(_last_results.get("coins", 0)) > 0

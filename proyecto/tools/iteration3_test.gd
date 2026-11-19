@@ -89,9 +89,16 @@ func _run() -> void:
 	_check(is_equal_approx(float(save.get_setting("shake", 0.6)), 0.6),
 		"Los ajustes se guardan y se releen")
 	save.set_setting("shake", previous_shake)
-	_check(save.medal_for(60.0) == "gold", "60 s da medalla de oro en el circuito largo")
-	_check(save.medal_for(85.0) == "silver", "85 s da medalla de plata")
-	_check(save.medal_for(120.0) == "bronze", "120 s da medalla de bronce")
+	# Los tiempos de medalla ya no son globales: cada circuito pasa los suyos.
+	var gold := 70.0
+	var silver := 95.0
+	var bronze := 130.0
+	_check(save.medal_for_values(60.0, gold, silver, bronze) == "gold",
+		"60 s da medalla de oro con esos tiempos")
+	_check(save.medal_for_values(85.0, gold, silver, bronze) == "silver",
+		"85 s da medalla de plata")
+	_check(save.medal_for_values(120.0, gold, silver, bronze) == "bronze",
+		"120 s da medalla de bronce")
 
 	# --- Dash/slide eliminado ---------------------------------------------
 	# Dive vuelve solo para nadar hacia abajo en Abyss Run; no hay dash ni API
@@ -228,8 +235,8 @@ func _run() -> void:
 	# si asomara, se vería a través de la madera.
 	var base: Node3D = game.get_node_or_null("Course/SeeSawBase")
 	var base_top := -99.0
-	if base != null and base is CSGBox3D:
-		base_top = base.global_position.y + (base as CSGBox3D).size.y * 0.5
+	if base != null:
+		base_top = base.global_position.y + BoxSize.of(base).y * 0.5
 	_check(base != null and base_top < -0.9,
 		"La base del balancín no asoma por encima de la tabla (%.2f m)" % base_top)
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -50.4)))
@@ -258,8 +265,20 @@ func _run() -> void:
 
 	_check(load("res://scenes/race/bot_racer.tscn") != null, "La escena del bot carga")
 	_check(load("res://scenes/menu/settings_menu.tscn") != null, "La escena de ajustes carga")
-	_check((load("res://scenes/race/hud.tscn") as PackedScene).instantiate() != null,
-		"El HUD se instancia")
+	var hud_scene := load("res://scenes/race/hud.tscn") as PackedScene
+	var hud_probe: Node = hud_scene.instantiate() if hud_scene != null else null
+	_check(hud_probe != null, "El HUD se instancia")
+	if hud_probe != null:
+		# Sin liberarlo, sus etiquetas y fuentes se quedaban como RIDs filtrados
+		# al cerrar el test.
+		hud_probe.free()
+
+	# El mapa instanciado al principio también se libera: dejaba viva toda la
+	# escena (y sus texturas) al salir.
+	current_scene = null
+	root.remove_child(game)
+	game.free()
+	await process_frame
 
 	print("RESULT: %s" % ("TODO OK" if _failures == 0 else "%d FALLOS" % _failures))
 	quit(1 if _failures > 0 else 0)

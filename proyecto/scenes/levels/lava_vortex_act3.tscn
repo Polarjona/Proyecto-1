@@ -1,0 +1,343 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/obstacles/spike_trap.tscn" id="1_5hbyk"]
+[ext_resource type="Script" path="res://scripts/spike_trap.gd" id="2_7qfne"]
+[ext_resource type="Script" path="res://scripts/magma_curtain.gd" id="3_x3mxx"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/sweeper.tscn" id="4_7fbxp"]
+[ext_resource type="Script" path="res://scripts/sweeper.gd" id="5_rj68b"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/piston.tscn" id="6_wxvp8"]
+[ext_resource type="Script" path="res://scripts/piston.gd" id="7_tmatv"]
+[ext_resource type="Script" path="res://scripts/lava_geyser.gd" id="8_xvlrt"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/rotor_gate.tscn" id="9_b3afb"]
+[ext_resource type="Script" path="res://scripts/rotor_gate.gd" id="10_arqhh"]
+[ext_resource type="Shader" path="res://shaders/platform.gdshader" id="11_1on03"]
+[ext_resource type="PackedScene" path="res://scenes/race/finish_line.tscn" id="12_hqs7a"]
+[ext_resource type="Script" path="res://scripts/finish_line.gd" id="13_i3xtb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s4lsl"]
+albedo_color = Color(0.09, 0.05, 0.045, 1)
+roughness = 0.92
+emission_enabled = true
+emission = Color(0.8, 0.18, 0.03, 1)
+emission_energy_multiplier = 0.55
+
+[sub_resource type="BoxMesh" id="BoxMesh_kfvyw"]
+size = Vector3(0.9, 7.2, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qqfrc"]
+albedo_color = Color(1, 0.38, 0.06, 1)
+roughness = 0.32
+emission_enabled = true
+emission = Color(1, 0.38, 0.06, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_sqtnq"]
+size = Vector3(11.2, 0.09, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e3ut5"]
+size = Vector3(12.4, 0.7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_khr8g"]
+size = Vector3(8, 0.06, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_njg2b"]
+size = Vector3(8, 0.06, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ohsbs"]
+size = Vector3(18, 0.5, 18)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aqf6m"]
+render_priority = 0
+shader = ExtResource("11_1on03")
+shader_parameter/base_color = Color(0.24, 0.09, 0.04, 1)
+shader_parameter/accent_color = Color(1, 0.68, 0.22, 1)
+shader_parameter/grout_color = Color(0.05, 0.02, 0.01, 1)
+shader_parameter/tile_scale = 0.62
+shader_parameter/line_width = 0.045
+shader_parameter/glow_strength = 0.62
+shader_parameter/pulse_speed = 0.8
+shader_parameter/sweep_strength = 0.18
+
+[sub_resource type="BoxMesh" id="BoxMesh_lpd24"]
+size = Vector3(18, 0.5, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xowfl"]
+size = Vector3(0.9, 7.2, 0.9)
+
+[node name="Act3" type="Node3D" unique_id=1961753517]
+
+[node name="Spike96_2" type="Node3D" parent="." unique_id=1070522668 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.94388354, -0.056397304, 0.32542783, 0, 0.98531324, 0.17075679, -0.33027855, -0.16117452, 0.9300209, 19.473234, 68.585815, -97.02297)
+script = ExtResource("2_7qfne")
+phase_offset = 1.3820077
+spike_count = 1
+
+[node name="Spike12_0" type="Node3D" parent="." unique_id=826087477 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.94388336, -0.056397386, 0.3254283, 0, 0.98531324, 0.17075679, -0.33027902, -0.16117449, 0.93002075, 15.843702, 9.334754, -98.51042)
+script = ExtResource("2_7qfne")
+phase_offset = 3.7158089
+spike_count = 1
+
+[node name="Spike39_0" type="Node3D" parent="." unique_id=1901768984 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.8467243, -0.090848066, 0.52421814, 0, 0.98531324, 0.17075679, -0.53203195, -0.14458391, 0.83428866, 12.666902, 28.626196, -98.598404)
+script = ExtResource("2_7qfne")
+phase_offset = 3.6481867
+spike_count = 1
+
+[node name="Spike39_1" type="Node3D" parent="." unique_id=1403611644 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.8467243, -0.090848066, 0.52421814, 0, 0.98531324, 0.17075679, -0.53203195, -0.14458391, 0.83428866, 15.268249, 28.728865, -99.533264)
+script = ExtResource("2_7qfne")
+phase_offset = 5.8568964
+spike_count = 1
+
+[node name="MagmaCurtain95" type="Node3D" parent="." unique_id=585643690]
+transform = Transform3D(0.84672445, -0.090848014, 0.52421784, 0, 0.98531324, 0.17075679, -0.53203166, -0.14458394, 0.83428884, 15.241035, 67.950005, -99.57658)
+script = ExtResource("3_x3mxx")
+cycle_speed = 2.5
+push_up = 10.0
+phase_offset = 16.150000000000002
+
+[node name="Sweeper86" type="Node3D" parent="." unique_id=2117042864 instance=ExtResource("4_7fbxp")]
+transform = Transform3D(-0.8467244, -0.090848036, 0.52421796, 0, 0.98531324, 0.17075679, -0.5320318, 0.14458394, -0.8342888, -15.241035, 61.949997, -99.57658)
+script = ExtResource("5_rj68b")
+spin_speed = 2.8
+push_force = 6.2
+spin_direction = -1.0
+
+[node name="Sweeper58" type="Node3D" parent="." unique_id=1122116707 instance=ExtResource("4_7fbxp")]
+transform = Transform3D(-0.84672374, -0.09084822, 0.52421904, 0, 0.98531324, 0.17075679, -0.53203285, 0.14458382, -0.8342881, -15.241035, 42.35, -99.57658)
+script = ExtResource("5_rj68b")
+spin_speed = 2.4
+push_force = 6.2
+spin_direction = -1.0
+
+[node name="Sweeper30" type="Node3D" parent="." unique_id=628021729 instance=ExtResource("4_7fbxp")]
+transform = Transform3D(-0.8467241, -0.090848126, 0.5242185, 0, 0.98531324, 0.17075679, -0.5320323, 0.14458388, -0.8342885, -15.241035, 22.75, -99.57658)
+script = ExtResource("5_rj68b")
+spin_speed = 2.0
+push_force = 6.2
+spin_direction = -1.0
+
+[node name="GatePillar88_-1" type="MeshInstance3D" parent="." unique_id=825726437]
+transform = Transform3D(-0.5320322, 0, 0.8467241, 0, 1, 0, -0.8467241, 0, -0.5320322, -6.4907904, 66.6, -100.33003)
+material_override = SubResource("StandardMaterial3D_s4lsl")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_kfvyw")
+
+[node name="Spike39_2" type="Node3D" parent="." unique_id=2047292100 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.8467243, -0.090848066, 0.52421814, 0, 0.98531324, 0.17075679, -0.53203195, -0.14458391, 0.83428866, 17.825197, 28.817072, -100.53879)
+script = ExtResource("2_7qfne")
+phase_offset = 3.7512388
+spike_count = 1
+
+[node name="Spike59_0" type="Node3D" parent="." unique_id=735741336 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.7071074, -0.12074317, 0.696721, 0, 0.98531324, 0.17075679, -0.7071061, 0.120743394, -0.6967223, -10.528831, 42.791054, -101.108635)
+script = ExtResource("2_7qfne")
+phase_offset = 0.15304641
+spike_count = 1
+
+[node name="SpiralPiston88_-1" type="Node3D" parent="." unique_id=621561325 instance=ExtResource("6_wxvp8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1558313, 64.2, -101.38844)
+script = ExtResource("7_tmatv")
+travel = Vector3(-2.553754, 0, -4.064276)
+push_force = 6.8
+phase_offset = 20.24
+
+[node name="Geyser94" type="Node3D" parent="." unique_id=995594189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.727922, 67.2, -102.72792)
+script = ExtResource("8_xvlrt")
+height = 8.4
+radius = 1.3
+phase_offset = 29.14
+
+[node name="Spike65_0" type="Node3D" parent="." unique_id=1599389287 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.5320318, -0.14458394, 0.8342888, 0, 0.98531324, 0.17075679, -0.8467244, -0.090848036, 0.52421796, 8.304048, 46.95356, -102.85186)
+script = ExtResource("2_7qfne")
+phase_offset = 0.3547639
+spike_count = 1
+
+[node name="Spike59_1" type="Node3D" parent="." unique_id=9384876 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.7071074, -0.12074317, 0.696721, 0, 0.98531324, 0.17075679, -0.7071061, 0.120743394, -0.6967223, -12.521618, 42.770565, -102.93423)
+script = ExtResource("2_7qfne")
+phase_offset = 1.091488
+spike_count = 1
+
+[node name="Spike9_0" type="Node3D" parent="." unique_id=1345422027 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.5320319, -0.14458393, 0.8342887, 0, 0.98531324, 0.17075679, -0.84672433, -0.09084806, 0.5242181, 7.697745, 7.629463, -103.23283)
+script = ExtResource("2_7qfne")
+phase_offset = 0.80508256
+spike_count = 1
+
+[node name="Spike32_0" type="Node3D" parent="." unique_id=230471790 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.5320317, -0.14458394, 0.83428884, 0, 0.98531324, 0.17075679, -0.84672445, 0.09084803, -0.5242179, -7.6583943, 23.91859, -103.257545)
+script = ExtResource("2_7qfne")
+phase_offset = 4.213855
+spike_count = 1
+
+[node name="Spike92_0" type="Node3D" parent="." unique_id=1139494745 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.33027926, -0.16117448, 0.93002063, 0, 0.98531324, 0.17075679, -0.94388324, -0.056397427, 0.32542852, 5.3315535, 65.87109, -104.34404)
+script = ExtResource("2_7qfne")
+phase_offset = 4.4095707
+spike_count = 1
+
+[node name="Spike5_0" type="Node3D" parent="." unique_id=2078651113 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.33027917, -0.16117448, 0.9300207, 0, 0.98531324, 0.17075679, -0.9438833, 0.056397412, -0.32542843, -4.692857, 4.986174, -104.56753)
+script = ExtResource("2_7qfne")
+phase_offset = 1.4466864
+spike_count = 1
+
+[node name="Spike88_0" type="Node3D" parent="." unique_id=1749608915 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.5320322, -0.14458388, 0.8342885, 0, 0.98531324, 0.17075679, -0.8467241, 0.09084811, -0.5242184, -12.473589, 62.534756, -104.58876)
+script = ExtResource("2_7qfne")
+phase_offset = 2.4595885
+spike_count = 1
+
+[node name="Spike59_2" type="Node3D" parent="." unique_id=1877279441 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.7071074, -0.12074317, 0.696721, 0, 0.98531324, 0.17075679, -0.7071061, 0.120743394, -0.6967223, -14.401655, 42.777706, -104.87257)
+script = ExtResource("2_7qfne")
+phase_offset = 4.978458
+spike_count = 1
+
+[node name="Spike65_1" type="Node3D" parent="." unique_id=497093255 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.5320318, -0.14458394, 0.8342888, 0, 0.98531324, 0.17075679, -0.8467244, -0.090848036, 0.52421796, 9.782765, 46.962204, -105.11148)
+script = ExtResource("2_7qfne")
+phase_offset = 5.7802267
+spike_count = 1
+
+[node name="MagmaCurtain60" type="Node3D" parent="." unique_id=189040374]
+transform = Transform3D(-0.5320328, -0.14458382, 0.8342881, 0, 0.98531324, 0.17075679, -0.84672374, 0.09084821, -0.524219, -9.576577, 43.45, -105.241035)
+script = ExtResource("3_x3mxx")
+cycle_speed = 2.0
+push_up = 10.0
+phase_offset = 10.2
+
+[node name="GateGlow88" type="MeshInstance3D" parent="." unique_id=120656760]
+transform = Transform3D(-0.5320322, 0, 0.8467241, 0, 1, 0, -0.8467241, 0, -0.5320322, -9.576577, 69.95, -105.241035)
+material_override = SubResource("StandardMaterial3D_qqfrc")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_sqtnq")
+
+[node name="GateBeam88" type="MeshInstance3D" parent="." unique_id=396097326]
+transform = Transform3D(-0.5320322, 0, 0.8467241, 0, 1, 0, -0.8467241, 0, -0.5320322, -9.576577, 70.3, -105.241035)
+material_override = SubResource("StandardMaterial3D_s4lsl")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_e3ut5")
+
+[node name="Spike92_1" type="Node3D" parent="." unique_id=1714053971 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.33027926, -0.16117448, 0.93002063, 0, 0.98531324, 0.17075679, -0.94388324, -0.056397427, 0.32542852, 6.0726724, 65.89802, -105.99172)
+script = ExtResource("2_7qfne")
+phase_offset = 2.3452258
+spike_count = 1
+
+[node name="GapWarning36_1" type="MeshInstance3D" parent="." unique_id=904240045]
+transform = Transform3D(0.3302789, 0, 0.94388336, 0, 1, 0, -0.94388336, 0, 0.3302789, 7.7384014, 26.630001, -106.362366)
+material_override = SubResource("StandardMaterial3D_qqfrc")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_khr8g")
+
+[node name="Rotor92" type="Node3D" parent="." unique_id=305596451 instance=ExtResource("9_b3afb")]
+transform = Transform3D(0.33027926, -0.16117448, 0.93002063, 0, 0.98531324, 0.17075679, -0.94388324, -0.056397427, 0.32542852, 5.945023, 66.15, -106.9899)
+script = ExtResource("10_arqhh")
+spin_speed = 1.29
+spin_direction = -1.0
+phase_offset = 34.04
+
+[node name="Spike32_1" type="Node3D" parent="." unique_id=1919610579 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.5320317, -0.14458394, 0.83428884, 0, 0.98531324, 0.17075679, -0.84672445, 0.09084803, -0.5242179, -11.254468, 23.77059, -107.3755)
+script = ExtResource("2_7qfne")
+phase_offset = 2.5139337
+spike_count = 1
+
+[node name="Spike65_2" type="Node3D" parent="." unique_id=693418531 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.5320318, -0.14458394, 0.8342888, 0, 0.98531324, 0.17075679, -0.8467244, -0.090848036, 0.52421796, 11.204859, 46.959255, -107.40668)
+script = ExtResource("2_7qfne")
+phase_offset = 0.23481035
+spike_count = 1
+
+[node name="Spike62_0" type="Node3D" parent="." unique_id=1456269690 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.11196511, -0.16968308, 0.9791177, 0, 0.98531324, 0.17075679, -0.9937121, 0.019118803, -0.11032071, -4.7838426, 44.334755, -107.449844)
+script = ExtResource("2_7qfne")
+phase_offset = 2.838623
+spike_count = 1
+
+[node name="Spike36_0" type="Node3D" parent="." unique_id=1553699312 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.3302789, -0.16117449, 0.93002075, 0, 0.98531324, 0.17075679, -0.94388336, -0.056397364, 0.3254282, 3.1548245, 26.134754, -107.49365)
+script = ExtResource("2_7qfne")
+phase_offset = 3.9514818
+spike_count = 1
+
+[node name="GapWarning36_-1" type="MeshInstance3D" parent="." unique_id=414604615]
+transform = Transform3D(0.3302789, 0, 0.94388336, 0, 1, 0, -0.94388336, 0, 0.3302789, 4.1516447, 26.630001, -107.61743)
+material_override = SubResource("StandardMaterial3D_qqfrc")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_njg2b")
+
+[node name="Geyser6" type="Node3D" parent="." unique_id=1637845506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0153606, 5.6, -107.88682)
+script = ExtResource("8_xvlrt")
+radius = 1.3
+phase_offset = 1.86
+
+[node name="Geyser34" type="Node3D" parent="." unique_id=1181288484]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0153606, 25.2, -107.88682)
+script = ExtResource("8_xvlrt")
+height = 8.4
+radius = 1.3
+phase_offset = 10.54
+
+[node name="Geyser62" type="Node3D" parent="." unique_id=1397790653]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0153606, 44.8, -107.88682)
+script = ExtResource("8_xvlrt")
+height = 9.8
+radius = 1.3
+phase_offset = 19.22
+
+[node name="Spike92_2" type="Node3D" parent="." unique_id=1532099275 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.33027926, -0.16117448, 0.93002063, 0, 0.98531324, 0.17075679, -0.94388324, -0.056397427, 0.32542852, 5.971226, 65.77024, -107.934235)
+script = ExtResource("2_7qfne")
+phase_offset = 2.5276444
+spike_count = 1
+
+[node name="SummitPlatform" type="StaticBody3D" parent="." unique_id=1562769443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.749996, 82, -108.43739)
+collision_mask = 0
+
+[node name="@CollisionShape3D@33962" type="CollisionShape3D" parent="SummitPlatform" unique_id=698209130]
+shape = SubResource("BoxShape3D_ohsbs")
+
+[node name="@MeshInstance3D@33963" type="MeshInstance3D" parent="SummitPlatform" unique_id=361401123]
+material_override = SubResource("ShaderMaterial_aqf6m")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_lpd24")
+
+[node name="FinishLine" type="Area3D" parent="." unique_id=1092981872 instance=ExtResource("12_hqs7a")]
+transform = Transform3D(-0.62348944, 0, 0.78183174, 0, 1, 0, -0.78183174, 0, -0.62348944, -5.749996, 82.25, -108.43739)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_i3xtb")
+
+[node name="SpiralPiston88_1" type="Node3D" parent="." unique_id=1824533626 instance=ExtResource("6_wxvp8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.997323, 64.2, -109.09363)
+script = ExtResource("7_tmatv")
+travel = Vector3(2.553754, 0, 4.064276)
+push_force = 6.8
+phase_offset = 21.94
+
+[node name="Spike92_3" type="Node3D" parent="." unique_id=268119887 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(0.33027926, -0.16117448, 0.93002063, 0, 0.98531324, 0.17075679, -0.94388324, -0.056397427, 0.32542852, 7.0214252, 65.853905, -109.47377)
+script = ExtResource("2_7qfne")
+phase_offset = 3.3948126
+spike_count = 1
+
+[node name="Spike5_1" type="Node3D" parent="." unique_id=1791198341 instance=ExtResource("1_5hbyk")]
+transform = Transform3D(-0.33027917, -0.16117448, 0.9300207, 0, 0.98531324, 0.17075679, -0.9438833, 0.056397412, -0.32542843, -6.375923, 5.0046153, -109.699646)
+script = ExtResource("2_7qfne")
+phase_offset = 2.6977658
+spike_count = 1
+
+[node name="GatePillar88_1" type="MeshInstance3D" parent="." unique_id=1795402261]
+transform = Transform3D(-0.5320322, 0, 0.8467241, 0, 1, 0, -0.8467241, 0, -0.5320322, -12.662364, 66.6, -110.15204)
+material_override = SubResource("StandardMaterial3D_s4lsl")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_xowfl")

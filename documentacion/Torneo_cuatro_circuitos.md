@@ -89,7 +89,7 @@ El HUD muestra la medalla de oro del circuito cargado y el panel de resultados i
 
 - **Pivot Push:** construido a mano en `scenes/main.tscn`.
 - **Spin Go Round:** `tools/build_levels.gd` comparte el entorno (cielo, luces, postproceso, HUD, RaceManager, KillPlane, RaceDirector, jugador y pausa), construye cada plataforma y obstáculo y empaqueta el resultado en `scenes/levels/spin_go_round.tscn`.
-- **Glacier Gallop, Lava Vortex y Abyss Run:** `scripts/level_builder.gd` (modo `@tool`) genera el mapa al abrir la escena y lo hornea al guardar. Abyss Run se genera en runtime porque su escena solo contiene el constructor.
+- **Glacier Gallop, Lava Vortex y Abyss Run:** `scripts/levels/level_builder.gd` (modo `@tool`) genera el mapa al abrir la escena y lo hornea al guardar; después cada circuito se guarda en tres actos (`_act1..3.tscn`) que el nivel instancia. Ninguno se genera en runtime.
 
 ```bash
 cd proyecto
@@ -98,14 +98,18 @@ godot --headless --path . res://tools/build_levels.tscn   # regenera Spin Go Rou
 
 ## 10. Verificación
 
-Resultados reales de la batería con Godot 4.7.2:
+Resultados reales de la batería con Godot 4.7.2 (`bash tools/run_tests.sh`):
 
-- `tools/check_scenes.gd`: **30/30 escenas OK**.
-- `tools/levels_test.gd`: los cinco circuitos cargan, `LevelInfo`, checkpoints, meta, plataformas y rutas; **4 comprobaciones desfasadas** sobre pinchos/rocas/bolas que los mapas ya no tienen en ese punto.
-- `tools/levels_bots_test.gd`: no termina dentro de 280 s en esta máquina y deja avisos de RIDs de `NavMesh` al salir; no se considera verde.
-- `tools/bots_test.gd`: no re-ejecutado en esta pasada.
+- `tools/check_scenes.gd`: **40/40 escenas OK**.
+- Suite obligatoria (12 tests): **todos en verde**, incluidos `levels_test`, `lod_test`, `flow_test`, `features_test` y `iteration3/4/5`.
+- `tools/bots_test.gd` y `tools/slow_test.gd` (tests largos): **TODO OK**.
+- `tools/levels_bots_test.gd` (test largo): los bots completan Spin Go Round (126,0 s), Glacier Gallop (183,0 s) y Lava Vortex (116,5 s).
 
-## 11. Créditos
+## 11. Uso de inteligencia artificial
+
+La IA (Freebuff, de Codebuff) se ha usado para revisar el estado real del proyecto frente a la documentación, describir los circuitos con datos verificados (escenas, `LevelInfo`, checkpoints y medallas), ejecutar la batería headless y anotar con precisión qué pasa y qué falla. Todos los datos de este informe salen del código y de los tests. El detalle del uso de IA de la entrega está en `Segunda_iteracio.md` (sección 7).
+
+## 12. Créditos
 
 - Referencias de composición: Pivot Push y Spin Go Round de **amogusstrikesback2** en Sketchfab, **CC-BY 4.0** (vistas previas en `documentacion/referencias/`).
 - Pelota de playa: [beach ball](https://poly.pizza/m/4IwPTeOmq6c) de **the_ normalgamer**, **CC-BY 3.0** (ver `proyecto/assets/props/README.md`).

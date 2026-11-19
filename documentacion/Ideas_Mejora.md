@@ -4,7 +4,7 @@
 **Fecha:** Octubre 2026
 **Cómo usar este documento:** cada idea tiene un **ID**. Responde con la lista de IDs que quieres aplicar (por ejemplo `M3, M7, G2, G9, P1`) y se implementan en ese orden. Las etiquetas de coste son orientativas: **S** ≈ media sesión, **M** ≈ una sesión larga, **L** ≈ varias sesiones.
 
-> **Nota (noviembre 2026):** este banco se escribió en octubre. Algunas ideas ya están implementadas: formato de nivel con `LevelInfo` (P1), circuitos temáticos (P4), torneo de cuatro rondas (M30) y nado en Abyss Run. El resto sigue siendo propuesta.
+> **Nota (noviembre 2026):** este banco se escribió en octubre y varias ideas ya están hechas. Están implementadas **P1** (formato de nivel con `LevelInfo`), **P4** (circuitos temáticos: glaciar, volcán y abismo), **M30** (torneo de cuatro rondas), **M60** (waypoints por nivel), **T1** (CSG horneado a malla), **T2** (multitud en `MultiMesh`), **T3** (LOD y oclusión), **T4** (pool de bolas), **T5** (precompilación de shaders), **T6/T7** (tests y CI), **G24** (tema de UI), **M75** (récords por circuito), **U5** (cámara con ratón), **U8** (reinicio desde checkpoint) y **A2** (variación de pitch), además del **nado**. La cámara ya no es de eje fijo y el *dive* existe como descenso en el agua: las frases del texto original que decían lo contrario están corregidas o marcadas con ✅. El resto sigue siendo propuesta.
 
 ---
 
@@ -12,19 +12,19 @@
 
 **Lo que ya está bien resuelto** (no hace falta rehacerlo):
 
-- `scripts/player.gd` (555 líneas): inercia, coyote time, jump buffer, salto variable, apex hang, dive/prone, herencia de momento de plataformas, stun por impacto, animación procedural, cámara SpringArm con FOV kick y shake.
+- `scripts/player.gd` (922 líneas): inercia, coyote time, jump buffer, salto variable, apex hang, nado, herencia de momento de plataformas, stun por impacto, animación procedural, cámara SpringArm con FOV kick y shake.
 - `scripts/race_manager.gd`: cronómetro, checkpoints, splits vs. récord, penalización por caída, medallas, persistencia.
 - `scripts/save_manager.gd`: perfil JSON versionado, ajustes, monedas, medallas, migración de saves antiguos.
 - `scripts/race_director.gd` + `bot_racer.gd`: bots con waypoints, clasificación en vivo, cualificación por rondas.
 - 17 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud y batería de tests headless.
 
-**Los cinco techos actuales** (esto es lo que impide el "x100"):
+**Los cinco techos de octubre y su estado hoy** (lo que entonces impedía el "x100"):
 
-1. **Un solo circuito, hecho a mano en `main.tscn`** (369 líneas de CSG). No hay formato de nivel ni reutilización: cada circuito nuevo sería copiar-pegar una escena enorme.
-2. **Los bots siguen una lista de 15 waypoints con `match _index` para saltar.** No ven el mundo, no reaccionan a obstáculos, no compiten entre ellos. Solo funcionan en *este* circuito.
+1. ✅ **Resuelto:** hay cinco circuitos y un formato de nivel (`LevelInfo` + un kit por tema), y Pivot Push ya no usa CSG. De este techo solo queda el kit modular de piezas (**P2**).
+2. ✅ **Resuelto en parte:** los waypoints viven en el `LevelInfo` de cada circuito (**M60**) y los bots esquivan barridos, péndulos, rocas y bolas. Siguen sin ver el mundo de forma general (**M61**/**M62** pendientes).
 3. **Falta el verbo central de Fall Guys: agarrar/empujar a otros.** Ahora mismo los jugadores no pueden interactuar entre sí, así que no hay comedia social, que es el 50 % del género.
-4. **La cámara es de eje fijo** (pivot con yaw del mundo) y no hay controles táctiles ni remapeo: un solo esquema de control, una sola forma de jugar.
-5. **Todo el arte es `CSGBox`/`CSGCylinder` con colores planos.** Funciona para leer el nivel, pero no genera identidad visual ni "capturas de pantalla que apetezca compartir".
+4. ✅ **Resuelto:** la cámara gira con el ratón (yaw y cabeceo, sensibilidad en Ajustes) y hay pausa con reinicio desde checkpoint. Quedan el remapeo de controles y el táctil.
+5. ✅ **Resuelto en lo técnico:** los mapas hechos a mano están horneados a `BoxMesh`, el resto usa mallas, y el acabado viene de `toy.gdshader` y del shader de personaje. Quedan el detalle por shader (**G3**) y los props (**G8**).
 
 **Y el techo más grande de todos:** el juego no tiene **bucle de progresión**. Se corre, se ve un tiempo, se vuelve al menú. Un juego "perfecto" necesita una razón para la partida número 50.
 
@@ -56,7 +56,7 @@ Cinco reglas que deberían gobernar cada decisión, sacadas de por qué funciona
 | **M8** | **Plataformas que te llevan de verdad**: `AnimatableBody3D` + `platform_on_leave = ADD_VELOCITY` en todos los obstáculos móviles y comprobación de que la velocidad heredada se conserva al saltar. | Arregla una clase de bugs y hace los obstáculos móviles justos. | S |
 | **M9** | **Suelo resbaladizo / hielo, barro que frena, agua que empuja**: variantes de superficie con un multiplicador de fricción y aceleración aplicado en `player.gd`. | Cinco niveles de sensación distintos con una variable. | S |
 | **M10** | **Impulso de rampa y *launch* dirigido**: las rampas convierten velocidad horizontal en vertical; permite muñecos volando por los aires. | Momento cómico garantizado y atajos arriesgados. | S |
-| **M11** | **Objetos físicos lanzables** (pelotas, conos, huevos): coger con M1 y lanzar con el dive; `RigidBody3D` con `apply_central_impulse`. | Armas sociales, y los obstáculos ganan vida. | M |
+| **M11** | **Objetos físicos lanzables** (pelotas, conos, huevos): coger con M1 y lanzar con el botón de hundirse (el *dive* como acción de carrera se retiró); `RigidBody3D` con `apply_central_impulse`. | Armas sociales, y los obstáculos ganan vida. | M |
 | **M12** | **Barra de resistencia al sprint** (o sprint con *stamina* que se recupera al correr cuesta abajo). | Añade gestión de recursos y ritmo a las rectas largas. | S |
 | **M13** | **Superficies con rebote** (trampolines ya existen, pero también suelos elásticos que devuelven el 80 % de la velocidad vertical). | Movilidad vertical barata y muy vistosa. | S |
 | **M14** | **Muerte no binaria**: en vez de "caer = respawn", caer en lodo te devuelve al último checkpoint con la ropa manchada; caer al vacío respawn normal. | Menos castigo, más variedad de riesgo. | S |
@@ -92,7 +92,7 @@ Los modos están ordenados por **relación diversión/esfuerzo** en este proyect
 
 ## 4. MECÁNICAS — obstáculos nuevos (kit de piezas)
 
-Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` propio, como los 12 actuales.
+Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` propio, como los 17 actuales.
 
 | ID | Obstáculo | Comportamiento |
 |----|-----------|----------------|
@@ -120,7 +120,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 
 | ID | Idea | Detalle | Coste |
 |----|------|---------|-------|
-| **M60** | **Waypoints por nivel, no por código** | Los waypoints pasan a ser un `Curve3D`/`Path3D` dentro de la escena del nivel, con `jump_hint` por punto. Elimina el `match _index` de `bot_racer.gd`. | M |
+| **M60** | ✅ **Waypoints por nivel, no por código** | Hecho: cada circuito declara su ruta en el `LevelInfo` y el bot la lee de ahí, sin `match _index`. Pendiente el `jump_hint` por punto y el `Curve3D` editable. | M |
 | **M61** | **Navegación con `NavigationRegion3D`** | En vez de seguir puntos ciegos, calcular ruta con A* sobre navmesh. Permite mapas nuevos sin tocar IA. | L |
 | **M62** | **Detección de peligros** | 3 raycasts delante + estado del obstáculo: el bot frena, salta o se aparta. | M |
 | **M63** | **Separación / *steering*** | Los bots no se apelotonan: fuerza de repulsión entre ellos (ya hay `_knockback`). | S |
@@ -186,7 +186,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **G19** | **Confeti y fuegos artificiales de victoria** | Ampliar `finish_line.tscn`: confeti continuo + fuegos artificiales + lluvia de monedas. | S |
 | **G20** | **Destrucción de props** | Cajas y barriles que se rompen con `RigidBody3D` + fragmentos; puro espectáculo. | M |
 | **G21** | **Cámaras de muerte y de meta** | Al caer, cámara que sigue al muñeco 1 s; al ganar, órbita lenta alrededor del personaje. | M |
-| **G22** | **Motion trails en el dive** | Rastro de estela + líneas de velocidad en los bordes (ya hay `speed` en el shader de postproceso). | S |
+| **G22** | **Motion trails al hundirse en el agua** | Rastro de estela + líneas de velocidad en los bordes (ya hay `speed` en el shader de postproceso). El *dive* como acción de carrera no existe; el impulso vertical solo se usa al nadar. | S |
 | **G23** | **Marcadores de jugador en el mundo** | Flecha/nombre sobre los rivales cercanos, con distancia y color. | S |
 
 **7.4 UI y presentación**
@@ -257,7 +257,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 | **U2** | **Modo daltónico** | Paleta alternativa + iconos además de color en peligros. | S |
 | **U3** | **Reducir flash / shake / movimiento** | Ya hay ajuste de *shake*: ampliar a flashes, *motion blur* y velocidad de cámara. | S |
 | **U4** | **Dificultad asistida** | Más tiempo de coyote, menos penalización, bots más lentos, checkpoints más frecuentes. | S |
-| **U5** | **Cámara con control de eje** | Permitir arrastrar con el ratón/stick derecho para orbitar ±60° (hoy el yaw está fijo). | M |
+| **U5** | ✅ **Cámara con control de eje** | Hecho: el ratón orbita el pivote con cabeceo limitado y sensibilidad ajustable. Queda el stick derecho en mando y el gesto táctil. | — |
 | **U6** | **Controles táctiles** | Joystick virtual + botones, útil para la versión móvil/HTML. | L |
 | **U7** | **Tutorial jugable** | Hoy es un panel de texto: convertirlo en un tramo guiado con flechas en el mundo. | M |
 | **U8** | **Reanudar partida / modo pausa completo** | Ya existe `pause_menu`: añadir reinicio rápido (R), ajustes en pausa y "volver al último checkpoint". | S |

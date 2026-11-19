@@ -590,7 +590,7 @@ func _build_ramp_trims() -> void:
 	var glow := _glow_material(Color(1.0, 0.86, 0.3), 1.45)
 	var metal := _toy_material(Color(0.16, 0.2, 0.45), 0.55, 0.03)
 	for ramp in _find_ramps(root):
-		var size: Vector3 = ramp.size
+		var size: Vector3 = BoxSize.of(ramp)
 		var half_width: float = size.x * 0.5 - 0.55
 		var depth: float = maxf(size.z - 0.8, 1.0)
 		for side in [-1.0, 1.0]:
@@ -619,12 +619,16 @@ func _build_ramp_trims() -> void:
 				ramp.add_child(bolt)
 
 
-## Rampas del mapa: losas CSG inclinadas, distinguidas por el nombre.
-func _find_ramps(root: Node) -> Array[CSGBox3D]:
-	var found: Array[CSGBox3D] = []
+## Rampas del mapa: losas inclinadas, distinguidas por el nombre. Vale tanto
+## para los mapas antiguos (CSG) como para los horneados a malla: en los dos se
+## busca el tamaño de la caja para colgarle los remates.
+func _find_ramps(root: Node) -> Array[Node3D]:
+	var found: Array[Node3D] = []
 	for child in root.get_children():
-		if child is CSGBox3D and _is_ramp_name(String(child.name)):
-			found.append(child)
+		if child is Node3D and _is_ramp_name(String(child.name)) \
+				and BoxSize.of(child) != Vector3.ZERO:
+			found.append(child as Node3D)
+			continue
 		found.append_array(_find_ramps(child))
 	return found
 

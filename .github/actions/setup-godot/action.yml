@@ -1,0 +1,52 @@
+name: Preparar Godot
+description: >-
+  Deja Godot headless instalado y el proyecto importado, reutilizando la caché
+  del binario (por versión) y la de la importación de recursos.
+
+inputs:
+  version:
+    description: Versión de Godot a usar, por ejemplo 4.7.2
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # El binario (~50 MB) se descarga una vez por versión y sistema operativo.
+    - name: Cachear el binario de Godot
+      id: binario
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/godot
+        key: godot-${{ runner.os }}-${{ inputs.version }}
+
+    - name: Descargar Godot ${{ inputs.version }}
+      if: steps.binario.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$HOME/.cache/godot"
+        curl -sSLo /tmp/godot.zip \
+          "https://github.com/godotengine/godot/releases/download/${VERSION}-stable/Godot_v${VERSION}-stable_linux.x86_64.zip"
+        unzip -q /tmp/godot.zip -d "$HOME/.cache/godot"
+        mv "$HOME/.cache/godot/Godot_v${VERSION}-stable_linux.x86_64" "$HOME/.cache/godot/godot"
+        chmod +x "$HOME/.cache/godot/godot"
+
+    - name: Dejar el binario en el PATH del job
+      shell: bash
+      run: echo "GODOT=$HOME/.cache/godot/godot" >> "$GITHUB_ENV"
+
+    # La importación (`.godot/`) es lo que más tarda del arranque: se cachea por
+    # huella de los recursos y, si cambia, se rehace desde la copia más cercana.
+    - name: Cachear la importación de recursos
+      uses: actions/cache@v4
+      with:
+        path: proyecto/.godot
+        key: godot-import-${{ runner.os }}-${{ inputs.version }}-${{ hashFiles('proyecto/project.godot', 'proyecto/**/*.tscn', 'proyecto/**/*.tres', 'proyecto/**/*.gd', 'proyecto/**/*.gdshader', 'proyecto/**/*.glb', 'proyecto/**/*.wav', 'proyecto/**/*.mp3') }}
+        restore-keys: |
+          godot-import-${{ runner.os }}-${{ inputs.version }}-
+
+    - name: Importar recursos
+      shell: bash
+      run: cd proyecto && "$GODOT" --headless --editor --quit

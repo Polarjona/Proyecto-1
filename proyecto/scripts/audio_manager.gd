@@ -52,11 +52,17 @@ var _victory_stream: AudioStream
 ## RNG propio: el pitch aleatorio de los SFX no debe alterar la secuencia
 ## aleatoria del gameplay (carriles y velocidades de los bots).
 var _rng := RandomNumberGenerator.new()
+## Sin salida de audio (headless) no se reproducen efectos: el driver de mentira
+## no suelta los playbacks hasta después del recuento de fugas del motor, así
+## que cada SFX dejaba basura al cerrar los tests. La música y la fanfarria se
+## siguen reproduciendo porque los tests comprueban que suenan.
+var _silent: bool = false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_rng.randomize()
+	_silent = DisplayServer.get_name() == "headless"
 	_ensure_bus("Music")
 	_ensure_bus("SFX")
 	_ensure_bus(VICTORY_BUS)
@@ -202,6 +208,20 @@ func is_music_playing() -> bool:
 	return _music_player != null and _music_player.playing
 
 
+## Para tests headless: apaga la reproducción en lugar de dejar playbacks
+## pendientes al cerrar el motor. Devuelve si el audio está silenciado.
+func is_silent() -> bool:
+	return _silent
+
+
+func set_silent(value: bool) -> void:
+	_silent = value
+	if value:
+		stop_music(false)
+		stop_victory()
+		stop_all_sfx()
+
+
 ## Fanfarria de meta. Suena una sola vez. Tiene bus propio para oírse aunque
 ## la música esté baja, pero respeta el silencio: con la música a cero no suena.
 func play_victory() -> void:
@@ -229,7 +249,7 @@ func is_victory_playing() -> bool:
 
 ## Reproduce un SFX por clave. `pitch_variance` evita el efecto "metralleta".
 func play_sfx(key: String, pitch_variance: float = 0.05, volume_db: float = 0.0) -> void:
-	if not _sfx_streams.has(key):
+	if _silent or not _sfx_streams.has(key):
 		return
 	for player in _sfx_pool:
 		if not player.playing:
@@ -240,7 +260,7 @@ func play_sfx(key: String, pitch_variance: float = 0.05, volume_db: float = 0.0)
 
 ## SFX posicional: útil para bots y obstáculos, con atenuación por distancia.
 func play_sfx_at(key: String, position: Vector3, pitch_variance: float = 0.1, volume_db: float = 0.0) -> void:
-	if not _sfx_streams.has(key):
+	if _silent or not _sfx_streams.has(key):
 		return
 	for player in _sfx_3d_pool:
 		if not player.playing:
@@ -284,3 +304,36 @@ func set_sfx_volume(linear: float) -> void:
 		return
 	AudioServer.set_bus_volume_db(index, linear_to_db(clampf(linear, 0.0001, 1.0)))
 	AudioServer.set_bus_mute(index, linear <= 0.001)
+
+
+## Corta todo lo que esté sonando. Un reproductor vivo al cerrar el juego deja
+## el playback como instancia filtrada, así que el cierre pasa por aquí.
+func stop_all_sfx() -> void:
+	for player in _sfx_pool:
+		if player != null:
+			player.stop()
+	for player in _sfx_3d_pool:
+		if player != null:
+			player.stop()
+
+
+## Al cerrar el juego se para todo y se sueltan los streams: un reproductor
+## parado sigue reteniendo su playback, y con ellos el WAV, hasta que el motor
+## cierra el audio (demasiado tarde para el recuento de fugas).
+func _exit_tree() -> void:
+	stop_music(false)
+	stop_victory()
+	stop_all_sfx()
+	for player in _sfx_pool:
+		if player != null:
+			player.stream = null
+	for player in _sfx_3d_pool:
+		if player != null:
+			player.stream = null
+	if _music_player != null:
+		_music_player.stream = null
+	if _victory_player != null:
+		_victory_player.stream = null
+	_sfx_streams.clear()
+	_music_stream = null
+	_victory_stream = null

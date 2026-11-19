@@ -93,6 +93,9 @@ func _ready() -> void:
 	# La música vive en el menú: la carrera la detiene al empezar y la fanfarria
 	# de victoria la sustituye al cruzar la meta.
 	AudioManager.play_music()
+	# Los materiales de los obstáculos se compilan aquí, con el menú delante,
+	# para que no den un tirón la primera vez que aparecen en carrera.
+	add_child(ShaderWarmup.new())
 
 
 func _process(delta: float) -> void:

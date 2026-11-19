@@ -1,7 +1,104 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/level_builder.gd" id="1_builder"]
+[ext_resource type="Script" path="res://scripts/levels/level_builder.gd" id="1_p5b04"]
+[ext_resource type="PackedScene" path="res://scenes/levels/abyss_run_act1.tscn" id="2_8wx5c"]
+[ext_resource type="PackedScene" path="res://scenes/levels/abyss_run_act2.tscn" id="3_pyv0l"]
+[ext_resource type="PackedScene" path="res://scenes/levels/abyss_run_act3.tscn" id="4_08qip"]
+[ext_resource type="Script" path="res://scripts/level_info.gd" id="5_245jk"]
+[ext_resource type="Script" path="res://scripts/race_manager.gd" id="6_whnlx"]
+[ext_resource type="PackedScene" path="res://scenes/race/hud.tscn" id="7_37pqj"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="8_d8rti"]
+[ext_resource type="PackedScene" path="res://scenes/race/kill_plane.tscn" id="9_ty4jl"]
+[ext_resource type="Script" path="res://scripts/kill_plane.gd" id="10_von8x"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="11_d1i4n"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="12_pcvgu"]
+[ext_resource type="Script" path="res://scripts/race_director.gd" id="13_foequ"]
+[ext_resource type="PackedScene" path="res://scenes/race/bot_racer.tscn" id="14_kt2ut"]
+[ext_resource type="PackedScene" path="res://scenes/menu/pause_menu.tscn" id="15_2vx4f"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="16_7awkb"]
 
-[node name="AbyssRun" type="Node3D"]
-script = ExtResource("1_builder")
+[sub_resource type="Environment" id="Environment_srh1i"]
+background_mode = 1
+background_color = Color(0.02, 0.1, 0.14, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.36, 0.68, 0.78, 1)
+ambient_light_energy = 1.15
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.06, 0.34, 0.42, 1)
+fog_light_energy = 1.1
+fog_density = 0.011
+
+[node name="AbyssRun" type="Node3D" unique_id=2056158982]
+script = ExtResource("1_p5b04")
 level_kind = "ocean"
+
+[node name="Course" type="Node3D" parent="." unique_id=1873903489]
+
+[node name="Act1" type="Node3D" parent="Course" unique_id=643591874 instance=ExtResource("2_8wx5c")]
+
+[node name="Act2" type="Node3D" parent="Course" unique_id=318302372 instance=ExtResource("3_pyv0l")]
+
+[node name="Act3" type="Node3D" parent="Course" unique_id=1755229179 instance=ExtResource("4_08qip")]
+
+[node name="OceanEnvironment" type="WorldEnvironment" parent="." unique_id=1284180000]
+environment = SubResource("Environment_srh1i")
+
+[node name="OceanSun" type="DirectionalLight3D" parent="." unique_id=731242100]
+transform = Transform3D(0.88294756, -0.41451877, 0.22040357, 0, 0.4694716, 0.88294756, -0.46947157, -0.7795964, 0.4145188, 0, 0, 0)
+light_color = Color(0.76, 0.95, 1, 1)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="LevelInfo" type="Node" parent="." unique_id=498098743]
+script = ExtResource("5_245jk")
+level_id = "abyss_run"
+display_name = "Abyss Run"
+round_index = 5
+start_z = 12.0
+finish_z = -416.0
+course_length = 428.0
+gold_time = 112.0
+silver_time = 138.0
+bronze_time = 172.0
+waypoints = PackedVector3Array(0, 2.55, 12, 0, 2.55, 10, 0, 2.55, 8, 0, 2.55, 6, 0, 2.55, 4, 0, 2.55, 2, 0, 2.55, 0, 0, 2.55, -2, 0, -5.65, -8, 0, -5.65, -11.92, 0, -5.65, -15.84, 0, -5.65, -19.759998, 0, -5.65, -23.68, 0, -5.65, -27.6, 0, -5.65, -31.519999, 0, -5.65, -35.440002, 0, -5.65, -39.36, 0, -5.65, -43.280003, 0, -5.65, -47.2, 0, -5.65, -51.12, 0, -5.65, -55.039997, 0, -5.65, -58.96, 0, -5.65, -62.88, 0, -5.65, -66.8, 0, -5.65, -70.72, 0, -5.65, -74.64, 0, -5.65, -78.560005, 0, -5.65, -82.479996, 0, -5.65, -86.4, 0, -5.65, -90.32, 0, -5.65, -94.24, 0, -5.65, -98.16, 0, -5.65, -102.079994, 0, -5.65, -106, 0, 1.35, -112, 0, 1.35, -114.5, 0, 1.35, -117, 0, 1.35, -119.5, 0, 1.35, -122, 0, -5.65, -128, 0, -5.65, -132, 0, -5.65, -136, 0, -5.65, -140, 0, -5.65, -144, 0, -5.65, -148, 0, -5.65, -152, 0, -5.65, -156, 0, -5.65, -160, 0, -5.65, -164, 0, -5.65, -168, 0, -5.65, -172, 0, -5.65, -176, 0, -5.65, -180, 0, -5.65, -184, 0, -5.65, -188, 0, -5.65, -192, 0, -5.65, -196, 0, -5.65, -200, 0, -5.65, -204, 0, -5.65, -208, 0, -5.65, -212, 0, -5.65, -216, 0, -5.65, -220, 0, -5.65, -224, 0, -5.65, -228, 0, -5.65, -232, 0, -5.65, -236, 0, 1.35, -242, 0, 1.35, -244.5, 0, 1.35, -247, 0, 1.35, -249.5, 0, 1.35, -252, 0, -5.65, -258, 0, -5.65, -261.9394, 0, -5.65, -265.87878, 0, -5.65, -269.81818, 0, -5.65, -273.75757, 0, -5.65, -277.69696, 0, -5.65, -281.63635, 0, -5.65, -285.57574, 0, -5.65, -289.51514, 0, -5.65, -293.45456, 0, -5.65, -297.39395, 0, -5.65, -301.33334, 0, -5.65, -305.27274, 0, -5.65, -309.21213, 0, -5.65, -313.15152, 0, -5.65, -317.0909, 0, -5.65, -321.0303, 0, -5.65, -324.9697, 0, -5.65, -328.9091, 0, -5.65, -332.84848, 0, -5.65, -336.78787, 0, -5.65, -340.72726, 0, -5.65, -344.6667, 0, -5.65, -348.60605, 0, -5.65, -352.54547, 0, -5.65, -356.48486, 0, -5.65, -360.42426, 0, -5.65, -364.36365, 0, -5.65, -368.30304, 0, -5.65, -372.24243, 0, -5.65, -376.18182, 0, -5.65, -380.12122, 0, -5.65, -384.0606, 0, -5.65, -388, 0, 1.5500001, -394, 0, 1.5500001, -396.66666, 0, 1.5500001, -399.33334, 0, 1.5500001, -402, 0, 1.5500001, -404.66666, 0, 1.5500001, -407.33334, 0, 1.5500001, -410)
+lane_widths = PackedFloat32Array(20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 18, 18, 18, 18, 18, 18, 18)
+start_position = Vector3(0, 2.65, 8)
+path_corridor = true
+
+[node name="RaceManager" type="Node" parent="." unique_id=186070658]
+script = ExtResource("6_whnlx")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=280172070 instance=ExtResource("7_37pqj")]
+layer = 3
+script = ExtResource("8_d8rti")
+
+[node name="KillPlane" type="Area3D" parent="." unique_id=622632580 instance=ExtResource("9_ty4jl")]
+transform = Transform3D(1.7, 0, 0, 0, 1, 0, 0, 0, 2.2, 0, -46, -200)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("10_von8x")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1486640964 instance=ExtResource("11_d1i4n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5425065, 8)
+collision_layer = 2
+collision_mask = 5
+velocity = Vector3(0, -1.3111584, 0)
+floor_stop_on_slope = false
+floor_max_angle = 0.9
+floor_snap_length = 0.35
+script = ExtResource("12_pcvgu")
+
+[node name="RaceDirector" type="Node" parent="." unique_id=962792854]
+script = ExtResource("13_foequ")
+bot_scene = ExtResource("14_kt2ut")
+finish_z = -416.0
+start_z = 12.0
+course_length = 428.0
+
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=367473517 instance=ExtResource("15_2vx4f")]
+process_mode = 3
+layer = 10
+visible = false
+script = ExtResource("16_7awkb")

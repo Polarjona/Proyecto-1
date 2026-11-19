@@ -200,6 +200,11 @@ static var _session_variants: Dictionary = {}
 ## fija en las pruebas.
 static var _variant_rng: RandomNumberGenerator = null
 
+## Materiales del acabado plástico compartidos entre cuerpos: solo depende del
+## color final, así que un catálogo entero usa unos pocos en vez de crear uno
+## por superficie y por modelo.
+static var _plastic_materials: Dictionary = {}
+
 static func default_id() -> String:
 	return String(CHARACTERS[0]["id"])
 
@@ -342,12 +347,8 @@ static func _apply_plastic_look(model: Node3D, entry: Dictionary) -> void:
 			elif source is ShaderMaterial:
 				continue
 			var is_face := surface == face_surface or material_name.to_lower() == "face"
-			var material := ShaderMaterial.new()
-			material.shader = CHARACTER_SHADER
-			material.set_shader_parameter(
-				"albedo_color",
-				TOY_EYE_INK if is_face else _toy_color(material_name, color, accent, palette))
-			mesh_instance.set_surface_override_material(surface, material)
+			var tint := TOY_EYE_INK if is_face else _toy_color(material_name, color, accent, palette)
+			mesh_instance.set_surface_override_material(surface, _plastic_material(tint))
 	if String(entry.get("id", "")) == "caballero":
 		_add_knight_eyes(model)
 
@@ -377,13 +378,29 @@ static func _add_knight_eyes(model: Node3D) -> void:
 		var eye := MeshInstance3D.new()
 		var box := BoxMesh.new()
 		box.size = Vector3(0.00065, 0.0002, 0.0011)
+		# El material va en la malla y no como override: una superficie sin
+		# material de malla dispara «Parameter "material" is null» al añadir el
+		# modelo a un viewport (y en el juego sale con el material por defecto).
+		box.material = eye_material
 		eye.mesh = box
-		eye.material_override = eye_material
 		eye.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		eye.transform = rest.affine_inverse() * Transform3D(
 			Basis.IDENTITY,
 			Vector3(side * 0.0020, -0.00468, 0.02555))
 		attachment.add_child(eye)
+
+
+## Material del plástico para un color concreto, compartido por todos los
+## cuerpos. Antes se creaba uno nuevo por superficie.
+static func _plastic_material(color: Color) -> ShaderMaterial:
+	var cached: Variant = _plastic_materials.get(color)
+	if cached is ShaderMaterial:
+		return cached
+	var material := ShaderMaterial.new()
+	material.shader = CHARACTER_SHADER
+	material.set_shader_parameter("albedo_color", color)
+	_plastic_materials[color] = material
+	return material
 
 
 ## Color de juguete de una superficie: manda la paleta del personaje, luego los
