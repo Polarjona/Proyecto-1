@@ -4,35 +4,51 @@ extends Node3D
 ## Balls spawn inside a small radius and are recycled when they fall out.
 
 @export var ball_scene: PackedScene
+
 @export var interval: float = 1.8
+
 @export var interval_variance: float = 0.5
+
 @export var drop_radius: float = 2.2
+
 @export var max_balls: int = 6
+
 @export var despawn_below_y: float = -4.0
+
 ## Delay before the first drop, so the corridor is not already full on spawn.
 @export var start_delay: float = 1.0
+
 ## Horizontal separation of the two support legs. Narrow it when the dropper
 ## stands on a small platform.
 @export var column_spread: float = 2.75
+
 @export var support_ray_length: float = 30.0
+
 ## Color de las bolas que suelta (alpha 0 = color de la escena).
 @export var ball_color: Color = Color(0.0, 0.0, 0.0, 0.0)
+
 ## Caños repartidos por la viga. Uno solo suelta las bolas por el centro; tres
 ## llenan el ancho del carril.
 @export var chute_count: int = 1
 
 var _timer: float = 0.0
+
 var _balls: Array[RigidBody3D] = []
+
 ## Bolas aparcadas para volver a usarlas. Antes cada 1,8 s se instanciaba y se
 ## liberaba un RigidBody3D: en un tramo largo eso es basura constante para la
 ## memoria y para el servidor de física.
 var _pool: Array[RigidBody3D] = []
+
 ## Desplazamientos locales de los caños a lo largo de la viga.
 var _chute_offsets: Array[float] = [0.0]
 
 @onready var column_left: MeshInstance3D = get_node_or_null("ColumnLeft")
+
 @onready var column_right: MeshInstance3D = get_node_or_null("ColumnRight")
+
 @onready var beam: MeshInstance3D = get_node_or_null("Beam")
+
 @onready var pipe: MeshInstance3D = get_node_or_null("Pipe")
 
 
@@ -66,10 +82,12 @@ func _drop_ball() -> void:
 	# Cada bola sale de uno de los caños, no siempre del centro.
 	var chute := _chute_offsets[randi() % _chute_offsets.size()]
 	var side_offset := global_transform.basis.x * chute
-	ball.global_position = global_position + side_offset + Vector3(
-		randf_range(-drop_radius, drop_radius),
-		0.0,
-		randf_range(-drop_radius, drop_radius)
+	ball.global_position = (
+		global_position
+		+ side_offset
+		+ Vector3(
+			randf_range(-drop_radius, drop_radius), 0.0, randf_range(-drop_radius, drop_radius)
+		)
 	)
 	_balls.append(ball)
 
@@ -166,18 +184,16 @@ func _fit_supports() -> void:
 		var leg_x: float = global_position.x + side * column_spread
 		var query := PhysicsRayQueryParameters3D.create(
 			Vector3(leg_x, top_y, global_position.z),
-			Vector3(leg_x, top_y - support_ray_length, global_position.z), 1)
+			Vector3(leg_x, top_y - support_ray_length, global_position.z),
+			1
+		)
 		var hit := space.intersect_ray(query)
 		if hit.is_empty():
 			continue
 		var bottom_y: float = (hit["position"] as Vector3).y
 		var height: float = maxf(top_y - bottom_y, 0.5)
 		column.scale.y = height / 6.0
-		column.global_position = Vector3(
-			leg_x,
-			(top_y + bottom_y) * 0.5,
-			global_position.z
-		)
+		column.global_position = Vector3(leg_x, (top_y + bottom_y) * 0.5, global_position.z)
 
 
 ## Number of balls currently alive; used by the automated tests.

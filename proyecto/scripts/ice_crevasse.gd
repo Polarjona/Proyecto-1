@@ -1,4 +1,5 @@
 @tool
+
 extends Node3D
 
 ## Grieta glacial: exclusiva del glaciar. El suelo del último tramo se abre por
@@ -13,16 +14,25 @@ extends Node3D
 ## poder seleccionarlas y moverlas como cualquier otro bloque.
 
 @export var lanes: int = 3
+
 @export var lane_width: float = 3.2
+
 @export var lane_length: float = 3.6
+
 @export var drop: float = 7.0
+
 @export var cycle: float = 3.4
+
 @export var warn_time: float = 0.9
+
 @export var travel_time: float = 0.5
 
 var _time: float = 0.0
+
 var _bodies: Array[AnimatableBody3D] = []
+
 var _lamps: Array[StandardMaterial3D] = []
+
 ## Cara superior de la losa cerrada (el nodo se coloca a ras del suelo).
 var _closed_y: float = -0.25
 

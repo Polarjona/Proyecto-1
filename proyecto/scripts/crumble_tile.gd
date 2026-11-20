@@ -5,19 +5,28 @@ extends Node3D
 ## puente sin quedarse sin camino.
 
 @export var warn_time: float = 0.9
+
 @export var fall_time: float = 0.45
+
 @export var respawn_time: float = 3.2
+
 @export var fall_distance: float = 9.0
+
 @export var tile_material: Material
 
-@onready var body: StaticBody3D = $Body
-@onready var mesh: MeshInstance3D = $Body/Mesh
-@onready var trigger: Area3D = $Trigger
-
 var _state: String = "idle"
+
 var _timer: float = 0.0
+
 var _base_y: float = 0.0
+
 var _shake: float = 0.0
+
+@onready var body: StaticBody3D = $Body
+
+@onready var mesh: MeshInstance3D = $Body/Mesh
+
+@onready var trigger: Area3D = $Trigger
 
 
 func _ready() -> void:
@@ -42,7 +51,7 @@ func _on_body_entered(toucher: Node3D) -> void:
 	AudioManager.play_sfx_at("creak", global_position, 0.15, -5.0)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	match _state:
 		"warn":
 			_timer -= delta

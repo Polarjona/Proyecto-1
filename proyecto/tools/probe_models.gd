@@ -26,6 +26,15 @@ func _initialize() -> void:
 		else:
 			var names := anim.get_animation_list()
 			print("   clips (%d): %s" % [names.size(), str(names)])
-		print("   nodes: %s" % str(node.find_children("*", "MeshInstance3D", true, false).map(func(n): return n.name)))
+		print(
+			(
+				"   nodes: %s"
+				% str(
+					node.find_children("*", "MeshInstance3D", true, false).map(
+						func(n): return n.name
+					)
+				)
+			)
+		)
 		node.free()
 	quit(0)

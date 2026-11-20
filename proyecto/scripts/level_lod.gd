@@ -1,4 +1,5 @@
 class_name LevelLod
+
 extends RefCounted
 
 ## LOD y oclusión para los circuitos generados, aplicados una sola vez al cargar
@@ -20,16 +21,22 @@ extends RefCounted
 ## Ángulo que ocupa la diagonal del atrezo cuando se deja de dibujar. 0,012 rad
 ## son unos 14 px de alto en 1080p con el FOV de la cámara.
 const CULL_ANGLE := 0.012
+
 ## Aunque el objeto sea diminuto no se corta más cerca de esto.
 const MIN_DISTANCE := 70.0
+
 ## Parte de la distancia final que se dedica al desvanecido: casi la mitad, para
 ## que el dither avance poco a poco en vez de borrarse de golpe.
 const FADE_SHARE := 0.4
+
 ## Losa que puede hacer de occluder: dos lados largos y uno fino. Las paredes y
 ## suelos de las pistas entran justo por debajo del grosor máximo.
 const OCCLUDER_MIN_SIDE := 3.0
+
 const OCCLUDER_MAX_THICKNESS := 3.0
+
 const OCCLUDER_MIN_LENGTH := 8.0
+
 const OCCLUDER_NAME := "Occluder"
 
 
@@ -71,9 +78,11 @@ static func _dress(mesh_node: MeshInstance3D) -> void:
 static func _is_flat_slab(size: Vector3) -> bool:
 	var sides := [size.x, size.y, size.z]
 	sides.sort()
-	return sides[0] <= OCCLUDER_MAX_THICKNESS \
-			and sides[1] >= OCCLUDER_MIN_SIDE \
-			and sides[2] >= OCCLUDER_MIN_LENGTH
+	return (
+		sides[0] <= OCCLUDER_MAX_THICKNESS
+		and sides[1] >= OCCLUDER_MIN_SIDE
+		and sides[2] >= OCCLUDER_MIN_LENGTH
+	)
 
 
 static func _add_occluder(mesh_node: MeshInstance3D, bounds: AABB) -> void:
@@ -82,20 +91,58 @@ static func _add_occluder(mesh_node: MeshInstance3D, bounds: AABB) -> void:
 	var low := bounds.position
 	var high := bounds.end
 	var occluder_mesh := ArrayOccluder3D.new()
-	occluder_mesh.vertices = PackedVector3Array([
-		Vector3(low.x, low.y, low.z), Vector3(high.x, low.y, low.z),
-		Vector3(high.x, low.y, high.z), Vector3(low.x, low.y, high.z),
-		Vector3(low.x, high.y, low.z), Vector3(high.x, high.y, low.z),
-		Vector3(high.x, high.y, high.z), Vector3(low.x, high.y, high.z),
-	])
-	occluder_mesh.indices = PackedInt32Array([
-		0, 1, 2, 0, 2, 3,
-		4, 6, 5, 4, 7, 6,
-		0, 4, 5, 0, 5, 1,
-		1, 5, 6, 1, 6, 2,
-		2, 6, 7, 2, 7, 3,
-		3, 7, 4, 3, 4, 0,
-	])
+	occluder_mesh.vertices = PackedVector3Array(
+		[
+			Vector3(low.x, low.y, low.z),
+			Vector3(high.x, low.y, low.z),
+			Vector3(high.x, low.y, high.z),
+			Vector3(low.x, low.y, high.z),
+			Vector3(low.x, high.y, low.z),
+			Vector3(high.x, high.y, low.z),
+			Vector3(high.x, high.y, high.z),
+			Vector3(low.x, high.y, high.z),
+		]
+	)
+	occluder_mesh.indices = PackedInt32Array(
+		[
+			0,
+			1,
+			2,
+			0,
+			2,
+			3,
+			4,
+			6,
+			5,
+			4,
+			7,
+			6,
+			0,
+			4,
+			5,
+			0,
+			5,
+			1,
+			1,
+			5,
+			6,
+			1,
+			6,
+			2,
+			2,
+			6,
+			7,
+			2,
+			7,
+			3,
+			3,
+			7,
+			4,
+			3,
+			4,
+			0,
+		]
+	)
 	var occluder := OccluderInstance3D.new()
 	occluder.name = OCCLUDER_NAME
 	occluder.occluder = occluder_mesh

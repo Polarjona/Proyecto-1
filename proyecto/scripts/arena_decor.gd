@@ -6,27 +6,108 @@ extends Node3D
 ## Todo es decorativo: no añade colisión ni altera el recorrido.
 
 const TOY_SHADER: Shader = preload("res://shaders/toy.gdshader")
+
 const SEA_SHADER: Shader = preload("res://shaders/void_sea.gdshader")
 
-## Top surface of every walkable slab in `main.tscn` (center + size).
+## Top surface of every walkable slab in `pivot_push.tscn` (center + size).
 const SECTIONS := [
-	{"name": "Start", "center": Vector3(0.0, 0.0, 2.0), "size": Vector2(14.0, 12.0), "color": Color(1.0, 0.8, 0.2)},
-	{"name": "SweeperHall", "center": Vector3(0.0, 0.0, -15.5), "size": Vector2(9.0, 18.0), "color": Color(1.0, 0.8, 0.2)},
-	{"name": "ConveyorHall", "center": Vector3(0.0, 0.0, -34.75), "size": Vector2(12.0, 14.5), "color": Color(1.0, 0.84, 0.3)},
-	{"name": "SeeSawLanding", "center": Vector3(0.0, 0.0, -62.5), "size": Vector2(10.0, 5.0), "color": Color(1.0, 0.8, 0.2)},
-	{"name": "PendulumBridge", "center": Vector3(0.0, 0.0, -78.0), "size": Vector2(5.0, 22.0), "color": Color(1.0, 0.84, 0.26)},
-	{"name": "LandingA", "center": Vector3(0.0, 0.6, -112.5), "size": Vector2(10.0, 7.0), "color": Color(1.0, 0.8, 0.2)},
-	{"name": "WindBridge", "center": Vector3(0.0, 0.6, -131.5), "size": Vector2(4.0, 17.0), "color": Color(1.0, 0.76, 0.24)},
-	{"name": "CannonLanding", "center": Vector3(0.0, 1.0, -154.0), "size": Vector2(12.0, 14.0), "color": Color(1.0, 0.82, 0.24)},
-	{"name": "FinalRun", "center": Vector3(0.0, 1.0, -189.0), "size": Vector2(9.0, 14.0), "color": Color(1.0, 0.78, 0.18)},
-	{"name": "Finish", "center": Vector3(0.0, 4.0, -206.0), "size": Vector2(14.0, 16.0), "color": Color(1.0, 0.86, 0.28)},
+	{
+		"name": "Start",
+		"center": Vector3(0.0, 0.0, 2.0),
+		"size": Vector2(14.0, 12.0),
+		"color": Color(1.0, 0.8, 0.2)
+	},
+	{
+		"name": "SweeperHall",
+		"center": Vector3(0.0, 0.0, -15.5),
+		"size": Vector2(9.0, 18.0),
+		"color": Color(1.0, 0.8, 0.2)
+	},
+	{
+		"name": "ConveyorHall",
+		"center": Vector3(0.0, 0.0, -34.75),
+		"size": Vector2(12.0, 14.5),
+		"color": Color(1.0, 0.84, 0.3)
+	},
+	{
+		"name": "SeeSawLanding",
+		"center": Vector3(0.0, 0.0, -62.5),
+		"size": Vector2(10.0, 5.0),
+		"color": Color(1.0, 0.8, 0.2)
+	},
+	{
+		"name": "PendulumBridge",
+		"center": Vector3(0.0, 0.0, -78.0),
+		"size": Vector2(5.0, 22.0),
+		"color": Color(1.0, 0.84, 0.26)
+	},
+	{
+		"name": "LandingA",
+		"center": Vector3(0.0, 0.6, -112.5),
+		"size": Vector2(10.0, 7.0),
+		"color": Color(1.0, 0.8, 0.2)
+	},
+	{
+		"name": "WindBridge",
+		"center": Vector3(0.0, 0.6, -131.5),
+		"size": Vector2(4.0, 17.0),
+		"color": Color(1.0, 0.76, 0.24)
+	},
+	{
+		"name": "CannonLanding",
+		"center": Vector3(0.0, 1.0, -154.0),
+		"size": Vector2(12.0, 14.0),
+		"color": Color(1.0, 0.82, 0.24)
+	},
+	{
+		"name": "FinalRun",
+		"center": Vector3(0.0, 1.0, -189.0),
+		"size": Vector2(9.0, 14.0),
+		"color": Color(1.0, 0.78, 0.18)
+	},
+	{
+		"name": "Finish",
+		"center": Vector3(0.0, 4.0, -206.0),
+		"size": Vector2(14.0, 16.0),
+		"color": Color(1.0, 0.86, 0.28)
+	},
 	# Acto 3 de Pivot Push: la forja.
-	{"name": "ForgeDeck", "center": Vector3(0.0, 2.0, -232.0), "size": Vector2(11.5, 24.0), "color": Color(1.0, 0.62, 0.75)},
-	{"name": "ChimneyBridge", "center": Vector3(0.0, 4.8, -260.0), "size": Vector2(4.6, 20.0), "color": Color(1.0, 0.82, 0.28)},
-	{"name": "ChimneyLanding", "center": Vector3(0.0, 4.8, -275.0), "size": Vector2(9.0, 10.0), "color": Color(1.0, 0.6, 0.8)},
-	{"name": "ForgeSummit", "center": Vector3(0.0, 9.2, -305.0), "size": Vector2(13.0, 14.0), "color": Color(1.0, 0.86, 0.3)},
-	{"name": "ForgeFinal", "center": Vector3(0.0, 3.6, -342.0), "size": Vector2(13.0, 24.0), "color": Color(1.0, 0.62, 0.75)},
-	{"name": "ForgePlaza", "center": Vector3(0.0, 3.6, -363.0), "size": Vector2(16.0, 18.0), "color": Color(1.0, 0.86, 0.3)},
+	{
+		"name": "ForgeDeck",
+		"center": Vector3(0.0, 2.0, -232.0),
+		"size": Vector2(11.5, 24.0),
+		"color": Color(1.0, 0.62, 0.75)
+	},
+	{
+		"name": "ChimneyBridge",
+		"center": Vector3(0.0, 4.8, -260.0),
+		"size": Vector2(4.6, 20.0),
+		"color": Color(1.0, 0.82, 0.28)
+	},
+	{
+		"name": "ChimneyLanding",
+		"center": Vector3(0.0, 4.8, -275.0),
+		"size": Vector2(9.0, 10.0),
+		"color": Color(1.0, 0.6, 0.8)
+	},
+	{
+		"name": "ForgeSummit",
+		"center": Vector3(0.0, 9.2, -305.0),
+		"size": Vector2(13.0, 14.0),
+		"color": Color(1.0, 0.86, 0.3)
+	},
+	{
+		"name": "ForgeFinal",
+		"center": Vector3(0.0, 3.6, -342.0),
+		"size": Vector2(13.0, 24.0),
+		"color": Color(1.0, 0.62, 0.75)
+	},
+	{
+		"name": "ForgePlaza",
+		"center": Vector3(0.0, 3.6, -363.0),
+		"size": Vector2(16.0, 18.0),
+		"color": Color(1.0, 0.86, 0.3)
+	},
 ]
 
 const ISLAND_COLORS := [
@@ -38,31 +119,46 @@ const ISLAND_COLORS := [
 ]
 
 const ROCK_COLOR := Color(0.2, 0.26, 0.55)
+
 const DISTANT_COLOR := Color(0.52, 0.64, 0.92)
 
 ## Los mapas nuevos pueden sobrescribir estos datos desde su escena para
 ## reutilizar todo el set-dressing con su propia paleta. Si se dejan vacios,
-## arena_decor usa la tabla SECTIONS y los colores por defecto (main.tscn).
+## arena_decor usa la tabla SECTIONS y los colores por defecto (pivot_push.tscn).
 @export var section_centers: PackedVector3Array = PackedVector3Array()
+
 @export var section_sizes: PackedVector2Array = PackedVector2Array()
+
 @export var section_colors: PackedColorArray = PackedColorArray()
+
 @export var sea_deep: Color = Color(0.1, 0.22, 0.52)
+
 @export var sea_mid: Color = Color(0.3, 0.5, 0.86)
+
 @export var sea_foam: Color = Color(0.78, 0.88, 1.0)
+
 @export var island_palette: PackedColorArray = PackedColorArray()
+
 @export var rock_color: Color = ROCK_COLOR
+
 @export var distant_color: Color = DISTANT_COLOR
+
 ## Los adornos con posiciones fijas (arcos, marcos de péndulo y torres) son
 ## del circuito original; los mapas nuevos construyen los suyos y apagan
 ## estos para que no aparezcan flotando en el vacio.
 @export var build_arches: bool = true
+
 @export var build_pendulum_frames: bool = true
+
 @export var build_light_towers: bool = true
 
 var _rng := RandomNumberGenerator.new()
+
 var _toy_cache: Dictionary = {}
+
 ## Adornos que respiran: globos, anillos de neón y rocas flotantes.
 var _floaters: Array = []
+
 var _time: float = 0.0
 
 
@@ -124,7 +220,13 @@ func _flat_material(color: Color, emission_energy: float = 0.0) -> StandardMater
 
 
 # ------------------------------------------------------------------ helpers
-func _box(size: Vector3, position: Vector3, material: Material, node_name: String, rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _box(
+	size: Vector3,
+	position: Vector3,
+	material: Material,
+	node_name: String,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
 	var instance := MeshInstance3D.new()
@@ -138,7 +240,16 @@ func _box(size: Vector3, position: Vector3, material: Material, node_name: Strin
 	return instance
 
 
-func _cylinder(top_radius: float, bottom_radius: float, height: float, position: Vector3, material: Material, node_name: String, segments: int = 12, rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _cylinder(
+	top_radius: float,
+	bottom_radius: float,
+	height: float,
+	position: Vector3,
+	material: Material,
+	node_name: String,
+	segments: int = 12,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = top_radius
 	mesh.bottom_radius = bottom_radius
@@ -156,7 +267,14 @@ func _cylinder(top_radius: float, bottom_radius: float, height: float, position:
 	return instance
 
 
-func _sphere(radius: float, height: float, position: Vector3, material: Material, node_name: String, scale: Vector3 = Vector3.ONE) -> MeshInstance3D:
+func _sphere(
+	radius: float,
+	height: float,
+	position: Vector3,
+	material: Material,
+	node_name: String,
+	scale: Vector3 = Vector3.ONE
+) -> MeshInstance3D:
 	var mesh := SphereMesh.new()
 	mesh.radius = radius
 	mesh.height = height
@@ -173,7 +291,15 @@ func _sphere(radius: float, height: float, position: Vector3, material: Material
 	return instance
 
 
-func _torus(inner_radius: float, outer_radius: float, position: Vector3, material: Material, node_name: String, rot: Vector3 = Vector3.ZERO, rings: int = 24) -> MeshInstance3D:
+func _torus(
+	inner_radius: float,
+	outer_radius: float,
+	position: Vector3,
+	material: Material,
+	node_name: String,
+	rot: Vector3 = Vector3.ZERO,
+	rings: int = 24
+) -> MeshInstance3D:
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = inner_radius
 	mesh.outer_radius = outer_radius
@@ -190,7 +316,9 @@ func _torus(inner_radius: float, outer_radius: float, position: Vector3, materia
 	return instance
 
 
-func _omni_light(position: Vector3, color: Color, energy: float, light_range: float, node_name: String) -> OmniLight3D:
+func _omni_light(
+	position: Vector3, color: Color, energy: float, light_range: float, node_name: String
+) -> OmniLight3D:
 	var light := OmniLight3D.new()
 	light.name = node_name
 	light.position = position
@@ -238,12 +366,17 @@ func _build_platform_edges() -> void:
 			var color := Color(1.0, 0.8, 0.2)
 			if i < section_colors.size():
 				color = section_colors[i]
-			sections.append({
-				"name": "Section%d" % i,
-				"center": section_centers[i],
-				"size": section_sizes[i],
-				"color": color,
-			})
+			(
+				sections
+				. append(
+					{
+						"name": "Section%d" % i,
+						"center": section_centers[i],
+						"size": section_sizes[i],
+						"color": color,
+					}
+				)
+			)
 
 	for section in sections:
 		var section_name: String = section["name"]
@@ -256,11 +389,26 @@ func _build_platform_edges() -> void:
 		# Neon trim along both long edges.
 		var rail_x: float = size.x * 0.5 - 0.12
 		var rail_length: float = size.y - 0.25
-		_box(Vector3(0.16, 0.1, rail_length), Vector3(center.x - rail_x, top_y + 0.05, center.z), glow, "RailL_%s" % section_name)
-		_box(Vector3(0.16, 0.1, rail_length), Vector3(center.x + rail_x, top_y + 0.05, center.z), glow, "RailR_%s" % section_name)
+		_box(
+			Vector3(0.16, 0.1, rail_length),
+			Vector3(center.x - rail_x, top_y + 0.05, center.z),
+			glow,
+			"RailL_%s" % section_name
+		)
+		_box(
+			Vector3(0.16, 0.1, rail_length),
+			Vector3(center.x + rail_x, top_y + 0.05, center.z),
+			glow,
+			"RailR_%s" % section_name
+		)
 
 		# Soft glow on the underside, visible while falling.
-		_box(Vector3(minf(size.x * 0.7, 4.0), 0.08, rail_length * 0.85), Vector3(center.x, top_y - 0.58, center.z), _glow_material(color, 0.7), "UnderGlow_%s" % section_name)
+		_box(
+			Vector3(minf(size.x * 0.7, 4.0), 0.08, rail_length * 0.85),
+			Vector3(center.x, top_y - 0.58, center.z),
+			_glow_material(color, 0.7),
+			"UnderGlow_%s" % section_name
+		)
 
 		# Hanging supports.
 		var pylon_count := 2
@@ -269,9 +417,24 @@ func _build_platform_edges() -> void:
 			var px: float = center.x + side * minf(size.x * 0.32, 2.6)
 			var pz: float = center.z + (1.0 if i == 0 else -1.0) * size.y * 0.32
 			var pylon_height := 11.0
-			_cylinder(0.16, 0.38, pylon_height, Vector3(px, top_y - pylon_height * 0.5 - 0.45, pz), support_material, "Pylon_%s_%d" % [section_name, i], 8)
-			_torus(0.42, 0.58, Vector3(px, top_y - 0.62, pz), _glow_material(color, 0.9), "PylonRing_%s_%d" % [section_name, i], Vector3.ZERO, 16)
-
+			_cylinder(
+				0.16,
+				0.38,
+				pylon_height,
+				Vector3(px, top_y - pylon_height * 0.5 - 0.45, pz),
+				support_material,
+				"Pylon_%s_%d" % [section_name, i],
+				8
+			)
+			_torus(
+				0.42,
+				0.58,
+				Vector3(px, top_y - 0.62, pz),
+				_glow_material(color, 0.9),
+				"PylonRing_%s_%d" % [section_name, i],
+				Vector3.ZERO,
+				16
+			)
 
 
 func _build_islands() -> void:
@@ -289,21 +452,61 @@ func _build_islands() -> void:
 				palette.append(entry)
 		var color: Color = palette[_rng.randi() % palette.size()]
 
-		_cylinder(radius * 0.92, radius * 0.42, rock_height, Vector3(x, top_y - rock_height * 0.5, z), _toy_material(ROCK_COLOR, 0.55, 0.02), "IslandRock_%d" % i, 9)
-		_sphere(radius, radius * 0.5, Vector3(x, top_y + 0.05, z), _toy_material(color, 0.7, 0.09), "IslandTop_%d" % i, Vector3(1.0, 1.0, 1.0))
+		_cylinder(
+			radius * 0.92,
+			radius * 0.42,
+			rock_height,
+			Vector3(x, top_y - rock_height * 0.5, z),
+			_toy_material(ROCK_COLOR, 0.55, 0.02),
+			"IslandRock_%d" % i,
+			9
+		)
+		_sphere(
+			radius,
+			radius * 0.5,
+			Vector3(x, top_y + 0.05, z),
+			_toy_material(color, 0.7, 0.09),
+			"IslandTop_%d" % i,
+			Vector3(1.0, 1.0, 1.0)
+		)
 
 		# Crystal garden: small glowing cones.
 		for c in _rng.randi_range(1, 3):
 			var cx := x + _rng.randf_range(-radius * 0.45, radius * 0.45)
 			var cz := z + _rng.randf_range(-radius * 0.45, radius * 0.45)
 			var crystal_height := _rng.randf_range(1.0, 2.4)
-			_cylinder(0.0, _rng.randf_range(0.18, 0.32), crystal_height, Vector3(cx, top_y + crystal_height * 0.5, cz), _glow_material(color.lightened(0.25), 1.0), "Crystal_%d_%d" % [i, c], 6, Vector3(_rng.randf_range(-16.0, 16.0), 0.0, _rng.randf_range(-16.0, 16.0)))
+			_cylinder(
+				0.0,
+				_rng.randf_range(0.18, 0.32),
+				crystal_height,
+				Vector3(cx, top_y + crystal_height * 0.5, cz),
+				_glow_material(color.lightened(0.25), 1.0),
+				"Crystal_%d_%d" % [i, c],
+				6,
+				Vector3(_rng.randf_range(-16.0, 16.0), 0.0, _rng.randf_range(-16.0, 16.0))
+			)
 
 		if radius > 4.4:
 			var tx := x + _rng.randf_range(-radius * 0.4, radius * 0.4)
 			var tz := z + _rng.randf_range(-radius * 0.4, radius * 0.4)
-			_cylinder(0.16, 0.24, 1.4, Vector3(tx, top_y + 0.7, tz), _toy_material(Color(0.42, 0.3, 0.26), 0.4), "Trunk_%d" % i, 6)
-			_cylinder(0.0, 1.15, 2.4, Vector3(tx, top_y + 2.4, tz), _toy_material(Color(0.42, 0.88, 0.52), 0.6, 0.05), "Tree_%d" % i, 8)
+			_cylinder(
+				0.16,
+				0.24,
+				1.4,
+				Vector3(tx, top_y + 0.7, tz),
+				_toy_material(Color(0.42, 0.3, 0.26), 0.4),
+				"Trunk_%d" % i,
+				6
+			)
+			_cylinder(
+				0.0,
+				1.15,
+				2.4,
+				Vector3(tx, top_y + 2.4, tz),
+				_toy_material(Color(0.42, 0.88, 0.52), 0.6, 0.05),
+				"Tree_%d" % i,
+				8
+			)
 
 
 func _build_distant_mountains() -> void:
@@ -315,7 +518,16 @@ func _build_distant_mountains() -> void:
 		var height := _rng.randf_range(40.0, 84.0)
 		var bottom := _rng.randf_range(22.0, 48.0)
 		var shade := distant_color.lerp(Color(1.0, 0.95, 0.98), _rng.randf_range(0.0, 0.22))
-		_cylinder(0.0, bottom, height, Vector3(x, -38.0 + height * 0.5, z), _flat_material(shade.darkened(0.04), 0.0), "Mountain_%d" % i, 7, Vector3(0.0, _rng.randf_range(0.0, 360.0), 0.0))
+		_cylinder(
+			0.0,
+			bottom,
+			height,
+			Vector3(x, -38.0 + height * 0.5, z),
+			_flat_material(shade.darkened(0.04), 0.0),
+			"Mountain_%d" % i,
+			7,
+			Vector3(0.0, _rng.randf_range(0.0, 360.0), 0.0)
+		)
 
 
 ## Fondo 3D lejano: globos aerostáticos, anillos de neón en el cielo, islas
@@ -334,13 +546,18 @@ func _build_backdrop() -> void:
 
 
 func _register_floater(node: Node3D, amplitude: float, speed: float) -> void:
-	_floaters.append({
-		"node": node,
-		"base": node.position,
-		"phase": _rng.randf_range(0.0, TAU),
-		"amplitude": amplitude,
-		"speed": speed,
-	})
+	(
+		_floaters
+		. append(
+			{
+				"node": node,
+				"base": node.position,
+				"phase": _rng.randf_range(0.0, TAU),
+				"amplitude": amplitude,
+				"speed": speed,
+			}
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -367,8 +584,11 @@ func _build_balloons(palette: Array) -> void:
 		var distance := _rng.randf_range(52.0, 108.0)
 		var root := Node3D.new()
 		root.name = "Balloon%d" % i
-		root.position = Vector3(cos(angle) * distance,
-			_rng.randf_range(9.0, 36.0), -120.0 + sin(angle) * distance * 1.45)
+		root.position = Vector3(
+			cos(angle) * distance,
+			_rng.randf_range(9.0, 36.0),
+			-120.0 + sin(angle) * distance * 1.45
+		)
 		add_child(root)
 		var color: Color = palette[i % palette.size()]
 
@@ -427,10 +647,14 @@ func _build_sky_rings(palette: Array) -> void:
 		var distance := _rng.randf_range(120.0, 190.0)
 		var ring := Node3D.new()
 		ring.name = "SkyRing%d" % i
-		ring.position = Vector3(cos(angle) * distance, _rng.randf_range(16.0, 52.0),
-			-140.0 + sin(angle) * distance)
-		ring.rotation_degrees = Vector3(_rng.randf_range(-30.0, 30.0),
-			_rng.randf_range(0.0, 360.0), _rng.randf_range(-30.0, 30.0))
+		ring.position = Vector3(
+			cos(angle) * distance, _rng.randf_range(16.0, 52.0), -140.0 + sin(angle) * distance
+		)
+		ring.rotation_degrees = Vector3(
+			_rng.randf_range(-30.0, 30.0),
+			_rng.randf_range(0.0, 360.0),
+			_rng.randf_range(-30.0, 30.0)
+		)
 		add_child(ring)
 		var color: Color = palette[(i + 2) % palette.size()]
 
@@ -459,20 +683,44 @@ func _build_far_islands(palette: Array) -> void:
 		var radius := _rng.randf_range(7.0, 15.0)
 		var color: Color = palette[i % palette.size()]
 
-		_cylinder(radius * 0.95, radius * 0.35, radius * 0.9,
-			Vector3(x, top_y - radius * 0.45, z), _toy_material(ROCK_COLOR, 0.5, 0.02),
-			"FarRock_%d" % i, 8)
-		_sphere(radius, radius * 0.42, Vector3(x, top_y, z),
-			_toy_material(color, 0.7, 0.08), "FarTop_%d" % i)
+		_cylinder(
+			radius * 0.95,
+			radius * 0.35,
+			radius * 0.9,
+			Vector3(x, top_y - radius * 0.45, z),
+			_toy_material(ROCK_COLOR, 0.5, 0.02),
+			"FarRock_%d" % i,
+			8
+		)
+		_sphere(
+			radius,
+			radius * 0.42,
+			Vector3(x, top_y, z),
+			_toy_material(color, 0.7, 0.08),
+			"FarTop_%d" % i
+		)
 		for t in 3:
 			var tx := x + _rng.randf_range(-radius * 0.4, radius * 0.4)
 			var tz := z + _rng.randf_range(-radius * 0.4, radius * 0.4)
 			var trunk_height := _rng.randf_range(1.6, 3.0)
-			_cylinder(0.2, 0.32, trunk_height, Vector3(tx, top_y + trunk_height * 0.5, tz),
-				_toy_material(Color(0.42, 0.3, 0.26), 0.4), "FarTrunk_%d_%d" % [i, t], 6)
-			_cylinder(0.0, _rng.randf_range(1.2, 2.2), _rng.randf_range(2.2, 3.6),
+			_cylinder(
+				0.2,
+				0.32,
+				trunk_height,
+				Vector3(tx, top_y + trunk_height * 0.5, tz),
+				_toy_material(Color(0.42, 0.3, 0.26), 0.4),
+				"FarTrunk_%d_%d" % [i, t],
+				6
+			)
+			_cylinder(
+				0.0,
+				_rng.randf_range(1.2, 2.2),
+				_rng.randf_range(2.2, 3.6),
 				Vector3(tx, top_y + trunk_height + 1.4, tz),
-				_toy_material(Color(0.42, 0.88, 0.52), 0.6, 0.05), "FarTree_%d_%d" % [i, t], 7)
+				_toy_material(Color(0.42, 0.88, 0.52), 0.6, 0.05),
+				"FarTree_%d_%d" % [i, t],
+				7
+			)
 
 
 func _build_floaters(palette: Array) -> void:
@@ -480,10 +728,14 @@ func _build_floaters(palette: Array) -> void:
 		var side := -1.0 if i % 2 == 0 else 1.0
 		var root := Node3D.new()
 		root.name = "Floater%d" % i
-		root.position = Vector3(side * _rng.randf_range(13.0, 30.0),
-			_rng.randf_range(3.0, 16.0), _rng.randf_range(-360.0, 10.0))
-		root.rotation_degrees = Vector3(_rng.randf_range(0.0, 360.0),
-			_rng.randf_range(0.0, 360.0), _rng.randf_range(0.0, 360.0))
+		root.position = Vector3(
+			side * _rng.randf_range(13.0, 30.0),
+			_rng.randf_range(3.0, 16.0),
+			_rng.randf_range(-360.0, 10.0)
+		)
+		root.rotation_degrees = Vector3(
+			_rng.randf_range(0.0, 360.0), _rng.randf_range(0.0, 360.0), _rng.randf_range(0.0, 360.0)
+		)
 		add_child(root)
 		var color: Color = palette[(i + 1) % palette.size()]
 		var size := _rng.randf_range(0.7, 1.8)
@@ -516,12 +768,42 @@ func _build_arches() -> void:
 		var color: Color = arch["color"]
 		var solid := _toy_material(color.darkened(0.2), 0.9, 0.15)
 		var glow := _glow_material(color, 1.4)
-		_box(Vector3(0.45, height, 0.45), Vector3(-width * 0.5, base_y + height * 0.5, z), solid, "ArchPillarL_%d" % i)
-		_box(Vector3(0.45, height, 0.45), Vector3(width * 0.5, base_y + height * 0.5, z), solid, "ArchPillarR_%d" % i)
-		_box(Vector3(width + 0.45, 0.5, 0.55), Vector3(0.0, base_y + height, z), solid, "ArchBeam_%d" % i)
-		_box(Vector3(width - 0.9, 0.12, 0.14), Vector3(0.0, base_y + height - 0.55, z), glow, "ArchGlow_%d" % i)
-		_box(Vector3(0.12, height - 0.9, 0.14), Vector3(-width * 0.5, base_y + height * 0.5 - 0.2, z), glow, "ArchStripL_%d" % i)
-		_box(Vector3(0.12, height - 0.9, 0.14), Vector3(width * 0.5, base_y + height * 0.5 - 0.2, z), glow, "ArchStripR_%d" % i)
+		_box(
+			Vector3(0.45, height, 0.45),
+			Vector3(-width * 0.5, base_y + height * 0.5, z),
+			solid,
+			"ArchPillarL_%d" % i
+		)
+		_box(
+			Vector3(0.45, height, 0.45),
+			Vector3(width * 0.5, base_y + height * 0.5, z),
+			solid,
+			"ArchPillarR_%d" % i
+		)
+		_box(
+			Vector3(width + 0.45, 0.5, 0.55),
+			Vector3(0.0, base_y + height, z),
+			solid,
+			"ArchBeam_%d" % i
+		)
+		_box(
+			Vector3(width - 0.9, 0.12, 0.14),
+			Vector3(0.0, base_y + height - 0.55, z),
+			glow,
+			"ArchGlow_%d" % i
+		)
+		_box(
+			Vector3(0.12, height - 0.9, 0.14),
+			Vector3(-width * 0.5, base_y + height * 0.5 - 0.2, z),
+			glow,
+			"ArchStripL_%d" % i
+		)
+		_box(
+			Vector3(0.12, height - 0.9, 0.14),
+			Vector3(width * 0.5, base_y + height * 0.5 - 0.2, z),
+			glow,
+			"ArchStripR_%d" % i
+		)
 
 
 ## Steel gantries over the pendulum bridge: the hammers hang from these
@@ -535,14 +817,29 @@ func _build_pendulum_frames() -> void:
 		for side in [-1.0, 1.0]:
 			var x: float = side * 4.2
 			# Tall pylon: top at beam height, bottom fades into the cloud sea.
-			_box(Vector3(0.42, 11.5, 0.42), Vector3(x, -0.35, z), metal, "PendulumPost_%d_%s" % [i, "L" if side < 0.0 else "R"])
-			_box(Vector3(0.7, 0.2, 0.7), Vector3(x, 5.25, z), glow, "PendulumFoot_%d_%s" % [i, "L" if side < 0.0 else "R"])
+			_box(
+				Vector3(0.42, 11.5, 0.42),
+				Vector3(x, -0.35, z),
+				metal,
+				"PendulumPost_%d_%s" % [i, "L" if side < 0.0 else "R"]
+			)
+			_box(
+				Vector3(0.7, 0.2, 0.7),
+				Vector3(x, 5.25, z),
+				glow,
+				"PendulumFoot_%d_%s" % [i, "L" if side < 0.0 else "R"]
+			)
 		_box(Vector3(8.9, 0.42, 0.42), Vector3(0.0, 5.35, z), metal, "PendulumBeam_%d" % i)
 		_box(Vector3(7.6, 0.08, 0.14), Vector3(0.0, 5.09, z), glow, "PendulumGlow_%d" % i)
 		_box(Vector3(0.7, 0.55, 0.7), Vector3(0.0, 5.2, z), metal, "PendulumMount_%d" % i)
 	# Longitudinal rails tie the four gantries together.
 	for side in [-1.0, 1.0]:
-		_box(Vector3(0.34, 0.34, 22.8), Vector3(side * 4.2, 5.35, -78.75), metal, "PendulumRail_%s" % ("L" if side < 0.0 else "R"))
+		_box(
+			Vector3(0.34, 0.34, 22.8),
+			Vector3(side * 4.2, 5.35, -78.75),
+			metal,
+			"PendulumRail_%s" % ("L" if side < 0.0 else "R")
+		)
 
 	# The final pendulum sits on the raised last straight, so its gantry is
 	# taller and reaches down through FinalRun instead of floating above it.
@@ -550,13 +847,28 @@ func _build_pendulum_frames() -> void:
 	var final_beam_y := 6.35
 	for side in [-1.0, 1.0]:
 		var x: float = side * 4.2
-		_box(Vector3(0.42, 13.5, 0.42), Vector3(x, 0.35, final_z), metal,
-			"PendulumPost_4_%s" % ("L" if side < 0.0 else "R"))
-		_box(Vector3(0.7, 0.2, 0.7), Vector3(x, final_beam_y, final_z), glow,
-			"PendulumFoot_4_%s" % ("L" if side < 0.0 else "R"))
+		_box(
+			Vector3(0.42, 13.5, 0.42),
+			Vector3(x, 0.35, final_z),
+			metal,
+			"PendulumPost_4_%s" % ("L" if side < 0.0 else "R")
+		)
+		_box(
+			Vector3(0.7, 0.2, 0.7),
+			Vector3(x, final_beam_y, final_z),
+			glow,
+			"PendulumFoot_4_%s" % ("L" if side < 0.0 else "R")
+		)
 	_box(Vector3(8.9, 0.42, 0.42), Vector3(0.0, final_beam_y, final_z), metal, "PendulumBeam_4")
-	_box(Vector3(7.6, 0.08, 0.14), Vector3(0.0, final_beam_y - 0.26, final_z), glow, "PendulumGlow_4")
-	_box(Vector3(0.7, 0.55, 0.7), Vector3(0.0, final_beam_y - 0.15, final_z), metal, "PendulumMount_4")
+	_box(
+		Vector3(7.6, 0.08, 0.14), Vector3(0.0, final_beam_y - 0.26, final_z), glow, "PendulumGlow_4"
+	)
+	_box(
+		Vector3(0.7, 0.55, 0.7),
+		Vector3(0.0, final_beam_y - 0.15, final_z),
+		metal,
+		"PendulumMount_4"
+	)
 
 
 func _build_light_towers() -> void:
@@ -575,9 +887,13 @@ func _build_light_towers() -> void:
 		var z: float = tower["z"]
 		var color: Color = tower["color"]
 		_cylinder(0.16, 0.42, 12.0, Vector3(x, 6.0, z), metal, "TowerPole_%d" % i, 8)
-		_box(Vector3(1.4, 0.85, 2.4), Vector3(x, 12.3, z), _glow_material(color, 1.6), "TowerLamp_%d" % i)
+		_box(
+			Vector3(1.4, 0.85, 2.4),
+			Vector3(x, 12.3, z),
+			_glow_material(color, 1.6),
+			"TowerLamp_%d" % i
+		)
 		_omni_light(Vector3(x * 0.82, 11.4, z), color, 1.5, 20.0, "TowerLight_%d" % i)
-
 
 
 ## Detalle de todas las rampas del mapa: dos guías luminosas a los lados y dos
@@ -614,7 +930,8 @@ func _build_ramp_trims() -> void:
 				bolt.position = Vector3(
 					lerpf(-half_width + 0.4, half_width - 0.4, float(i) / 3.0),
 					0.29,
-					row_z * (depth * 0.5 - 0.35))
+					row_z * (depth * 0.5 - 0.35)
+				)
 				bolt.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				ramp.add_child(bolt)
 
@@ -625,8 +942,11 @@ func _build_ramp_trims() -> void:
 func _find_ramps(root: Node) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	for child in root.get_children():
-		if child is Node3D and _is_ramp_name(String(child.name)) \
-				and BoxSize.of(child) != Vector3.ZERO:
+		if (
+			child is Node3D
+			and _is_ramp_name(String(child.name))
+			and BoxSize.of(child) != Vector3.ZERO
+		):
 			found.append(child as Node3D)
 			continue
 		found.append_array(_find_ramps(child))
@@ -652,15 +972,30 @@ func _build_pendulum_supports() -> void:
 		var tag := String(pivot.name)
 		for side in [-1.0, 1.0]:
 			var post_height: float = maxf(beam_y - ground_y, 1.0)
-			_box(Vector3(0.36, post_height, 0.36),
+			_box(
+				Vector3(0.36, post_height, 0.36),
 				Vector3(center.x + side * 4.2, ground_y + post_height * 0.5, center.z),
-				metal, "PendulumPost_%s_%s" % [tag, "L" if side < 0.0 else "R"])
-		_box(Vector3(8.9, 0.34, 0.34), Vector3(center.x, beam_y, center.z), metal,
-			"PendulumBeam_%s" % tag)
-		_box(Vector3(7.4, 0.06, 0.12), Vector3(center.x, beam_y - 0.22, center.z), glow,
-			"PendulumGlow_%s" % tag)
-		_box(Vector3(0.72, 0.42, 0.72), Vector3(center.x, center.y + 0.05, center.z), metal,
-			"PendulumMount_%s" % tag)
+				metal,
+				"PendulumPost_%s_%s" % [tag, "L" if side < 0.0 else "R"]
+			)
+		_box(
+			Vector3(8.9, 0.34, 0.34),
+			Vector3(center.x, beam_y, center.z),
+			metal,
+			"PendulumBeam_%s" % tag
+		)
+		_box(
+			Vector3(7.4, 0.06, 0.12),
+			Vector3(center.x, beam_y - 0.22, center.z),
+			glow,
+			"PendulumGlow_%s" % tag
+		)
+		_box(
+			Vector3(0.72, 0.42, 0.72),
+			Vector3(center.x, center.y + 0.05, center.z),
+			metal,
+			"PendulumMount_%s" % tag
+		)
 
 
 func _ground_below(point: Vector3) -> float:
@@ -668,7 +1003,8 @@ func _ground_below(point: Vector3) -> float:
 	if space == null:
 		return point.y - 4.0
 	var query := PhysicsRayQueryParameters3D.create(
-		point + Vector3.UP * 7.0, point + Vector3.DOWN * 40.0, 1)
+		point + Vector3.UP * 7.0, point + Vector3.DOWN * 40.0, 1
+	)
 	var hit := space.intersect_ray(query)
 	if hit.is_empty():
 		return point.y - 4.0

@@ -4,23 +4,43 @@ extends CharacterBody3D
 ## platform momentum, procedural animation and a collision-aware third-person
 ## camera with FOV kick and shake.
 
+## El raycast del suelo bajo la cámara no necesita ir a la par del frame: a
+## 30 Hz la corrección llega igual de suave y se ahorra un raycast por frame.
+const CAMERA_GROUND_INTERVAL := 1.0 / 30.0
+
+## La sombra de contacto se refresca a 25 Hz: con doce corredores en pista,
+## hacerlo cada tick de física eran 720 raycasts por segundo que no se ven.
+const SHADOW_INTERVAL := 0.04
+
 @export_group("Movement")
 @export var max_speed: float = 6.5
+
 @export var acceleration: float = 28.0
+
 @export var friction: float = 18.0
+
 @export var jump_velocity: float = 6.0
+
 ## Upward speed kept when the jump button is released early.
 @export var min_jump_velocity: float = 2.2
+
 @export var air_control: float = 0.35
+
 @export var gravity_scale: float = RunnerTuning.GRAVITY_SCALE
+
 @export var fall_gravity_scale: float = 1.4
+
 ## Grace period to still jump after walking off a ledge.
 @export var coyote_time: float = 0.12
+
 ## Window in which a jump pressed just before landing still counts.
 @export var jump_buffer_time: float = 0.12
+
 ## Below this vertical speed gravity is reduced, giving a floaty apex.
 @export var apex_threshold: float = 2.0
+
 @export var apex_gravity_scale: float = 0.65
+
 ## Maximum horizontal speed inherited from a moving platform on jump.
 @export var platform_jump_cap: float = 6.0
 
@@ -28,125 +48,180 @@ extends CharacterBody3D
 ## Un poco más lejos que antes: el corredor es más alto y así se ve más mapa
 ## alrededor de la parrilla de salida.
 @export var camera_distance: float = 5.6
+
 ## Altura del pivote sobre los pies. Va con la estatura del catálogo
 ## (`CharacterCatalog.CHARACTER_HEIGHT`): la cámara mira al cuerpo del corredor.
 @export var camera_height: float = 1.12
+
 ## Downward pitch of the camera, in degrees. Negative looks down.
 @export var camera_pitch: float = -15.0
+
 @export var camera_lerp: float = 7.0
+
 ## Vertical smoothing, slower than the horizontal one so slopes do not
 ## drag the camera along the floor.
 @export var camera_height_lerp: float = 5.0
+
 ## Minimum distance between the pivot and the ground below it.
 @export var camera_min_clearance: float = 0.85
+
 @export var camera_look_ahead: float = 0.12
+
 @export var camera_fov_base: float = 55.0
+
 @export var camera_fov_max: float = 70.0
+
 ## Sensibilidad del ratón al girar la cámara (radianes por píxel).
 @export var mouse_sensitivity: float = 0.0028
+
+## Sensibilidad del stick derecho (radianes por segundo).
+@export var stick_sensitivity: float = 2.6
+
 ## Límites del cabeceo manual, en grados.
 @export var camera_pitch_min: float = -75.0
+
 @export var camera_pitch_max: float = 15.0
 
 @export_group("Reactions")
 ## How long the player staggers after a hard hit.
 @export var stun_time: float = 0.55
+
 ## Control left while staggered (1.0 = full control, 0.0 = none).
 @export var stun_control: float = 0.18
+
 ## Horizontal push magnitude above which a hit staggers the player.
 @export var stun_push_threshold: float = 5.0
+
 @export var shadow_max_distance: float = 8.0
+
 @export var dust_speed_threshold: float = 3.0
 
 @export_group("Animation")
 ## El pack solo trae el clip de andar: se acelera para que lea como esprint.
 @export var run_clip_speed: float = RunnerTuning.RUN_CLIP_SPEED
+
 ## Fotograma del andar que se congela en el aire (el pack no trae salto).
 @export var jump_pose_time: float = RunnerTuning.JUMP_POSE_TIME
 
 @export_group("Swimming")
 ## Velocidad de nado del circuito abisal.
 @export var swim_speed: float = 7.4
+
 @export var swim_acceleration: float = 24.0
+
 ## Flotabilidad tenue: sin tocar nada el corredor sube muy despacio.
 @export var swim_buoyancy: float = 0.35
+
 ## Arrastre del agua, por segundo. Frena la inercia al soltar el stick.
 @export var swim_drag: float = 0.9
+
 ## Inclinación del cuerpo mientras nada, en grados.
 @export var swim_pitch_degrees: float = 64.0
 
-## Lo activan las zonas de agua (`scripts/water_zone.gd`).
-var swimming: bool = false
-## Cota de crucero de la zona: al entrar, el corredor baja solo hasta ella.
-var _swim_depth: float = 0.0
-var _has_swim_depth: bool = false
-## Franja vertical del tramo de agua: sin salirse por arriba ni por abajo.
-var _swim_band_min: float = -1.0e9
-var _swim_band_max: float = 1.0e9
-var _has_swim_band: bool = false
 ## Cadencia del andar a poca marcha. Sube sin escalones hasta `run_clip_speed`
 ## conforme el corredor acelera, así la zancada no se corta al pasar de andar
 ## a esprintar.
 @export var walk_clip_speed: float = RunnerTuning.WALK_CLIP_SPEED
+
 ## Suavizado con el que la cadencia sigue a la velocidad real.
 @export var stride_blend_speed: float = 9.0
 
 ## Set by a bot driver (future split-screen / network input).
 @export var is_bot: bool = false
+
+## Lo activan las zonas de agua (`scripts/water_zone.gd`).
+var swimming: bool = false
+
 ## Id del personaje que se está usando (expuesto para tests y HUD).
 var character_id: String = ""
 
 ## While true the player keeps standing: no walk or jump input.
 var input_locked: bool = false
 
-@onready var mesh: MeshInstance3D = $MeshInstance3D
 ## El modelo 3D se instancia en runtime según el personaje elegido en el menú.
 var model: Node3D
+
 var anim: AnimationPlayer
+
 ## Capa procedural sobre el clip: inclinación de esprint, salto recogido y
 ## aterrizaje con flexión.
 var rig: CharacterRig
-@onready var marker: Node3D = $Marker
-@onready var dizzy: Node3D = $Dizzy
-@onready var shadow: MeshInstance3D = $Shadow
-@onready var dust: CPUParticles3D = $Dust
-@onready var camera_pivot: Node3D = $CameraPivot
-@onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
-@onready var camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
+
+## Cota de crucero de la zona: al entrar, el corredor baja solo hasta ella.
+var _swim_depth: float = 0.0
+
+var _has_swim_depth: bool = false
+
+## Franja vertical del tramo de agua: sin salirse por arriba ni por abajo.
+var _swim_band_min: float = -1.0e9
+
+var _swim_band_max: float = 1.0e9
+
+var _has_swim_band: bool = false
 
 var _spawn_transform: Transform3D
+
 ## Giro y cabeceo manuales de la cámara: los mueve el ratón bloqueado.
 var _orbit_yaw: float = 0.0
+
 var _orbit_pitch: float = 0.0
+
 ## Sensibilidad de fábrica; el ajuste del menú la multiplica.
 var _mouse_sensitivity_base: float = 0.0028
+
+var _stick_sensitivity_base: float = 2.6
+
+## Coyote de fábrica; la dificultad asistida lo alarga.
+var _coyote_time_base: float = 0.12
+
 ## Player-driven XZ velocity (friction/accel apply here only).
 var _control_velocity: Vector3 = Vector3.ZERO
+
 ## Per-frame belt/wind contribution (not cancelled by friction).
 var _external_velocity: Vector3 = Vector3.ZERO
+
 ## Animation state: "idle" | "run" | "jump" | "stun" | "land".
 var _anim_state: String = "idle"
+
 var _anim_time: float = 0.0
+
 var _mesh_base_y: float = 0.0
+
 var _anim_was_on_floor: bool = true
+
 var _land_squash_timer: float = 0.0
+
 var _jump_cut_available: bool = false
+
 var _stun_timer: float = 0.0
+
 ## Ralentización que dejan los hazards al tocarte.
 var _slow_timer: float = 0.0
+
 var _slow_factor: float = 1.0
+
 var _shadow_material: StandardMaterial3D
+
 var _dust_burst_timer: float = 0.0
+
 var _marker_base_y: float = 0.0
+
 var _dizzy_base_y: float = 0.0
+
 var _step_timer: float = 0.0
+
 var _step_side: float = 1.0
 
 var _coyote_timer: float = 0.0
+
 var _jump_buffer_timer: float = 0.0
+
 var _fall_speed: float = 0.0
+
 var _impact_speed: float = 0.0
+
 var _wish_dir: Vector3 = Vector3.ZERO
+
 ## After a teleport, one zero-velocity slide with platform inheritance off
 ## clears the floor reference from the previous spot. Otherwise a respawn
 ## while leaving a spinning platform can inherit a huge tangential velocity.
@@ -154,7 +229,28 @@ var _clear_platform_on_next_frame: bool = false
 
 ## Bot input mirror (world-space).
 var _bot_wish: Vector3 = Vector3.ZERO
+
 var _bot_jump_pressed: bool = false
+
+var _camera_ground_clock := 0.0
+
+var _shadow_clock := 0.0
+
+@onready var mesh: MeshInstance3D = $MeshInstance3D
+
+@onready var marker: Node3D = $Marker
+
+@onready var dizzy: Node3D = $Dizzy
+
+@onready var shadow: MeshInstance3D = $Shadow
+
+@onready var dust: CPUParticles3D = $Dust
+
+@onready var camera_pivot: Node3D = $CameraPivot
+
+@onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
+
+@onready var camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
 
 
 func _ready() -> void:
@@ -170,10 +266,12 @@ func _ready() -> void:
 	if not is_bot and DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	_mouse_sensitivity_base = mouse_sensitivity
-	_apply_mouse_sensitivity()
+	_stick_sensitivity_base = stick_sensitivity
+	_coyote_time_base = coyote_time
+	_apply_camera_settings()
 	if not is_bot:
-		# El ajuste del menú se aplica en caliente, sin reiniciar la carrera.
-		SaveManager.settings_changed.connect(_apply_mouse_sensitivity)
+		# Los ajustes de cámara y dificultad se aplican en caliente.
+		SaveManager.settings_changed.connect(_apply_camera_settings)
 	spring_arm.spring_length = camera_distance
 	_orbit_pitch = deg_to_rad(camera_pitch)
 	spring_arm.rotation.x = _orbit_pitch
@@ -281,7 +379,7 @@ func _physics_process(delta: float) -> void:
 	_update_facing(delta)
 	_update_camera(delta)
 	_update_shadow(delta)
-	_update_animation(delta, was_on_floor)
+	_update_animation(delta)
 	_update_footsteps(delta)
 	_update_marker(delta)
 
@@ -312,8 +410,12 @@ func _update_marker(delta: float) -> void:
 	if marker == null or not marker.visible:
 		return
 	marker.rotate_y(delta * 1.9)
-	var speed_ratio := clampf(Vector3(velocity.x, 0.0, velocity.z).length() / maxf(max_speed, 0.01), 0.0, 1.0)
-	marker.position.y = _marker_base_y + sin(Time.get_ticks_msec() * 0.004) * 0.055 + speed_ratio * 0.06
+	var speed_ratio := clampf(
+		Vector3(velocity.x, 0.0, velocity.z).length() / maxf(max_speed, 0.01), 0.0, 1.0
+	)
+	marker.position.y = (
+		_marker_base_y + sin(Time.get_ticks_msec() * 0.004) * 0.055 + speed_ratio * 0.06
+	)
 	var pulse := 1.0 + sin(Time.get_ticks_msec() * 0.006) * 0.06
 	marker.scale = Vector3(pulse, pulse, pulse)
 
@@ -359,7 +461,9 @@ func _handle_jump() -> void:
 		_coyote_timer = 0.0
 		_jump_cut_available = true
 		var platform_velocity := get_platform_velocity()
-		_control_velocity += Vector3(platform_velocity.x, 0.0, platform_velocity.z).limit_length(platform_jump_cap)
+		_control_velocity += Vector3(platform_velocity.x, 0.0, platform_velocity.z).limit_length(
+			platform_jump_cap
+		)
 		AudioManager.play_sfx("jump", 0.08)
 		_burst_dust()
 
@@ -492,17 +596,21 @@ func _swim(delta: float) -> void:
 	# subir o bajar cuando haga falta.
 	var manual_vertical := false
 	if not is_bot:
-		manual_vertical = Input.is_action_pressed("jump") \
+		manual_vertical = (
+			Input.is_action_pressed("jump")
 			or (InputMap.has_action("dive") and Input.is_action_pressed("dive"))
+		)
 	_wish_dir = wish
 	# Bajo el agua el frenazo de los hazards también cuenta: si no, en Abyss Run
 	# ningún obstáculo marino ralentizaría al corredor.
-	_control_velocity = _control_velocity.move_toward(wish * swim_speed * _slow_scale(),
-		swim_acceleration * delta)
+	_control_velocity = _control_velocity.move_toward(
+		wish * swim_speed * _slow_scale(), swim_acceleration * delta
+	)
 	if _has_swim_depth and not manual_vertical:
 		var depth_error := _swim_depth - global_position.y
-		_control_velocity.y = move_toward(_control_velocity.y,
-			clampf(depth_error * 1.5, -2.6, 2.6), 8.0 * delta)
+		_control_velocity.y = move_toward(
+			_control_velocity.y, clampf(depth_error * 1.5, -2.6, 2.6), 8.0 * delta
+		)
 	_control_velocity += Vector3.UP * swim_buoyancy * delta
 	_control_velocity *= maxf(0.0, 1.0 - swim_drag * delta)
 	_control_velocity.y = clampf(_control_velocity.y, -swim_speed, swim_speed)
@@ -530,12 +638,17 @@ func _update_facing(delta: float) -> void:
 	mesh.rotation.y = lerp_angle(mesh.rotation.y, target_yaw, 10.0 * delta)
 
 
-## Third-person camera behind the player with spring-arm collision, FOV kick,
-## look-ahead and shake. The pivot keeps a world-fixed yaw so input stays stable.
+## Aplica al vuelo la sensibilidad (ratón y stick), el FOV y la asistencia.
 ## Sensibilidad efectiva = base del jugador × ajuste del menú (100 % = 1,0).
-func _apply_mouse_sensitivity() -> void:
+func _apply_camera_settings() -> void:
 	var multiplier := clampf(float(SaveManager.get_setting("sensitivity", 1.0)), 0.05, 5.0)
 	mouse_sensitivity = _mouse_sensitivity_base * multiplier
+	stick_sensitivity = _stick_sensitivity_base * multiplier
+	camera_fov_base = clampf(float(SaveManager.get_setting("fov", 55.0)), 45.0, 85.0)
+	if camera != null:
+		camera.fov = camera_fov_base
+	var assisted := bool(SaveManager.get_setting("assisted", false))
+	coyote_time = _coyote_time_base * (1.5 if assisted else 1.0)
 
 
 ## Cámara manual: con el ratón bloqueado, mover izquierda/derecha gira el pivote
@@ -547,11 +660,23 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var motion := event as InputEventMouseMotion
 		_orbit_yaw = wrapf(_orbit_yaw - motion.relative.x * mouse_sensitivity, -PI, PI)
-		_orbit_pitch = clampf(_orbit_pitch - motion.relative.y * mouse_sensitivity,
-			deg_to_rad(camera_pitch_min), deg_to_rad(camera_pitch_max))
+		_orbit_pitch = clampf(
+			_orbit_pitch - motion.relative.y * mouse_sensitivity,
+			deg_to_rad(camera_pitch_min),
+			deg_to_rad(camera_pitch_max)
+		)
 
 
 func _update_camera(delta: float) -> void:
+	if not is_bot:
+		var look := Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
+		if look.length_squared() > 0.0001:
+			_orbit_yaw = wrapf(_orbit_yaw - look.x * stick_sensitivity * delta, -PI, PI)
+			_orbit_pitch = clampf(
+				_orbit_pitch - look.y * stick_sensitivity * delta,
+				deg_to_rad(camera_pitch_min),
+				deg_to_rad(camera_pitch_max)
+			)
 	camera_pivot.rotation.y = _orbit_yaw
 	spring_arm.rotation.x = _orbit_pitch
 	if is_bot:
@@ -581,12 +706,6 @@ func _update_camera(delta: float) -> void:
 	camera.v_offset = shake.y
 
 
-## El raycast del suelo bajo la cámara no necesita ir a la par del frame: a
-## 30 Hz la corrección llega igual de suave y se ahorra un raycast por frame.
-const CAMERA_GROUND_INTERVAL := 1.0 / 30.0
-var _camera_ground_clock := 0.0
-
-
 ## Keeps the pivot at least `camera_min_clearance` above whatever is below it,
 ## so the view never drags along the floor on downhill sections.
 func _keep_camera_above_ground(delta: float) -> void:
@@ -608,12 +727,6 @@ func _keep_camera_above_ground(delta: float) -> void:
 	var minimum := ground_y + camera_min_clearance
 	if camera_pivot.global_position.y < minimum:
 		camera_pivot.global_position.y = minimum
-
-
-## La sombra de contacto se refresca a 25 Hz: con doce corredores en pista,
-## hacerlo cada tick de física eran 720 raycasts por segundo que no se ven.
-const SHADOW_INTERVAL := 0.04
-var _shadow_clock := 0.0
 
 
 ## Blob shadow: casts a ray straight down and fades/grows the disc with height.
@@ -651,7 +764,7 @@ func _update_shadow(delta: float) -> void:
 
 ## Picks the animation clip for the state and keeps a light procedural
 ## squash/bounce on top, so the downloaded model still feels cartoony.
-func _update_animation(delta: float, was_on_floor: bool) -> void:
+func _update_animation(delta: float) -> void:
 	var on_floor := is_on_floor()
 	var horizontal_speed := Vector3(velocity.x, 0.0, velocity.z).length()
 
@@ -699,8 +812,14 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 		elif _anim_state == "swim":
 			stride = clampf(_control_velocity.length() * 0.35, 0.5, 1.7)
 		elif _anim_state == "walk" or _anim_state == "run":
-			stride = clampf(horizontal_speed * (run_clip_speed / maxf(max_speed, 0.01)), walk_clip_speed, run_clip_speed)
-		anim.speed_scale = lerpf(anim.speed_scale, stride, clampf(stride_blend_speed * delta, 0.0, 1.0))
+			stride = clampf(
+				horizontal_speed * (run_clip_speed / maxf(max_speed, 0.01)),
+				walk_clip_speed,
+				run_clip_speed
+			)
+		anim.speed_scale = lerpf(
+			anim.speed_scale, stride, clampf(stride_blend_speed * delta, 0.0, 1.0)
+		)
 	if _anim_state != "stun":
 		mesh.rotation.z = lerpf(mesh.rotation.z, 0.0, 12.0 * delta)
 
@@ -731,7 +850,9 @@ func _update_animation(delta: float, was_on_floor: bool) -> void:
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
 		"stun":
-			var wobble := sin(_anim_time * 20.0) * (0.08 + 0.16 * (_stun_timer / maxf(stun_time, 0.01)))
+			var wobble := (
+				sin(_anim_time * 20.0) * (0.08 + 0.16 * (_stun_timer / maxf(stun_time, 0.01)))
+			)
 			mesh.scale = Vector3.ONE
 			mesh.position.y = _mesh_base_y
 			mesh.rotation.z = wobble

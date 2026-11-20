@@ -1,4 +1,5 @@
 class_name CharacterCatalog
+
 extends RefCounted
 
 ## Catálogo único de personajes. Lo usan el jugador, los bots y el menú, así
@@ -36,27 +37,32 @@ const CHARACTER_SHADER := preload("res://shaders/character.gdshader")
 ## piel a 0.01 y casi toda la ropa por debajo de 0.05 (casi negro), así que
 ## pintar cada superficie con el color del .glb dejaba muñecos grises.
 const TOY_SKIN := Color(0.98, 0.72, 0.52)
+
 const TOY_HAIR := Color(0.24, 0.15, 0.12)
+
 const TOY_EYE_INK := Color("#050505")
 
 ## Paleta de juguete de cada personaje, por nombre de material del pack. Los
 ## nombres son los que traen los `.glb` (`Skin`, `Clothes`, `Hood`…); lo que no
 ## esté en la tabla cae en piel/pelo o en un realce del color original.
 const PALETTES := {
-	"chef": {
+	"chef":
+	{
 		"Clothes": Color(1.0, 0.97, 0.9),
 		"DarkClothes": Color(0.15, 0.42, 0.78),
 		"Band": Color(0.99, 0.42, 0.05),
 		"Hair": Color(0.25, 0.14, 0.1),
 	},
-	"worker": {
+	"worker":
+	{
 		"Vest": Color(0.99, 0.52, 0.05),
 		"Shirt": Color(1.0, 0.96, 0.88),
 		"Pants": Color(0.05, 0.24, 0.58),
 		"Hat": Color(0.99, 0.89, 0.05),
 		"Hair": Color(0.3, 0.17, 0.08),
 	},
-	"cowboy": {
+	"cowboy":
+	{
 		"Pants": Color(0.05, 0.24, 0.58),
 		"Scarf": Color(0.99, 0.2, 0.25),
 		"Jacket": Color(0.85, 0.39, 0.08),
@@ -65,13 +71,15 @@ const PALETTES := {
 		"HatLightBrown": Color(0.96, 0.62, 0.2),
 		"Hair": Color(0.38, 0.2, 0.08),
 	},
-	"ninja": {
+	"ninja":
+	{
 		"Main": Color(0.1, 0.18, 0.52),
 		"Details": Color(0.99, 0.2, 0.25),
 		"Grey": Color(0.42, 0.5, 0.64),
 		"Hair": Color(0.08, 0.08, 0.16),
 	},
-	"pirate": {
+	"pirate":
+	{
 		"Clothes": Color(0.04, 0.23, 0.58),
 		"Beige": Color(1.0, 0.86, 0.55),
 		"Gold": Color(1.0, 0.79, 0.05),
@@ -80,32 +88,37 @@ const PALETTES := {
 		"Red": Color(0.99, 0.16, 0.2),
 		"Hair": Color(0.36, 0.18, 0.06),
 	},
-	"vikingo": {
+	"vikingo":
+	{
 		"Pants": Color(0.42, 0.22, 0.08),
 		"Main": Color(0.05, 0.38, 0.8),
 		"Light": Color(1.0, 0.85, 0.62),
 		"Hair": Color(1.0, 0.48, 0.05),
 	},
-	"kimono": {
+	"kimono":
+	{
 		"Clothes": Color(1.0, 0.24, 0.55),
 		"Band": Color(0.82, 0.03, 0.22),
 		"Hair": Color(0.1, 0.07, 0.12),
 	},
-	"soldado": {
+	"soldado":
+	{
 		"DarkGreen": Color(0.15, 0.35, 0.11),
 		"Black": Color(0.09, 0.12, 0.1),
 		"Main": Color(0.3, 0.57, 0.1),
 		"Helmet": Color(0.21, 0.43, 0.08),
 		"Hair": Color(0.25, 0.13, 0.06),
 	},
-	"ejecutivo": {
+	"ejecutivo":
+	{
 		"Black": Color(0.05, 0.13, 0.35),
 		"Shirt": Color(1.0, 1.0, 1.0),
 		"Belt": Color(0.4, 0.21, 0.06),
 		"Details": Color(0.1, 0.48, 0.9),
 		"Hair": Color(0.22, 0.12, 0.08),
 	},
-	"caballero": {
+	"caballero":
+	{
 		"Armor": Color(1.0, 0.78, 0.05),
 		"Armor_Dark": Color(0.55, 0.31, 0.04),
 		"Detail": Color(0.92, 0.08, 0.16),
@@ -190,6 +203,24 @@ const CHARACTERS := [
 	},
 ]
 
+## Clips que esperan el jugador y los bots, con los nombres que usa el pack. El
+## primero que exista en el modelo gana; la búsqueda también acepta el último
+## tramo del nombre ("CharacterArmature|Walk").
+##
+## El pack no trae clip de carrera ni de salto: la carrera reutiliza el andar
+## acelerado y el aire congela una zancada de la carrera. El rig procedural
+## (`character_rig.gd`) añade la inclinación de esprint y la pose de salto.
+const CLIP_ALIASES := {
+	"Idle": ["Idle"],
+	"Walking_A": ["Walk", "Walking"],
+	"Running_A": ["Run", "Running", "Walk"],
+	"Jump_Idle": ["Jump", "Jump_Idle", "Idle"],
+	"Jump_Land": ["Land", "Jump_Land", "Idle"],
+	"Lie_Idle": ["Defeat", "Lie_Idle", "SitDown"],
+	"Hit_A": ["RecieveHit", "Hit_A"],
+	"Cheer": ["Victory", "Cheer"],
+}
+
 ## Cuerpo que se le ha asignado al jugador en esta sesión, por personaje. El
 ## índice se sortea la primera vez que se pide y se queda fijo hasta cerrar el
 ## juego: el cuerpo del corredor no cambia a mitad de carrera.
@@ -204,6 +235,7 @@ static var _variant_rng: RandomNumberGenerator = null
 ## color final, así que un catálogo entero usa unos pocos en vez de crear uno
 ## por superficie y por modelo.
 static var _plastic_materials: Dictionary = {}
+
 
 static func default_id() -> String:
 	return String(CHARACTERS[0]["id"])
@@ -347,7 +379,9 @@ static func _apply_plastic_look(model: Node3D, entry: Dictionary) -> void:
 			elif source is ShaderMaterial:
 				continue
 			var is_face := surface == face_surface or material_name.to_lower() == "face"
-			var tint := TOY_EYE_INK if is_face else _toy_color(material_name, color, accent, palette)
+			var tint := (
+				TOY_EYE_INK if is_face else _toy_color(material_name, color, accent, palette)
+			)
 			mesh_instance.set_surface_override_material(surface, _plastic_material(tint))
 	if String(entry.get("id", "")) == "caballero":
 		_add_knight_eyes(model)
@@ -384,9 +418,10 @@ static func _add_knight_eyes(model: Node3D) -> void:
 		box.material = eye_material
 		eye.mesh = box
 		eye.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		eye.transform = rest.affine_inverse() * Transform3D(
-			Basis.IDENTITY,
-			Vector3(side * 0.0020, -0.00468, 0.02555))
+		eye.transform = (
+			rest.affine_inverse()
+			* Transform3D(Basis.IDENTITY, Vector3(side * 0.0020, -0.00468, 0.02555))
+		)
 		attachment.add_child(eye)
 
 
@@ -406,7 +441,9 @@ static func _plastic_material(color: Color) -> ShaderMaterial:
 ## Color de juguete de una superficie: manda la paleta del personaje, luego los
 ## materiales comunes (piel, cara, pelo) y, si el nombre no aparece, se conserva
 ## el tono del .glb con el valor y la saturación de un juguete.
-static func _toy_color(material_name: String, source: Color, accent: Color, palette: Dictionary) -> Color:
+static func _toy_color(
+	material_name: String, source: Color, accent: Color, palette: Dictionary
+) -> Color:
 	var key := material_name.strip_edges()
 	var lower := key.to_lower()
 	var toy := Color.WHITE
@@ -435,21 +472,30 @@ static func _toy_color(material_name: String, source: Color, accent: Color, pale
 		else:
 			# Tono propio pero oscuro: se sube el valor y la saturación sin
 			# cambiar la familia de color, así cada prenda conserva su intención.
-			toy = Color.from_hsv(source.h, clampf(0.2 + source.s * 1.05, 0.0, 0.7), clampf(0.5 + source.v * 0.4, 0.5, 0.85))
+			toy = Color.from_hsv(
+				source.h,
+				clampf(0.2 + source.s * 1.05, 0.0, 0.7),
+				clampf(0.5 + source.v * 0.4, 0.5, 0.85)
+			)
 	return _calm(toy)
 
 
 ## Mantiene la vibración del banner sin llegar a fluorescente: sube un poco la
 ## saturación y el brillo, pero conserva las sombras para que se lean las caras.
 static func _calm(color: Color) -> Color:
-	return Color.from_hsv(color.h, clampf(color.s * 1.06, 0.0, 1.0), clampf(color.v * 1.03, 0.0, 0.98))
+	return Color.from_hsv(
+		color.h, clampf(color.s * 1.06, 0.0, 1.0), clampf(color.v * 1.03, 0.0, 0.98)
+	)
 
 
 ## Índice de la superficie Face del cuerpo, o -1 si no la trae.
 static func _face_surface(mesh_instance: MeshInstance3D) -> int:
 	for surface in mesh_instance.mesh.get_surface_count():
 		var source := mesh_instance.mesh.surface_get_material(surface)
-		if source is BaseMaterial3D and String((source as BaseMaterial3D).resource_name).to_lower() == "face":
+		if (
+			source is BaseMaterial3D
+			and String((source as BaseMaterial3D).resource_name).to_lower() == "face"
+		):
 			return surface
 	return -1
 
@@ -486,25 +532,6 @@ static func _model_bounds(node: Node3D, base: Transform3D = Transform3D.IDENTITY
 				box = child_box if first else box.merge(child_box)
 				first = false
 	return box
-
-
-## Clips que esperan el jugador y los bots, con los nombres que usa el pack. El
-## primero que exista en el modelo gana; la búsqueda también acepta el último
-## tramo del nombre ("CharacterArmature|Walk").
-##
-## El pack no trae clip de carrera ni de salto: la carrera reutiliza el andar
-## acelerado y el aire congela una zancada de la carrera. El rig procedural
-## (`character_rig.gd`) añade la inclinación de esprint y la pose de salto.
-const CLIP_ALIASES := {
-	"Idle": ["Idle"],
-	"Walking_A": ["Walk", "Walking"],
-	"Running_A": ["Run", "Running", "Walk"],
-	"Jump_Idle": ["Jump", "Jump_Idle", "Idle"],
-	"Jump_Land": ["Land", "Jump_Land", "Idle"],
-	"Lie_Idle": ["Defeat", "Lie_Idle", "SitDown"],
-	"Hit_A": ["RecieveHit", "Hit_A"],
-	"Cheer": ["Victory", "Cheer"],
-}
 
 
 ## Añade los alias de animación que faltan duplicando el clip original.

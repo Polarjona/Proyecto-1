@@ -7,6 +7,8 @@ extends SceneTree
 ## También comprueba que una caída cuesta el tramo: el bot vuelve a su último
 ## checkpoint en vez de aparecer en el que perseguía.
 
+const BOT_RACER_SCENE := "res://scenes/race/bot_racer.tscn"
+
 var _failures := 0
 
 
@@ -28,7 +30,7 @@ func _run() -> void:
 	seed(20261024)
 	var session: Variant = root.get_node("GameSession")
 	session.start_bots(false)
-	var game: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
+	var game: Node = (load(LevelPaths.PIVOT_PUSH) as PackedScene).instantiate()
 	root.add_child(game)
 	current_scene = game
 	for i in 3:
@@ -56,7 +58,10 @@ func _run() -> void:
 	var distinct_lanes := {}
 	for lane in lanes:
 		distinct_lanes[lane] = true
-	_check(distinct_lanes.size() >= 4, "Los bots eligen carriles distintos (%d)" % distinct_lanes.size())
+	_check(
+		distinct_lanes.size() >= 4,
+		"Los bots eligen carriles distintos (%d)" % distinct_lanes.size()
+	)
 	# Los bots arrancan en la plataforma de salida, no repartidos por el
 	# circuito. Se mira la zona y no el waypoint exacto: con la escena cargando,
 	# el primer frame de física ya ha dado algún paso cuando el test mira.
@@ -64,8 +69,9 @@ func _run() -> void:
 	for bot in bots:
 		if bot.global_position.z > 0.0:
 			at_start += 1
-	_check(at_start == bots.size(),
-		"Los 7 bots empiezan en la plataforma de salida (%d)" % at_start)
+	_check(
+		at_start == bots.size(), "Los 7 bots empiezan en la plataforma de salida (%d)" % at_start
+	)
 
 	var start_positions: Array[Vector3] = []
 	for bot in bots:
@@ -83,7 +89,10 @@ func _run() -> void:
 		min_z = minf(min_z, bot.global_position.z)
 		max_z = maxf(max_z, bot.global_position.z)
 	_check(advanced == 7, "Los 7 bots superan el primer tramo a los 15 s (%d)" % advanced)
-	_check(max_z - min_z > 2.0, "El pelotón se estira en vez de ir en bloque (%.1f m)" % (max_z - min_z))
+	_check(
+		max_z - min_z > 2.0,
+		"El pelotón se estira en vez de ir en bloque (%.1f m)" % (max_z - min_z)
+	)
 
 	# Wait for the whole pack to finish, with a generous timeout.
 	var finished_count := 0
@@ -101,18 +110,34 @@ func _run() -> void:
 	var max_rescues := 0
 	for bot in bots:
 		max_rescues = maxi(max_rescues, int(bot.call("get_rescue_count")))
-		print("BOT pos=%s wp=%d lane=%.2f rescates=%d caidas=%d empujones=%d" % [
-			bot.global_position, int(bot.call("get_waypoint_index")), float(bot.call("get_lane")),
-			int(bot.call("get_rescue_count")), int(bot.call("get_fall_count")),
-			int(bot.call("get_shortcut_count"))])
+		print(
+			(
+				"BOT pos=%s wp=%d lane=%.2f rescates=%d caidas=%d empujones=%d"
+				% [
+					bot.global_position,
+					int(bot.call("get_waypoint_index")),
+					float(bot.call("get_lane")),
+					int(bot.call("get_rescue_count")),
+					int(bot.call("get_fall_count")),
+					int(bot.call("get_shortcut_count"))
+				]
+			)
+		)
 	_check(max_rescues <= 3, "Los bots apenas necesitan rescates (máx %d)" % max_rescues)
 	var max_shortcuts := 0
 	for bot in bots:
 		max_shortcuts = maxi(max_shortcuts, int(bot.call("get_shortcut_count")))
-	_check(max_shortcuts <= 1,
-		"El empujón hacia delante es el último recurso (máx %d por bot)" % max_shortcuts)
-	_check(finished_count == bots.size(),
-		"Los 7 bots terminan el circuito (%d, %.1f s simulados)" % [finished_count, float(frames) / 60.0])
+	_check(
+		max_shortcuts <= 1,
+		"El empujón hacia delante es el último recurso (máx %d por bot)" % max_shortcuts
+	)
+	_check(
+		finished_count == bots.size(),
+		(
+			"Los 7 bots terminan el circuito (%d, %.1f s simulados)"
+			% [finished_count, float(frames) / 60.0]
+		)
+	)
 	var moved := 0
 	for i in bots.size():
 		if (bots[i].global_position - start_positions[i]).length() > 10.0:
@@ -123,11 +148,17 @@ func _run() -> void:
 	# Bot suelto con su propia ruta: se le deja pasado su último checkpoint y
 	# por debajo del plano de caída. Al caer tiene que volver a ese checkpoint,
 	# no aparecer en el que estaba persiguiendo.
-	var fall_path := PackedVector3Array([
-		Vector3(0.0, 0.2, 1.0), Vector3(0.0, 0.2, -6.0), Vector3(0.0, 0.2, -12.0),
-		Vector3(0.0, 0.2, -18.0), Vector3(0.0, 0.2, -24.0), Vector3(0.0, 0.2, -30.0),
-	])
-	var faller := (load("res://scenes/race/bot_racer.tscn") as PackedScene).instantiate() as Node3D
+	var fall_path := PackedVector3Array(
+		[
+			Vector3(0.0, 0.2, 1.0),
+			Vector3(0.0, 0.2, -6.0),
+			Vector3(0.0, 0.2, -12.0),
+			Vector3(0.0, 0.2, -18.0),
+			Vector3(0.0, 0.2, -24.0),
+			Vector3(0.0, 0.2, -30.0),
+		]
+	)
+	var faller := (load(BOT_RACER_SCENE) as PackedScene).instantiate() as Node3D
 	faller.set("waypoints", fall_path)
 	faller.set("lane_widths", PackedFloat32Array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 	faller.set("finish_z", -100.0)
@@ -140,20 +171,24 @@ func _run() -> void:
 	await physics_frame
 	var checkpoint_z := float(fall_path[3].z)
 	var chased_z := float(fall_path[4].z)
-	_check(int(faller.call("get_fall_count")) == 1,
-		"Al caer al vacío cuenta como caída (%d)" % int(faller.call("get_fall_count")))
-	_check(faller.global_position.z > chased_z
-		and absf(faller.global_position.z - checkpoint_z) < 0.6,
-		"Al caer vuelve a su último checkpoint (z=%.2f, perseguía z=%.2f)" % [
-			faller.global_position.z, chased_z])
-	_check(int(faller.call("get_shortcut_count")) == 0,
-		"Una caída sola no le regala el tramo")
+	_check(
+		int(faller.call("get_fall_count")) == 1,
+		"Al caer al vacío cuenta como caída (%d)" % int(faller.call("get_fall_count"))
+	)
+	_check(
+		faller.global_position.z > chased_z and absf(faller.global_position.z - checkpoint_z) < 0.6,
+		(
+			"Al caer vuelve a su último checkpoint (z=%.2f, perseguía z=%.2f)"
+			% [faller.global_position.z, chased_z]
+		)
+	)
+	_check(int(faller.call("get_shortcut_count")) == 0, "Una caída sola no le regala el tramo")
 	faller.queue_free()
 	await process_frame
 
 	# El empujon tras agotar los intentos tiene que saltarse el tramo. Antes
 	# volvia al mismo waypoint y el bot quedaba en bucle.
-	var skipper := (load("res://scenes/race/bot_racer.tscn") as PackedScene).instantiate() as Node3D
+	var skipper := (load(BOT_RACER_SCENE) as PackedScene).instantiate() as Node3D
 	skipper.set("waypoints", fall_path)
 	skipper.set("lane_widths", PackedFloat32Array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 	skipper.set("finish_z", -100.0)
@@ -169,8 +204,10 @@ func _run() -> void:
 	await physics_frame
 	await physics_frame
 	var after_index := int(skipper.call("get_waypoint_index"))
-	_check(after_index == before_index + 1,
-		"El empujon avanza al siguiente waypoint (%d -> %d)" % [before_index, after_index])
+	_check(
+		after_index == before_index + 1,
+		"El empujon avanza al siguiente waypoint (%d -> %d)" % [before_index, after_index]
+	)
 	skipper.queue_free()
 	await process_frame
 

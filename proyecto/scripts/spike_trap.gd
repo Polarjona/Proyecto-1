@@ -9,33 +9,51 @@ extends Node3D
 ## se nota igual (salto forzado, aturdimiento y sacudida de cámara).
 
 @export var idle_time: float = 1.1
+
 @export var warn_time: float = 0.55
+
 @export var rise_time: float = 0.14
+
 @export var hold_time: float = 0.55
+
 @export var hide_time: float = 0.5
+
 @export var push_force: float = 7.5
+
 @export var push_lift: float = 6.5
+
 @export var stuns: bool = true
+
 @export var phase_offset: float = 0.0
+
 @export var spike_height: float = 0.8
+
 ## Cuántas púas se levantan en esta trampa. 0 = todas las del patrón.
 ## El generador lo usa para alternar trampas de 1, 2, 3 y 4 pinchos.
 @export var spike_count: int = 0
+
 ## Velocidad del ciclo. A 0.7 suben y bajan más despacio y se pueden leer.
 @export var cycle_speed: float = 0.7
+
 ## Material de los pinchos. Por defecto, acero neutro: fuera el dorado, el
 ## blanco y las rayas naranjas que no pegaban con ningún mapa.
 @export var spike_material: Material
 
-@onready var spikes: Node3D = $Spikes
-@onready var plate: MeshInstance3D = $Plate
-@onready var push_area: Area3D = $PushArea
-@onready var warning: OmniLight3D = $Warning
-
 var _time: float = 0.0
+
 var _cycle: float = 1.0
+
 var _armed: bool = false
+
 var _hit_ids: Dictionary = {}
+
+@onready var spikes: Node3D = $Spikes
+
+@onready var plate: MeshInstance3D = $Plate
+
+@onready var push_area: Area3D = $PushArea
+
+@onready var warning: OmniLight3D = $Warning
 
 
 func _ready() -> void:
@@ -74,8 +92,10 @@ func _build_spikes() -> void:
 		material = steel
 	var offsets := [
 		Vector3(0.0, 0.0, 0.0),
-		Vector3(-0.85, 0.0, -0.85), Vector3(0.85, 0.0, -0.85),
-		Vector3(-0.85, 0.0, 0.85), Vector3(0.85, 0.0, 0.85),
+		Vector3(-0.85, 0.0, -0.85),
+		Vector3(0.85, 0.0, -0.85),
+		Vector3(-0.85, 0.0, 0.85),
+		Vector3(0.85, 0.0, 0.85),
 	]
 	var visible_count := offsets.size()
 	if spike_count > 0:

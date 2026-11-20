@@ -23,7 +23,7 @@ const COLORS := [
 	Color(1.0, 0.85, 0.6),
 ]
 
-## Centre line of the course, matching `scenes/main.tscn` section by section.
+## Centre line of the course, matching `scenes/levels/pivot_push.tscn` section by section.
 const WAYPOINTS: Array[Vector3] = [
 	Vector3(0.0, 0.2, 1.0),
 	Vector3(0.0, 0.2, -4.0),
@@ -71,92 +71,173 @@ const MAX_RETRIES := 2
 ## Maximum lateral distance from the centre line at each waypoint. Narrow
 ## bridges get almost none, open halls get room for the pack to spread.
 const LANE_HALF_WIDTH: Array[float] = [
-	3.2, 3.2, 2.0, 2.0, 1.5, 2.4, 2.0, 1.6, 0.4, 1.6, 2.2, 0.5, 0.4, 0.5,
-	1.2, 0.4, 0.4, 2.2, 0.3, 0.3, 0.3, 0.5, 2.4, 2.0, 1.1, 0.8, 1.6, 1.6, 0.3, 2.6, 2.6,
+	3.2,
+	3.2,
+	2.0,
+	2.0,
+	1.5,
+	2.4,
+	2.0,
+	1.6,
+	0.4,
+	1.6,
+	2.2,
+	0.5,
+	0.4,
+	0.5,
+	1.2,
+	0.4,
+	0.4,
+	2.2,
+	0.3,
+	0.3,
+	0.3,
+	0.5,
+	2.4,
+	2.0,
+	1.1,
+	0.8,
+	1.6,
+	1.6,
+	0.3,
+	2.6,
+	2.6,
 ]
 
 ## Compartidos con el jugador (`scripts/runner_tuning.gd`).
 const RUN_CLIP_SPEED := RunnerTuning.RUN_CLIP_SPEED
+
 const JUMP_POSE_TIME := RunnerTuning.JUMP_POSE_TIME
+
 ## Suavizado con el que la cadencia del clip sigue a la velocidad.
 const STRIDE_BLEND_SPEED := 10.0
-
-@export var speed_min: float = 4.8
-@export var speed_max: float = 6.4
-@export var speed_scale: float = 1.0
-@export var finish_z: float = -209.0
-@export var respawn_below_y: float = -5.0
-## Ruta opcional por nivel. Si está vacía se usa la tabla WAYPOINTS de abajo
-## (el circuito original), para no romper tests ni previews sueltas.
-@export var waypoints: PackedVector3Array = PackedVector3Array()
-@export var lane_widths: PackedFloat32Array = PackedFloat32Array()
-@export var body_color: Color = Color(0.95, 0.4, 0.55)
-@export var jump_velocity: float = 6.2
-@export var look_ahead: float = 1.8
-## En circuitos que giran sobre sí mismos hay que corregir el rumbo contra la
-## propia ruta, no contra el eje X, porque la pista ya no está centrada en x=0.
-@export var path_corridor: bool = false
-
-var _index: int = 0
-var _speed: float = 5.5
-var _lane: float = 0.0
-var _finished: bool = false
-var _stumble_time: float = 0.0
-var _stumble_cooldown: float = 0.0
-## Frenazo de los hazards (misma regla que el jugador): los bots cruzan los
-## mismos charcos y martillos, así que la carrera no se desequilibra.
-var _slow_timer: float = 0.0
-var _slow_factor: float = 1.0
-var _start_ms: int = 0
-var _jump_cooldown: float = 0.0
-var _jump_request: float = 0.0
-var _knockback: Vector3 = Vector3.ZERO
-var _external: Vector3 = Vector3.ZERO
-var _best_distance: float = 9999.0
-var _progress_time: float = 0.0
-var _hold_time: float = 0.0
-## Once a bot sees a safe gap in a sweeper/pendulum it commits to crossing.
-var _sweeper_commits: Dictionary = {}
-var _pendulum_commits: Dictionary = {}
-var _rotor_commits: Dictionary = {}
-var _rescue_count: int = 0
-## Caídas al vacío y tramos perdidos por ellas (expuesto para tests).
-var _fall_count: int = 0
-## Veces que un tramo se le ha atragantado y ha habido que empujarlo.
-var _shortcut_count: int = 0
-## Intentos seguidos en el tramo actual, sin alcanzar el checkpoint siguiente.
-var _retries: int = 0
-var _was_on_floor: bool = true
-var _step_timer: float = 0.0
-## Personaje aleatorio asignado al bot (expuesto para tests).
-var character_id: String = ""
-## Bots hold at the line until the countdown ends, like the player.
-var _waiting_for_start: bool = true
-var _wait_elapsed: float = 0.0
-var _anim: AnimationPlayer
-## Cadencia a la que debe ir el clip; se interpola para no cortar la zancada.
-var _stride_target: float = 1.0
-## Capa procedural de animación (inclinación al correr, salto recogido).
-var _rig: CharacterRig
-## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
-var _path: Array[Vector3] = []
-var _path_widths: Array[float] = []
 
 ## Cada cuanto se refresca la lista de hazards. Las bolas se crean en runtime,
 ## asi que no vale con cachearlas una sola vez al aparecer.
 const HAZARD_SCAN_INTERVAL := 0.25
 
+@export var speed_min: float = 4.8
+
+@export var speed_max: float = 6.4
+
+@export var speed_scale: float = 1.0
+
+@export var finish_z: float = -209.0
+
+@export var respawn_below_y: float = -5.0
+
+## Ruta opcional por nivel. Si está vacía se usa la tabla WAYPOINTS de abajo
+## (el circuito original), para no romper tests ni previews sueltas.
+@export var waypoints: PackedVector3Array = PackedVector3Array()
+
+@export var lane_widths: PackedFloat32Array = PackedFloat32Array()
+
+@export var body_color: Color = Color(0.95, 0.4, 0.55)
+
+@export var jump_velocity: float = 6.2
+
+@export var look_ahead: float = 1.8
+
+## En circuitos que giran sobre sí mismos hay que corregir el rumbo contra la
+## propia ruta, no contra el eje X, porque la pista ya no está centrada en x=0.
+@export var path_corridor: bool = false
+
+## Personaje aleatorio asignado al bot (expuesto para tests).
+var character_id: String = ""
+
+var _index: int = 0
+
+var _speed: float = 5.5
+
+var _lane: float = 0.0
+
+var _finished: bool = false
+
+var _stumble_time: float = 0.0
+
+var _stumble_cooldown: float = 0.0
+
+## Frenazo de los hazards (misma regla que el jugador): los bots cruzan los
+## mismos charcos y martillos, así que la carrera no se desequilibra.
+var _slow_timer: float = 0.0
+
+var _slow_factor: float = 1.0
+
+var _start_ms: int = 0
+
+var _jump_cooldown: float = 0.0
+
+var _jump_request: float = 0.0
+
+var _knockback: Vector3 = Vector3.ZERO
+
+var _external: Vector3 = Vector3.ZERO
+
+var _best_distance: float = 9999.0
+
+var _progress_time: float = 0.0
+
+var _hold_time: float = 0.0
+
+## Once a bot sees a safe gap in a sweeper/pendulum it commits to crossing.
+var _sweeper_commits: Dictionary = {}
+
+var _pendulum_commits: Dictionary = {}
+
+var _rotor_commits: Dictionary = {}
+
+var _rescue_count: int = 0
+
+## Caídas al vacío y tramos perdidos por ellas (expuesto para tests).
+var _fall_count: int = 0
+
+## Veces que un tramo se le ha atragantado y ha habido que empujarlo.
+var _shortcut_count: int = 0
+
+## Intentos seguidos en el tramo actual, sin alcanzar el checkpoint siguiente.
+var _retries: int = 0
+
+var _was_on_floor: bool = true
+
+var _step_timer: float = 0.0
+
+## Bots hold at the line until the countdown ends, like the player.
+var _waiting_for_start: bool = true
+
+var _wait_elapsed: float = 0.0
+
+var _anim: AnimationPlayer
+
+## Cadencia a la que debe ir el clip; se interpola para no cortar la zancada.
+var _stride_target: float = 1.0
+
+## Capa procedural de animación (inclinación al correr, salto recogido).
+var _rig: CharacterRig
+
+## Copia local de la ruta del nivel para no convertir PackedArray cada frame.
+var _path: Array[Vector3] = []
+
+var _path_widths: Array[float] = []
+
 ## RNG propio: la camara del jugador y los efectos tambien consumen el RNG
 ## global, asi que los bots no deben depender de el. Se siembra desde `randi()`
 ## para que `seed()` en los tests siga dando carreras reproducibles.
 var _rng := RandomNumberGenerator.new()
+
 var _hazard_scan_timer: float = 0.0
+
 var _hazard_balls: Array[Node] = []
+
 var _hazard_platforms: Array[Node] = []
+
 var _hazard_sweepers: Array[Node] = []
+
 var _hazard_rotors: Array[Node] = []
+
 var _hazard_pendulums: Array[Node] = []
+
 var _hazard_launchers: Array[Node] = []
+
 var _hazard_geysers: Array[Node] = []
 
 @onready var body: MeshInstance3D = $Body
@@ -182,7 +263,10 @@ func _ready() -> void:
 ## Elige un personaje al azar del catálogo y uno de sus dos cuerpos, lo
 ## instancia con su escala. Cada bot tiene su propio AnimationPlayer.
 func _setup_model() -> void:
-	var index := mini(int(_rng.randf() * float(CharacterCatalog.CHARACTERS.size())), CharacterCatalog.CHARACTERS.size() - 1)
+	var index := mini(
+		int(_rng.randf() * float(CharacterCatalog.CHARACTERS.size())),
+		CharacterCatalog.CHARACTERS.size() - 1
+	)
 	character_id = String(CharacterCatalog.CHARACTERS[index]["id"])
 	# El cuerpo se sortea con un generador aparte para no mover la secuencia
 	# aleatoria de los carriles, las velocidades y los tropiezos.
@@ -217,7 +301,9 @@ func _play_anim(clip: String, blend: float = 0.15) -> void:
 func _apply_stride(delta: float) -> void:
 	if _anim == null:
 		return
-	_anim.speed_scale = lerpf(_anim.speed_scale, _stride_target, clampf(STRIDE_BLEND_SPEED * delta, 0.0, 1.0))
+	_anim.speed_scale = lerpf(
+		_anim.speed_scale, _stride_target, clampf(STRIDE_BLEND_SPEED * delta, 0.0, 1.0)
+	)
 
 
 ## En el aire se congela una zancada de la carrera: el pack no trae salto y el
@@ -374,7 +460,7 @@ func _near_cannon() -> bool:
 
 
 ## Copia la ruta del nivel una sola vez. Si no hay LevelInfo con waypoints,
-## usa la tabla histórica de main.tscn.
+## usa la tabla histórica de pivot_push.tscn.
 func _cache_path() -> void:
 	_path.clear()
 	_path_widths.clear()
@@ -403,8 +489,9 @@ func _target_position() -> Vector3:
 	var index := mini(_index, points.size() - 1)
 	# En una plataforma móvil o giratoria (4 m o menos) el carril lateral deja
 	# al bot fuera del borde; en el cañón, un carril lo hace fallar el gatillo.
-	var centered := _near_moving_platform() or _near_cannon() \
-		or get_platform_velocity().length_squared() > 0.01
+	var centered := (
+		_near_moving_platform() or _near_cannon() or get_platform_velocity().length_squared() > 0.01
+	)
 	var width := 0.0 if centered else _path_lane_width(index)
 	return (points[index] as Vector3) + Vector3(_lane * width, 0.0, 0.0)
 
@@ -414,8 +501,11 @@ func _near_moving_platform() -> bool:
 		if not is_instance_valid(platform) or not (platform is Node3D):
 			continue
 		var delta: Vector3 = (platform as Node3D).global_position - global_position
-		if absf(delta.x) < 3.0 and absf(delta.y) < 2.5 \
-			and (absf(delta.z) < 3.0 or (delta.z < 0.5 and delta.z > -8.0)):
+		if (
+			absf(delta.x) < 3.0
+			and absf(delta.y) < 2.5
+			and (absf(delta.z) < 3.0 or (delta.z < 0.5 and delta.z > -8.0))
+		):
 			return true
 	return false
 
@@ -589,7 +679,12 @@ func _should_hold() -> bool:
 		var rotor_node := rotor as Node3D
 		var rotor_delta: Vector3 = rotor_node.global_position - global_position
 		var rotor_id := rotor_node.get_instance_id()
-		if rotor_delta.z > 1.5 or rotor_delta.z < -6.5 or absf(rotor_delta.x) > 3.0 or absf(rotor_delta.y) > 3.0:
+		if (
+			rotor_delta.z > 1.5
+			or rotor_delta.z < -6.5
+			or absf(rotor_delta.x) > 3.0
+			or absf(rotor_delta.y) > 3.0
+		):
 			_rotor_commits.erase(rotor_id)
 			continue
 		if rotor_delta.z > -1.4:
@@ -612,7 +707,12 @@ func _should_hold() -> bool:
 		if not is_instance_valid(geyser) or not (geyser is Node3D):
 			continue
 		var geyser_delta: Vector3 = (geyser as Node3D).global_position - global_position
-		if geyser_delta.z > 2.0 or geyser_delta.z < -4.5 or absf(geyser_delta.x) > 2.5 or absf(geyser_delta.y) > 2.0:
+		if (
+			geyser_delta.z > 2.0
+			or geyser_delta.z < -4.5
+			or absf(geyser_delta.x) > 2.5
+			or absf(geyser_delta.y) > 2.0
+		):
 			continue
 		if bool((geyser as Node3D).call("is_erupting")):
 			return true
@@ -705,8 +805,12 @@ func _rescue(from_fall: bool) -> void:
 		# `_index` saltaba un tramo entero y provocaba mas caidas.
 		point = mini(point + 1, _path_points().size() - 1)
 	if OS.is_debug_build():
-		print("BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d" % [
-			get_instance_id(), global_position, _index, point])
+		print(
+			(
+				"BOT RESCATE id=%d desde=%s wp=%d -> checkpoint %d"
+				% [get_instance_id(), global_position, _index, point]
+			)
+		)
 	var target: Vector3 = _path_points()[point]
 	global_position = target + Vector3(0.0, 0.7, 0.0)
 	velocity = Vector3.ZERO

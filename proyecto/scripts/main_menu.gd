@@ -5,53 +5,112 @@ extends Control
 ## bots). Desde aquí también se abre el submenú Personaje, donde se compran los
 ## corredores bloqueados con las monedas ganadas.
 
-@onready var classic_card: Button = $ModePanel/VBox/ClassicCard
-@onready var tournament_card: Button = $ModePanel/VBox/TournamentCard
-@onready var mode_panel: Control = $ModePanel
-@onready var mode_back_button: Button = $ModePanel/VBox/Header/ModeBackButton
-@onready var play_button: Button = $PlayButton
-@onready var quit_button: Button = $TopBar/HBox/QuitButton
-@onready var scrim: ColorRect = $Scrim
-@onready var top_bar: Control = $TopBar
-@onready var season_card: PanelContainer = $SeasonCard
-@onready var player_badge: PanelContainer = $PlayerBadge
-@onready var character_button: Button = $TopBar/HBox/NavRow/CharacterButton
-@onready var settings_button: Button = $TopBar/HBox/NavRow/SettingsButton
-@onready var controls_button: Button = $TopBar/HBox/NavRow/ControlsButton
-@onready var credits_button: Button = $TopBar/HBox/NavRow/CreditsButton
-@onready var controls_panel: Control = $ControlsPanel
-@onready var credits_panel: Control = $CreditsPanel
-@onready var character_panel: Control = $CharacterPanel
-@onready var character_back_button: Button = $CharacterPanel/VBox/Header/BackButton
-@onready var best_time_label: Label = $SeasonCard/VBox/BestTimeLabel
-@onready var medal_label: Label = $SeasonCard/VBox/MedalLabel
-@onready var season_progress: ProgressBar = $SeasonCard/VBox/LobbyProgress
-@onready var season_progress_label: Label = $SeasonCard/VBox/LobbyProgressLabel
-@onready var season_kicker: Label = $SeasonCard/VBox/SeasonKicker
-@onready var controls_goal_label: Label = $ControlsPanel/VBoxContainer/GoalLabel
-@onready var coins_label: Label = $TopBar/HBox/CoinsBadge/CoinsLabel
-@onready var panel_coins_label: Label = $CharacterPanel/VBox/Header/PanelCoins
-@onready var player_name_label: Label = $PlayerBadge/HBox/VBox/PlayerNameLabel
-@onready var settings_menu = $SettingsMenu
-@onready var lobby_stage: Node3D = $LobbyStage/SubViewport/Stage
-@onready var lobby_camera: Camera3D = $LobbyStage/SubViewport/Camera3D
-@onready var preview_stage: Node3D = $CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage
-@onready var preview_camera: Camera3D = $CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Camera3D
-@onready var selected_character_label: Label = $CharacterPanel/VBox/Body/PreviewBox/SelectedCharacterLabel
-@onready var price_label: Label = $CharacterPanel/VBox/Body/PreviewBox/PriceLabel
-@onready var buy_button: Button = $CharacterPanel/VBox/Body/PreviewBox/BuyButton
-@onready var roster: GridContainer = $CharacterPanel/VBox/Body/RosterScroll/Roster
-
 ## Alto de cada tarjeta del roster, en píxeles. La cuadrícula de dos columnas
 ## permite que los diez personajes entren sin scroll.
 const ROSTER_ROW_HEIGHT := 62.0
 
 ## Botones, avatares y etiquetas del roster, en el mismo orden que el catálogo.
 var character_buttons: Array[Button] = []
+
 var character_status: Array[Label] = []
+
 var character_avatars: Array[PanelContainer] = []
+
 var character_name_labels: Array[Label] = []
+
 var _roster_group: ButtonGroup
+
+## Personaje que se está mirando en el panel (puede seguir bloqueado).
+var _pending_id: String = ""
+
+## Último idioma aplicado: los textos dinámicos solo se regeneran al cambiarlo.
+var _locale: String = ""
+
+var _preview_model: Node3D
+
+var _preview_id: String = ""
+
+var _lobby_model: Node3D
+
+var _lobby_id: String = ""
+
+@onready var classic_card: Button = $ModePanel/VBox/ClassicCard
+
+@onready var tournament_card: Button = $ModePanel/VBox/TournamentCard
+
+@onready var mode_panel: Control = $ModePanel
+
+@onready var mode_back_button: Button = $ModePanel/VBox/Header/ModeBackButton
+
+@onready var play_button: Button = $PlayButton
+
+@onready var quit_button: Button = $TopBar/HBox/QuitButton
+
+@onready var scrim: ColorRect = $Scrim
+
+@onready var top_bar: Control = $TopBar
+
+@onready var season_card: PanelContainer = $SeasonCard
+
+@onready var player_badge: PanelContainer = $PlayerBadge
+
+@onready var character_button: Button = $TopBar/HBox/NavRow/CharacterButton
+
+@onready var settings_button: Button = $TopBar/HBox/NavRow/SettingsButton
+
+@onready var controls_button: Button = $TopBar/HBox/NavRow/ControlsButton
+
+@onready var credits_button: Button = $TopBar/HBox/NavRow/CreditsButton
+
+@onready var controls_panel: Control = $ControlsPanel
+
+@onready var credits_panel: Control = $CreditsPanel
+
+@onready var character_panel: Control = $CharacterPanel
+
+@onready var character_back_button: Button = $CharacterPanel/VBox/Header/BackButton
+
+@onready var best_time_label: Label = $SeasonCard/VBox/BestTimeLabel
+
+@onready var medal_label: Label = $SeasonCard/VBox/MedalLabel
+
+@onready var season_progress: ProgressBar = $SeasonCard/VBox/LobbyProgress
+
+@onready var season_progress_label: Label = $SeasonCard/VBox/LobbyProgressLabel
+
+@onready var season_kicker: Label = $SeasonCard/VBox/SeasonKicker
+
+@onready var controls_goal_label: Label = $ControlsPanel/VBoxContainer/GoalLabel
+
+@onready var coins_label: Label = $TopBar/HBox/CoinsBadge/CoinsLabel
+
+@onready var panel_coins_label: Label = $CharacterPanel/VBox/Header/PanelCoins
+
+@onready var player_name_label: Label = $PlayerBadge/HBox/VBox/PlayerNameLabel
+
+@onready var settings_menu = $SettingsMenu
+
+@onready var lobby_stage: Node3D = $LobbyStage/SubViewport/Stage
+
+@onready var lobby_camera: Camera3D = $LobbyStage/SubViewport/Camera3D
+
+@onready
+var preview_stage: Node3D = $CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage
+
+@onready var preview_camera: Camera3D = (
+	get_node("CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Camera3D")
+	as Camera3D
+)
+
+@onready
+var selected_character_label: Label = $CharacterPanel/VBox/Body/PreviewBox/SelectedCharacterLabel
+
+@onready var price_label: Label = $CharacterPanel/VBox/Body/PreviewBox/PriceLabel
+
+@onready var buy_button: Button = $CharacterPanel/VBox/Body/PreviewBox/BuyButton
+
+@onready var roster: GridContainer = $CharacterPanel/VBox/Body/RosterScroll/Roster
+
 @onready var level_buttons: Array[Button] = [
 	$ModePanel/VBox/LevelPicker/LevelRow/Level1,
 	$ModePanel/VBox/LevelPicker/LevelRow/Level2,
@@ -59,13 +118,6 @@ var _roster_group: ButtonGroup
 	$ModePanel/VBox/LevelPicker/LevelRow/Level4,
 	$ModePanel/VBox/LevelPicker/LevelRow/Level5,
 ]
-
-## Personaje que se está mirando en el panel (puede seguir bloqueado).
-var _pending_id: String = ""
-var _preview_model: Node3D
-var _preview_id: String = ""
-var _lobby_model: Node3D
-var _lobby_id: String = ""
 
 
 func _ready() -> void:
@@ -96,6 +148,10 @@ func _ready() -> void:
 	# Los materiales de los obstáculos se compilan aquí, con el menú delante,
 	# para que no den un tirón la primera vez que aparecen en carrera.
 	add_child(ShaderWarmup.new())
+	_locale = TranslationServer.get_locale()
+	# Los textos dinámicos (récord, precios, objetivo) se generan con `tr()`:
+	# al cambiar de idioma en Ajustes hay que volver a generarlos.
+	SaveManager.settings_changed.connect(_on_settings_changed)
 
 
 func _process(delta: float) -> void:
@@ -108,7 +164,12 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if not event.is_action_pressed("pause"):
 		return
-	if mode_panel.visible or controls_panel.visible or credits_panel.visible or character_panel.visible:
+	if (
+		mode_panel.visible
+		or controls_panel.visible
+		or credits_panel.visible
+		or character_panel.visible
+	):
 		get_viewport().set_input_as_handled()
 		_close_panels()
 
@@ -229,6 +290,7 @@ func _connect_character_buttons() -> void:
 
 # --- Modos ------------------------------------------------------------------
 
+
 ## El botón JUGAR no arranca directo: abre la elección de modo, como el lobby
 ## de referencia.
 func _on_play_pressed() -> void:
@@ -271,11 +333,18 @@ func _refresh_level_picker() -> void:
 		button.text = GameSession.level_name(i)
 		button.set_pressed_no_signal(i == chosen)
 	var medals := GameSession.level_medals(chosen)
-	controls_goal_label.text = "Objetivo: %s. Oro ≤ %.0f s · bronce ≤ %.0f s." % [
-		GameSession.level_name(chosen), float(medals["gold"]), float(medals["bronze"])]
+	controls_goal_label.text = (
+		tr("Objetivo: %s. Oro ≤ %s s · bronce ≤ %s s.")
+		% [
+			GameSession.level_name(chosen),
+			"%.0f" % float(medals["gold"]),
+			"%.0f" % float(medals["bronze"]),
+		]
+	)
 
 
 # --- Paneles ----------------------------------------------------------------
+
 
 func _on_character_pressed() -> void:
 	AudioManager.play_sfx("ui", 0.05)
@@ -342,6 +411,7 @@ func _close_panels() -> void:
 
 # --- Personajes -------------------------------------------------------------
 
+
 ## El personaje que muestra el panel: el último tocado, o el equipado.
 func _selection() -> String:
 	if not _pending_id.is_empty() and CharacterCatalog.ids().has(_pending_id):
@@ -380,7 +450,7 @@ func _on_buy_pressed() -> void:
 ## el botón de compra en el estado correcto.
 func _refresh_character_panel() -> void:
 	var coins := SaveManager.coins()
-	panel_coins_label.text = "%d monedas" % coins
+	panel_coins_label.text = tr("%d monedas") % coins
 	var current := SaveManager.character_id()
 	var shown := _selection()
 	for i in mini(character_buttons.size(), CharacterCatalog.CHARACTERS.size()):
@@ -396,40 +466,41 @@ func _refresh_character_panel() -> void:
 		if avatar_style != null:
 			# Los bloqueados conservan su color de identidad, solo un poco más
 			# profundo; nada de convertirlos en gris.
-			avatar_style.bg_color = accent if unlocked else Color.from_hsv(
-				accent.h, accent.s * 0.92, accent.v * 0.68)
+			avatar_style.bg_color = (
+				accent if unlocked else Color.from_hsv(accent.h, accent.s * 0.92, accent.v * 0.68)
+			)
 		var initial := avatar.get_child(0) as Label
 		if initial != null:
 			initial.add_theme_color_override("font_color", _readable_ink(avatar_style.bg_color))
 		status.add_theme_color_override("font_color", UITheme.INK)
 		if id == current:
-			status.text = "ELEGIDO"
+			status.text = tr("ELEGIDO")
 		elif unlocked:
-			status.text = "LIBRE"
+			status.text = tr("LIBRE")
 		else:
-			status.text = "%d monedas" % SaveManager.character_price(id)
+			status.text = tr("%d monedas") % SaveManager.character_price(id)
 
 	selected_character_label.text = CharacterCatalog.display_name(shown)
 	selected_character_label.add_theme_color_override("font_color", UITheme.CREAM)
 	_load_preview(shown)
 
 	if SaveManager.is_character_unlocked(shown):
-		price_label.text = "Desbloqueada · lista para correr"
+		price_label.text = tr("Desbloqueada · lista para correr")
 		if shown == current:
-			buy_button.text = "ELEGIDO"
+			buy_button.text = tr("ELEGIDO")
 			buy_button.disabled = true
 		else:
-			buy_button.text = "ELEGIR PERSONAJE"
+			buy_button.text = tr("ELEGIR PERSONAJE")
 			buy_button.disabled = false
 	else:
 		var price := SaveManager.character_price(shown)
 		if coins >= price:
-			price_label.text = "Bloqueada · %d monedas" % price
-			buy_button.text = "DESBLOQUEAR POR %d MONEDAS" % price
+			price_label.text = tr("Bloqueada · %d monedas") % price
+			buy_button.text = tr("DESBLOQUEAR POR %d MONEDAS") % price
 			buy_button.disabled = false
 		else:
-			price_label.text = "Bloqueada · te faltan %d monedas" % (price - coins)
-			buy_button.text = "NECESITAS %d MONEDAS" % price
+			price_label.text = tr("Bloqueada · te faltan %d monedas") % (price - coins)
+			buy_button.text = tr("NECESITAS %d MONEDAS") % price
 			buy_button.disabled = true
 
 
@@ -479,6 +550,17 @@ func _swap_model(stage: Node3D, previous: Node3D, id: String, model_name: String
 
 # --- Perfil -----------------------------------------------------------------
 
+
+func _on_settings_changed() -> void:
+	var locale := TranslationServer.get_locale()
+	if locale == _locale:
+		return
+	_locale = locale
+	_refresh_level_picker()
+	_refresh_profile()
+	_refresh_character_panel()
+
+
 func _refresh_profile() -> void:
 	var index := clampi(GameSession.classic_level, 0, GameSession.level_count() - 1)
 	var medals := GameSession.level_medals(index)
@@ -490,18 +572,22 @@ func _refresh_profile() -> void:
 	season_kicker.text = level_name.to_upper()
 	if SaveManager.has_best(level_id):
 		var best := SaveManager.best_time(level_id)
-		best_time_label.text = "Récord %s: %.2f s" % [level_name, best]
-		medal_label.text = "Mejor medalla: %s" % SaveManager.medal_label(
-			SaveManager.medal_for_values(best, gold, silver, bronze))
+		best_time_label.text = tr("Récord %s: %s s") % [level_name, "%.2f" % best]
+		medal_label.text = (
+			tr("Mejor medalla: %s")
+			% tr(SaveManager.medal_label(SaveManager.medal_for_values(best, gold, silver, bronze)))
+		)
 		var span := maxf(bronze - gold, 0.01)
 		var progress := clampf((bronze - best) / span, 0.0, 1.0)
 		season_progress.value = progress * 100.0
-		season_progress_label.text = "Oro ≤ %.0f s · bronce ≤ %.0f s" % [gold, bronze]
+		season_progress_label.text = (
+			tr("Oro ≤ %s s · bronce ≤ %s s") % ["%.0f" % gold, "%.0f" % bronze]
+		)
 	else:
-		best_time_label.text = "Sin récord en %s" % level_name
-		medal_label.text = "Oro ≤ %.0f s · bronce ≤ %.0f s" % [gold, bronze]
+		best_time_label.text = tr("Sin récord en %s") % level_name
+		medal_label.text = (tr("Oro ≤ %s s · bronce ≤ %s s") % ["%.0f" % gold, "%.0f" % bronze])
 		season_progress.value = 0.0
-		season_progress_label.text = "Corre una carrera y persigue la medalla"
-	coins_label.text = "%d monedas" % SaveManager.coins()
-	panel_coins_label.text = "%d monedas" % SaveManager.coins()
+		season_progress_label.text = tr("Corre una carrera y persigue la medalla")
+	coins_label.text = tr("%d monedas") % SaveManager.coins()
+	panel_coins_label.text = tr("%d monedas") % SaveManager.coins()
 	player_name_label.text = CharacterCatalog.display_name(SaveManager.character_id())

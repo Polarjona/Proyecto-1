@@ -1,4 +1,5 @@
 @tool
+
 extends Node3D
 
 ## Cortina de magma: exclusiva del volcán. Una fila de chorros verticales cruza
@@ -9,15 +10,23 @@ extends Node3D
 ## pegados al suelo y suben perpendiculares al tramo.
 
 @export var jets: int = 7
+
 @export var spacing: float = 1.15
+
 @export var height: float = 4.6
+
 @export var cycle_speed: float = 2.2
+
 @export var push_up: float = 6.0
+
 @export var phase_offset: float = 0.0
 
 var _time: float = 0.0
+
 var _flames: Array[Node3D] = []
+
 var _bodies: Array = []
+
 var _light: OmniLight3D
 
 

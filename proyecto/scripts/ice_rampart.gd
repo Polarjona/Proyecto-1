@@ -1,4 +1,5 @@
 @tool
+
 extends Node3D
 
 ## Muro de témpanos: exclusivo del glaciar. Tres bloques de hielo duermen bajo
@@ -11,22 +12,33 @@ extends Node3D
 ## poder seleccionarlos y moverlos como cualquier otro bloque.
 
 @export var lanes: int = 3
+
 @export var lane_width: float = 3.2
+
 @export var block_height: float = 3.0
+
 @export var block_depth: float = 1.8
+
 ## Segundos que tarda el patrón en abrir el siguiente carril.
 @export var cycle: float = 3.2
+
 ## Tiempo que tarda un bloque en subir o bajar del todo.
 @export var travel_time: float = 0.4
+
 ## Cuánto queda enterrado el bloque cuando está recogido.
 @export var embed: float = 1.2
+
 ## Aviso luminoso antes de que el carril abierto se cierre.
 @export var warn_time: float = 0.7
 
 var _time: float = 0.0
+
 var _bodies: Array[AnimatableBody3D] = []
+
 var _lamps: Array[StandardMaterial3D] = []
+
 var _up_y: float = 0.0
+
 var _down_y: float = 0.0
 
 

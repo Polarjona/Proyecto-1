@@ -58,8 +58,9 @@ func _check_level(path: String) -> void:
 		_check(_obstacles_untouched(act), "%s no toca los obstáculos" % act.name)
 		var before := _count_nodes(act)
 		LevelLod.apply(host)
-		_check(_count_nodes(act) == before,
-			"%s no duplica occluders al aplicarlo dos veces" % act.name)
+		_check(
+			_count_nodes(act) == before, "%s no duplica occluders al aplicarlo dos veces" % act.name
+		)
 		host.free()
 	level.free()
 	_check(lod > 0, "%s recorta atrezo a distancia (%d mallas)" % [path.get_file(), lod])

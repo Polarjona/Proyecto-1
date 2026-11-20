@@ -1,4 +1,5 @@
 @tool
+
 extends Node3D
 
 ## Géiser de lava: la grieta del suelo se enciende, la luz parpadea y, un
@@ -7,20 +8,33 @@ extends Node3D
 ## y esquivar.
 
 @export var idle_time: float = 3.6
+
 @export var warn_time: float = 1.8
+
 @export var erupt_time: float = 1.3
+
 @export var height: float = 7.0
+
 @export var radius: float = 1.7
+
 @export var phase_offset: float = 0.0
 
 var _time: float = 0.0
+
 var _cycle: float = 6.7
+
 var _cooldown: float = 0.0
+
 var _jet: MeshInstance3D
+
 var _jet_material: StandardMaterial3D
+
 var _area: Area3D
+
 var _warning: OmniLight3D
+
 var _ring: MeshInstance3D
+
 var _sparks: CPUParticles3D
 
 

@@ -1,4 +1,5 @@
 @tool
+
 extends Area3D
 
 ## Mar de lava del volcán. La superficie sube sola y persigue al corredor
@@ -12,15 +13,21 @@ extends Area3D
 const SEA_SHADER := preload("res://shaders/void_sea.gdshader")
 
 @export var center_xz: Vector3 = Vector3(0.0, 0.0, -90.0)
+
 @export var surface_y: float = -8.0
+
 @export var max_surface_y: float = 118.0
+
 @export var radius: float = 58.0
+
 ## Metros por segundo que sube, sin pausas ni persecución: si te quedas
 ## parado, la lava acaba llegando a tus pies.
 @export var rise_speed: float = 0.6
 
 var _surface: float = -8.0
+
 var _cooldown: float = 0.0
+
 var _manager: Node
 
 

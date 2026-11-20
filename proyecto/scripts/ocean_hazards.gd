@@ -1,4 +1,5 @@
 @tool
+
 extends Node3D
 
 ## Los quince obstáculos exclusivos del circuito abisal (Abyss Run).
@@ -11,6 +12,8 @@ extends Node3D
 
 ## Clase base: caja de detección, empuje con enfriamiento y utilidades de malla
 ## para que cada obstáculo solo tenga que describir su forma y su ritmo.
+
+
 class OceanHazard:
 	extends Area3D
 
@@ -25,17 +28,23 @@ class OceanHazard:
 	var push_override: float = 0.0
 	var stun_override: float = 0.0
 
-	var _bodies: Array[Node3D] = []
-	var _cooldown_until: int = 0
-	var _collision_shape: CollisionShape3D
 	## El volumen de detección se dibuja con su tamaño real: así se ve dónde
 	## empieza a golpear en vez de chocar con un área invisible más grande que la
 	## figura. El color dice qué hace: rojo mata, naranja empuja, cian aturde.
 	var show_hitbox: bool = true
+
+	var _bodies: Array[Node3D] = []
+	var _cooldown_until: int = 0
+	var _collision_shape: CollisionShape3D
 	var _hitbox_ghost: MeshInstance3D
 
-	func _setup(box: Vector3, push: float = 6.0, stun_time: float = 0.0,
-			offset: Vector3 = Vector3.ZERO, ghost: bool = true) -> void:
+	func _setup(
+		box: Vector3,
+		push: float = 6.0,
+		stun_time: float = 0.0,
+		offset: Vector3 = Vector3.ZERO,
+		ghost: bool = true
+	) -> void:
 		push_force = push
 		stun_seconds = stun_time
 		collision_layer = 0
@@ -57,8 +66,13 @@ class OceanHazard:
 	## Volumen esférico. Para las figuras redondas (erizo, mina, tinta) la caja
 	## cuadrada golpeaba en las esquinas mucho más lejos que la figura: era lo
 	## que se notaba como «hitbox enorme».
-	func _setup_sphere(radius: float, push: float = 6.0, stun_time: float = 0.0,
-			offset: Vector3 = Vector3.ZERO, ghost: bool = true) -> void:
+	func _setup_sphere(
+		radius: float,
+		push: float = 6.0,
+		stun_time: float = 0.0,
+		offset: Vector3 = Vector3.ZERO,
+		ghost: bool = true
+	) -> void:
 		_setup(Vector3.ZERO, push, stun_time, offset, false)
 		var shape := SphereShape3D.new()
 		shape.radius = radius
@@ -71,8 +85,13 @@ class OceanHazard:
 
 	## Volumen cilíndrico: las aspas giran en un disco, así que la esquina de un
 	## cuadrado siempre sobraba.
-	func _setup_cylinder(radius: float, height_value: float, push: float = 6.0,
-			stun_time: float = 0.0, offset: Vector3 = Vector3.ZERO) -> void:
+	func _setup_cylinder(
+		radius: float,
+		height_value: float,
+		push: float = 6.0,
+		stun_time: float = 0.0,
+		offset: Vector3 = Vector3.ZERO
+	) -> void:
 		_setup(Vector3.ZERO, push, stun_time, offset, false)
 		var shape := CylinderShape3D.new()
 		shape.radius = radius
@@ -147,8 +166,9 @@ class OceanHazard:
 			if body.has_method("slow"):
 				body.slow(0.25, 0.7)
 
-	func _add_sphere(parent: Node3D, radius: float, material: Material,
-			at: Vector3) -> MeshInstance3D:
+	func _add_sphere(
+		parent: Node3D, radius: float, material: Material, at: Vector3
+	) -> MeshInstance3D:
 		var mesh := SphereMesh.new()
 		mesh.radius = radius
 		mesh.height = radius * 2.0
@@ -162,8 +182,13 @@ class OceanHazard:
 		parent.add_child(instance)
 		return instance
 
-	func _add_box(parent: Node3D, box: Vector3, material: Material, at: Vector3,
-			rot_deg: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+	func _add_box(
+		parent: Node3D,
+		box: Vector3,
+		material: Material,
+		at: Vector3,
+		rot_deg: Vector3 = Vector3.ZERO
+	) -> MeshInstance3D:
 		var mesh := BoxMesh.new()
 		mesh.size = box
 		var instance := MeshInstance3D.new()
@@ -175,9 +200,16 @@ class OceanHazard:
 		parent.add_child(instance)
 		return instance
 
-	func _add_cylinder(parent: Node3D, top_radius: float, bottom_radius: float,
-			height_value: float, material: Material, at: Vector3,
-			rot_deg: Vector3 = Vector3.ZERO, segments: int = 10) -> MeshInstance3D:
+	func _add_cylinder(
+		parent: Node3D,
+		top_radius: float,
+		bottom_radius: float,
+		height_value: float,
+		material: Material,
+		at: Vector3,
+		rot_deg: Vector3 = Vector3.ZERO,
+		segments: int = 10
+	) -> MeshInstance3D:
 		var mesh := CylinderMesh.new()
 		mesh.top_radius = top_radius
 		mesh.bottom_radius = bottom_radius
@@ -193,8 +225,7 @@ class OceanHazard:
 		parent.add_child(instance)
 		return instance
 
-	func _add_light(parent: Node3D, color: Color, energy: float,
-			reach: float) -> OmniLight3D:
+	func _add_light(parent: Node3D, color: Color, energy: float, reach: float) -> OmniLight3D:
 		var light := OmniLight3D.new()
 		light.light_color = color
 		light.light_energy = energy
@@ -231,8 +262,7 @@ class OceanHazard:
 
 	## Caja translúcida del tamaño exacto del hitbox. Un solo `MeshInstance3D`
 	## por obstáculo, así que no cuesta nada de dibujar.
-	func _add_hitbox_ghost(box: Vector3,
-			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+	func _add_hitbox_ghost(box: Vector3, at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
 		if not show_hitbox:
 			return null
 		var mesh := BoxMesh.new()
@@ -248,8 +278,7 @@ class OceanHazard:
 			_hitbox_ghost = ghost
 		return ghost
 
-	func _add_hitbox_sphere(radius: float,
-			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+	func _add_hitbox_sphere(radius: float, at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
 		if not show_hitbox:
 			return null
 		var mesh := SphereMesh.new()
@@ -268,8 +297,9 @@ class OceanHazard:
 			_hitbox_ghost = ghost
 		return ghost
 
-	func _add_hitbox_cylinder(radius: float, height_value: float,
-			at: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+	func _add_hitbox_cylinder(
+		radius: float, height_value: float, at: Vector3 = Vector3.ZERO
+	) -> MeshInstance3D:
 		if not show_hitbox:
 			return null
 		var mesh := CylinderMesh.new()
@@ -291,7 +321,8 @@ class OceanHazard:
 
 
 ## Erizo de mar: bola de púas que gira y no deja pasar por el centro.
-class Urchin extends OceanHazard:
+class Urchin:
+	extends OceanHazard
 	var radius: float = 0.85
 	var spin: float = 0.7
 
@@ -307,8 +338,14 @@ class Urchin extends OceanHazard:
 			var ring := sqrt(maxf(0.0, 1.0 - y * y))
 			var angle := float(i) * 2.39996
 			var dir := Vector3(cos(angle) * ring, y, sin(angle) * ring)
-			var spike := _add_cylinder(self, 0.0, 0.11, 0.58,
-				OceanStyle.glow(OceanStyle.CORAL_ALT, 1.1), dir * (radius + 0.27))
+			var spike := _add_cylinder(
+				self,
+				0.0,
+				0.11,
+				0.58,
+				OceanStyle.glow(OceanStyle.CORAL_ALT, 1.1),
+				dir * (radius + 0.27)
+			)
 			spike.quaternion = Quaternion(Vector3.UP, dir)
 
 	func _process(delta: float) -> void:
@@ -316,7 +353,8 @@ class Urchin extends OceanHazard:
 
 
 ## Alga látigo: una columna de hojas que barre el paso de lado a lado.
-class KelpWhip extends OceanHazard:
+class KelpWhip:
+	extends OceanHazard
 	var height: float = 12.0
 	var sway: float = 1.0
 	var blades: int = 9
@@ -333,12 +371,16 @@ class KelpWhip extends OceanHazard:
 		add_child(_blade_root)
 		for i in blades:
 			var t := float(i) / float(blades - 1)
-			var segment := _add_box(_blade_root, Vector3(0.34, height / float(blades) + 0.12, 0.16),
+			var segment := _add_box(
+				_blade_root,
+				Vector3(0.34, height / float(blades) + 0.12, 0.16),
 				OceanStyle.matte(OceanStyle.ALGAE.lerp(OceanStyle.ROCK_DARK, t), 0.8),
-				Vector3(0.0, -height * 0.5 + t * height, 0.0))
+				Vector3(0.0, -height * 0.5 + t * height, 0.0)
+			)
 			segment.rotation.z = sin(t * 3.0) * 0.12
-		_add_sphere(self, 0.34, OceanStyle.glow(OceanStyle.ALGAE, 1.6),
-			Vector3(0.0, height * 0.5, 0.0))
+		_add_sphere(
+			self, 0.34, OceanStyle.glow(OceanStyle.ALGAE, 1.6), Vector3(0.0, height * 0.5, 0.0)
+		)
 
 	func _process(delta: float) -> void:
 		_phase += delta * 1.7 * sway
@@ -352,7 +394,8 @@ class KelpWhip extends OceanHazard:
 
 
 ## Mina de burbujas: flota, sube y baja, y al tocarla estalla en un empujón.
-class BubbleMine extends OceanHazard:
+class BubbleMine:
+	extends OceanHazard
 	var radius: float = 0.95
 	var bob: float = 1.4
 
@@ -368,8 +411,14 @@ class BubbleMine extends OceanHazard:
 		_add_sphere(self, radius * 1.3, OceanStyle.glass(OceanStyle.GLOW, 0.22), Vector3.ZERO)
 		for i in 8:
 			var angle := float(i) * TAU / 8.0
-			_add_sphere(self, 0.17, OceanStyle.glass(OceanStyle.GLOW, 0.6),
-				Vector3(cos(angle) * radius * 1.35, sin(angle * 2.0) * 0.3, sin(angle) * radius * 1.35))
+			_add_sphere(
+				self,
+				0.17,
+				OceanStyle.glass(OceanStyle.GLOW, 0.6),
+				Vector3(
+					cos(angle) * radius * 1.35, sin(angle * 2.0) * 0.3, sin(angle) * radius * 1.35
+				)
+			)
 		_add_light(self, OceanStyle.GLOW, 0.9, 6.0)
 
 	func _process(delta: float) -> void:
@@ -379,7 +428,8 @@ class BubbleMine extends OceanHazard:
 
 
 ## Corriente cruzada: una franja que empuja de lado mientras se la cruza.
-class CurrentRibbon extends OceanHazard:
+class CurrentRibbon:
+	extends OceanHazard
 	var force: float = 3.4
 	var direction: Vector3 = Vector3.RIGHT
 
@@ -391,14 +441,21 @@ class CurrentRibbon extends OceanHazard:
 		# se ve con las cintas, así que no lleva recuadro.
 		_setup(Vector3(25.0, 9.0, 3.6), 6.0, 0.0, Vector3.ZERO, false)
 		for i in 7:
-			var ribbon := _add_box(self, Vector3(23.0, 0.12, 0.5),
+			var ribbon := _add_box(
+				self,
+				Vector3(23.0, 0.12, 0.5),
 				OceanStyle.additive(OceanStyle.GLOW, 0.14),
-				Vector3(0.0, -3.6 + float(i) * 1.2, 0.0))
+				Vector3(0.0, -3.6 + float(i) * 1.2, 0.0)
+			)
 			_arrows.append(ribbon)
 		for i in 9:
-			var fin := _add_box(self, Vector3(0.3, 0.9, 1.6),
+			var fin := _add_box(
+				self,
+				Vector3(0.3, 0.9, 1.6),
 				OceanStyle.glass(OceanStyle.GLOW, 0.22),
-				Vector3(-10.0 + float(i) * 2.5, 0.0, 0.0), Vector3(0.0, 0.0, 24.0))
+				Vector3(-10.0 + float(i) * 2.5, 0.0, 0.0),
+				Vector3(0.0, 0.0, 24.0)
+			)
 			fin.rotation.z = deg_to_rad(28.0)
 		_add_light(self, OceanStyle.GLOW, 0.7, 12.0)
 
@@ -410,7 +467,8 @@ class CurrentRibbon extends OceanHazard:
 
 
 ## Medusa: campana translúcida que sube y baja, con tentáculos que aturden.
-class Jellyfish extends OceanHazard:
+class Jellyfish:
+	extends OceanHazard
 	var bell_size: float = 1.1
 	var drift: float = 1.8
 	var rise_speed: float = 0.8
@@ -423,19 +481,25 @@ class Jellyfish extends OceanHazard:
 	func _ready() -> void:
 		# Caja pegada a la campana y a los tentáculos: 4,6 m de alto (antes 6,4)
 		# y desplazada hacia abajo, que es donde cuelgan.
-		_setup(Vector3(bell_size * 2.1, 4.6, bell_size * 2.1), 5.2, 0.65,
-			Vector3(0.0, -1.3, 0.0))
+		_setup(Vector3(bell_size * 2.1, 4.6, bell_size * 2.1), 5.2, 0.65, Vector3(0.0, -1.3, 0.0))
 		_base_y = position.y
 		_bell = Node3D.new()
 		add_child(_bell)
-		var dome := _add_sphere(_bell, bell_size, OceanStyle.glass(OceanStyle.CORAL_PURPLE, 0.6), Vector3.ZERO)
+		var dome := _add_sphere(
+			_bell, bell_size, OceanStyle.glass(OceanStyle.CORAL_PURPLE, 0.6), Vector3.ZERO
+		)
 		dome.scale = Vector3(1.0, 0.72, 1.0)
-		_add_sphere(_bell, bell_size * 0.4, OceanStyle.glow(OceanStyle.GLOW, 2.1), Vector3(0, 0.18, 0))
+		_add_sphere(
+			_bell, bell_size * 0.4, OceanStyle.glow(OceanStyle.GLOW, 2.1), Vector3(0, 0.18, 0)
+		)
 		for i in 7:
 			var angle := float(i) * TAU / 7.0
-			_add_box(_bell, Vector3(0.08, 2.8, 0.08),
+			_add_box(
+				_bell,
+				Vector3(0.08, 2.8, 0.08),
 				OceanStyle.glass(OceanStyle.CORAL_PURPLE, 0.45),
-				Vector3(cos(angle) * bell_size * 0.55, -1.6, sin(angle) * bell_size * 0.55))
+				Vector3(cos(angle) * bell_size * 0.55, -1.6, sin(angle) * bell_size * 0.55)
+			)
 		_light = _add_light(self, OceanStyle.CORAL_PURPLE, 1.3, 7.0)
 
 	func _process(delta: float) -> void:
@@ -449,7 +513,8 @@ class Jellyfish extends OceanHazard:
 
 
 ## Señuelo de rape: un farol colgante que se balancea sobre el paso.
-class AnglerLure extends OceanHazard:
+class AnglerLure:
+	extends OceanHazard
 	var swing: float = 2.4
 	var phase: float = 0.0
 
@@ -459,8 +524,12 @@ class AnglerLure extends OceanHazard:
 		# El área es del tamaño del farol, no del arco que describe: antes
 		# cubría toda la oscilación y se golpeaba con el aire del balanceo.
 		_setup(Vector3.ONE * 1.8, 6.0, 0.55)
-		_add_box(self, Vector3(0.06, 6.0, 0.06), OceanStyle.matte(OceanStyle.ROCK_DARK),
-			Vector3(0.0, 3.0, 0.0))
+		_add_box(
+			self,
+			Vector3(0.06, 6.0, 0.06),
+			OceanStyle.matte(OceanStyle.ROCK_DARK),
+			Vector3(0.0, 3.0, 0.0)
+		)
 		_hook = Node3D.new()
 		_hook.position = Vector3(0.0, 0.4, 0.0)
 		add_child(_hook)
@@ -483,7 +552,8 @@ class AnglerLure extends OceanHazard:
 
 
 ## Remolino: succiona hacia el ojo y hace girar al corredor.
-class Whirlpool extends OceanHazard:
+class Whirlpool:
+	extends OceanHazard
 	var radius: float = 4.0
 	var pull: float = 4.4
 	var spin: float = 2.4
@@ -498,9 +568,12 @@ class Whirlpool extends OceanHazard:
 			add_child(ring)
 			for j in 10:
 				var angle := float(j) * TAU / 10.0
-				var arm := _add_box(ring, Vector3(0.18, 0.18, radius * 0.9),
+				var arm := _add_box(
+					ring,
+					Vector3(0.18, 0.18, radius * 0.9),
 					OceanStyle.additive(OceanStyle.GLOW, 0.18),
-					Vector3(cos(angle) * radius * 0.55, sin(angle) * radius * 0.55, 0.0))
+					Vector3(cos(angle) * radius * 0.55, sin(angle) * radius * 0.55, 0.0)
+				)
 				arm.rotation.z = angle
 			ring.rotation.x = deg_to_rad(24.0 + float(i) * 12.0)
 			_rings.append(ring)
@@ -524,7 +597,8 @@ class Whirlpool extends OceanHazard:
 
 
 ## Pez globo: se hincha y deshincha, y bloquea el paso solo cuando está lleno.
-class Pufferfish extends OceanHazard:
+class Pufferfish:
+	extends OceanHazard
 	var puff_speed: float = 2.2
 
 	var _time: float = 0.0
@@ -548,8 +622,9 @@ class Pufferfish extends OceanHazard:
 			var ring := sqrt(maxf(0.0, 1.0 - y * y))
 			var angle := float(i) * 2.39996
 			var dir := Vector3(cos(angle) * ring, y, sin(angle) * ring)
-			_add_cylinder(_body, 0.0, 0.09, 0.42, OceanStyle.matte(OceanStyle.CORAL_ALT, 0.5),
-				dir * 0.95)
+			_add_cylinder(
+				_body, 0.0, 0.09, 0.42, OceanStyle.matte(OceanStyle.CORAL_ALT, 0.5), dir * 0.95
+			)
 			var spike := _body.get_child(_body.get_child_count() - 1) as MeshInstance3D
 			spike.quaternion = Quaternion(Vector3.UP, dir)
 		_add_light(_body, OceanStyle.CORAL_ALT, 0.7, 4.5)
@@ -564,7 +639,8 @@ class Pufferfish extends OceanHazard:
 
 
 ## Almeja gigante: dos valvas que se cierran y empujan al que esté en medio.
-class ClamSnap extends OceanHazard:
+class ClamSnap:
+	extends OceanHazard
 	var period: float = 2.6
 
 	var _time: float = 0.0
@@ -578,14 +654,16 @@ class ClamSnap extends OceanHazard:
 		_top = Node3D.new()
 		_top.position = Vector3(0.0, 0.35, -1.7)
 		add_child(_top)
-		var top_shell := _add_sphere(_top, 1.7, OceanStyle.matte(OceanStyle.CORAL_PURPLE, 0.45),
-			Vector3(0.0, 0.0, 1.7))
+		var top_shell := _add_sphere(
+			_top, 1.7, OceanStyle.matte(OceanStyle.CORAL_PURPLE, 0.45), Vector3(0.0, 0.0, 1.7)
+		)
 		top_shell.scale = Vector3(1.3, 0.5, 1.0)
 		_bottom = Node3D.new()
 		_bottom.position = Vector3(0.0, -0.35, -1.7)
 		add_child(_bottom)
-		var bottom_shell := _add_sphere(_bottom, 1.7, OceanStyle.matte(OceanStyle.ROCK_DARK, 0.5),
-			Vector3(0.0, 0.0, 1.7))
+		var bottom_shell := _add_sphere(
+			_bottom, 1.7, OceanStyle.matte(OceanStyle.ROCK_DARK, 0.5), Vector3(0.0, 0.0, 1.7)
+		)
 		bottom_shell.scale = Vector3(1.3, 0.45, 1.0)
 		_add_sphere(self, 0.5, OceanStyle.glow(OceanStyle.GLOW, 2.0), Vector3(0.0, 0.6, 1.5))
 		_add_light(self, OceanStyle.GLOW, 0.8, 5.0)
@@ -598,7 +676,8 @@ class ClamSnap extends OceanHazard:
 
 
 ## Abanico de coral: aspas vivas que giran y empujan al rozarlas.
-class CoralFan extends OceanHazard:
+class CoralFan:
+	extends OceanHazard
 	var spin_speed: float = 1.7
 	var blade_count: int = 6
 
@@ -614,10 +693,15 @@ class CoralFan extends OceanHazard:
 			var pivot := Node3D.new()
 			pivot.rotation.z = TAU * float(i) / float(blade_count)
 			_rotor.add_child(pivot)
-			_add_box(pivot, Vector3(0.5, 3.2, 0.34),
-				OceanStyle.matte(OceanStyle.CORAL, 0.5), Vector3(0.0, 1.55, 0.0))
-			_add_sphere(pivot, 0.2, OceanStyle.glow(OceanStyle.CORAL_ALT, 1.5),
-				Vector3(0.0, 3.1, 0.0))
+			_add_box(
+				pivot,
+				Vector3(0.5, 3.2, 0.34),
+				OceanStyle.matte(OceanStyle.CORAL, 0.5),
+				Vector3(0.0, 1.55, 0.0)
+			)
+			_add_sphere(
+				pivot, 0.2, OceanStyle.glow(OceanStyle.CORAL_ALT, 1.5), Vector3(0.0, 3.1, 0.0)
+			)
 		_add_sphere(self, 0.62, OceanStyle.glow(OceanStyle.GLOW, 1.9), Vector3.ZERO)
 		_add_light(self, OceanStyle.CORAL_ALT, 0.8, 6.0)
 
@@ -626,7 +710,8 @@ class CoralFan extends OceanHazard:
 
 
 ## Chimenea térmica: sopla una columna de agua caliente que sube de golpe.
-class ThermalVent extends OceanHazard:
+class ThermalVent:
+	extends OceanHazard
 	var cycle: float = 3.4
 
 	var _time: float = 0.0
@@ -636,14 +721,21 @@ class ThermalVent extends OceanHazard:
 
 	func _ready() -> void:
 		_setup(Vector3(2.6, 14.0, 2.6), 6.0, 0.0, Vector3.ZERO, false)
-		_add_box(self, Vector3(2.0, 1.2, 2.0), OceanStyle.matte(OceanStyle.ROCK_DARK),
-			Vector3(0.0, -7.4, 0.0))
+		_add_box(
+			self,
+			Vector3(2.0, 1.2, 2.0),
+			OceanStyle.matte(OceanStyle.ROCK_DARK),
+			Vector3(0.0, -7.4, 0.0)
+		)
 		_jet = Node3D.new()
 		add_child(_jet)
 		for i in 6:
-			_add_sphere(_jet, 0.5 - float(i) * 0.05,
+			_add_sphere(
+				_jet,
+				0.5 - float(i) * 0.05,
 				OceanStyle.additive(OceanStyle.CORAL_ALT, 0.16),
-				Vector3(sin(float(i) * 1.7) * 0.4, -6.0 + float(i) * 2.4, cos(float(i) * 2.1) * 0.4))
+				Vector3(sin(float(i) * 1.7) * 0.4, -6.0 + float(i) * 2.4, cos(float(i) * 2.1) * 0.4)
+			)
 		_light = _add_light(self, OceanStyle.CORAL_ALT, 1.4, 9.0)
 
 		var bubble_mesh := SphereMesh.new()
@@ -681,7 +773,8 @@ class ThermalVent extends OceanHazard:
 
 
 ## Témpano a la deriva: un bloque de hielo que cruza el pasillo de lado a lado.
-class DriftIce extends OceanHazard:
+class DriftIce:
+	extends OceanHazard
 	var travel: float = 8.0
 	var speed: float = 1.15
 
@@ -695,7 +788,12 @@ class DriftIce extends OceanHazard:
 		_setup(Vector3(3.2, 3.2, 3.2), 8.0, 0.45)
 		_base_x = position.x
 		_add_sphere(self, 1.5, OceanStyle.glass(OceanStyle.ICE, 0.75), Vector3.ZERO)
-		_add_box(self, Vector3(2.4, 1.4, 2.4), OceanStyle.glass(OceanStyle.ICE, 0.55), Vector3(0.2, 0.9, 0.0))
+		_add_box(
+			self,
+			Vector3(2.4, 1.4, 2.4),
+			OceanStyle.glass(OceanStyle.ICE, 0.55),
+			Vector3(0.2, 0.9, 0.0)
+		)
 		_add_sphere(self, 0.9, OceanStyle.glass(OceanStyle.ICE, 0.65), Vector3(-1.2, -0.7, 0.9))
 		_add_light(self, OceanStyle.ICE, 0.6, 5.0)
 
@@ -706,7 +804,8 @@ class DriftIce extends OceanHazard:
 
 
 ## Nube de tinta: una masa oscura que aturde más que el resto.
-class InkCloud extends OceanHazard:
+class InkCloud:
+	extends OceanHazard
 	var radius: float = 2.4
 
 	var _time: float = 0.0
@@ -719,9 +818,12 @@ class InkCloud extends OceanHazard:
 		_setup_sphere(radius * 0.85, 3.4, 0.9)
 		for i in 7:
 			var angle := float(i) * TAU / 7.0
-			var puff := _add_sphere(self, 1.05 + float(i % 3) * 0.22,
+			var puff := _add_sphere(
+				self,
+				1.05 + float(i % 3) * 0.22,
 				OceanStyle.glass(OceanStyle.INK, 0.55),
-				Vector3(cos(angle) * 0.75, sin(angle * 1.7) * 0.65, sin(angle) * 0.75))
+				Vector3(cos(angle) * 0.75, sin(angle * 1.7) * 0.65, sin(angle) * 0.75)
+			)
 			_puffs.append(puff)
 		_add_light(self, OceanStyle.CORAL_PURPLE, 0.5, 5.0)
 
@@ -736,7 +838,8 @@ class InkCloud extends OceanHazard:
 
 
 ## Cadena de minas: una fila de esferas brillantes que hay que esquivar.
-class MineChain extends OceanHazard:
+class MineChain:
+	extends OceanHazard
 	var count: int = 6
 	var span: float = 13.0
 	var hit_radius: float = 0.7
@@ -782,7 +885,8 @@ class MineChain extends OceanHazard:
 
 
 ## Estrella de mar giratoria: cinco brazos que barren el carril.
-class StarfishSpinner extends OceanHazard:
+class StarfishSpinner:
+	extends OceanHazard
 	var spin_speed: float = 2.0
 
 	var _star: Node3D
@@ -799,8 +903,12 @@ class StarfishSpinner extends OceanHazard:
 			var arm := Node3D.new()
 			arm.rotation.z = TAU * float(i) / 5.0
 			_star.add_child(arm)
-			_add_box(arm, Vector3(0.6, 2.9, 0.45), OceanStyle.matte(OceanStyle.CORAL_ALT, 0.5),
-				Vector3(0.0, 1.5, 0.0))
+			_add_box(
+				arm,
+				Vector3(0.6, 2.9, 0.45),
+				OceanStyle.matte(OceanStyle.CORAL_ALT, 0.5),
+				Vector3(0.0, 1.5, 0.0)
+			)
 			_add_sphere(arm, 0.24, OceanStyle.glow(OceanStyle.CORAL, 1.5), Vector3(0.0, 2.9, 0.0))
 		_add_sphere(self, 0.7, OceanStyle.glow(OceanStyle.CORAL, 1.9), Vector3.ZERO)
 		_add_light(self, OceanStyle.CORAL_ALT, 0.9, 6.5)
@@ -812,7 +920,8 @@ class StarfishSpinner extends OceanHazard:
 ## Rápidos de burbujas: un aro que acelera hacia delante al corredor que lo
 ## cruza por dentro. No golpea, no aturde y no frena: es el premio por salir
 ## limpio de una compuerta y la forma de enganchar el túnel de un tirón.
-class BoostRing extends OceanHazard:
+class BoostRing:
+	extends OceanHazard
 	var radius: float = 2.8
 	var boost: float = 12.0
 
@@ -828,16 +937,23 @@ class BoostRing extends OceanHazard:
 		_add_torus(self, radius * 1.18, OceanStyle.additive(OceanStyle.GLOW, 0.16))
 		for i in 8:
 			var angle := float(i) * TAU / 8.0
-			_sparks.append(_add_sphere(self, 0.16, OceanStyle.glow(OceanStyle.GLOW, 1.6),
-				Vector3(cos(angle) * radius, sin(angle) * radius, 0.0)))
+			_sparks.append(
+				_add_sphere(
+					self,
+					0.16,
+					OceanStyle.glow(OceanStyle.GLOW, 1.6),
+					Vector3(cos(angle) * radius, sin(angle) * radius, 0.0)
+				)
+			)
 		_add_light(self, OceanStyle.GLOW, 1.1, radius * 3.0)
 
 	func _process(delta: float) -> void:
 		_time += delta
 		for i in _sparks.size():
 			var angle := float(i) * TAU / float(_sparks.size()) + _time * 1.6
-			_sparks[i].position = Vector3(cos(angle) * radius, sin(angle) * radius,
-				sin(_time * 2.0 + float(i)) * 0.25)
+			_sparks[i].position = Vector3(
+				cos(angle) * radius, sin(angle) * radius, sin(_time * 2.0 + float(i)) * 0.25
+			)
 		if _torus != null:
 			_torus.scale = Vector3.ONE * (1.0 + 0.04 * sin(_time * 3.0))
 
@@ -854,7 +970,8 @@ class BoostRing extends OceanHazard:
 ## que sube al corredor hasta la superficie. Sin ella, salir del agua a la isla
 ## es nadar a ciegas contra 24 m de pared y en la meta no se llega a la
 ## plataforma. No golpea ni frena: solo empuja hacia arriba y hacia delante.
-class Updraft extends OceanHazard:
+class Updraft:
+	extends OceanHazard
 	var radius: float = 3.6
 	## Subida mientras se está dentro, en m/s (la natación admite hasta 11).
 	var lift: float = 10.0
@@ -869,15 +986,19 @@ class Updraft extends OceanHazard:
 	func _ready() -> void:
 		touch_kind = "boost"
 		# Volumen de empuje continuo: no hay golpe, así que no lleva recuadro.
-		_setup(Vector3(radius * 2.0, column_height, radius * 2.0), 0.0, 0.0,
-			Vector3.ZERO, false)
+		_setup(Vector3(radius * 2.0, column_height, radius * 2.0), 0.0, 0.0, Vector3.ZERO, false)
 		for i in 4:
-			var ring := _add_torus(self, radius * (0.55 + 0.11 * float(i)),
-				OceanStyle.glow(OceanStyle.GLOW, 1.7))
+			var ring := _add_torus(
+				self, radius * (0.55 + 0.11 * float(i)), OceanStyle.glow(OceanStyle.GLOW, 1.7)
+			)
 			ring.position = Vector3(0.0, column_height * 0.5 - 0.4 - float(i) * 1.8, 0.0)
 			_rings.append(ring)
-		_add_sphere(self, radius * 0.9, OceanStyle.additive(OceanStyle.GLOW, 0.05),
-			Vector3(0.0, column_height * 0.5 - 0.2, 0.0))
+		_add_sphere(
+			self,
+			radius * 0.9,
+			OceanStyle.additive(OceanStyle.GLOW, 0.05),
+			Vector3(0.0, column_height * 0.5 - 0.2, 0.0)
+		)
 		_light = _add_light(self, OceanStyle.GLOW, 1.2, radius * 3.6)
 
 		var bubble_mesh := SphereMesh.new()

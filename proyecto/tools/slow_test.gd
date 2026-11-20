@@ -13,9 +13,18 @@ const BOT_SCENE := "res://scenes/race/bot_racer.tscn"
 ## matan (lava, géiser, vacío) o bloquean (hielo) no están aquí a propósito:
 ## su castigo es el respawn o la pared, no la lentitud.
 const TOUCH_HAZARDS := [
-	"piston.gd", "spike_trap.gd", "boulder.gd", "rotor_gate.gd", "ball.gd",
-	"pendulum.gd", "sweeper.gd", "meteor.gd", "ash_vortex.gd",
-	"magma_curtain.gd", "ocean_hazards.gd", "wind_tunnel.gd",
+	"piston.gd",
+	"spike_trap.gd",
+	"boulder.gd",
+	"rotor_gate.gd",
+	"ball.gd",
+	"pendulum.gd",
+	"sweeper.gd",
+	"meteor.gd",
+	"ash_vortex.gd",
+	"magma_curtain.gd",
+	"ocean_hazards.gd",
+	"wind_tunnel.gd",
 ]
 
 var _failures := 0
@@ -72,15 +81,18 @@ func _run() -> void:
 
 	# Una zona suave que entra después no debe anular el golpe.
 	player.slow(0.25, 0.8)
-	_check(absf(player.slow_ratio() - 0.6) <= 0.02,
-		"El factor más fuerte sobrevive al solapamiento")
+	_check(
+		absf(player.slow_ratio() - 0.6) <= 0.02, "El factor más fuerte sobrevive al solapamiento"
+	)
 
 	# Y al acabarse el frenazo vuelve entero.
 	for i in 70:
 		await physics_frame
 	_check(not player.is_slowed(), "El frenazo caduca solo")
-	_check(_speed(player) / maxf(base_speed, 0.01) > 0.9,
-		"Al caducar se recupera la velocidad de crucero")
+	_check(
+		_speed(player) / maxf(base_speed, 0.01) > 0.9,
+		"Al caducar se recupera la velocidad de crucero"
+	)
 
 	# Bots: misma regla, para que la carrera siga siendo justa.
 	var bot: CharacterBody3D = (load(BOT_SCENE) as PackedScene).instantiate()
@@ -91,14 +103,18 @@ func _run() -> void:
 	# reloj del frenazo corra como en partida.
 	bot.set("_waiting_for_start", false)
 	bot.slow(0.8, 0.6)
-	_check(bot.is_slowed() and absf(bot.slow_ratio() - 0.6) <= 0.02,
-		"El bot también queda ralentizado al 60%")
+	_check(
+		bot.is_slowed() and absf(bot.slow_ratio() - 0.6) <= 0.02,
+		"El bot también queda ralentizado al 60%"
+	)
 	bot.slow(0.25, 0.85)
-	_check(absf(bot.slow_ratio() - 0.6) <= 0.02,
-		"El bot conserva el factor más fuerte al solaparse")
+	_check(
+		absf(bot.slow_ratio() - 0.6) <= 0.02, "El bot conserva el factor más fuerte al solaparse"
+	)
 	bot.slow(0.05, 0.3)
-	_check(absf(bot.slow_ratio() - 0.3) <= 0.02,
-		"Un golpe más fuerte sí reemplaza el frenazo del bot")
+	_check(
+		absf(bot.slow_ratio() - 0.3) <= 0.02, "Un golpe más fuerte sí reemplaza el frenazo del bot"
+	)
 	for i in 70:
 		await physics_frame
 	_check(not bot.is_slowed(), "El frenazo del bot caduca solo")
@@ -118,8 +134,7 @@ func _run() -> void:
 	for i in 12:
 		await physics_frame
 	_check(player.is_slowed(), "Pisar una placa Hazard frena al corredor")
-	_check(absf(player.slow_ratio() - 0.6) <= 0.05,
-		"La placa deja al corredor al ~60%")
+	_check(absf(player.slow_ratio() - 0.6) <= 0.05, "La placa deja al corredor al ~60%")
 
 	print("RESULTADO: %d fallo(s)" % _failures)
 	quit(1 if _failures > 0 else 0)
@@ -150,8 +165,12 @@ func _report_values() -> void:
 func _print_hazard(file_name: String, factor: float, duration: float) -> void:
 	var speed := 6.5 * factor
 	var lost := (6.5 - speed) * duration
-	print("%-20s factor %.2f · %.2f s · %.1f m/s · pierde %.2f m" % [
-		file_name, factor, duration, speed, lost])
+	print(
+		(
+			"%-20s factor %.2f · %.2f s · %.1f m/s · pierde %.2f m"
+			% [file_name, factor, duration, speed, lost]
+		)
+	)
 
 
 ## Ningún hazard que toca al corredor puede quedarse sin slow().
@@ -159,8 +178,7 @@ func _report_coverage() -> void:
 	for file_name in TOUCH_HAZARDS:
 		var text := _read_script(file_name)
 		var slows := text.contains(".slow(") or text.contains("slow(0")
-		_check(slows or text.contains("apply_push"),
-			"%s ralentiza al corredor" % file_name)
+		_check(slows or text.contains("apply_push"), "%s ralentiza al corredor" % file_name)
 
 
 func _read_script(file_name: String) -> String:

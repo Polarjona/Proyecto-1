@@ -1,5 +1,7 @@
 @tool
+
 class_name WaterZone
+
 extends Area3D
 
 ## Volumen de agua del circuito abisal.
@@ -11,18 +13,24 @@ extends Area3D
 
 ## Tamaño de la caja de agua, en metros (ancho, alto, largo).
 @export var size: Vector3 = Vector3(25.0, 25.0, 100.0)
+
 ## Dibuja la lámina de agua en la cara superior (se ve desde abajo).
 @export var draw_surface: bool = true
+
 ## Burbujas ascendentes. A 0 se apagan.
 @export var bubble_count: int = 90
+
 ## Altura de crucero, en coordenadas de mundo. Al entrar en el volumen el
 ## corredor baja solo hasta aquí; Space/Shift lo siguen mandando.
 @export var cruise_depth: float = -9.0
+
 @export var auto_cruise: bool = true
+
 ## Franja de profundidad del tramo, en coordenadas de mundo. Mientras se nada
 ## no se sale por arriba ni por abajo: el corredor se queda dentro del pasillo
 ## de obstáculos en vez de colarse buceando por debajo.
 @export var band_min_y: float = -1.0e9
+
 @export var band_max_y: float = 1.0e9
 
 var _surface_material: StandardMaterial3D
@@ -53,9 +61,11 @@ func _ready() -> void:
 ## reaparecer en un checkpoint para saber si debe seguir nadando.
 func contains_point(point: Vector3) -> bool:
 	var local := to_local(point)
-	return absf(local.x) <= size.x * 0.5 \
-		and absf(local.y) <= size.y * 0.5 \
+	return (
+		absf(local.x) <= size.x * 0.5
+		and absf(local.y) <= size.y * 0.5
 		and absf(local.z) <= size.z * 0.5
+	)
 
 
 func _on_body_entered(body: Node3D) -> void:

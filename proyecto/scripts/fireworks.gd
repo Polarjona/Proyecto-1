@@ -5,16 +5,25 @@ extends Node3D
 ## que todos los circuitos los tienen sin tocar cada escena.
 
 const COLORS := [
-	Color(1.0, 0.86, 0.3), Color(1.0, 0.45, 0.65), Color(0.45, 0.85, 1.0),
-	Color(0.6, 1.0, 0.55), Color(0.85, 0.6, 1.0),
+	Color(1.0, 0.86, 0.3),
+	Color(1.0, 0.45, 0.65),
+	Color(0.45, 0.85, 1.0),
+	Color(0.6, 1.0, 0.55),
+	Color(0.85, 0.6, 1.0),
 ]
+
 const BURST_COUNT := 5
+
 const BURST_DELAY := 0.42
 
 var _bursts: Array[CPUParticles3D] = []
+
 var _lights: Array[OmniLight3D] = []
+
 var _time: float = 0.0
+
 var _next_burst: float = 0.0
+
 var _launched: int = 0
 
 

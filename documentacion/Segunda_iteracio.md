@@ -10,62 +10,52 @@
 
 ## 1. Estado de la entrega
 
-El juego ya no es un circuito único con bots: es una temporada de **cinco circuitos** con dos formas de jugarlos.
+El juego ya no es un circuito único con bots: es una temporada de circuitos con dos formas de jugarlos.
 
-- **Torneo de cuatro rondas:** Pivot Push → Spin Go Round → Glacier Gallop → Lava Vortex.
-- **Carrera clásica:** permite elegir cualquiera de los cinco, incluido **Abyss Run**, el circuito submarino.
+- **Torneo por rondas:** Pivot Push → Spin Go Round → Glacier Gallop → Lava Vortex.
+- **Carrera clásica:** permite elegir cualquiera de los circuitos, incluido **Abyss Run**, el submarino.
 
 Cada circuito tiene su propia escena, su `LevelInfo` (id, nombre, ronda, longitud, tiempos de medalla, ruta de bots y anchos de carril), su récord, sus medallas y sus checkpoints. `GameSession` es quien decide qué mapa se carga según el modo y la ronda, y el menú recuerda el circuito elegido para la carrera clásica.
 
-| Ronda | Circuito       | Escena                             | Longitud | Checkpoints | Oro / Plata / Bronce |
-| ----- | -------------- | ---------------------------------- | -------- | ----------- | -------------------- |
-| 1     | Pivot Push     | `scenes/main.tscn`                 | 368 m    | 11          | 130 / 170 / 215 s    |
-| 2     | Spin Go Round  | `scenes/levels/spin_go_round.tscn` | 339 m    | 12          | 115 / 145 / 185 s    |
-| 3     | Glacier Gallop | `scenes/levels/glacier_gallop.tscn`| 367 m    | 9           | 145 / 180 / 225 s    |
-| 4     | Lava Vortex    | `scenes/levels/lava_vortex.tscn`   | 509 m    | 0           | 84 / 100 / 116 s     |
-| —     | Abyss Run      | `scenes/levels/abyss_run.tscn`     | 428 m    | 6           | 112 / 138 / 172 s    |
+La tabla vigente de longitudes, checkpoints y medallas está en [Datos de referencia](Datos_circuitos.md#circuitos). Este informe ya no la copia: cualquier cambio se hace solo allí.
 
-**Pivot Panic se retiró.** Su escena ya no existe y su constructor quedó desactivado en `tools/build_levels.gd`; el torneo se cerró con los cuatro circuitos actuales.
+**Pivot Panic se retiró.** Su escena ya no existe y su constructor quedó desactivado en `tools/build_levels.gd`; el torneo se cerró con los circuitos actuales.
 
 ---
 
-## 2. Los cinco circuitos
+## 2. Los circuitos
 
-### 2.1 Pivot Push (ronda 1, 368 m, 11 checkpoints)
+El [informe del torneo](Torneo_cuatro_circuitos.md) es la referencia detallada de actos, obstáculos y cifras de producción. Aquí queda el resumen de la temporada:
 
-Es el circuito original, retematizado en azul real, magenta y oro. Conserva los tramos clásicos (barridos, plataformas móviles, túneles de viento, cañón, balancín, péndulos, disco giratorio y lluvia de bolas) y el tercer acto, **la forja**: pasillo de rocas persecutorias, terraza de pinchos, puente de tres aspas, subida larga con dos péndulos y bajada final con barridos y pinchos.
+- **Pivot Push (ronda 1):** circuito original retematizado en azul, magenta y oro; conserva los tramos clásicos y la forja del tercer acto.
+- **Spin Go Round (ronda 2):** el circuito con más obstáculos de suelo; alterna arena, peonzas, altura, persecuciones y mirador.
+- **Glacier Gallop (ronda 3):** hielo con barridos, ascensores, placas frágiles y muros de témpanos; el salto del jugador va recortado.
+- **Lava Vortex (ronda 4):** espiral alrededor del volcán con lava ascendente, géiseres, meteoros, ceniza y magma; no tiene checkpoints.
+- **Abyss Run (clásica):** túnel submarino con islas, zonas de agua, nado y hazards marinos; no entra en el torneo.
 
-### 2.2 Spin Go Round (ronda 2, 339 m, 12 checkpoints)
+### Capturas propias
 
-El circuito más largo del torneo y el más cargado de obstáculos de suelo:
+Todas las imágenes salen del render real del juego. Se generaron con [`proyecto/tools/capture_docs.gd`](../proyecto/tools/capture_docs.gd) y un perfil aislado; la galería completa está en [Capturas](Capturas.md).
 
-- **Acto 1:** arena de barridos con pasillos cerrados, pasarela con plataforma móvil y tramo de peonzas con lluvia de bolas.
-- **Acto 2:** rampa de subida, dos pistones alternos con luz de aviso, puente de 12 losas frágiles y rampa de bajada.
-- **Acto 3:** descenso de rocas, galería de 16 trampas de pinchos, puente de tres aspas, cinta en contra, subida al mirador con lluvia de bolas, dos péndulos en la cima y bajada final.
-
-### 2.3 Glacier Gallop (ronda 3, 367 m, 9 checkpoints)
-
-El circuito de hielo. La primera mitad encadena barridos, arena giratoria, ascensor de hielo, galería de pistones y puente de placas frágiles. La segunda suma el **puente del vendaval**, el pasillo de rocas y la terraza de pinchos antes de la recta final.
-
-Sus dos señas de identidad son los **muros de témpanos** (tres carriles que suben y bajan con aviso, siempre queda uno abierto) y un **salto recortado** (impulso 5,02 en vez de 6,0) para que el hielo pese. La escena añade nieve, niebla, una catedral de hielo y decoración propia.
-
-### 2.4 Lava Vortex (ronda 4, 509 m, 0 checkpoints)
-
-La final del torneo es una **espiral de cuatro vueltas** alrededor de una montaña, construida con 116 tramos y tres saltos sobre la lava.
-
-- **Lava que sube** desde la base hasta la cima: no se puede perder tiempo.
-- **Géiseres**, **lluvia de meteoros** con aviso, **vórtices de ceniza** y **cortinas de magma** en los tramos altos.
-- **Sin checkpoints**: una caída devuelve a la salida. El circuito está pensado para correrse de una tirada.
-- La cámara puede seguir la espiral (el código de seguimiento por muelle existe, aunque el control actual es con ratón).
-
-### 2.5 Abyss Run (carrera clásica, 428 m, 6 checkpoints)
-
-El circuito submarino se juega solo en carrera clásica. Es un túnel de 428 m con islas secas, tramos de agua con franja de nado, ascensores, pasos estrechos y hazards marinos:
-
-- **Erizos** y **medusas** que golpean o empujan.
-- **Minas de burbujas** y **estrellas giratorias**.
-- **Aros de impulso** que lanzan al corredor al tramo siguiente.
-- **Zonas de agua** con flotabilidad, arrastre, inclinación del cuerpo y descenso con `Shift`/`Ctrl` o gatillo derecho.
+<p align="center">
+  <img src="capturas/menu_principal.webp" alt="Menú principal" width="49%">
+  <img src="capturas/menu_torneo.webp" alt="Selección de modo y torneo" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/pivot_push.webp" alt="Pivot Push" width="49%">
+  <img src="capturas/spin_go_round.webp" alt="Spin Go Round" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/glacier_gallop.webp" alt="Glacier Gallop" width="49%">
+  <img src="capturas/lava_vortex.webp" alt="Lava Vortex" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/abyss_run.webp" alt="Abyss Run" width="49%">
+  <img src="capturas/resultados.webp" alt="Pantalla de resultados" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/torneo_carrera.webp" alt="Carrera de torneo con bots" width="49%">
+</p>
 
 ---
 
@@ -89,7 +79,7 @@ La novedad es la **cámara con ratón**: durante la carrera el puntero se captur
 
 ### 3.3 Kit de hazards temáticos
 
-Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden scripts propios:
+Además de los obstáculos reutilizables (recuento en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido)), los circuitos nuevos añaden scripts propios:
 
 | Circuito | Hazard | Qué hace |
 | --- | --- | --- |
@@ -105,7 +95,7 @@ Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden script
 
 ### 3.4 Bots y torneo
 
-- El torneo empieza con 7 bots y 3 plazas; cada ronda añade un bot (hasta 11), sube un 5 % su velocidad y reduce las plazas (3 → 3 → 2 → 1).
+- La configuración de bots, plazas y velocidad por ronda está en [Datos de referencia](Datos_circuitos.md#configuracion-del-torneo).
 - Los bots siguen la ruta de cada circuito, esperan plataformas y barridos, esquivan rocas y bolas y reciben los hazards como el jugador.
 - Una caída devuelve al bot a **su último checkpoint**, no al que perseguía. El empujón de seguridad solo aparece si el tramo se le atraganta dos veces o se queda atascado.
 
@@ -118,9 +108,9 @@ Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden script
 
 ### 3.6 Personajes, lobby y audio
 
-- **Diez personajes CC0 de Quaternius** con dos cuerpos cada uno (20 modelos), animaciones de idle, andar, caída y celebración, más una capa procedural de esprint, salto y aterrizaje.
+- **Personajes CC0 de Quaternius** con cuerpo masculino y femenino, animaciones de idle, andar, caída y celebración, más una capa procedural de esprint, salto y aterrizaje. El catálogo y sus recuentos están en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido).
 - **Lobby** con escaparate 3D del corredor equipado, tarjeta de temporada, monedas y panel de personajes con compra y vista previa.
-- **Audio:** tema de menú, canción de victoria en bus propio y **15 SFX** sintetizados con `tools/generate_audio.py`.
+- **Audio:** tema de menú, canción de victoria en bus propio y SFX sintetizados con `tools/generate_audio.py` (recuento en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido)).
 
 ---
 
@@ -131,39 +121,28 @@ Además de los 17 obstáculos reutilizables, los circuitos nuevos añaden script
 - **Escenas horneadas:** Pivot Push y Spin Go Round están construidas a mano y guardadas como `.tscn`.
 - **Generador `@tool`:** `scripts/levels/level_builder.gd` construye Glacier Gallop, Lava Vortex y Abyss Run. Al abrir la escena en el editor se genera el mapa; al guardar, los nodos quedan marcados con `owner` y el `.tscn` queda horneado y editable. Si la escena ya tiene contenido, el generador no reconstruye nada.
 - **Abyss Run:** funciona como los demás circuitos generados: su escena instancia `abyss_run_act1..3.tscn`, que salen del generador horneado. El túnel no se genera en runtime.
-- **Rendimiento:** los dos mapas hechos a mano ya no usan CSG (33 y 45 cajas horneadas a `BoxMesh` + `BoxShape3D`); los tres circuitos generados se guardan en tres actos (`_act1..3.tscn`); la sombra de contacto y el raycast del suelo de la cámara se refrescan a 25 y 30 Hz; el dispensador de bolas recicla sus `RigidBody3D`; el menú templa los shaders de los obstáculos; y cada acto recorta su atrezo a distancia (~14 px, con desvanecido *dither*) y convierte sus losas grandes en occluders (`scripts/level_lod.gd`).
+- **Rendimiento:** los mapas hechos a mano ya no usan CSG; los circuitos generados se guardan en actos (`_act1..3.tscn`); la sombra de contacto y el raycast del suelo de la cámara se refrescan a menos frecuencia que la física; el dispensador de bolas recicla sus `RigidBody3D`; el menú templa los shaders de los obstáculos; y cada acto recorta su atrezo a distancia y convierte sus losas grandes en occluders (`scripts/level_lod.gd`).
 - **Grupos:** `player`, `bot`, `bots`, `checkpoints`, `race_manager`, `race_director`, `pause_menu`, `wind_tunnels`, `launchers`, `see_saws` y `level_info`.
 
 ---
 
 ## 5. Verificación
 
-La batería se ejecuta desde `proyecto/` con `tools/run_tests.sh`, que corta cada test por tiempo (180 s la suite, 900 s los largos) y publica un resumen:
+La batería se ejecuta desde `proyecto/` con `tools/run_tests.sh`, que corta cada test por tiempo y publica un resumen:
 
 ```bash
 cd proyecto
-bash tools/run_tests.sh          # suite obligatoria (12 tests)
+bash tools/run_tests.sh          # suite obligatoria
 bash tools/run_tests.sh --long   # tests largos de bots
 ```
 
-Resultados reales de la última pasada con Godot 4.7.2 en esta máquina:
-
-| Test | Resultado |
-| --- | --- |
-| `check_scenes` | 40/40 escenas OK |
-| `smoke_test` | SMOKE OK |
-| `flow_test` | TODO OK |
-| `features_test` | TODO OK |
-| `levels_test` | TODO OK (0 fallos) |
-| `lod_test` | TODO OK (0 fallos) |
-| `persistence_test`, `progression_test`, `settings_test` | TODO OK |
-| `iteration3_test`, `iteration4_test`, `iteration5_test` | TODO OK |
+El resultado vigente y el recuento de tests están en [Datos de referencia](Datos_circuitos.md#verificacion).
 
 **Tests largos** (`tools/run_tests.sh --long`, job aparte en la CI):
 
-- `bots_test.gd` — **TODO OK**: los siete bots se reparten en carriles, avanzan y completan el circuito.
+- `bots_test.gd` — **TODO OK**: los bots se reparten en carriles, avanzan y completan el circuito.
 - `slow_test.gd` — **TODO OK**: los hazards frenan al corredor y al bot, y el frenazo caduca solo.
-- `levels_bots_test.gd` — **TODO OK**: el bot completa Spin Go Round (126,0 s), Glacier Gallop (183,0 s) y Lava Vortex (116,5 s). La prueba corre sin jugador en la escena: si se queda quieto, la lava lo quema a los pocos segundos, `fail_race()` congela la carrera y los bots se paran, que es justo lo que no se quiere medir.
+- `levels_bots_test.gd` — **TODO OK**: el bot completa Spin Go Round, Glacier Gallop y Lava Vortex. Los tiempos están en [Datos de referencia](Datos_circuitos.md#verificacion). La prueba corre sin jugador en la escena: si se queda quieto, la lava lo quema a los pocos segundos, `fail_race()` congela la carrera y los bots se paran, que es justo lo que no se quiere medir.
 
 Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar escenas y WAV nuevos.
 
@@ -171,14 +150,14 @@ Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar
 
 ## 6. Incidencias y decisiones
 
-- **Pivot Panic fuera del torneo.** Su escena y su constructor se retiraron para cerrar el torneo con cuatro circuitos; las referencias a Pivot Panic que quedaban en la documentación se han eliminado.
+- **Pivot Panic fuera del torneo.** Su escena y su constructor se retiraron para cerrar el torneo con los circuitos actuales; las referencias a Pivot Panic que quedaban en la documentación se han eliminado.
 - **Lava Vortex sin checkpoints.** La subida de lava convierte cada caída en un reinicio completo; por eso el circuito no tiene puntos de control y sus medallas son las más ajustadas del juego.
 - **Dive restaurado para nadar.** El dive como mecánica de carrera sigue fuera, pero la acción de entrada se reutiliza para descender en el agua. Eso invalida una comprobación de `iteration3_test`.
-- **Saltos y alturas del glaciar.** El jugador lleva un impulso de salto recortado (5,02) para que el hielo se note; el resto del control no cambia.
+- **Saltos y alturas del glaciar.** El jugador lleva un impulso de salto recortado para que el hielo se note; el resto del control no cambia.
 - **Generación y horneado.** El generador `@tool` permite reconstruir un circuito temático sin copiar escenas gigantes, y el horneado deja el mapa editable y estable para los tests.
-- **Documentación alineada.** README, este informe y el informe del torneo describen los cinco circuitos y el torneo de cuatro rondas; la Tercera Iteración se retira de la entrega y queda para una futura iteración.
-- **Documentación y CI puestas al día.** Los informes citaban cifras que ya no eran ciertas (30/30 escenas, fallos de `iteration3` y `levels_test`); ahora llevan los resultados de la batería actual y el recuento real de escenas (40/40). La CI ya no deja fuera ningún test: `tools/run_tests.sh` corta cada test por tiempo y el workflow tiene dos jobs (suite obligatoria y tests largos), además de caché de Godot y de la importación.
-- **El falso bucle del bot en Lava Vortex.** El test de bots de los circuitos dejaba al jugador quieto en la escena. La lava sube, lo quema hacia el segundo 9, `fail_race()` llama a `freeze_race()` y el director apaga la física de todos los bots: lo que parecía un bot atascado en el waypoint 17 de la espiral (z ≈ -107 m) era la carrera congelada esperando al tope de frames del test. Ahora la prueba quita el jugador de la escena y el bot sube la espiral entera (Lava Vortex, 116,5 s y un rescate).
+- **Documentación alineada.** README, este informe y el informe del torneo describen los circuitos y el torneo; la Tercera Iteración se retira de la entrega y queda para una futura iteración.
+- **Documentación y CI puestas al día.** Los informes citaban cifras que ya no eran ciertas; ahora las cifras vigentes viven en [Datos de referencia](Datos_circuitos.md) y la CI no deja fuera ningún test: `tools/run_tests.sh` corta cada test por tiempo y el workflow tiene dos jobs (suite obligatoria y tests largos), además de caché de Godot y de la importación.
+- **El falso bucle del bot en Lava Vortex.** El test de bots de los circuitos dejaba al jugador quieto en la escena. La lava sube, lo quema a los pocos segundos, `fail_race()` llama a `freeze_race()` y el director apaga la física de todos los bots: lo que parecía un bot atascado en un waypoint de la espiral era la carrera congelada esperando al tope de frames del test. Ahora la prueba quita el jugador de la escena y el bot sube la espiral entera (Lava Vortex y un rescate).
 
 ---
 
@@ -186,7 +165,7 @@ Los tests asumen que el proyecto ya se ha abierto una vez en Godot para importar
 
 En esta iteración la IA (Freebuff, de Codebuff) se ha utilizado para:
 
-- Revisar el estado real del proyecto frente a la documentación y localizar las contradicciones (tres circuitos frente a cinco, Pivot Panic frente a Glacier/Lava/Abyss, tests que ya no pasan).
+- Revisar el estado real del proyecto frente a la documentación y localizar las contradicciones (circuitos que faltaban, Pivot Panic frente a Glacier/Lava/Abyss, tests que ya no pasan).
 - Revisar los circuitos nuevos y sus scripts (`level_builder.gd`, hazards de hielo, volcán y abismo) para describirlos con datos verificados.
 - Reescribir este informe, el README y el informe del torneo con los datos reales de escenas, `LevelInfo`, checkpoints y medallas.
 - Ejecutar la batería headless y documentar con precisión qué pasa, qué falla y por qué.
@@ -201,11 +180,12 @@ Todo el código citado se ha revisado y los resultados de los tests son los que 
 
 | Punto                                              | Estado |
 | -------------------------------------------------- | ------ |
-| Los cinco circuitos cargan y tienen `LevelInfo`    | ✅     |
-| El torneo tiene cuatro rondas y el menú, cinco circuitos | ✅ |
-| Medallas, longitudes y checkpoints documentados    | ✅     |
+| Los circuitos cargan y tienen `LevelInfo`          | ✅     |
+| El torneo y el menú usan el catálogo de circuitos  | ✅     |
+| Medallas, longitudes y checkpoints documentados    | ✅ En [Datos de referencia](Datos_circuitos.md) |
 | Nado y cámara con ratón documentados               | ✅     |
 | Lobby, personajes, monedas y audio documentados    | ✅     |
+| Capturas propias del menú, circuitos, resultados y torneo | ✅ En [Capturas](Capturas.md) |
 | README e informe del torneo alineados              | ✅     |
 | Tercera Iteración retirada de la entrega           | ✅     |
-| Tests en verde                                     | ✅ Suite completa (12/12) y tests largos (3/3) |
+| Tests en verde                                     | ✅ Ver [Datos de referencia](Datos_circuitos.md#verificacion) |

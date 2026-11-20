@@ -53,8 +53,9 @@ func _split(path: String) -> bool:
 	# La salida está en z positivo y la meta en negativo: ordenar así deja cada
 	# acto como un tramo continuo de la pista.
 	var ordered := children.duplicate()
-	ordered.sort_custom(func(a: Node, b: Node) -> bool:
-		return (a as Node3D).position.z > (b as Node3D).position.z)
+	ordered.sort_custom(
+		func(a: Node, b: Node) -> bool: return (a as Node3D).position.z > (b as Node3D).position.z
+	)
 	var per_act := ceili(float(total) / float(ACTS))
 
 	var act_scenes: Array[PackedScene] = []
@@ -104,13 +105,19 @@ func _split(path: String) -> bool:
 		return false
 
 	var backup := path + ".preacts"
-	DirAccess.copy_absolute(ProjectSettings.globalize_path(path),
-		ProjectSettings.globalize_path(backup))
+	DirAccess.copy_absolute(
+		ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(backup)
+	)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
-	if DirAccess.rename_absolute(ProjectSettings.globalize_path(out_path),
-			ProjectSettings.globalize_path(path)) != OK:
-		DirAccess.rename_absolute(ProjectSettings.globalize_path(backup),
-			ProjectSettings.globalize_path(path))
+	if (
+		DirAccess.rename_absolute(
+			ProjectSettings.globalize_path(out_path), ProjectSettings.globalize_path(path)
+		)
+		!= OK
+	):
+		DirAccess.rename_absolute(
+			ProjectSettings.globalize_path(backup), ProjectSettings.globalize_path(path)
+		)
 		print("FAIL: no se pudo reemplazar ", path)
 		return false
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(backup))

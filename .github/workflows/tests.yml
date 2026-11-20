@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-godot
         with:
           version: ${{ env.GODOT_VERSION }}
@@ -31,7 +31,7 @@ jobs:
 
       - name: Guardar los logs de los tests
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-suite
           path: proyecto/tools/test-logs/
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-godot
         with:
           version: ${{ env.GODOT_VERSION }}
@@ -54,8 +54,30 @@ jobs:
 
       - name: Guardar los logs de los tests
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-largos
           path: proyecto/tools/test-logs/
           if-no-files-found: ignore
+
+  # Mismo formato y lint que el pre-commit local, con la versión fijada en
+  # `.pre-commit-config.yaml`: si divergen, la CI avisa antes del merge.
+  lint:
+    name: Formato y lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar gdtoolkit
+        run: pip install gdtoolkit==4.5.0
+
+      - name: Comprobar el formato
+        run: gdformat --check proyecto/scripts proyecto/tools
+
+      - name: Lint de GDScript
+        run: gdlint proyecto/scripts proyecto/tools

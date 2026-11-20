@@ -6,15 +6,19 @@ extends Node
 ## Los archivos ausentes se ignoran para que el juego nunca se rompa.
 
 const MUSIC_PATH := "res://audio/music/menu_theme.wav"
+
 ## Tema que suena al cruzar la meta, encima de la pantalla de resultados.
 const VICTORY_PATH := "res://audio/music/victory.mp3"
+
 ## La fanfarria tiene su propio bus: se oye siempre, aunque la música del
 ## menú esté baja, pero el volumen maestro la sigue controlando.
 ## El archivo viene masterizado a tope (-7.8 LUFS, picos a 0 dBFS), así que el
 ## reproductor lo baja 9 dB: queda ~12 dB por encima del menú y con aire de
 ## sobra para que el Master no recorte.
 const VICTORY_BUS := "Victory"
+
 const VICTORY_VOLUME_DB := -9.0
+
 const SFX_PATHS := {
 	"jump": "res://audio/sfx/jump.wav",
 	"step": "res://audio/sfx/step.wav",
@@ -37,21 +41,33 @@ const SFX_PATHS := {
 const LOOPING_SFX := ["wind"]
 
 const SFX_POOL_SIZE := 10
+
 const SFX_3D_POOL_SIZE := 14
+
 const MUSIC_VOLUME_DB := -6.0
+
 const MUSIC_SILENT_DB := -40.0
 
 var _music_player: AudioStreamPlayer
+
 var _sfx_pool: Array[AudioStreamPlayer] = []
+
 var _sfx_3d_pool: Array[AudioStreamPlayer3D] = []
+
 var _sfx_streams: Dictionary = {}
+
 var _music_stream: AudioStream
+
 var _music_tween: Tween
+
 var _victory_player: AudioStreamPlayer
+
 var _victory_stream: AudioStream
+
 ## RNG propio: el pitch aleatorio de los SFX no debe alterar la secuencia
 ## aleatoria del gameplay (carriles y velocidades de los bots).
 var _rng := RandomNumberGenerator.new()
+
 ## Sin salida de audio (headless) no se reproducen efectos: el driver de mentira
 ## no suelta los playbacks hasta después del recuento de fugas del motor, así
 ## que cada SFX dejaba basura al cerrar los tests. La música y la fanfarria se
@@ -170,6 +186,7 @@ func _enable_loop(stream: AudioStream) -> void:
 
 # --- Música ---------------------------------------------------------------
 
+
 ## Arranca el tema del menú. La carrera llama a `stop_music()`.
 func play_music(fade_in: bool = true) -> void:
 	if _music_player == null or not _load_music_stream():
@@ -184,8 +201,12 @@ func play_music(fade_in: bool = true) -> void:
 		_music_tween.kill()
 	if fade_in:
 		_music_tween = create_tween()
-		_music_tween.tween_property(_music_player, "volume_db", MUSIC_VOLUME_DB, 1.4) \
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		(
+			_music_tween
+			. tween_property(_music_player, "volume_db", MUSIC_VOLUME_DB, 1.4)
+			. set_trans(Tween.TRANS_SINE)
+			. set_ease(Tween.EASE_OUT)
+		)
 
 
 ## Para la música con un fundido corto (o en seco, para los tests).
@@ -199,8 +220,12 @@ func stop_music(fade_out: bool = true) -> void:
 		_music_player.stop()
 		return
 	_music_tween = create_tween()
-	_music_tween.tween_property(_music_player, "volume_db", MUSIC_SILENT_DB, 0.7) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	(
+		_music_tween
+		. tween_property(_music_player, "volume_db", MUSIC_SILENT_DB, 0.7)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN)
+	)
 	_music_tween.tween_callback(_music_player.stop)
 
 
@@ -247,6 +272,7 @@ func is_victory_playing() -> bool:
 
 # --- Efectos ---------------------------------------------------------------
 
+
 ## Reproduce un SFX por clave. `pitch_variance` evita el efecto "metralleta".
 func play_sfx(key: String, pitch_variance: float = 0.05, volume_db: float = 0.0) -> void:
 	if _silent or not _sfx_streams.has(key):
@@ -259,7 +285,9 @@ func play_sfx(key: String, pitch_variance: float = 0.05, volume_db: float = 0.0)
 
 
 ## SFX posicional: útil para bots y obstáculos, con atenuación por distancia.
-func play_sfx_at(key: String, position: Vector3, pitch_variance: float = 0.1, volume_db: float = 0.0) -> void:
+func play_sfx_at(
+	key: String, position: Vector3, pitch_variance: float = 0.1, volume_db: float = 0.0
+) -> void:
 	if _silent or not _sfx_streams.has(key):
 		return
 	for player in _sfx_3d_pool:
@@ -283,7 +311,9 @@ func get_sfx_stream(key: String) -> AudioStream:
 	return _sfx_streams.get(key) as AudioStream
 
 
-func _play_on(player: AudioStreamPlayer, key: String, pitch_variance: float, volume_db: float) -> void:
+func _play_on(
+	player: AudioStreamPlayer, key: String, pitch_variance: float, volume_db: float
+) -> void:
 	player.stream = _sfx_streams[key]
 	player.pitch_scale = 1.0 + _rng.randf_range(-pitch_variance, pitch_variance)
 	player.volume_db = volume_db

@@ -11,7 +11,7 @@
 repos:
   # Formato y estilo de GDScript (gdtoolkit 4.x, la rama de Godot 4).
   - repo: https://github.com/Scony/godot-gdscript-toolkit
-    rev: 4.3.3
+    rev: 4.5.0
     hooks:
       - id: gdformat
       - id: gdlint

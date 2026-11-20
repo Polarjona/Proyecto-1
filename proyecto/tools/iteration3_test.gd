@@ -32,7 +32,7 @@ func _run() -> void:
 	var session: Variant = root.get_node("GameSession")
 	var save: Variant = root.get_node("SaveManager")
 	session.start_classic()
-	var game: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
+	var game: Node = (load(LevelPaths.PIVOT_PUSH) as PackedScene).instantiate()
 	root.add_child(game)
 	current_scene = game
 	await process_frame
@@ -43,20 +43,30 @@ func _run() -> void:
 
 	# --- Escenas y nodos nuevos ------------------------------------------
 	_check(game.get_node_or_null("Course/WindTunnel") != null, "Túnel de viento en el mapa")
-	_check(game.get_node_or_null("Course/Sweeper2") == null, "El segundo sweeper ya no está en el mapa")
+	_check(
+		game.get_node_or_null("Course/Sweeper2") == null, "El segundo sweeper ya no está en el mapa"
+	)
 	_check(game.get_node_or_null("Course/SeeSaw") != null, "Balancín en el mapa")
 	var launcher_model: Node3D = game.get_node_or_null("Course/Launcher")
 	_check(launcher_model != null, "Cañón en el mapa")
 	var muzzle: Node3D = launcher_model.get_node_or_null("Tube/Muzzle")
 	var bore: Node3D = launcher_model.get_node_or_null("Tube/Bore")
 	var muzzle_ring: Node3D = launcher_model.get_node_or_null("Ring")
-	_check(muzzle != null and bore != null and launcher_model.get_node_or_null("ArrowShaft") != null,
-		"El launcher tiene cañón, boca y flecha de dirección visibles")
-	_check(muzzle != null and bore != null and muzzle_ring != null
-		and muzzle.global_position.z < launcher_model.global_position.z
-		and bore.global_position.z < muzzle.global_position.z
-		and absf(muzzle_ring.global_position.z - muzzle.global_position.z) < 0.5,
-		"El cañón, boca y anillo apuntan hacia delante (-Z)")
+	_check(
+		muzzle != null and bore != null and launcher_model.get_node_or_null("ArrowShaft") != null,
+		"El launcher tiene cañón, boca y flecha de dirección visibles"
+	)
+	_check(
+		(
+			muzzle != null
+			and bore != null
+			and muzzle_ring != null
+			and muzzle.global_position.z < launcher_model.global_position.z
+			and bore.global_position.z < muzzle.global_position.z
+			and absf(muzzle_ring.global_position.z - muzzle.global_position.z) < 0.5
+		),
+		"El cañón, boca y anillo apuntan hacia delante (-Z)"
+	)
 	_check(game.get_node_or_null("SkyDome") != null, "Cúpula de nubes procedural")
 	_check(game.get_node_or_null("Crowd") != null, "Multitud en gradas")
 	_check(game.get_node_or_null("PostProcess") != null, "Capa de postproceso")
@@ -66,78 +76,116 @@ func _run() -> void:
 	var arch_bottom := -99.0
 	if arch_pillar != null:
 		arch_bottom = arch_pillar.global_position.y - (arch_pillar.mesh as BoxMesh).size.y * 0.5
-	_check(arch_pillar != null and absf(arch_bottom - 0.6) < 0.05
-		and absf(arch_pillar.global_position.z + 112.5) < 0.05,
-		"El arco de LandingA apoya sus pilares en la plataforma (base y=%.2f)" % arch_bottom)
+	_check(
+		(
+			arch_pillar != null
+			and absf(arch_bottom - 0.6) < 0.05
+			and absf(arch_pillar.global_position.z + 112.5) < 0.05
+		),
+		"El arco de LandingA apoya sus pilares en la plataforma (base y=%.2f)" % arch_bottom
+	)
 	var pendulum5: Node3D = game.get_node("Course/Pendulum5")
 	var beam5: Node3D = game.get_node_or_null("ArenaDecor/PendulumBeam_4")
 	var post5: Node3D = game.get_node_or_null("ArenaDecor/PendulumPost_4_L")
-	_check(beam5 != null and post5 != null
-		and absf(pendulum5.global_position.z - beam5.global_position.z) < 0.05
-		and absf(post5.global_position.x + 4.2) < 0.05,
-		"El péndulo 5 cuelga de un pórtico con soportes")
+	_check(
+		(
+			beam5 != null
+			and post5 != null
+			and absf(pendulum5.global_position.z - beam5.global_position.z) < 0.05
+			and absf(post5.global_position.x + 4.2) < 0.05
+		),
+		"El péndulo 5 cuelga de un pórtico con soportes"
+	)
 
 	# --- Cámara y cara ----------------------------------------------------
-	_check(player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") != null,
-		"La cámara usa SpringArm3D")
-	_check(player.get_node_or_null("MeshInstance3D/Model/AnimationPlayer") != null,
-		"El personaje usa un modelo 3D animado")
+	_check(
+		player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") != null,
+		"La cámara usa SpringArm3D"
+	)
+	_check(
+		player.get_node_or_null("MeshInstance3D/Model/AnimationPlayer") != null,
+		"El personaje usa un modelo 3D animado"
+	)
 
 	# --- Perfil y ajustes -------------------------------------------------
 	var previous_shake: float = float(save.get_setting("shake", 1.0))
 	save.set_setting("shake", 0.6)
-	_check(is_equal_approx(float(save.get_setting("shake", 0.6)), 0.6),
-		"Los ajustes se guardan y se releen")
+	_check(
+		is_equal_approx(float(save.get_setting("shake", 0.6)), 0.6),
+		"Los ajustes se guardan y se releen"
+	)
 	save.set_setting("shake", previous_shake)
 	# Los tiempos de medalla ya no son globales: cada circuito pasa los suyos.
 	var gold := 70.0
 	var silver := 95.0
 	var bronze := 130.0
-	_check(save.medal_for_values(60.0, gold, silver, bronze) == "gold",
-		"60 s da medalla de oro con esos tiempos")
-	_check(save.medal_for_values(85.0, gold, silver, bronze) == "silver",
-		"85 s da medalla de plata")
-	_check(save.medal_for_values(120.0, gold, silver, bronze) == "bronze",
-		"120 s da medalla de bronce")
+	_check(
+		save.medal_for_values(60.0, gold, silver, bronze) == "gold",
+		"60 s da medalla de oro con esos tiempos"
+	)
+	_check(
+		save.medal_for_values(85.0, gold, silver, bronze) == "silver", "85 s da medalla de plata"
+	)
+	_check(
+		save.medal_for_values(120.0, gold, silver, bronze) == "bronze", "120 s da medalla de bronce"
+	)
 
 	# --- Dash/slide eliminado ---------------------------------------------
 	# Dive vuelve solo para nadar hacia abajo en Abyss Run; no hay dash ni API
 	# de deslizamiento en el jugador.
 	_check(InputMap.has_action("dive"), "La acción de dive existe para nadar hacia abajo")
-	_check(not player.has_method("can_dive") and not player.has_method("is_prone")
-		and not player.has_method("dive_cooldown_remaining")
-		and player.get("dive_speed") == null and player.get("prone_time") == null,
-		"El jugador ya no sabe deslizarse ni quedarse tumbado")
+	_check(
+		(
+			not player.has_method("can_dive")
+			and not player.has_method("is_prone")
+			and not player.has_method("dive_cooldown_remaining")
+			and player.get("dive_speed") == null
+			and player.get("prone_time") == null
+		),
+		"El jugador ya no sabe deslizarse ni quedarse tumbado"
+	)
 	var hud_nodes: Node = game.get_node_or_null("HUD")
-	_check(hud_nodes != null and hud_nodes.get_node_or_null("Root/DiveLabel") == null,
-		"El HUD ya no anuncia el cooldown del deslizamiento")
+	_check(
+		hud_nodes != null and hud_nodes.get_node_or_null("Root/DiveLabel") == null,
+		"El HUD ya no anuncia el cooldown del deslizamiento"
+	)
 	await _place(player, Vector3(0.0, 0.6, 0.0))
 	Input.action_press("move_forward")
 	for i in 45:
 		await physics_frame
 	Input.action_release("move_forward")
-	_check(player.global_position.z < -1.0 and player.is_on_floor(),
-		"Sin dive el jugador sigue corriendo normal (z=%.1f)" % player.global_position.z)
+	_check(
+		player.global_position.z < -1.0 and player.is_on_floor(),
+		"Sin dive el jugador sigue corriendo normal (z=%.1f)" % player.global_position.z
+	)
 
 	# --- Flechas del conveyor ---------------------------------------------
 	var conveyor: Area3D = game.get_node("Course/ConveyorA1")
 	var arrows: Node3D = conveyor.get_node_or_null("DirectionArrows")
-	_check(arrows != null and arrows.get_child_count() == 4,
-		"El conveyor dibuja cuatro flechas de dirección")
+	_check(
+		arrows != null and arrows.get_child_count() == 4,
+		"El conveyor dibuja cuatro flechas de dirección"
+	)
 	if arrows != null and arrows.get_child_count() > 0:
 		var arrow: Node3D = arrows.get_child(0)
 		var first_x: float = arrow.position.x
 		for i in 20:
 			await process_frame
-		_check(absf(arrow.position.x - first_x) > 0.05,
-			"Las flechas del conveyor se mueven (%.2f m)" % absf(arrow.position.x - first_x))
+		_check(
+			absf(arrow.position.x - first_x) > 0.05,
+			"Las flechas del conveyor se mueven (%.2f m)" % absf(arrow.position.x - first_x)
+		)
 		var reverse: Area3D = game.get_node("Course/ConveyorB1")
 		var reverse_arrows: Node3D = reverse.get_node("DirectionArrows")
-		_check(absf(absf(reverse_arrows.rotation.y) - PI) < 0.01,
-			"Las flechas apuntan en el sentido de la cinta inversa")
+		_check(
+			absf(absf(reverse_arrows.rotation.y) - PI) < 0.01,
+			"Las flechas apuntan en el sentido de la cinta inversa"
+		)
 		var final_conveyor: Area3D = game.get_node("Course/FinalConveyor")
-		_check(is_equal_approx(float(final_conveyor.get("arrow_span")) * 2.0, 4.0),
-			"Las flechas del conveyor final cubren justo su diseño de 4 m")
+		_check(
+			is_equal_approx(float(final_conveyor.get("arrow_span")) * 2.0, 4.0),
+			"Las flechas del conveyor final cubren justo su diseño de 4 m"
+		)
 
 	# --- Túnel de viento --------------------------------------------------
 	var wind1: Node3D = game.get_node("Course/WindTunnel")
@@ -150,26 +198,45 @@ func _run() -> void:
 	var deck2: MeshInstance3D = platform2.get_node("Deck")
 	var gap1 := absf(platform1.position.x) - (deck1.mesh as BoxMesh).size.x * 0.5 - 2.0
 	var gap2 := absf(platform2.position.x) - (deck2.mesh as BoxMesh).size.x * 0.5 - 2.0
-	_check(wind1.get_node_or_null("Banner") == null and wind2.get_node_or_null("Banner") == null,
-		"Se quitaron los banderines de viento")
-	_check(fan1.position.x * wind1.wind_direction.x < 0.0
-		and fan2.position.x * wind2.wind_direction.x < 0.0,
-		"Cada ventilador queda del lado de donde sopla el viento")
-	_check(absf(fan1.position.x - platform1.position.x) < 0.01
-		and absf(fan2.position.x - platform2.position.x) < 0.01,
-		"Cada ventilador se apoya en su propia plataforma")
-	_check(gap1 > 0.5 and gap2 > 0.5,
-		"Las plataformas de los ventiladores están separadas del puente (huecos %.2f y %.2f m)" % [gap1, gap2])
+	_check(
+		wind1.get_node_or_null("Banner") == null and wind2.get_node_or_null("Banner") == null,
+		"Se quitaron los banderines de viento"
+	)
+	_check(
+		(
+			fan1.position.x * wind1.wind_direction.x < 0.0
+			and fan2.position.x * wind2.wind_direction.x < 0.0
+		),
+		"Cada ventilador queda del lado de donde sopla el viento"
+	)
+	_check(
+		(
+			absf(fan1.position.x - platform1.position.x) < 0.01
+			and absf(fan2.position.x - platform2.position.x) < 0.01
+		),
+		"Cada ventilador se apoya en su propia plataforma"
+	)
+	_check(
+		gap1 > 0.5 and gap2 > 0.5,
+		(
+			"Las plataformas de los ventiladores están separadas del puente (huecos %.2f y %.2f m)"
+			% [gap1, gap2]
+		)
+	)
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.9, -126.0)))
 	for i in 15:
 		await physics_frame
-	_check(player.global_position.x > 0.05,
-		"El viento empuja lateralmente al jugador (x=%.2f)" % player.global_position.x)
+	_check(
+		player.global_position.x > 0.05,
+		"El viento empuja lateralmente al jugador (x=%.2f)" % player.global_position.x
+	)
 
 	# --- Cañón ------------------------------------------------------------
 	var launcher: Area3D = game.get_node("Course/Launcher")
-	_check(launcher.get("cooldown") == null and not launcher.has_method("is_ready"),
-		"El cañón ya no tiene cooldown")
+	_check(
+		launcher.get("cooldown") == null and not launcher.has_method("is_ready"),
+		"El cañón ya no tiene cooldown"
+	)
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.9, -139.2)))
 	var launched := false
 	for i in 8:
@@ -202,43 +269,57 @@ func _run() -> void:
 	for dummy in batch:
 		if dummy.velocity.y > 2.0:
 			flying += 1
-	_check(flying == batch.size(),
-		"Tres cuerpos en el gatillo salen disparados a la vez (%d de %d)" % [flying, batch.size()])
+	_check(
+		flying == batch.size(),
+		"Tres cuerpos en el gatillo salen disparados a la vez (%d de %d)" % [flying, batch.size()]
+	)
 	for dummy in batch:
 		dummy.queue_free()
 	await physics_frame
 
 	# --- Balancín ---------------------------------------------------------
 	var saw: AnimatableBody3D = game.get_node("Course/SeeSaw")
-	_check(player.max_speed <= 7.0, "El jugador corre a una velocidad contenida (%.1f m/s)" % player.max_speed)
-	_check(absf(saw.get_tilt()) < 0.02,
-		"El balancín queda horizontal cuando no hay nadie encima (%.3f rad)" % saw.get_tilt())
+	_check(
+		player.max_speed <= 7.0,
+		"El jugador corre a una velocidad contenida (%.1f m/s)" % player.max_speed
+	)
+	_check(
+		absf(saw.get_tilt()) < 0.02,
+		"El balancín queda horizontal cuando no hay nadie encima (%.3f rad)" % saw.get_tilt()
+	)
 	# En el centro de la tabla el peso queda equilibrado, como en uno real.
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -51.0)))
 	for i in 90:
 		await physics_frame
-	_check(absf(saw.get_tilt()) < 0.08,
-		"Un jugador centrado mantiene el balancín nivelado (%.2f rad)" % saw.get_tilt())
-	_check(float(saw.get("tip_threshold")) <= 0.03
-		and float(saw.get("responsiveness")) >= 5.0
-		and float(saw.get("slide_speed")) > 0.0,
-		"El balancín está configurado como super inestable y resbaladizo")
+	_check(
+		absf(saw.get_tilt()) < 0.08,
+		"Un jugador centrado mantiene el balancín nivelado (%.2f rad)" % saw.get_tilt()
+	)
+	_check(
+		(
+			float(saw.get("tip_threshold")) <= 0.03
+			and float(saw.get("responsiveness")) >= 5.0
+			and float(saw.get("slide_speed")) > 0.0
+		),
+		"El balancín está configurado como super inestable y resbaladizo"
+	)
 	# Un desvío mínimo ya lo vuelca casi por completo. Se deja caer desde
 	# poca altura para que el peso cuente desde el primer frame.
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.4, -50.4)))
 	for i in 45:
 		await physics_frame
 	var tilt0: float = saw.get_tilt()
-	_check(absf(tilt0) > 0.2,
-		"Un desvío de 0,6 m ya hace volcar el balancín (%.2f rad)" % tilt0)
+	_check(absf(tilt0) > 0.2, "Un desvío de 0,6 m ya hace volcar el balancín (%.2f rad)" % tilt0)
 	# La base del balancín queda por debajo de la tabla incluso al volcar:
 	# si asomara, se vería a través de la madera.
 	var base: Node3D = game.get_node_or_null("Course/SeeSawBase")
 	var base_top := -99.0
 	if base != null:
 		base_top = base.global_position.y + BoxSize.of(base).y * 0.5
-	_check(base != null and base_top < -0.9,
-		"La base del balancín no asoma por encima de la tabla (%.2f m)" % base_top)
+	_check(
+		base != null and base_top < -0.9,
+		"La base del balancín no asoma por encima de la tabla (%.2f m)" % base_top
+	)
 	player.respawn_at(Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, -50.4)))
 	for i in 4:
 		await physics_frame
@@ -246,21 +327,28 @@ func _run() -> void:
 
 	# --- HUD y resultados -------------------------------------------------
 	var hud: Node = game.get_node_or_null("HUD")
-	_check(hud != null and hud.get_node_or_null("Root/ResultsPanel") != null,
-		"El HUD incluye panel de resultados")
-	_check(hud != null and hud.get_node_or_null("Root/TutorialPanel") != null,
-		"El HUD incluye tutorial de primera vez")
-	_check(hud != null and hud.get_node_or_null("Root/ProgressBar") != null,
-		"El HUD incluye barra de progreso")
-	_check(hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsSplits") == null,
-		"La pantalla de victoria no muestra los tiempos de los checkpoints")
+	_check(
+		hud != null and hud.get_node_or_null("Root/ResultsPanel") != null,
+		"El HUD incluye panel de resultados"
+	)
+	_check(
+		hud != null and hud.get_node_or_null("Root/TutorialPanel") != null,
+		"El HUD incluye tutorial de primera vez"
+	)
+	_check(
+		hud != null and hud.get_node_or_null("Root/ProgressBar") != null,
+		"El HUD incluye barra de progreso"
+	)
+	_check(
+		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsSplits") == null,
+		"La pantalla de victoria no muestra los tiempos de los checkpoints"
+	)
 
 	# --- Modos ------------------------------------------------------------
 	session.start_bots(false)
 	_check(session.is_bot_race(), "El modo bots se activa")
 	session.start_bots(true)
-	_check(session.is_tournament() and session.round == 1,
-		"El modo torneo arranca en la ronda 1")
+	_check(session.is_tournament() and session.round == 1, "El modo torneo arranca en la ronda 1")
 	session.reset()
 
 	_check(load("res://scenes/race/bot_racer.tscn") != null, "La escena del bot carga")

@@ -17,9 +17,13 @@ const PASTEL_COLORS := [
 ]
 
 @export var rows: int = 3
+
 @export var per_row: int = 26
+
 @export var stand_offset: float = 14.0
+
 @export var stand_length: float = 48.0
+
 @export var stand_center_z: float = -36.0
 
 var _crowd_material: ShaderMaterial
@@ -95,7 +99,9 @@ func _build_crowd(side: float) -> void:
 			var z := stand_center_z - stand_length * 0.5 + step * (i + 0.5)
 			var x := side * (stand_offset - 0.6 + float(row) * 1.0) + randf_range(-0.2, 0.2)
 			var y := 1.55 + float(row) * 0.55
-			var basis := Basis(Vector3.UP, randf_range(-0.5, 0.5)).scaled(Vector3.ONE * randf_range(0.85, 1.15))
+			var basis := Basis(Vector3.UP, randf_range(-0.5, 0.5)).scaled(
+				Vector3.ONE * randf_range(0.85, 1.15)
+			)
 			var color: Color = PASTEL_COLORS[randi() % PASTEL_COLORS.size()]
 			bodies.set_instance_transform(index, Transform3D(basis, Vector3(x, y, z)))
 			bodies.set_instance_color(index, color)

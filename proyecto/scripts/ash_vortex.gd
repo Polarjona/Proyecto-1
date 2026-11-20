@@ -1,4 +1,5 @@
 @tool
+
 extends Area3D
 
 ## Remolino de ceniza: exclusivo de Lava Vortex. No es sólido, se nota como una
@@ -6,14 +7,19 @@ extends Area3D
 ## o saltando de lado, y los anillos giran en sentidos alternos para leerlo.
 
 @export var radius: float = 3.4
+
 @export var height: float = 3.0
+
 ## Velocidad tangencial que impone (m/s): más alto, más cuesta mantener la línea.
 @export var spin_force: float = 4.6
+
 ## Tirón hacia el centro del remolino (m/s).
 @export var pull_force: float = 1.1
+
 @export var ring_speed: float = 1.7
 
 var _bodies: Array[Node3D] = []
+
 var _rings: Array[MeshInstance3D] = []
 
 

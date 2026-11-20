@@ -3,42 +3,80 @@ extends CanvasLayer
 ## HUD: cronómetro, récord, medalla, progreso, cuenta atrás, ranking de
 ## bots, pantalla de resultados y tutorial de primera vez.
 
-const START_Z := 5.0
-const FINISH_Z := -205.0
-
-@onready var time_label: Label = $Root/TimeLabel
-@onready var message_label: Label = $Root/MessageLabel
-@onready var checkpoints_label: Label = $Root/CheckpointsLabel
-@onready var best_time_label: Label = $Root/BestTimeLabel
-@onready var medal_label: Label = $Root/MedalLabel
-@onready var rank_label: Label = $Root/RankLabel
-@onready var progress_bar: ProgressBar = $Root/ProgressBar
-@onready var countdown_label: Label = $Root/CountdownLabel
-@onready var results_panel: PanelContainer = $Root/ResultsPanel
-@onready var results_title: Label = $Root/ResultsPanel/VBox/Title
-@onready var results_time: Label = $Root/ResultsPanel/VBox/ResultsTime
-@onready var results_best: Label = $Root/ResultsPanel/VBox/ResultsBest
-@onready var results_medal: Label = $Root/ResultsPanel/VBox/ResultsMedal
-@onready var results_rank: Label = $Root/ResultsPanel/VBox/ResultsRank
-@onready var results_coins: Label = $Root/ResultsPanel/VBox/ResultsCoins
-@onready var results_coin_breakdown: Label = $Root/ResultsPanel/VBox/ResultsCoinBreakdown
-@onready var retry_button: Button = $Root/ResultsPanel/VBox/Buttons/RetryButton
-@onready var next_round_button: Button = $Root/ResultsPanel/VBox/Buttons/NextRoundButton
-@onready var menu_button: Button = $Root/ResultsPanel/VBox/Buttons/MenuButton
-@onready var tutorial_panel: PanelContainer = $Root/TutorialPanel
-@onready var tutorial_button: Button = $Root/TutorialPanel/VBox/TutorialButton
-@onready var scrim: ColorRect = $Root/Scrim
+## Se precarga para que el exportador incluya la guía aunque se instancie en
+## runtime después de cerrar el tutorial.
+const TUTORIAL_GUIDE := preload("res://scripts/tutorial_guide.gd")
 
 var _manager: RaceManager
+
 var _director: Node
+
 var _player: Node3D
+
 var _level_info: LevelInfo
-var _start_z: float = START_Z
-var _finish_z: float = FINISH_Z
+
+# Los rellena el `LevelInfo` del circuito en `_ready`: cada mapa mide distinto.
+var _start_z: float = 0.0
+
+var _finish_z: float = 0.0
+
 var _results_shown: bool = false
+
 var _qualified: bool = true
+
 var _headless: bool = false
+
+## Último idioma pintado: los valores con `tr()` se regeneran al cambiarlo.
+var _locale: String = ""
+
 var _tutorial_paused: bool = false
+
+## Último aviso de la guía, para no borrar un mensaje de checkpoint encima.
+var _guide_prompt: String = ""
+
+@onready var time_label: Label = $Root/TimeLabel
+
+@onready var message_label: Label = $Root/MessageLabel
+
+@onready var checkpoints_label: Label = $Root/CheckpointsLabel
+
+@onready var best_time_label: Label = $Root/BestTimeLabel
+
+@onready var medal_label: Label = $Root/MedalLabel
+
+@onready var rank_label: Label = $Root/RankLabel
+
+@onready var progress_bar: ProgressBar = $Root/ProgressBar
+
+@onready var countdown_label: Label = $Root/CountdownLabel
+
+@onready var results_panel: PanelContainer = $Root/ResultsPanel
+
+@onready var results_title: Label = $Root/ResultsPanel/VBox/Title
+
+@onready var results_time: Label = $Root/ResultsPanel/VBox/ResultsTime
+
+@onready var results_best: Label = $Root/ResultsPanel/VBox/ResultsBest
+
+@onready var results_medal: Label = $Root/ResultsPanel/VBox/ResultsMedal
+
+@onready var results_rank: Label = $Root/ResultsPanel/VBox/ResultsRank
+
+@onready var results_coins: Label = $Root/ResultsPanel/VBox/ResultsCoins
+
+@onready var results_coin_breakdown: Label = $Root/ResultsPanel/VBox/ResultsCoinBreakdown
+
+@onready var retry_button: Button = $Root/ResultsPanel/VBox/Buttons/RetryButton
+
+@onready var next_round_button: Button = $Root/ResultsPanel/VBox/Buttons/NextRoundButton
+
+@onready var menu_button: Button = $Root/ResultsPanel/VBox/Buttons/MenuButton
+
+@onready var tutorial_panel: PanelContainer = $Root/TutorialPanel
+
+@onready var tutorial_button: Button = $Root/TutorialPanel/VBox/TutorialButton
+
+@onready var scrim: ColorRect = $Root/Scrim
 
 
 func _ready() -> void:
@@ -48,8 +86,8 @@ func _ready() -> void:
 	message_label.text = ""
 	checkpoints_label.text = "0/0"
 	checkpoints_label.visible = false
-	best_time_label.text = "Récord: --"
-	medal_label.text = "Oro ≤ --"
+	best_time_label.text = tr("Récord: --")
+	medal_label.text = tr("Oro ≤ --")
 	rank_label.text = ""
 	results_panel.hide()
 	scrim.hide()
@@ -70,9 +108,11 @@ func _ready() -> void:
 	if _level_info != null:
 		_start_z = _level_info.start_z
 		_finish_z = _level_info.finish_z
-		medal_label.text = "Oro ≤ %.1f s" % _level_info.gold_time
+		medal_label.text = tr("Oro ≤ %s") % ("%.1f s" % _level_info.gold_time)
 	_connect_manager()
 	_connect_director()
+	_locale = TranslationServer.get_locale()
+	SaveManager.settings_changed.connect(_on_settings_changed)
 	if not _headless and not SaveManager.has_seen_tutorial():
 		_show_tutorial()
 
@@ -133,7 +173,7 @@ func _on_finished(final_time: float) -> void:
 
 
 func _on_respawned(penalty: float) -> void:
-	message_label.text = "+%.1f s  (caída)" % penalty
+	message_label.text = tr("+%s s  (caída)") % ("%.1f" % penalty)
 	message_label.modulate = Color(1.0, 0.45, 0.55)
 	await get_tree().create_timer(1.4).timeout
 	if not is_inside_tree():
@@ -143,12 +183,13 @@ func _on_respawned(penalty: float) -> void:
 
 
 func _on_checkpoint(checkpoint_name: String) -> void:
-	message_label.text = checkpoint_name
+	var text := tr(checkpoint_name)
+	message_label.text = text
 	message_label.modulate = Color(0.4, 1.0, 0.55)
 	await get_tree().create_timer(1.0).timeout
 	if not is_inside_tree():
 		return
-	if message_label.text == checkpoint_name:
+	if message_label.text == text:
 		message_label.text = ""
 
 
@@ -156,12 +197,13 @@ func _on_split(checkpoint_name: String, split_time: float, delta: float) -> void
 	var suffix := ""
 	if not is_zero_approx(delta):
 		suffix = "  (%+.2f)" % delta
-	message_label.text = "%s  %.2f s%s" % [checkpoint_name, split_time, suffix]
+	var text := tr("%s  %s s%s") % [tr(checkpoint_name), "%.2f" % split_time, suffix]
+	message_label.text = text
 	message_label.modulate = Color(0.55, 1.0, 0.65) if delta <= 0.0 else Color(1.0, 0.75, 0.4)
 	await get_tree().create_timer(1.2).timeout
 	if not is_inside_tree():
 		return
-	if message_label.text.begins_with(checkpoint_name):
+	if message_label.text == text:
 		message_label.text = ""
 
 
@@ -175,9 +217,22 @@ func _on_checkpoints_updated(completed: int, total: int) -> void:
 
 func _on_best_time_updated(time: float) -> void:
 	if time <= 0.0:
-		best_time_label.text = "Récord: --"
+		best_time_label.text = tr("Récord: --")
 	else:
-		best_time_label.text = "Récord: %.2f s" % time
+		best_time_label.text = tr("Récord: %s") % ("%.2f s" % time)
+
+
+## El idioma se puede cambiar desde la pausa: los textos ya formateados no
+## se traducen solos, así que se vuelven a construir.
+func _on_settings_changed() -> void:
+	var locale := TranslationServer.get_locale()
+	if locale == _locale:
+		return
+	_locale = locale
+	if _level_info != null:
+		medal_label.text = tr("Oro ≤ %s") % ("%.1f s" % _level_info.gold_time)
+	if _manager != null:
+		_on_best_time_updated(_manager.best_time)
 
 
 func _on_countdown_tick(value: int) -> void:
@@ -185,12 +240,17 @@ func _on_countdown_tick(value: int) -> void:
 	if value > 0:
 		countdown_label.text = str(value)
 	else:
-		countdown_label.text = "¡YA!"
+		countdown_label.text = tr("¡YA!")
 	countdown_label.pivot_offset = countdown_label.size * 0.5
 	countdown_label.scale = Vector2(1.6, 1.6)
 	countdown_label.modulate = Color(1, 1, 1, 1)
 	var tween := create_tween()
-	tween.tween_property(countdown_label, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(countdown_label, "scale", Vector2.ONE, 0.22)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
 	if value == 0:
 		tween.tween_property(countdown_label, "modulate:a", 0.0, 0.25).set_delay(0.3)
 		tween.tween_callback(countdown_label.hide)
@@ -198,23 +258,27 @@ func _on_countdown_tick(value: int) -> void:
 
 func _on_rank_updated(rank: int, total: int) -> void:
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · %d.º/%d" % [
-			GameSession.round, GameSession.total_rounds(), rank, total]
+		rank_label.text = (
+			tr("Ronda %d/%d · %d.º/%d")
+			% [GameSession.round, GameSession.total_rounds(), rank, total]
+		)
 	else:
-		rank_label.text = "%d.º/%d" % [rank, total]
+		rank_label.text = tr("%d.º/%d") % [rank, total]
 
 
 func _on_qualification_result(qualified: bool, rank: int, qualifiers: int) -> void:
 	_qualified = qualified
 	var total := int(_director.total_racers if _director else 0)
-	var state := "CLASIFICADO" if qualified else "ELIMINADO"
+	var state := tr("CLASIFICADO") if qualified else tr("ELIMINADO")
 	if GameSession.is_tournament():
-		rank_label.text = "Ronda %d/%d · %d.º/%d · %s" % [
-			GameSession.round, GameSession.total_rounds(), rank, total, state]
+		rank_label.text = (
+			tr("Ronda %d/%d · %d.º/%d · %s")
+			% [GameSession.round, GameSession.total_rounds(), rank, total, state]
+		)
 	else:
-		rank_label.text = "%d.º/%d · %s" % [rank, total, state]
+		rank_label.text = tr("%d.º/%d · %s") % [rank, total, state]
 	if results_rank:
-		results_rank.text = "Puesto %d de %d · clasifican %d" % [rank, total, qualifiers]
+		results_rank.text = tr("Puesto %d de %d · clasifican %d") % [rank, total, qualifiers]
 
 
 func _on_results_ready(data: Dictionary) -> void:
@@ -227,19 +291,24 @@ func _on_results_ready(data: Dictionary) -> void:
 	var medal := String(data.get("medal", "none"))
 	var new_best := bool(data.get("new_best", false))
 
-	results_time.text = "Tiempo: %.2f s" % time
+	results_time.text = tr("Tiempo: %s") % ("%.2f s" % time)
 	if new_best:
-		results_best.text = "Récord: %.2f s  ·  ¡NUEVO!" % best
+		results_best.text = tr("Récord: %s  ·  ¡NUEVO!") % ("%.2f s" % best)
 	else:
-		results_best.text = "Récord: %.2f s" % best
-	results_medal.text = "Medalla: %s" % SaveManager.medal_label(medal)
+		results_best.text = tr("Récord: %s") % ("%.2f s" % best)
+	results_medal.text = tr("Medalla: %s") % tr(SaveManager.medal_label(medal))
 	results_medal.modulate = _medal_color(medal)
 
 	var falls := int(data.get("falls", 0))
-	var fall_text := "sin caídas" if falls == 0 else ("1 caída" if falls == 1 else "%d caídas" % falls)
-	results_coins.text = "+%d monedas (total %d) · %s" % [
-		int(data.get("coins", 0)), int(data.get("coins_total", 0)), fall_text
-	]
+	var fall_text := (
+		tr("sin caídas")
+		if falls == 0
+		else (tr("1 caída") if falls == 1 else tr("%d caídas") % falls)
+	)
+	results_coins.text = (
+		tr("+%d monedas (total %d) · %s")
+		% [int(data.get("coins", 0)), int(data.get("coins_total", 0)), fall_text]
+	)
 	if results_coin_breakdown != null:
 		var breakdown: Dictionary = data.get("coins_breakdown", {})
 		results_coin_breakdown.text = _coin_breakdown_text(breakdown)
@@ -256,24 +325,27 @@ func _on_results_ready(data: Dictionary) -> void:
 			rank = int(_director.get("player_rank"))
 			total = int(_director.get("total_racers"))
 		if final_round and _qualified:
-			results_title.text = "¡CAMPEÓN!"
+			results_title.text = tr("¡CAMPEÓN!")
 			results_title.modulate = Color(1, 0.9, 0.3)
 		elif _qualified:
-			results_title.text = "¡META!"
+			results_title.text = tr("¡META!")
 			results_title.modulate = Color(1, 0.92, 0.4)
 		else:
-			results_title.text = "¡ELIMINADO!"
+			results_title.text = tr("¡ELIMINADO!")
 			results_title.modulate = Color(1, 0.45, 0.45)
-		var state := "CLASIFICADO" if _qualified else "ELIMINADO"
+		var state := tr("CLASIFICADO") if _qualified else tr("ELIMINADO")
 		if final_round and _qualified:
-			state = "CAMPEÓN DEL TORNEO"
+			state = tr("CAMPEÓN DEL TORNEO")
 		if rank > 0 and total > 0:
-			results_rank.text = "Ronda %d/%d · Puesto %d de %d · %s" % [round_number, total_rounds, rank, total, state]
+			results_rank.text = (
+				tr("Ronda %d/%d · Puesto %d de %d · %s")
+				% [round_number, total_rounds, rank, total, state]
+			)
 		else:
-			results_rank.text = "Ronda %d/%d · %s" % [round_number, total_rounds, state]
+			results_rank.text = tr("Ronda %d/%d · %s") % [round_number, total_rounds, state]
 		next_round_button.visible = GameSession.is_tournament() and _qualified and not final_round
 	else:
-		results_title.text = "¡META!"
+		results_title.text = tr("¡META!")
 		results_title.modulate = Color(1, 0.92, 0.4)
 		results_rank.text = ""
 		next_round_button.visible = false
@@ -296,21 +368,21 @@ func _on_failed(reason: String) -> void:
 	_results_shown = true
 	message_label.text = ""
 	countdown_label.hide()
-	results_title.text = "¡HAS PERDIDO!"
+	results_title.text = tr("¡HAS PERDIDO!")
 	results_title.modulate = Color(1.0, 0.42, 0.34)
-	results_time.text = "La lava te alcanzó" if reason == "lava" else "Caíste al vacío"
+	results_time.text = tr("La lava te alcanzó") if reason == "lava" else tr("Caíste al vacío")
 	results_time.modulate = Color(1.0, 1.0, 1.0, 0.92)
 	var elapsed := _manager.elapsed_time if _manager != null else 0.0
-	results_best.text = "Tiempo: %.2f s" % elapsed
+	results_best.text = tr("Tiempo: %s") % ("%.2f s" % elapsed)
 	results_medal.text = ""
-	results_rank.text = "Pulsa REINTENTAR para volver a la salida."
+	results_rank.text = tr("Pulsa REINTENTAR para volver a la salida.")
 	results_coins.text = ""
 	results_coin_breakdown.text = ""
 	results_coin_breakdown.visible = false
 	# Perder no debe costar volver a navegar el menu: se puede reintentar en el sitio.
 	retry_button.visible = true
 	next_round_button.visible = false
-	menu_button.text = "VOLVER AL LOBBY"
+	menu_button.text = tr("VOLVER AL LOBBY")
 	scrim.show()
 	results_panel.show()
 	results_panel.modulate = Color(1, 1, 1, 0)
@@ -326,17 +398,17 @@ func _on_failed(reason: String) -> void:
 func _coin_breakdown_text(breakdown: Dictionary) -> String:
 	if breakdown.is_empty():
 		return ""
-	var parts: Array[String] = ["Base %d" % int(breakdown.get("base", 0))]
+	var parts: Array[String] = [tr("Base %d") % int(breakdown.get("base", 0))]
 	var time_coins := int(breakdown.get("time", 0))
 	if time_coins > 0:
-		parts.append("Tiempo %d" % time_coins)
+		parts.append(tr("Tiempo %d") % time_coins)
 	var place := int(breakdown.get("place", 0))
 	var place_coins := int(breakdown.get("position", 0))
 	if place > 0 and place_coins > 0:
-		parts.append("Puesto %dº %d" % [place, place_coins])
+		parts.append(tr("Puesto %dº %d") % [place, place_coins])
 	var medal_coins := int(breakdown.get("medal", 0))
 	if medal_coins > 0:
-		parts.append("Medalla %d" % medal_coins)
+		parts.append(tr("Medalla %d") % medal_coins)
 	return "  ·  ".join(parts)
 
 
@@ -367,6 +439,19 @@ func is_tutorial_open() -> bool:
 	return tutorial_panel.visible
 
 
+## Avisos del tramo guiado (las flechas 3D del tutorial).
+func show_tutorial_prompt(text: String) -> void:
+	_guide_prompt = tr(text)
+	message_label.text = _guide_prompt
+	message_label.modulate = Color(1.0, 0.95, 0.5)
+
+
+func clear_tutorial_prompt() -> void:
+	if message_label.text == _guide_prompt:
+		message_label.text = ""
+	_guide_prompt = ""
+
+
 func _on_tutorial_closed() -> void:
 	SaveManager.mark_tutorial_seen()
 	AudioManager.play_sfx("ui", 0.05)
@@ -376,6 +461,23 @@ func _on_tutorial_closed() -> void:
 		_tutorial_paused = false
 		get_tree().paused = false
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_start_tutorial_guide()
+
+
+## Solo en la primera partida de Pivot Push: el resto de circuitos ya no son
+## "el tramo de aprendizaje" y no deben llenarse de flechas.
+func _start_tutorial_guide() -> void:
+	if _headless or _player == null or _level_info == null:
+		return
+	if String(_level_info.level_id) != "pivot_push":
+		return
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	var guide := TUTORIAL_GUIDE.new() as Node3D
+	scene.add_child(guide)
+	guide.call("setup", _player, _level_info)
+	guide.call("start")
 
 
 func _on_retry_pressed() -> void:

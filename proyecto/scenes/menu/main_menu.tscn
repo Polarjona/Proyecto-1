@@ -1161,6 +1161,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Moverte:  W A S D  o  flechas"
 
+[node name="CameraLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Cámara:  Ratón  o  stick derecho"
+
 [node name="JumpLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
@@ -1170,6 +1175,11 @@ text = "Saltar:  Espacio  (mantén para saltar más alto)"
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Pausa:  Escape  o  Start del mando"
+
+[node name="RestartLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Reiniciar carrera:  R"
 
 [node name="GoalLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
 layout_mode = 2

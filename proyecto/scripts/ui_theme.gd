@@ -6,26 +6,42 @@ extends Node
 ## compartan el mismo lenguaje visual.
 
 const FONT: FontFile = preload("res://ui/fonts/Baloo2-Variable.ttf")
+
 # Paleta tomada de los mapas: cobalto de los muros, azul de cielo, cian de
 # las losas/hielo, oro de las barandillas, naranja de lava y coral del abismo.
 # Los nombres históricos se conservan para no romper las escenas existentes.
 const INK := Color("#06183B")
+
 const CREAM := Color("#EDF9FF")
+
 const PLUM := Color("#0A2A61")
+
 const PLUM_DARK := Color("#061838")
+
 const ROYAL := Color("#0B3A82")
+
 const BLUE := Color("#0D6FE8")
+
 const YELLOW := Color("#FFD23F")
+
 const YELLOW_HOVER := Color("#FFE37A")
+
 const PINK := Color("#FF5B1A")
+
 const PINK_HOVER := Color("#FF874D")
+
 const CYAN := Color("#16D9F1")
+
 const CYAN_HOVER := Color("#6CF0FF")
+
 const MINT := Color("#5BE3A6")
+
 const CORAL := Color("#FF3D5A")
 
 var theme: Theme
+
 var _display_font: FontVariation
+
 var _body_font: FontVariation
 
 
@@ -68,7 +84,14 @@ func _apply(node: Node) -> void:
 			# fantasma o pill) y el contraste sea el mismo en todas las pantallas.
 			for style in ["normal", "hover", "pressed", "focus", "disabled"]:
 				control.remove_theme_stylebox_override(style)
-			for color in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color", "font_outline_color"]:
+			for color in [
+				"font_color",
+				"font_hover_color",
+				"font_pressed_color",
+				"font_focus_color",
+				"font_disabled_color",
+				"font_outline_color"
+			]:
 				control.remove_theme_color_override(color)
 			control.remove_theme_constant_override("outline_size")
 			var size := control.get_theme_font_size("font_size")
@@ -103,13 +126,22 @@ func _build() -> Theme:
 	# Botón base: acción secundaria amarilla.
 	_button_styles(result, "Button", YELLOW, YELLOW_HOVER, PINK, INK, 16)
 	result.set_stylebox("focus", "Button", _focus())
-	result.set_stylebox("disabled", "Button", _box(Color("#10233F"), 2, Color(1, 1, 1, 0.35), 16, 20, 10))
+	result.set_stylebox(
+		"disabled", "Button", _box(Color("#10233F"), 2, Color(1, 1, 1, 0.35), 16, 20, 10)
+	)
 	result.set_color("font_disabled_color", "Button", Color(1, 1, 1, 0.55))
 
 	# Variantes semánticas.
 	_variation(result, "PrimaryButton", PINK, PINK_HOVER, INK, 18)
 	_variation(result, "InfoButton", CYAN, CYAN_HOVER, INK, 18)
-	_variation(result, "GhostButton", Color(0.02, 0.08, 0.18, 0.55), Color(0.03, 0.18, 0.36, 0.85), CREAM, 16)
+	_variation(
+		result,
+		"GhostButton",
+		Color(0.02, 0.08, 0.18, 0.55),
+		Color(0.03, 0.18, 0.36, 0.85),
+		CREAM,
+		16
+	)
 	result.set_type_variation("NavButton", "Button")
 	result.set_stylebox("normal", "NavButton", _box(ROYAL, 3, CREAM, 14, 12, 8))
 	result.set_stylebox("hover", "NavButton", _box(BLUE, 4, CREAM, 14, 12, 8))
@@ -141,12 +173,22 @@ func _build() -> Theme:
 	# se ve el punto del grabber.
 	result.set_stylebox("slider", "HSlider", _box(PLUM_DARK, 2, CREAM, 9, 0, 5))
 	result.set_stylebox("grabber_area", "HSlider", _box(CYAN, 0, Color(0, 0, 0, 0), 9, 0, 5))
-	result.set_stylebox("grabber_area_highlight", "HSlider", _box(CYAN_HOVER, 0, Color(0, 0, 0, 0), 9, 0, 5))
+	result.set_stylebox(
+		"grabber_area_highlight", "HSlider", _box(CYAN_HOVER, 0, Color(0, 0, 0, 0), 9, 0, 5)
+	)
 
-	result.set_stylebox("scroll", "VScrollBar", _box(Color(0.02, 0.08, 0.18), 0, Color(0, 0, 0, 0), 8, 0, 0))
-	result.set_stylebox("grabber", "VScrollBar", _box(Color(1, 1, 1, 0.35), 0, Color(0, 0, 0, 0), 8, 0, 0))
-	result.set_stylebox("grabber_highlight", "VScrollBar", _box(Color(1, 1, 1, 0.55), 0, Color(0, 0, 0, 0), 8, 0, 0))
-	result.set_stylebox("grabber_pressed", "VScrollBar", _box(YELLOW, 0, Color(0, 0, 0, 0), 8, 0, 0))
+	result.set_stylebox(
+		"scroll", "VScrollBar", _box(Color(0.02, 0.08, 0.18), 0, Color(0, 0, 0, 0), 8, 0, 0)
+	)
+	result.set_stylebox(
+		"grabber", "VScrollBar", _box(Color(1, 1, 1, 0.35), 0, Color(0, 0, 0, 0), 8, 0, 0)
+	)
+	result.set_stylebox(
+		"grabber_highlight", "VScrollBar", _box(Color(1, 1, 1, 0.55), 0, Color(0, 0, 0, 0), 8, 0, 0)
+	)
+	result.set_stylebox(
+		"grabber_pressed", "VScrollBar", _box(YELLOW, 0, Color(0, 0, 0, 0), 8, 0, 0)
+	)
 
 	var sep := StyleBoxLine.new()
 	sep.color = Color(1, 1, 1, 0.18)
@@ -159,13 +201,23 @@ func _build() -> Theme:
 	return result
 
 
-func _variation(result: Theme, name: String, normal: Color, hover: Color, ink: Color, font_size: int) -> void:
+func _variation(
+	result: Theme, name: String, normal: Color, hover: Color, ink: Color, font_size: int
+) -> void:
 	result.set_type_variation(name, "Button")
 	_button_styles(result, name, normal, hover, PINK, ink, font_size)
 	result.set_stylebox("focus", name, _focus())
 
 
-func _button_styles(result: Theme, type: String, normal: Color, hover: Color, pressed: Color, ink: Color, font_size: int) -> void:
+func _button_styles(
+	result: Theme,
+	type: String,
+	normal: Color,
+	hover: Color,
+	pressed: Color,
+	ink: Color,
+	font_size: int
+) -> void:
 	result.set_stylebox("normal", type, _box(normal, 4, CREAM, 17, 20, 10))
 	result.set_stylebox("hover", type, _box(hover, 5, CREAM, 17, 20, 10))
 	# Al pulsar, el texto baja y la sombra desaparece: el botón se hunde.
@@ -180,7 +232,9 @@ func _button_styles(result: Theme, type: String, normal: Color, hover: Color, pr
 	result.set_font_size("font_size", type, font_size)
 
 
-func _box(bg: Color, border: int, border_color: Color, radius: int, margin_h: float, margin_v: float) -> StyleBoxFlat:
+func _box(
+	bg: Color, border: int, border_color: Color, radius: int, margin_h: float, margin_v: float
+) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = bg
 	box.border_width_left = border
