@@ -4,13 +4,19 @@ extends Node
 ## Usa el reloj real (Time.get_ticks_msec) para no depender de time_scale.
 
 var shake_strength: float = 0.0
+
 var flash_amount: float = 0.0
+
 var flash_color: Color = Color.WHITE
 
 var _hitstop_until_ms: int = 0
+
 var _slowmo_until_ms: int = 0
+
 var _slowmo_scale: float = 1.0
+
 var _last_ms: int = 0
+
 ## RNG propio: la sacudida no debe alterar la secuencia aleatoria de los bots.
 var _rng := RandomNumberGenerator.new()
 

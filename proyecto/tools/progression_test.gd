@@ -56,8 +56,10 @@ func _run() -> void:
 	# --- Torneo -------------------------------------------------------------
 	var session: Node = root.get_node("GameSession")
 	session.call("start_bots", true)
-	_check(int(session.get("round")) == 1 and int(session.get("qualifiers")) == 3,
-		"El torneo empieza en la ronda 1 con 3 plazas")
+	_check(
+		int(session.get("round")) == 1 and int(session.get("qualifiers")) == 3,
+		"El torneo empieza en la ronda 1 con 3 plazas"
+	)
 	for _i in [2, 3, 4]:
 		session.call("advance_round")
 	_check(int(session.get("round")) == 4, "El torneo llega a la ronda 4")
@@ -71,7 +73,7 @@ func _run() -> void:
 	# --- Tutorial y cuenta atras -------------------------------------------
 	# El HUD solo muestra el tutorial cuando no es headless; aqui se abre a mano
 	# para comprobar que la cuenta atras queda congelada detras del panel.
-	var level: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
+	var level: Node = (load(LevelPaths.PIVOT_PUSH) as PackedScene).instantiate()
 	root.add_child(level)
 	current_scene = level
 	await process_frame
@@ -87,7 +89,9 @@ func _run() -> void:
 		hud.call("_show_tutorial")
 		await create_timer(3.0).timeout
 		_check(paused, "El tutorial congela el arbol")
-		_check(not bool(manager.get("is_running")), "La cuenta atras no se consume tras el tutorial")
+		_check(
+			not bool(manager.get("is_running")), "La cuenta atras no se consume tras el tutorial"
+		)
 		hud.call("_on_tutorial_closed")
 		await create_timer(2.6).timeout
 		_check(not paused, "Cerrar el tutorial reanuda el juego")

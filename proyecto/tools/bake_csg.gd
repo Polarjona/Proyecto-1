@@ -12,7 +12,7 @@ extends Node
 ## Uso: godot --headless --path . res://tools/csg_runner.tscn
 
 const TARGETS := [
-	"res://scenes/main.tscn",
+	LevelPaths.PIVOT_PUSH,
 	"res://scenes/levels/spin_go_round.tscn",
 ]
 
@@ -37,8 +37,12 @@ func _convert_scene(path: String) -> bool:
 		return false
 	var stats := {"replaced": 0, "collision": 0, "children_lost": 0}
 	_convert(root, root, stats)
-	print("%s: %d CSG a malla (%d con colisión), %d con hijos"
-		% [path, stats["replaced"], stats["collision"], stats["children_lost"]])
+	print(
+		(
+			"%s: %d CSG a malla (%d con colisión), %d con hijos"
+			% [path, stats["replaced"], stats["collision"], stats["children_lost"]]
+		)
+	)
 	if stats["replaced"] == 0:
 		print("NOTA: no había CSG en ", path)
 		root.free()
@@ -61,13 +65,19 @@ func _convert_scene(path: String) -> bool:
 
 	# Sustituye el original dejando copia por si el reemplazo fallara.
 	var backup := path + ".precsg"
-	DirAccess.copy_absolute(ProjectSettings.globalize_path(path),
-		ProjectSettings.globalize_path(backup))
+	DirAccess.copy_absolute(
+		ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(backup)
+	)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
-	if DirAccess.rename_absolute(ProjectSettings.globalize_path(out_path),
-			ProjectSettings.globalize_path(path)) != OK:
-		DirAccess.rename_absolute(ProjectSettings.globalize_path(backup),
-			ProjectSettings.globalize_path(path))
+	if (
+		DirAccess.rename_absolute(
+			ProjectSettings.globalize_path(out_path), ProjectSettings.globalize_path(path)
+		)
+		!= OK
+	):
+		DirAccess.rename_absolute(
+			ProjectSettings.globalize_path(backup), ProjectSettings.globalize_path(path)
+		)
 		print("FAIL: no se pudo reemplazar ", path)
 		return false
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(backup))
@@ -169,8 +179,9 @@ func _verify(path: String) -> bool:
 	var shapes := _count(root, func(node: Node) -> bool: return node is CollisionShape3D)
 	var ok := csg == 0 and bodies > 0 and shapes > 0
 	if not ok:
-		print("FAIL: verificación de %s (csg=%d, cuerpos=%d, formas=%d)"
-			% [path, csg, bodies, shapes])
+		print(
+			"FAIL: verificación de %s (csg=%d, cuerpos=%d, formas=%d)" % [path, csg, bodies, shapes]
+		)
 	root.free()
 	return ok
 

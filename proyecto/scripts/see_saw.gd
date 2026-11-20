@@ -17,26 +17,38 @@ extends AnimatableBody3D
 ## root rotations while that flag is enabled.
 
 @export var max_tilt: float = 0.5
+
 @export var max_roll: float = 0.16
+
 @export var responsiveness: float = 6.0
+
 @export var idle_sway: float = 0.0
+
 ## Normalised offset (0..1) beyond which the board commits to a full tip.
 ## 0.02 over the 5 m half-board is a 10 cm safe strip.
 @export var tip_threshold: float = 0.02
+
 ## Lateral offset is amplified so stepping off the centre line also rolls it.
 @export var roll_gain: float = 2.5
+
 ## Small constant shiver while somebody is riding, so it never feels stable.
 @export var instability: float = 0.02
+
 ## Half-length of the board along the travel direction (local Z).
 @export var rider_range: float = 5.0
+
 ## Half-width of the board across the path (local X).
 @export var rider_width: float = 6.5
+
 ## How far above the board a body still counts as riding it (local Y).
 @export var rider_height: float = 2.2
+
 ## Tilt beyond which the deck stops gripping and starts sliding riders.
 @export var slide_threshold: float = 0.35
+
 ## Downhill speed applied to riders past the slide threshold (m/s).
 @export var slide_speed: float = 4.0
+
 ## When a rider reaches this local Z on the down-side of the board, their end
 ## of the deck has already dropped past the edge and they are past the point of
 ## no return. Pushing them off here drops them into the void — not onto the
@@ -44,9 +56,13 @@ extends AnimatableBody3D
 @export var edge_cutoff: float = -4.7
 
 var _tilt: float = 0.0
+
 var _roll: float = 0.0
+
 var _time: float = 0.0
+
 var _rider_count: int = 0
+
 var _creak_cooldown: float = 0.0
 
 
@@ -158,8 +174,8 @@ func _rider_weight(riders: Array[Node3D]) -> Vector2:
 	for body in riders:
 		var local := to_local(body.global_position)
 		total += Vector2(
-			clampf(local.x / rider_width, -1.0, 1.0),
-			clampf(local.z / rider_range, -1.0, 1.0))
+			clampf(local.x / rider_width, -1.0, 1.0), clampf(local.z / rider_range, -1.0, 1.0)
+		)
 	return total / float(riders.size())
 
 

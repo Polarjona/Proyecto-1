@@ -2,14 +2,17 @@ extends MeshInstance3D
 
 ## Placa de hazard pintada en el suelo: mientras el corredor la pisa va más
 ## lento, y al salir recupera la velocidad en `refresh` segundos. Las placas ya
-## vienen horneadas en main.tscn y spin_go_round.tscn; los generadores también
+## vienen horneadas en pivot_push.tscn y spin_go_round.tscn; los generadores también
 ## enganchan este script para los mapas nuevos.
 
 ## Velocidad a la que se corre sobre la placa (1.0 = sin freno).
+
 @export var factor: float = 0.6
+
 ## Refresco del frenazo: al salir de la placa se recupera en este tiempo. La
 ## franja se cruza en décimas, así que el frenazo dura algo más para notarse.
 @export var refresh: float = 0.5
+
 ## Altura del volumen que detecta a quien pisa la placa.
 @export var height: float = 2.4
 

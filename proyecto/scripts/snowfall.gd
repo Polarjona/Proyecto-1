@@ -1,4 +1,5 @@
 @tool
+
 extends CPUParticles3D
 
 ## Nevada del glaciar: el emisor viaja con la cámara y los copos se quedan
@@ -6,7 +7,9 @@ extends CPUParticles3D
 ## en el pasillo de rocas y en la cumbre, sin depender de dónde quedó el nodo.
 
 ## Metros por delante de la cámara donde se centra la caja de emisión.
+
 @export var ahead: float = 30.0
+
 ## Altura de la caja respecto a la cámara.
 @export var above: float = 14.0
 

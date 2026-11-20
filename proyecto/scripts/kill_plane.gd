@@ -2,6 +2,7 @@ extends Area3D
 
 ## En la final del volcán caer al vacío también pierde la carrera; en el resto
 ## de circuitos solo penaliza y devuelve al último checkpoint.
+
 @export var fail_run: bool = false
 
 

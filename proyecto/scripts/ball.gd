@@ -4,17 +4,22 @@ extends RigidBody3D
 ## Impact force scales with the ball's falling speed, capped so it stays fair.
 
 @export var push_force: float = 10.0
+
 @export var push_lift: float = 2.5
+
 @export var speed_for_max_push: float = 12.0
+
 @export var lifetime: float = 14.0
+
 ## Color de la bola. El lanzador lo cambia para que no se confunda con el
 ## decorado de cada circuito (en el hielo, las bolas ya no parecen nieve).
 @export var ball_color: Color = Color(0.92, 0.44, 0.16)
 
-@onready var hit_area: Area3D = $HitArea
-@onready var mesh: MeshInstance3D = $MeshInstance3D
-
 var _age: float = 0.0
+
+@onready var hit_area: Area3D = $HitArea
+
+@onready var mesh: MeshInstance3D = $MeshInstance3D
 
 
 func _ready() -> void:

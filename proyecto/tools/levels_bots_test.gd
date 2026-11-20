@@ -53,16 +53,30 @@ func _run() -> void:
 			await physics_frame
 			frames += 1
 			if frames % 900 == 0:
-				print("  %4.1f s  z=%7.2f  wp=%d  rescates=%d" % [
-					float(frames) / 60.0, bot.global_position.z,
-					int(bot.call("get_waypoint_index")),
-					int(bot.call("get_rescue_count")),
-				])
+				print(
+					(
+						"  %4.1f s  z=%7.2f  wp=%d  rescates=%d"
+						% [
+							float(frames) / 60.0,
+							bot.global_position.z,
+							int(bot.call("get_waypoint_index")),
+							int(bot.call("get_rescue_count")),
+						]
+					)
+				)
 		var finished := bool(bot.get("_finished"))
 		var rescues := int(bot.call("get_rescue_count"))
-		print("RESULTADO: terminado=%s  tiempo=%.1f s  rescates=%d  z=%.2f" % [
-			finished, float(frames) / 60.0, rescues, bot.global_position.z,
-		])
+		print(
+			(
+				"RESULTADO: terminado=%s  tiempo=%.1f s  rescates=%d  z=%.2f"
+				% [
+					finished,
+					float(frames) / 60.0,
+					rescues,
+					bot.global_position.z,
+				]
+			)
+		)
 		if not finished:
 			_failures += 1
 		if rescues > 14:

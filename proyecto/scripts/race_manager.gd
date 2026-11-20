@@ -1,42 +1,68 @@
 class_name RaceManager
+
 extends Node
 
 ## Tracks race time, checkpoints, splits, medal and finish state.
 ## Persists results through SaveManager (user://profile.json).
 
 signal checkpoint_reached(checkpoint_name: String)
+
 signal split_reached(checkpoint_name: String, split_time: float, delta: float)
+
 signal finished(final_time: float)
+
 signal respawned(penalty: float)
+
 signal time_updated(elapsed: float)
+
 signal best_time_updated(time: float)
+
 signal checkpoints_updated(completed: int, total: int)
+
 signal countdown_tick(value: int)
+
 signal race_started
+
 signal results_ready(data: Dictionary)
+
 ## La carrera termina en derrota (lava o vacío en la final sin checkpoints).
 signal failed(reason: String)
 
 @export var time_penalty: float = 2.5
 
 var elapsed_time: float = 0.0
+
 var is_running: bool = true
+
 var is_finished: bool = false
+
 var last_checkpoint: Transform3D = Transform3D.IDENTITY
+
 var has_checkpoint: bool = false
+
 var player: CharacterBody3D
+
 var best_time: float = 0.0
+
 var has_best_time: bool = false
+
 var checkpoints_completed: int = 0
+
 var checkpoints_total: int = 0
+
 var splits: Array[float] = []
+
 var fall_count: int = 0
 
 ## Identidad y tiempos del circuito cargado. Se rellenan desde LevelInfo.
 var level_id: String = ""
+
 var level_name: String = ""
+
 var gold_time: float = 70.0
+
 var silver_time: float = 95.0
+
 var bronze_time: float = 130.0
 
 var _headless: bool = false
@@ -147,8 +173,9 @@ func respawn_player() -> void:
 		player.respawn_at(last_checkpoint)
 	fall_count += 1
 	SaveManager.register_fall()
-	elapsed_time += time_penalty
-	respawned.emit(time_penalty)
+	var penalty := 1.0 if bool(SaveManager.get_setting("assisted", false)) else time_penalty
+	elapsed_time += penalty
+	respawned.emit(penalty)
 	time_updated.emit(elapsed_time)
 	GameFeel.flash(Color(1.0, 0.35, 0.4), 0.35)
 	GameFeel.shake(2.5)
@@ -189,8 +216,16 @@ func finish_race() -> void:
 	is_running = false
 	var medal := SaveManager.medal_for_values(elapsed_time, gold_time, silver_time, bronze_time)
 	var position := player_position()
-	var info := SaveManager.register_finish(elapsed_time, fall_count, splits.duplicate(), position,
-		level_id, gold_time, silver_time, bronze_time)
+	var info := SaveManager.register_finish(
+		elapsed_time,
+		fall_count,
+		splits.duplicate(),
+		position,
+		level_id,
+		gold_time,
+		silver_time,
+		bronze_time
+	)
 	best_time = SaveManager.best_time(level_id)
 	has_best_time = SaveManager.has_best(level_id)
 	best_time_updated.emit(best_time)

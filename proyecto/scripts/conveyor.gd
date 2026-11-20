@@ -4,20 +4,29 @@ extends Area3D
 ## animated chevrons on the belt so the direction of travel is readable.
 
 @export var direction: Vector3 = Vector3.FORWARD
+
 @export var force: float = 12.0
+
 ## Material used for the moving chevrons (the yellow trim material).
 @export var arrow_material: Material
+
 @export var arrow_count: int = 4
+
 ## Local X distance the arrows travel before wrapping around.
 @export var arrow_span: float = 2.6
+
 @export var arrow_speed: float = 2.4
+
 ## Tamaño del suelo de la cinta. Los chevrones no se estiran: solo crecen el
 ## área que empuja y la placa que la dibuja, para cubrir una sala entera.
 @export var belt_length: float = 6.0
+
 @export var belt_width: float = 4.0
 
 var _bodies: Array[Node3D] = []
+
 var _arrows_root: Node3D
+
 var _arrow_scroll: float = 0.0
 
 
@@ -59,7 +68,9 @@ func _process(delta: float) -> void:
 	var spacing := arrow_span * 2.0 / float(arrow_count)
 	for i in _arrows_root.get_child_count():
 		var arrow := _arrows_root.get_child(i) as Node3D
-		arrow.position.x = -arrow_span + fposmod(float(i) * spacing + _arrow_scroll, arrow_span * 2.0)
+		arrow.position.x = (
+			-arrow_span + fposmod(float(i) * spacing + _arrow_scroll, arrow_span * 2.0)
+		)
 
 
 func _physics_process(_delta: float) -> void:

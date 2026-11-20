@@ -3,43 +3,15 @@ extends "res://scripts/levels/level_kit.gd"
 ## Abyss Run (carrera clásica): túnel inundado de 430 m con nado, islas secas y
 ## quince peligros marinos.
 
-
-var _ocean_rock: StandardMaterial3D
-
-
-var _ocean_rock_dark: StandardMaterial3D
-
-
-var _ocean_sand: StandardMaterial3D
-
-
-var _ocean_coral: StandardMaterial3D
-
-
-var _ocean_coral_alt: StandardMaterial3D
-
-
-var _ocean_glow: StandardMaterial3D
-
-
-var _ocean_water: StandardMaterial3D
-
-
-var _ocean_ray: StandardMaterial3D
-
-
 ## Circuito abisal: una fosa inundada de 430 m con tres tramos de agua y dos
 ## islas secas (los checkpoints). El corredor nada en tres dimensiones dentro
 ## del agua y sale a superficie en las islas, así que el mapa mezcla natación
 ## con carrera a pie. Los quince obstáculos son exclusivos de este circuito.
 const O_WATERLINE := 1.2
 
-
 const O_FLOOR_Y := -24.0
 
-
 const O_HALF_WIDTH := 12.0
-
 
 ## Paredes laterales del túnel: su cara interior queda exactamente en
 ## ±O_HALF_WIDTH, así encajan con las compuertas, las islas y el muelle. Antes
@@ -47,20 +19,15 @@ const O_HALF_WIDTH := 12.0
 ## cruzaba cada compuerta sin pasar por el hueco.
 const O_WALL_THICKNESS := 1.8
 
-
 ## Las paredes suben hasta aquí: desde el muelle (2 m) no se puede saltar por
 ## encima y salir del túnel por el aire.
 const O_WALL_TOP := 6.0
 
-
 const O_WALL_HEIGHT := O_WALL_TOP - (O_FLOOR_Y - 1.0)
-
 
 const O_START_Z := 12.0
 
-
 const O_FINISH_Z := -416.0
-
 
 ## Islas secas: centro, largo y altura de la meseta (justo bajo la línea de
 ## agua, para poder salir nadando sin escalón).
@@ -69,13 +36,28 @@ const O_ISLANDS := [
 	{"z": -247.0, "length": 14.0, "top": 0.4},
 ]
 
-
 ## Tramos inundados (z inicial, z final). Entre uno y otro quedan las islas.
 const O_WATER_STRETCHES := [
 	Vector2(-4.0, -110.0),
 	Vector2(-124.0, -240.0),
 	Vector2(-254.0, -392.0),
 ]
+
+var _ocean_rock: StandardMaterial3D
+
+var _ocean_rock_dark: StandardMaterial3D
+
+var _ocean_sand: StandardMaterial3D
+
+var _ocean_coral: StandardMaterial3D
+
+var _ocean_coral_alt: StandardMaterial3D
+
+var _ocean_glow: StandardMaterial3D
+
+var _ocean_water: StandardMaterial3D
+
+var _ocean_ray: StandardMaterial3D
 
 
 func _make_ocean_palette() -> void:
@@ -110,19 +92,21 @@ func _build_ocean() -> void:
 	_build_ocean_decor(course)
 	_build_ocean_scenery(course)
 
-	_add_level_info({
-		"level_id": "abyss_run",
-		"display_name": "Abyss Run",
-		"round_index": 5,
-		"start_z": O_START_Z,
-		"finish_z": O_FINISH_Z,
-		"course_length": O_START_Z - O_FINISH_Z,
-		"gold_time": 112.0,
-		"silver_time": 138.0,
-		"bronze_time": 172.0,
-		"start_position": Vector3(0.0, 2.65, 8.0),
-		"path_corridor": true,
-	})
+	_add_level_info(
+		{
+			"level_id": "abyss_run",
+			"display_name": "Abyss Run",
+			"round_index": 5,
+			"start_z": O_START_Z,
+			"finish_z": O_FINISH_Z,
+			"course_length": O_START_Z - O_FINISH_Z,
+			"gold_time": 112.0,
+			"silver_time": 138.0,
+			"bronze_time": 172.0,
+			"start_position": Vector3(0.0, 2.65, 8.0),
+			"path_corridor": true,
+		}
+	)
 	_add_race_manager()
 	_add_hud()
 	_add_kill_plane(Vector3(0.0, -46.0, -200.0), false)
@@ -160,44 +144,75 @@ func _build_ocean_light() -> void:
 
 
 func _build_ocean_trench(course: Node3D) -> void:
-	_slab(course, "TrenchFloor", Vector3(0.0, O_FLOOR_Y - 0.7, -206.0),
-		Vector3(30.0, 1.4, 444.0), _ocean_sand)
+	_slab(
+		course,
+		"TrenchFloor",
+		Vector3(0.0, O_FLOOR_Y - 0.7, -206.0),
+		Vector3(30.0, 1.4, 444.0),
+		_ocean_sand
+	)
 	for side in [-1.0, 1.0]:
 		var suffix := "L" if side < 0.0 else "R"
-		_slab(course, "TrenchWall" + suffix,
-			Vector3(side * (O_HALF_WIDTH + O_WALL_THICKNESS * 0.5),
-				O_WALL_TOP - O_WALL_HEIGHT * 0.5, -206.0),
-			Vector3(O_WALL_THICKNESS, O_WALL_HEIGHT, 444.0), _ocean_rock)
+		_slab(
+			course,
+			"TrenchWall" + suffix,
+			Vector3(
+				side * (O_HALF_WIDTH + O_WALL_THICKNESS * 0.5),
+				O_WALL_TOP - O_WALL_HEIGHT * 0.5,
+				-206.0
+			),
+			Vector3(O_WALL_THICKNESS, O_WALL_HEIGHT, 444.0),
+			_ocean_rock
+		)
 		# Repisas de roca a media altura: rompen la pared lisa.
 		for i in 9:
 			var z := -20.0 - float(i) * 46.0
-			_mesh_box(course, "WallShelf%s%d" % [suffix, i],
+			_mesh_box(
+				course,
+				"WallShelf%s%d" % [suffix, i],
 				Vector3(side * 12.0, -6.0 - float(i % 3) * 4.0, z),
-				Vector3(2.6, 0.55, 9.0), _ocean_rock_dark,
-				Vector3(0.0, 0.0, side * 6.0))
+				Vector3(2.6, 0.55, 9.0),
+				_ocean_rock_dark,
+				Vector3(0.0, 0.0, side * 6.0)
+			)
 	# Rocas redondas sobre la arena.
 	for i in 26:
 		var z := -6.0 - float(i) * 16.0
 		var x := sin(float(i) * 2.3) * 9.0
-		_ocean_rock_boulder(course, "FloorRock%d" % i,
-			Vector3(x, O_FLOOR_Y + 0.2, z), 1.2 + float(i % 4) * 0.5)
+		_ocean_rock_boulder(
+			course, "FloorRock%d" % i, Vector3(x, O_FLOOR_Y + 0.2, z), 1.2 + float(i % 4) * 0.5
+		)
 
 
 func _build_ocean_start(course: Node3D) -> void:
 	# El muelle llega hasta las paredes (antes medía 22 m y quedaba un canal
 	# seco de 0,6 m a cada lado).
-	_slab(course, "StartDock", Vector3(0.0, 1.35, 6.0),
-		Vector3(25.4, 1.3, 20.0), _ocean_sand)
-	_slab(course, "StartDockLip", Vector3(0.0, 1.9, -4.6),
-		Vector3(25.4, 0.4, 1.6), _ocean_rock_dark)
-	_arch(course, "StartGate", Vector3(0.0, 2.0, 2.0), 15.0, 6.4,
-		_ocean_rock_dark, _ocean_glow, "ABYSS RUN")
+	_slab(course, "StartDock", Vector3(0.0, 1.35, 6.0), Vector3(25.4, 1.3, 20.0), _ocean_sand)
+	_slab(
+		course, "StartDockLip", Vector3(0.0, 1.9, -4.6), Vector3(25.4, 0.4, 1.6), _ocean_rock_dark
+	)
+	_arch(
+		course,
+		"StartGate",
+		Vector3(0.0, 2.0, 2.0),
+		15.0,
+		6.4,
+		_ocean_rock_dark,
+		_ocean_glow,
+		"ABYSS RUN"
+	)
 	for side in [-1.0, 1.0]:
 		var suffix := "L" if side < 0.0 else "R"
-		_mesh_box(course, "DockPost" + suffix,
-			Vector3(side * 8.0, 2.8, -3.2), Vector3(0.35, 1.6, 0.35), _ocean_rock_dark)
-		_mesh_sphere(course, "DockLamp" + suffix,
-			Vector3(side * 8.0, 3.75, -3.2), 0.26, _ocean_glow)
+		_mesh_box(
+			course,
+			"DockPost" + suffix,
+			Vector3(side * 8.0, 2.8, -3.2),
+			Vector3(0.35, 1.6, 0.35),
+			_ocean_rock_dark
+		)
+		_mesh_sphere(
+			course, "DockLamp" + suffix, Vector3(side * 8.0, 3.75, -3.2), 0.26, _ocean_glow
+		)
 
 
 func _build_ocean_islands(course: Node3D) -> void:
@@ -209,44 +224,65 @@ func _build_ocean_islands(course: Node3D) -> void:
 		var height := top - O_FLOOR_Y
 		# Un poco más anchas que el túnel: se meten en la pared y no dejan un
 		# hueco de 0,6 m junto al muro en el que caerse y quedarse atrapado.
-		_slab(course, "Island%d" % i,
+		_slab(
+			course,
+			"Island%d" % i,
 			Vector3(0.0, O_FLOOR_Y + height * 0.5, z),
-			Vector3(25.4, height, length), _ocean_rock)
-		_slab(course, "IslandSand%d" % i, Vector3(0.0, top - 0.12, z),
-			Vector3(25.8, 0.3, length + 0.6), _ocean_sand)
+			Vector3(25.4, height, length),
+			_ocean_rock
+		)
+		_slab(
+			course,
+			"IslandSand%d" % i,
+			Vector3(0.0, top - 0.12, z),
+			Vector3(25.8, 0.3, length + 0.6),
+			_ocean_sand
+		)
 		for j in 6:
 			var side := -1.0 if j % 2 == 0 else 1.0
-			_ocean_rock_boulder(course, "IslandRock%d_%d" % [i, j],
-				Vector3(side * (9.5 + float(j % 2) * 1.5), top + 0.1,
-					z - length * 0.5 + float(j) * 2.4),
-				0.9 + float(j % 3) * 0.35)
-		_ocean_coral_cluster(course, "IslandCoral%d" % i,
-			Vector3(-6.0, top, z + 3.0), 1.2, i + 1)
-		_ocean_coral_cluster(course, "IslandCoralB%d" % i,
-			Vector3(6.5, top, z - 2.5), 1.0, i + 3)
+			_ocean_rock_boulder(
+				course,
+				"IslandRock%d_%d" % [i, j],
+				Vector3(
+					side * (9.5 + float(j % 2) * 1.5), top + 0.1, z - length * 0.5 + float(j) * 2.4
+				),
+				0.9 + float(j % 3) * 0.35
+			)
+		_ocean_coral_cluster(course, "IslandCoral%d" % i, Vector3(-6.0, top, z + 3.0), 1.2, i + 1)
+		_ocean_coral_cluster(course, "IslandCoralB%d" % i, Vector3(6.5, top, z - 2.5), 1.0, i + 3)
 
 
 func _build_ocean_finish(course: Node3D) -> void:
 	# La plataforma empieza detrás de la rampa: si llegaba hasta el agua, su
 	# cara vertical tapaba la subida.
-	_slab(course, "FinishDeck", Vector3(0.0, 0.3, -407.0),
-		Vector3(25.4, 1.4, 22.0), _ocean_sand)
+	_slab(course, "FinishDeck", Vector3(0.0, 0.3, -407.0), Vector3(25.4, 1.4, 22.0), _ocean_sand)
 	# Rampa de ancho completo: antes medía 18 m dentro de un túnel de 24 y se
 	# caía uno al fondo seco por los lados. Ahora la única salida es subirla.
-	_ramp_z(course, "FinishRamp", 0.0, -391.0, -395.5, 0.5, 1.0, 25.4,
-		_ocean_rock_dark)
+	_ramp_z(course, "FinishRamp", 0.0, -391.0, -395.5, 0.5, 1.0, 25.4, _ocean_rock_dark)
 	# Cierre del último tramo: pared desde el fondo hasta la base de la rampa,
 	# de lado a lado. A media profundidad el túnel ya no continúa: hay que
 	# salir por arriba y caminar hasta la meta.
-	_slab(course, "AbyssEndWall", Vector3(0.0, (0.5 + O_FLOOR_Y) * 0.5, -392.0),
-		Vector3(25.4, 0.5 - O_FLOOR_Y, 1.2), _ocean_rock_dark)
-	_slab(course, "Podium", Vector3(0.0, 1.8, -414.0),
-		Vector3(16.0, 1.6, 6.0), _ocean_rock)
+	_slab(
+		course,
+		"AbyssEndWall",
+		Vector3(0.0, (0.5 + O_FLOOR_Y) * 0.5, -392.0),
+		Vector3(25.4, 0.5 - O_FLOOR_Y, 1.2),
+		_ocean_rock_dark
+	)
+	_slab(course, "Podium", Vector3(0.0, 1.8, -414.0), Vector3(16.0, 1.6, 6.0), _ocean_rock)
 	_obstacle(course, "FinishLine", FINISH_SCENE, Vector3(0.0, 1.0, -408.0))
 	for side in [-1.0, 1.0]:
-		_mesh_cylinder(course, "PodiumTorch" + ("L" if side < 0.0 else "R"),
-			Vector3(side * 7.0, 3.6, -414.0), 0.1, 0.5, 2.6, _ocean_glow,
-			Vector3.ZERO, 8)
+		_mesh_cylinder(
+			course,
+			"PodiumTorch" + ("L" if side < 0.0 else "R"),
+			Vector3(side * 7.0, 3.6, -414.0),
+			0.1,
+			0.5,
+			2.6,
+			_ocean_glow,
+			Vector3.ZERO,
+			8
+		)
 
 
 func _build_ocean_water(course: Node3D) -> void:
@@ -263,8 +299,7 @@ func _build_ocean_water(course: Node3D) -> void:
 		# se sale, así no se puede bucear por debajo de los obstáculos.
 		zone.set("band_min_y", [-16.5, -23.0, -19.0][i])
 		zone.set("band_max_y", 0.9)
-		zone.position = Vector3(0.0, (O_WATERLINE + O_FLOOR_Y) * 0.5,
-			(stretch.x + stretch.y) * 0.5)
+		zone.position = Vector3(0.0, (O_WATERLINE + O_FLOOR_Y) * 0.5, (stretch.x + stretch.y) * 0.5)
 		course.add_child(zone)
 
 
@@ -282,8 +317,15 @@ func _build_ocean_path() -> void:
 
 ## Compuerta de arrecife: cierra el túnel entero salvo un hueco al lado del
 ## obstáculo. Antes casi todo se podía rodear por una esquina.
-func _ocean_choke(course: Node3D, node_name: String, z: float, center_x: float,
-		center_y: float, opening_w: float = 9.0, opening_h: float = 9.0) -> void:
+func _ocean_choke(
+	course: Node3D,
+	node_name: String,
+	z: float,
+	center_x: float,
+	center_y: float,
+	opening_w: float = 9.0,
+	opening_h: float = 9.0
+) -> void:
 	var thickness := 1.2
 	var bottom := O_FLOOR_Y
 	var top := O_WATERLINE
@@ -298,34 +340,70 @@ func _ocean_choke(course: Node3D, node_name: String, z: float, center_x: float,
 	var left_edge := -(O_HALF_WIDTH + 1.2)
 	var left_w := open_l - left_edge
 	if left_w > 0.2:
-		_slab(course, node_name + "L",
+		_slab(
+			course,
+			node_name + "L",
 			Vector3(left_edge + left_w * 0.5, middle_y, z),
-			Vector3(left_w, top - bottom, thickness), _ocean_rock)
+			Vector3(left_w, top - bottom, thickness),
+			_ocean_rock
+		)
 	var right_edge := O_HALF_WIDTH + 1.2
 	var right_w := right_edge - open_r
 	if right_w > 0.2:
-		_slab(course, node_name + "R",
+		_slab(
+			course,
+			node_name + "R",
 			Vector3(right_edge - right_w * 0.5, middle_y, z),
-			Vector3(right_w, top - bottom, thickness), _ocean_rock)
+			Vector3(right_w, top - bottom, thickness),
+			_ocean_rock
+		)
 	var low_h := open_b - bottom
 	if low_h > 0.2:
-		_slab(course, node_name + "B",
+		_slab(
+			course,
+			node_name + "B",
 			Vector3((open_l + open_r) * 0.5, bottom + low_h * 0.5, z),
-			Vector3(open_r - open_l, low_h, thickness), _ocean_rock)
+			Vector3(open_r - open_l, low_h, thickness),
+			_ocean_rock
+		)
 	var high_h := top - open_t
 	if high_h > 0.2:
-		_slab(course, node_name + "T",
+		_slab(
+			course,
+			node_name + "T",
 			Vector3((open_l + open_r) * 0.5, open_t + high_h * 0.5, z),
-			Vector3(open_r - open_l, high_h, thickness), _ocean_rock)
+			Vector3(open_r - open_l, high_h, thickness),
+			_ocean_rock
+		)
 	# Marco luminoso: el hueco se ve desde lejos.
-	_mesh_box(course, node_name + "GlowL", Vector3(open_l, center_y, z),
-		Vector3(0.16, opening_h, thickness + 0.12), _ocean_glow)
-	_mesh_box(course, node_name + "GlowR", Vector3(open_r, center_y, z),
-		Vector3(0.16, opening_h, thickness + 0.12), _ocean_glow)
-	_mesh_box(course, node_name + "GlowB", Vector3(center_x, open_b, z),
-		Vector3(opening_w, 0.16, thickness + 0.12), _ocean_glow)
-	_mesh_box(course, node_name + "GlowT", Vector3(center_x, open_t, z),
-		Vector3(opening_w, 0.16, thickness + 0.12), _ocean_glow)
+	_mesh_box(
+		course,
+		node_name + "GlowL",
+		Vector3(open_l, center_y, z),
+		Vector3(0.16, opening_h, thickness + 0.12),
+		_ocean_glow
+	)
+	_mesh_box(
+		course,
+		node_name + "GlowR",
+		Vector3(open_r, center_y, z),
+		Vector3(0.16, opening_h, thickness + 0.12),
+		_ocean_glow
+	)
+	_mesh_box(
+		course,
+		node_name + "GlowB",
+		Vector3(center_x, open_b, z),
+		Vector3(opening_w, 0.16, thickness + 0.12),
+		_ocean_glow
+	)
+	_mesh_box(
+		course,
+		node_name + "GlowT",
+		Vector3(center_x, open_t, z),
+		Vector3(opening_w, 0.16, thickness + 0.12),
+		_ocean_glow
+	)
 
 
 func _build_ocean_chokes(course: Node3D) -> void:
@@ -345,8 +423,15 @@ func _build_ocean_chokes(course: Node3D) -> void:
 	]
 	for i in gates.size():
 		var gate: Dictionary = gates[i]
-		_ocean_choke(course, "ReefGate%d" % i, float(gate["z"]), float(gate["x"]),
-			float(gate["y"]), float(gate["w"]), float(gate["h"]))
+		_ocean_choke(
+			course,
+			"ReefGate%d" % i,
+			float(gate["z"]),
+			float(gate["x"]),
+			float(gate["y"]),
+			float(gate["w"]),
+			float(gate["h"])
+		)
 
 
 ## Corrientes ascendentes al final de cada tramo inundado. El agua termina en
@@ -362,12 +447,12 @@ func _build_ocean_lifts(course: Node3D) -> void:
 		var lift := OCEAN_HAZARDS.Updraft.new()
 		lift.set("lift", 10.0)
 		lift.set("forward", 3.2)
-		_ocean_hazard(course, String(entry["name"]), lift,
-			Vector3(0.0, -11.5, float(entry["z"])))
+		_ocean_hazard(course, String(entry["name"]), lift, Vector3(0.0, -11.5, float(entry["z"])))
 
 
-func _ocean_hazard(course: Node3D, node_name: String, hazard: Node3D,
-		position: Vector3, yaw: float = 0.0) -> Node3D:
+func _ocean_hazard(
+	course: Node3D, node_name: String, hazard: Node3D, position: Vector3, yaw: float = 0.0
+) -> Node3D:
 	hazard.name = node_name
 	hazard.position = position
 	hazard.rotation.y = yaw
@@ -377,8 +462,14 @@ func _ocean_hazard(course: Node3D, node_name: String, hazard: Node3D,
 
 ## Coloca un obstáculo marino forzando cómo te toca: aturde y frena, empuja
 ## lejos o te devuelve al checkpoint. `push` es la fuerza del empujón.
-func _ocean_hazard_kind(course: Node3D, node_name: String, hazard: Node3D,
-		position: Vector3, kind: String, push: float = 0.0) -> Node3D:
+func _ocean_hazard_kind(
+	course: Node3D,
+	node_name: String,
+	hazard: Node3D,
+	position: Vector3,
+	kind: String,
+	push: float = 0.0
+) -> Node3D:
 	hazard.set("touch_override", kind)
 	if push > 0.0:
 		hazard.set("push_override", push)
@@ -638,15 +729,24 @@ func _build_ocean_hazards(course: Node3D) -> void:
 		var left := OCEAN_HAZARDS.Urchin.new()
 		left.set("radius", 1.2)
 		left.set("spin", 0.8 + float(i % 3) * 0.2)
-		_ocean_hazard_kind(course, "GateUrchin%d" % i, left,
+		_ocean_hazard_kind(
+			course,
+			"GateUrchin%d" % i,
+			left,
 			Vector3(gate_x - 2.1, gate_y, gate_z),
-			"stun" if kind == "push" else kind)
+			"stun" if kind == "push" else kind
+		)
 		var right := OCEAN_HAZARDS.Jellyfish.new()
 		right.set("bell_size", 1.2)
 		right.set("drift", 0.5)
-		_ocean_hazard_kind(course, "GateJelly%d" % i, right,
-			Vector3(gate_x + 2.1, gate_y, gate_z + 0.7), kind,
-			24.0 if kind == "push" else 0.0)
+		_ocean_hazard_kind(
+			course,
+			"GateJelly%d" % i,
+			right,
+			Vector3(gate_x + 2.1, gate_y, gate_z + 0.7),
+			kind,
+			24.0 if kind == "push" else 0.0
+		)
 		# Rápidos: el aro de burbujas espera detrás del hueco. Cruzarlo lanza
 		# al corredor hacia el tramo siguiente; no golpea, así que quien
 		# prefiera ir con calma solo tiene que bordearlo.
@@ -654,8 +754,7 @@ func _build_ocean_hazards(course: Node3D) -> void:
 			var boost := OCEAN_HAZARDS.BoostRing.new()
 			boost.set("radius", 2.8)
 			boost.set("boost", 12.0)
-			_ocean_hazard(course, "BoostRing%d" % i, boost,
-				Vector3(gate_x, gate_y, gate_z - 5.5))
+			_ocean_hazard(course, "BoostRing%d" % i, boost, Vector3(gate_x, gate_y, gate_z - 5.5))
 
 	# --- zigzag obligatorio: ni una recta limpia en todo el túnel ----------
 	# Un obstáculo a cada lado, alternando cada pocos metros: hay que cruzar el
@@ -688,9 +787,14 @@ func _build_ocean_hazards(course: Node3D) -> void:
 				var mine := OCEAN_HAZARDS.BubbleMine.new()
 				mine.set("bob", 1.1)
 				hazard = mine
-			_ocean_hazard_kind(course, "WeaveHazard%d" % weave_index, hazard,
-				Vector3(side * 4.8, -9.5, z), kind,
-				26.0 if kind == "push" else 0.0)
+			_ocean_hazard_kind(
+				course,
+				"WeaveHazard%d" % weave_index,
+				hazard,
+				Vector3(side * 4.8, -9.5, z),
+				kind,
+				26.0 if kind == "push" else 0.0
+			)
 			weave_index += 1
 
 	# Checkpoints: los secos, sobre las islas; los otros, dentro del agua.
@@ -705,16 +809,18 @@ func _build_ocean_hazards(course: Node3D) -> void:
 # --------------------------------------------------- decoración del abismo
 
 
-func _ocean_rock_boulder(parent: Node3D, node_name: String, position: Vector3,
-		radius: float) -> void:
+func _ocean_rock_boulder(
+	parent: Node3D, node_name: String, position: Vector3, radius: float
+) -> void:
 	var rock := _mesh_sphere(parent, node_name, position, radius, _ocean_rock_dark)
 	rock.scale = Vector3(1.0, 0.62, 1.0)
 
 
 ## Racimo de coral: cinco ramas con punta luminosa. El `variant` cambia altura,
 ## inclinación y color para que no haya dos racimos iguales.
-func _ocean_coral_cluster(parent: Node3D, node_name: String, position: Vector3,
-		scale_value: float, variant: int) -> void:
+func _ocean_coral_cluster(
+	parent: Node3D, node_name: String, position: Vector3, scale_value: float, variant: int
+) -> void:
 	var root := Node3D.new()
 	root.name = node_name
 	root.position = position
@@ -737,12 +843,18 @@ func _ocean_coral_cluster(parent: Node3D, node_name: String, position: Vector3,
 		branch.rotation = Vector3(cos(angle) * 0.22, 0.0, sin(angle) * 0.22)
 		branch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(branch)
-		_mesh_sphere(root, "%sTip%d" % [node_name, i],
-			offset + Vector3.UP * height, 0.16 * scale_value, _ocean_glow)
+		_mesh_sphere(
+			root,
+			"%sTip%d" % [node_name, i],
+			offset + Vector3.UP * height,
+			0.16 * scale_value,
+			_ocean_glow
+		)
 
 
-func _ocean_anemone(parent: Node3D, node_name: String, position: Vector3,
-		scale_value: float) -> void:
+func _ocean_anemone(
+	parent: Node3D, node_name: String, position: Vector3, scale_value: float
+) -> void:
 	_mesh_sphere(parent, node_name + "Base", position, 0.55 * scale_value, _ocean_coral)
 	for i in 12:
 		var angle := float(i) * TAU / 12.0
@@ -761,8 +873,7 @@ func _ocean_anemone(parent: Node3D, node_name: String, position: Vector3,
 		parent.add_child(tentacle)
 
 
-func _ocean_kelp(parent: Node3D, node_name: String, position: Vector3,
-		height: float) -> void:
+func _ocean_kelp(parent: Node3D, node_name: String, position: Vector3, height: float) -> void:
 	var stalk := MeshInstance3D.new()
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = 0.09
@@ -776,17 +887,28 @@ func _ocean_kelp(parent: Node3D, node_name: String, position: Vector3,
 	stalk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(stalk)
 	for i in 4:
-		var leaf := _mesh_box(parent, "%sLeaf%d" % [node_name, i],
+		var leaf := _mesh_box(
+			parent,
+			"%sLeaf%d" % [node_name, i],
 			position + Vector3.UP * height * (0.3 + float(i) * 0.18),
-			Vector3(0.9, 0.08, 0.3), OceanStyle.matte(OceanStyle.ALGAE, 0.8),
-			Vector3(0.0, float(i) * 42.0, 18.0))
+			Vector3(0.9, 0.08, 0.3),
+			OceanStyle.matte(OceanStyle.ALGAE, 0.8),
+			Vector3(0.0, float(i) * 42.0, 18.0)
+		)
 		leaf.scale = Vector3(0.8 + float(i) * 0.12, 1.0, 1.0)
 
 
-func _ocean_light_shaft(parent: Node3D, node_name: String, position: Vector3,
-		width: float, length: float) -> void:
-	_mesh_box(parent, node_name, position, Vector3(width, length, 0.35),
-		_ocean_ray, Vector3(0.0, 0.0, 16.0))
+func _ocean_light_shaft(
+	parent: Node3D, node_name: String, position: Vector3, width: float, length: float
+) -> void:
+	_mesh_box(
+		parent,
+		node_name,
+		position,
+		Vector3(width, length, 0.35),
+		_ocean_ray,
+		Vector3(0.0, 0.0, 16.0)
+	)
 
 
 func _ocean_fish_school(parent: Node3D, center: Vector3, amount: int) -> void:
@@ -849,20 +971,31 @@ func _build_ocean_decor(course: Node3D) -> void:
 	for i in 34:
 		var z := -14.0 - float(i) * 11.5
 		var side := -1.0 if i % 2 == 0 else 1.0
-		_ocean_coral_cluster(course, "Coral%d" % i,
+		_ocean_coral_cluster(
+			course,
+			"Coral%d" % i,
 			Vector3(side * (9.6 + float(i % 3) * 0.8), O_FLOOR_Y + 0.1, z),
-			0.9 + float(i % 4) * 0.22, i)
+			0.9 + float(i % 4) * 0.22,
+			i
+		)
 		if i % 3 == 0:
-			_ocean_anemone(course, "Anemone%d" % i,
+			_ocean_anemone(
+				course,
+				"Anemone%d" % i,
 				Vector3(-side * 8.0, O_FLOOR_Y + 0.15, z - 3.5),
-				0.9 + float(i % 2) * 0.3)
+				0.9 + float(i % 2) * 0.3
+			)
 		if i % 2 == 0:
-			_ocean_kelp(course, "KelpDecor%d" % i,
+			_ocean_kelp(
+				course,
+				"KelpDecor%d" % i,
 				Vector3(-side * 10.6, O_FLOOR_Y + 0.2, z + 4.0),
-				7.0 + float(i % 4) * 1.6)
+				7.0 + float(i % 4) * 1.6
+			)
 		if i % 5 == 0:
-			_ocean_light_shaft(course, "Ray%d" % i,
-				Vector3(float((i % 3) - 1) * 6.0, -8.0, z), 6.0, 30.0)
+			_ocean_light_shaft(
+				course, "Ray%d" % i, Vector3(float((i % 3) - 1) * 6.0, -8.0, z), 6.0, 30.0
+			)
 	_ocean_plankton(course)
 
 	# --- tercera pasada de detalle: siempre en el suelo o en las paredes ----
@@ -871,31 +1004,50 @@ func _build_ocean_decor(course: Node3D) -> void:
 	for i in 22:
 		var z := -10.0 - float(i) * 18.0
 		var side := -1.0 if i % 2 == 0 else 1.0
-		_ocean_rock_boulder(course, "FloorPebble%d" % i,
+		_ocean_rock_boulder(
+			course,
+			"FloorPebble%d" % i,
 			Vector3(side * (6.4 + float(i % 3) * 2.2), O_FLOOR_Y + 0.1, z),
-			0.5 + float(i % 3) * 0.22)
-		_ocean_anemone(course, "FloorAnemone%d" % i,
+			0.5 + float(i % 3) * 0.22
+		)
+		_ocean_anemone(
+			course,
+			"FloorAnemone%d" % i,
 			Vector3(-side * (10.2 + float(i % 2) * 0.7), O_FLOOR_Y + 0.15, z + 6.0),
-			0.8 + float(i % 3) * 0.2)
+			0.8 + float(i % 3) * 0.2
+		)
 	for i in 14:
 		var z := -16.0 - float(i) * 27.0
 		var side := -1.0 if i % 2 == 0 else 1.0
 		# Pegados a la cara interior del muro (que ahora está en ±12), no dentro
 		# de él, para que se sigan viendo.
-		_mesh_box(course, "WallBarnacle%d" % i,
+		_mesh_box(
+			course,
+			"WallBarnacle%d" % i,
 			Vector3(side * (O_HALF_WIDTH - 0.12), -4.0 - float(i % 4) * 2.4, z),
-			Vector3(0.55, 1.7, 2.6), _ocean_sand, Vector3(0.0, 0.0, side * 8.0))
+			Vector3(0.55, 1.7, 2.6),
+			_ocean_sand,
+			Vector3(0.0, 0.0, side * 8.0)
+		)
 	for i in 12:
 		var z := -22.0 - float(i) * 32.0
-		_ocean_light_shaft(course, "RayB%d" % i,
-			Vector3(float((i % 5) - 2) * 3.4, -6.0, z), 7.0, 34.0)
+		_ocean_light_shaft(
+			course, "RayB%d" % i, Vector3(float((i % 5) - 2) * 3.4, -6.0, z), 7.0, 34.0
+		)
 	for i in 10:
 		var z := -30.0 - float(i) * 36.0
 		var side := -1.0 if i % 2 == 0 else 1.0
-		_mesh_cylinder(course, "WallCoralFan%d" % i,
+		_mesh_cylinder(
+			course,
+			"WallCoralFan%d" % i,
 			Vector3(side * (O_HALF_WIDTH - 0.3), -7.0 - float(i % 3) * 3.0, z),
-			1.4, 1.4, 0.35, _ocean_coral,
-			Vector3(0.0, 0.0, side * 90.0), 8)
+			1.4,
+			1.4,
+			0.35,
+			_ocean_coral,
+			Vector3(0.0, 0.0, side * 90.0),
+			8
+		)
 
 
 ## Paisaje fuera del túnel: agujas de roca, restos de un naufragio, ballena y
@@ -904,29 +1056,64 @@ func _build_ocean_scenery(course: Node3D) -> void:
 	for i in 16:
 		var z := -14.0 - float(i) * 27.0
 		var side := -1.0 if i % 2 == 0 else 1.0
-		_mesh_cylinder(course, "Spire%d" % i,
+		_mesh_cylinder(
+			course,
+			"Spire%d" % i,
 			Vector3(side * (26.0 + float(i % 3) * 6.0), -8.0 + float(i % 4) * 2.0, z),
-			1.1, 6.0 + float(i % 3) * 2.4, 32.0 + float(i % 4) * 7.0,
-			_ocean_rock_dark)
+			1.1,
+			6.0 + float(i % 3) * 2.4,
+			32.0 + float(i % 4) * 7.0,
+			_ocean_rock_dark
+		)
 
 	# Pecio: casco, mástil y columnas caídas cerca de las islas.
-	_mesh_box(course, "WreckHull", Vector3(-24.0, 0.5, -168.0),
-		Vector3(16.0, 3.0, 6.0), _ocean_rock_dark, Vector3(0.0, 24.0, 8.0))
-	_mesh_cylinder(course, "WreckMast", Vector3(-24.0, 5.0, -168.0),
-		0.2, 0.45, 12.0, _ocean_rock_dark, Vector3(0.0, 0.0, 18.0))
+	_mesh_box(
+		course,
+		"WreckHull",
+		Vector3(-24.0, 0.5, -168.0),
+		Vector3(16.0, 3.0, 6.0),
+		_ocean_rock_dark,
+		Vector3(0.0, 24.0, 8.0)
+	)
+	_mesh_cylinder(
+		course,
+		"WreckMast",
+		Vector3(-24.0, 5.0, -168.0),
+		0.2,
+		0.45,
+		12.0,
+		_ocean_rock_dark,
+		Vector3(0.0, 0.0, 18.0)
+	)
 	for i in 4:
-		_mesh_cylinder(course, "Ruin%d" % i,
+		_mesh_cylinder(
+			course,
+			"Ruin%d" % i,
 			Vector3(23.0, -2.0, -96.0 - float(i) * 6.0),
-			0.9, 1.4, 7.0 + float(i % 2) * 3.0, _ocean_sand,
-			Vector3(0.0, 0.0, 6.0 + float(i) * 4.0))
+			0.9,
+			1.4,
+			7.0 + float(i % 2) * 3.0,
+			_ocean_sand,
+			Vector3(0.0, 0.0, 6.0 + float(i) * 4.0)
+		)
 
 	# Ballena de fondo.
-	var whale := _mesh_sphere(course, "WhaleBody", Vector3(42.0, 18.0, -196.0),
-		6.0, OceanStyle.matte(OceanStyle.ROCK_DARK, 1.0))
+	var whale := _mesh_sphere(
+		course,
+		"WhaleBody",
+		Vector3(42.0, 18.0, -196.0),
+		6.0,
+		OceanStyle.matte(OceanStyle.ROCK_DARK, 1.0)
+	)
 	whale.scale = Vector3(2.8, 0.9, 1.1)
-	_mesh_box(course, "WhaleTail", Vector3(42.0, 18.0, -184.0),
-		Vector3(6.0, 0.6, 5.0), OceanStyle.matte(OceanStyle.ROCK_DARK, 1.0),
-		Vector3(18.0, 0.0, 0.0))
+	_mesh_box(
+		course,
+		"WhaleTail",
+		Vector3(42.0, 18.0, -184.0),
+		Vector3(6.0, 0.6, 5.0),
+		OceanStyle.matte(OceanStyle.ROCK_DARK, 1.0),
+		Vector3(18.0, 0.0, 0.0)
+	)
 
 	_ocean_fish_school(course, Vector3(-22.0, 6.0, -150.0), 90)
 	_ocean_fish_school(course, Vector3(24.0, 4.0, -300.0), 70)

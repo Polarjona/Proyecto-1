@@ -4,7 +4,9 @@
 **Fecha:** Octubre 2026
 **Cómo usar este documento:** cada idea tiene un **ID**. Responde con la lista de IDs que quieres aplicar (por ejemplo `M3, M7, G2, G9, P1`) y se implementan en ese orden. Las etiquetas de coste son orientativas: **S** ≈ media sesión, **M** ≈ una sesión larga, **L** ≈ varias sesiones.
 
-> **Nota (noviembre 2026):** este banco se escribió en octubre y varias ideas ya están hechas. Están implementadas **P1** (formato de nivel con `LevelInfo`), **P4** (circuitos temáticos: glaciar, volcán y abismo), **M30** (torneo de cuatro rondas), **M60** (waypoints por nivel), **T1** (CSG horneado a malla), **T2** (multitud en `MultiMesh`), **T3** (LOD y oclusión), **T4** (pool de bolas), **T5** (precompilación de shaders), **T6/T7** (tests y CI), **G24** (tema de UI), **M75** (récords por circuito), **U5** (cámara con ratón), **U8** (reinicio desde checkpoint) y **A2** (variación de pitch), además del **nado**. La cámara ya no es de eje fijo y el *dive* existe como descenso en el agua: las frases del texto original que decían lo contrario están corregidas o marcadas con ✅. El resto sigue siendo propuesta.
+> **Cifras vigentes:** el banco ya no repite la tabla de circuitos, las medallas ni los resultados de tests. La fuente única es [Datos de referencia](Datos_circuitos.md); este documento solo describe ideas.
+>
+> **Nota (noviembre 2026):** este banco se escribió en octubre y varias ideas ya están hechas. Están implementadas **P1** (formato de nivel con `LevelInfo`), **P4** (circuitos temáticos: glaciar, volcán y abismo), **M30** (torneo por rondas), **M60** (waypoints por nivel), **T1** (CSG horneado a malla), **T2** (multitud en `MultiMesh`), **T3** (LOD y oclusión), **T4** (pool de bolas), **T5** (precompilación de shaders), **T6/T7** (tests y CI), **G24** (tema de UI), **M75** (récords por circuito), **U5** (cámara con ratón), **U8** (reinicio desde checkpoint) y **A2** (variación de pitch), además del **nado**. La cámara ya no es de eje fijo y el *dive* existe como descenso en el agua: las frases del texto original que decían lo contrario están corregidas o marcadas con ✅. El resto sigue siendo propuesta.
 
 ---
 
@@ -16,11 +18,11 @@
 - `scripts/race_manager.gd`: cronómetro, checkpoints, splits vs. récord, penalización por caída, medallas, persistencia.
 - `scripts/save_manager.gd`: perfil JSON versionado, ajustes, monedas, medallas, migración de saves antiguos.
 - `scripts/race_director.gd` + `bot_racer.gd`: bots con waypoints, clasificación en vivo, cualificación por rondas.
-- 17 obstáculos instanciables, shader de postproceso, cielo con nubes, multitud y batería de tests headless.
+- Obstáculos instanciables, shader de postproceso, cielo con nubes, multitud y batería de tests headless.
 
-**Los cinco techos de octubre y su estado hoy** (lo que entonces impedía el "x100"):
+**Los techos de octubre y su estado hoy** (lo que entonces impedía el "x100"):
 
-1. ✅ **Resuelto:** hay cinco circuitos y un formato de nivel (`LevelInfo` + un kit por tema), y Pivot Push ya no usa CSG. De este techo solo queda el kit modular de piezas (**P2**).
+1. ✅ **Resuelto:** hay circuitos y un formato de nivel (`LevelInfo` + un kit por tema), y Pivot Push ya no usa CSG. De este techo solo queda el kit modular de piezas (**P2**).
 2. ✅ **Resuelto en parte:** los waypoints viven en el `LevelInfo` de cada circuito (**M60**) y los bots esquivan barridos, péndulos, rocas y bolas. Siguen sin ver el mundo de forma general (**M61**/**M62** pendientes).
 3. **Falta el verbo central de Fall Guys: agarrar/empujar a otros.** Ahora mismo los jugadores no pueden interactuar entre sí, así que no hay comedia social, que es el 50 % del género.
 4. ✅ **Resuelto:** la cámara gira con el ratón (yaw y cabeceo, sensibilidad en Ajustes) y hay pausa con reinicio desde checkpoint. Quedan el remapeo de controles y el táctil.
@@ -80,7 +82,7 @@ Los modos están ordenados por **relación diversión/esfuerzo** en este proyect
 | **M27** | **Fall Ball / Fútbol con muñecos** | Dos equipos, pelota gigante, porterías | Muy divertido, pero exige física de equipo estable | L |
 | **M28** | **Final: trofeo** | 3-5 clasificados, carrera corta final; el ganador se lleva el trofeo | Cierra el torneo con tensión máxima | M |
 | **M29** | **Modo práctica / contrarreloj** | Sin bots, sin muerte, splits y ghosts | Ideal para aprender el circuito y para los tests | S |
-| **M30** | **Torneo real de 4-5 rondas** | Eliminación progresiva, mapa distinto por ronda, 1 final | Es lo que convierte "una demo" en "un juego" | L |
+| **M30** | **Torneo real por rondas** | Eliminación progresiva, mapa distinto por ronda, 1 final | Es lo que convierte "una demo" en "un juego" | L |
 | **M31** | **Eventos aleatorios de ronda** (*mutators*) | "Gravedad baja", "todos resbalan", "lluvia de bolas", "sin saltar" | Rejugabilidad casi gratis, gran gancho para clips | M |
 | **M32** | **Modo espectador / bots de relleno** | Si caes, ves a los demás terminar con cámara libre | Evita el "he perdido, cierro el juego" | S |
 | **M33** | **Replay del fantasma del récord** | Grabar posiciones cada 0,1 s y reproducir un personaje translúcido | Objetivo personal claro, muy motivador | M |
@@ -92,7 +94,7 @@ Los modos están ordenados por **relación diversión/esfuerzo** en este proyect
 
 ## 4. MECÁNICAS — obstáculos nuevos (kit de piezas)
 
-Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` propio, como los 17 actuales.
+Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` propio, como los actuales.
 
 | ID | Obstáculo | Comportamiento |
 |----|-----------|----------------|
@@ -219,10 +221,10 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 
 | ID | Idea | Detalle | Coste |
 |----|------|---------|-------|
-| **P1** | **Formato de nivel reutilizable** | Separar `main.tscn` en `scenes/levels/*.tscn` que solo contienen el curso + un `LevelData` (nombre, z de meta, waypoints, medallas). | M |
+| **P1** | **Formato de nivel reutilizable** | Extraer de `scenes/levels/pivot_push.tscn` un formato común: escenas que solo contienen el curso + un `LevelData` (nombre, z de meta, waypoints, medallas). | M |
 | **P2** | **Kit modular de piezas** | 15-20 piezas de geometría (recto, curva, rampa, hueco, túnel, meta) combinables; el nivel se monta, no se esculpe. | L |
 | **P3** | **Editor interno de niveles** | Colocar piezas con teclado/ratón y guardar JSON: multiplica el contenido sin escribir escenas a mano. | L |
-| **P4** | **Cuatro circuitos temáticos** | "Ciudad" (azoteas), "Fábrica" (cintas y prensas), "Hielo" (resbaladizo), "Jungla" (lodo y lianas), cada uno con paleta y obstáculos propios. | L |
+| **P4** | **Circuitos temáticos** | "Ciudad" (azoteas), "Fábrica" (cintas y prensas), "Hielo" (resbaladizo), "Jungla" (lodo y lianas), cada uno con paleta y obstáculos propios. | L |
 | **P5** | **Curvas de dificultad** | Cada circuito con 3 tramos: enseñanza (1 obstáculo), combinación (2), examen (3 juntos). | S |
 | **P6** | **Atajos con riesgo** | Rutas alternativas más cortas y más peligrosas (cuerda floja, saltos sobre vacío) recompensadas con monedas. | M |
 | **P7** | **Secretos** | 1 moneda escondida por nivel fuera de la ruta principal. | S |
@@ -273,7 +275,7 @@ Si quieres el máximo "x100" por esfuerzo, estos son los caminos que yo elegirí
 → El juego pasa de "demo bonita" a "clip que apetece compartir".
 
 ### Paquete B — "Hay un juego, no un nivel" (15-20 h)
-`P1` formato de nivel · `P2` kit modular · `M30` torneo de 4 rondas · `M33` fantasma · `M21`/`M23`/`M25` tres modos · `M60`/`M64`/`M65` IA por nivel · `M70`/`M76` progresión
+`P1` formato de nivel · `P2` kit modular · `M30` torneo por rondas · `M33` fantasma · `M21`/`M23`/`M25` tres modos · `M60`/`M64`/`M65` IA por nivel · `M70`/`M76` progresión
 → Contenido y rejugabilidad: la razón para abrir el juego una segunda vez.
 
 ### Paquete C — "Escaparate técnico" (10-14 h)

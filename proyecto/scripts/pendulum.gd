@@ -3,14 +3,15 @@ extends Node3D
 ## Oscillating hammer using sine rotation on Z.
 
 @export var max_angle: float = 1.1
+
 @export var swing_speed: float = 0.002
+
 @export var push_force: float = 14.0
+
 @export var phase_offset: float = 0.0
 
-@onready var hammer: AnimatableBody3D = $Hammer
-@onready var push_area: Area3D = $Hammer/PushArea
-
 var _whoosh_timer: float = 0.0
+
 ## Tiempo acumulado en milisegundos simulados. El balanceo se calculaba con el
 ## reloj real (`Time.get_ticks_msec`), así que el martillo caía en un punto
 ## distinto en cada partida y la física dejaba de ser reproducible: los bots se
@@ -18,6 +19,10 @@ var _whoosh_timer: float = 0.0
 ## el martillo siempre empieza en el mismo sitio y `swing_speed` sigue midiéndose
 ## en radianes por milisegundo.
 var _time_ms: float = 0.0
+
+@onready var hammer: AnimatableBody3D = $Hammer
+
+@onready var push_area: Area3D = $Hammer/PushArea
 
 
 func _ready() -> void:
@@ -41,7 +46,7 @@ func _on_body_entered(body: Node3D) -> void:
 		var tangent := Vector3(-cos(hammer.rotation.z), 0.0, 0.0).normalized()
 		if tangent.length_squared() < 0.01:
 			tangent = Vector3.RIGHT
-		var dir := (body.global_position - hammer.global_position)
+		var dir := body.global_position - hammer.global_position
 		dir.y = 0.2
 		if dir.length_squared() > 0.001:
 			dir = dir.normalized()

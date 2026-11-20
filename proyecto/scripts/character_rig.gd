@@ -1,4 +1,5 @@
 class_name CharacterRig
+
 extends SkeletonModifier3D
 
 ## Capa procedural de animación sobre los clips del pack de Quaternius.
@@ -18,23 +19,37 @@ extends SkeletonModifier3D
 
 ## Radianes por segundo con los que se mezcla cada pose.
 const BLEND_SPEED := 14.0
+
 const LAND_BLEND_SPEED := 22.0
 
 const BONE_NAMES := [
-	"Torso", "Abdomen", "Head",
-	"UpperArm.L", "UpperArm.R", "LowerArm.L", "LowerArm.R",
-	"UpperLeg.L", "UpperLeg.R", "LowerLeg.L", "LowerLeg.R",
+	"Torso",
+	"Abdomen",
+	"Head",
+	"UpperArm.L",
+	"UpperArm.R",
+	"LowerArm.L",
+	"LowerArm.R",
+	"UpperLeg.L",
+	"UpperLeg.R",
+	"LowerLeg.L",
+	"LowerLeg.R",
 ]
 
 ## Estado que pide el corredor: "idle" | "walk" | "run" | "jump" | "land" | "stun".
 var state: String = "idle"
+
 ## 0..1, expuestos para tests.
 var run_blend: float = 0.0
+
 var jump_blend: float = 0.0
+
 var land_blend: float = 0.0
 
 var _skeleton: Skeleton3D
+
 var _bones: Dictionary = {}
+
 var _cached_for: Skeleton3D
 
 

@@ -12,7 +12,7 @@ extends Node3D
 ## El script es `@tool`: al abrir la escena en el editor se genera el circuito
 ## completo marcando cada nodo generado con `owner`. Al guardar la escena
 ## (Ctrl+S), el mapa queda horneado en el `.tscn` y se edita elemento por
-## elemento como main.tscn; desde entonces el generador no reconstruye nada
+## elemento como pivot_push.tscn; desde entonces el generador no reconstruye nada
 ## (detecta el contenido guardado) y solo mantiene la cámara del volcán.
 
 const GLACIER_KIT := preload("res://scripts/levels/glacier_kit.gd")

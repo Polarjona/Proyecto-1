@@ -45,12 +45,12 @@ La batería headless vive en `proyecto/tools/`:
 
 ```bash
 cd proyecto
-bash tools/run_tests.sh          # suite obligatoria (12 tests, ~5 min)
+bash tools/run_tests.sh          # suite obligatoria (~5 min)
 bash tools/run_tests.sh --long   # tests largos de bots
 bash tools/run_tests.sh --all    # todo
 ```
 
-- Cada test corre con `timeout` (180 s la suite, 900 s los largos): un cuelgue **falla**, no cuelga la máquina.
+- Cada test corre con `timeout`: un cuelgue **falla**, no cuelga la máquina. Los valores por defecto están en [`proyecto/tools/README.md`](proyecto/tools/README.md).
 - El resumen se imprime, se guarda en `proyecto/tools/test-logs/summary.md` y, en CI, se publica en el resumen del job.
 - Para un test suelto: `godot --headless --path . -s res://tools/levels_test.gd`.
 - Los tests asumen que el proyecto se ha abierto una vez en Godot (importación hecha).
@@ -78,10 +78,19 @@ Cuando cambie algo visible del juego (circuito, mecánica, recuento de escenas, 
 
 | Documento | Qué cubre |
 | --- | --- |
-| `README.md` | Cómo ejecutar, controles, características, arquitectura y verificación. |
-| `documentacion/Segunda_iteracio.md` | Estado de la entrega actual y resultados reales de la batería. |
-| `documentacion/Torneo_cuatro_circuitos.md` | Los circuitos del torneo, paletas y verificación. |
+| `documentacion/README.md` | Índice y orden de lectura de los informes y la galería. |
+| `README.md` | Cómo ejecutar, controles, características, arquitectura y enlaces a la verificación. |
+| `documentacion/Datos_circuitos.md` | **Fuente única** de longitudes, checkpoints, medallas, configuración, recuentos y resultados de tests. |
+| `documentacion/Capturas.md` | Galería de capturas propias; se regenera con `proyecto/tools/capture_docs.gd`. |
+| `documentacion/Segunda_iteracio.md` | Estado de la entrega actual y enlaces a los datos vigentes. |
+| `documentacion/Torneo_cuatro_circuitos.md` | Los cuatro circuitos del torneo y Abyss Run: paletas, producción y enlaces a la verificación. |
 | `documentacion/Primera_entrega.md` | Histórico de la primera entrega (no se reescribe con datos nuevos). |
-| `documentacion/Ideas_Mejora.md` | Banco de ideas: se marca lo que ya está hecho. |
+| `documentacion/Ideas_Mejora.md` | Banco de ideas: se marca lo que ya está hecho y no se duplican cifras. |
 
-Las cifras de los informes salen de los tests, no de la memoria: si `check_scenes` dice `40/40`, el informe dice `40/40`.
+Las cifras de los informes salen de los tests y del código, no de la memoria. Se actualizan **solo** en `Datos_circuitos.md`; README e informes enlazan a esa tabla en vez de copiarla. Las capturas se regeneran desde `proyecto/` con:
+
+```bash
+../.tools/Godot_v4.7.2-stable_win64_console.exe --path . -s res://tools/capture_docs.gd
+```
+
+El script necesita ventana (no `--headless`) y escribe en `documentacion/capturas/` usando un perfil aislado.

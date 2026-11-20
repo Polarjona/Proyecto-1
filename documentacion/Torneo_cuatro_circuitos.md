@@ -1,4 +1,6 @@
-# Torneo de cuatro circuitos
+# Torneo de circuitos
+
+**Alcance:** los cuatro circuitos del torneo y **Abyss Run** como carrera clásica; el archivo conserva su nombre original.
 
 **Proyecto:** Tumble Rush
 **Autores:** Pol Arjona e Yazan Issa
@@ -9,28 +11,22 @@
 
 ## 1. Objetivo
 
-El modo torneo recorre **cuatro circuitos**, uno por ronda, unidos por `GameSession`. El quinto circuito, **Abyss Run**, queda para la carrera clásica.
+El modo torneo recorre los circuitos del torneo, uno por ronda, unidos por `GameSession`. **Abyss Run** queda para la carrera clásica.
 
-| Ronda | Escena                                   | Nombre         | Longitud | Checkpoints | Oro / Plata / Bronce |
-| --- | --- | --- | --- | --- | --- |
-| 1 | `scenes/main.tscn`                       | Pivot Push     | 368 m | 11 | 130 / 170 / 215 s |
-| 2 | `scenes/levels/spin_go_round.tscn`       | Spin Go Round  | 339 m | 12 | 115 / 145 / 185 s |
-| 3 | `scenes/levels/glacier_gallop.tscn`      | Glacier Gallop | 367 m | 9  | 145 / 180 / 225 s |
-| 4 | `scenes/levels/lava_vortex.tscn`         | Lava Vortex    | 509 m | 0  | 84 / 100 / 116 s |
-| — | `scenes/levels/abyss_run.tscn`           | Abyss Run      | 428 m | 6  | 112 / 138 / 172 s |
+La tabla vigente de longitudes, checkpoints y medallas está en [Datos de referencia](Datos_circuitos.md#circuitos). Este informe ya no la copia.
 
 Cada nivel lleva un `LevelInfo` con id, ronda, tiempos de medalla, récord propio, ruta de bots y anchos de carril. `RaceManager`, `RaceDirector` y el HUD leen esos datos, así que el mismo jugador y el mismo bot funcionan en todos los mapas.
 
-**Pivot Panic se retiró.** Su escena ya no existe y su constructor está desactivado en `tools/build_levels.gd`; el torneo se cierra con los cuatro circuitos de la tabla.
+**Pivot Panic se retiró.** Su escena ya no existe y su constructor está desactivado en `tools/build_levels.gd`; el torneo se cierra con los circuitos de la tabla.
 
 ## 2. Referencias y paletas
 
-La composición y el color de los dos primeros circuitos se inspiraron en dos mapas de Stumble Guys de Sketchfab (CC-BY 4.0, autor **amogusstrikesback2**):
+La composición y el color de los dos primeros circuitos se inspiraron en dos mapas **ajenos** de Stumble Guys de Sketchfab (CC-BY 4.0, autor **amogusstrikesback2**):
 
 - [Pivot Push](https://sketchfab.com/3d-models/stumble-guys-pivot-push-map-c7abc0bdd0a8490d9f1e9c805e3c05cd)
 - [Spin Go Round](https://sketchfab.com/3d-models/stumble-guys-spin-go-round-map-71224cc13db44948b91b8bb43c635d5c)
 
-No se descargaron sus mallas: se usaron sus vistas previas para estudiar layout, familias de color y siluetas, y se construyeron circuitos originales con CSG, mallas y materiales del proyecto. Las dos vistas previas quedan en `documentacion/referencias/` con la misma atribución CC-BY 4.0.
+No se descargaron sus mallas: se usaron sus vistas previas para estudiar layout, familias de color y siluetas, y se construyeron circuitos originales con CSG, mallas y materiales del proyecto. Las dos vistas previas ajenas quedan en `documentacion/referencias/` con la misma atribución CC-BY 4.0; no son capturas del juego.
 
 | Circuito | Base | Acentos | Cielo / mar |
 | --- | --- | --- | --- |
@@ -42,9 +38,26 @@ No se descargaron sus mallas: se usaron sus vistas previas para estudiar layout,
 
 Materiales nuevos: `pivot_floor`, `pivot_floor_alt`, `pivot_blue`, `pivot_gold`, `pivot_wall`, `pivot_rail`, `pivot_cream`, `spin_floor`, `spin_blue`, `spin_orange`, `spin_magenta`, `spin_lime`, `spin_gold`, `spin_wall` y `spin_hazard` (rayas de peligro con shader propio). El glaciar, el volcán y el abismo generan sus materiales en `level_builder.gd`.
 
+### 2.1 Capturas propias
+
+Todas las imágenes salen del render real del juego, con un perfil aislado. La galería completa está en [Capturas](Capturas.md).
+
+<p align="center">
+  <img src="capturas/pivot_push.webp" alt="Pivot Push" width="49%">
+  <img src="capturas/spin_go_round.webp" alt="Spin Go Round" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/glacier_gallop.webp" alt="Glacier Gallop" width="49%">
+  <img src="capturas/lava_vortex.webp" alt="Lava Vortex" width="49%">
+</p>
+<p align="center">
+  <img src="capturas/torneo_carrera.webp" alt="Salida de una carrera de torneo con bots" width="49%">
+  <img src="capturas/menu_torneo.webp" alt="Panel de elección de modo" width="49%">
+</p>
+
 ## 3. Pivot Push (ronda 1)
 
-Es el circuito original, retematizado de azul/cian/lima a **azul real, magenta y oro**. Conserva los tramos y el balancín entre las cintas y la avenida de martillos. Los 11 checkpoints y los bots siguen usando la misma ruta, expuesta en `LevelInfo`.
+Es el circuito original, retematizado de azul/cian/lima a **azul real, magenta y oro**. Conserva los tramos y el balancín entre las cintas y la avenida de martillos. Los checkpoints y los bots siguen usando la misma ruta, expuesta en `LevelInfo`; el recuento está en [Datos de referencia](Datos_circuitos.md#circuitos).
 
 **Acto 3 — la forja:** rampa de bajada al **pasillo de las rocas** (rocas persecutorias y cinta en contra), **terraza de pinchos**, **puente de las aspas** con tres brazos giratorios, **subida larga** hasta la cima con barrido y **dos péndulos**, y **bajada final** con dos barridos, cinta en contra y pinchos antes de la meta.
 
@@ -64,7 +77,7 @@ Sus dos rasgos exclusivos son los **muros de témpanos** (tres carriles que emer
 
 ## 6. Lava Vortex (ronda 4)
 
-La final es una **espiral de cuatro vueltas** alrededor de una montaña, con 116 tramos y tres saltos sobre la lava.
+La final es una **espiral de cuatro vueltas** alrededor de una montaña, con tres saltos sobre la lava; el desglose de producción está en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido).
 
 - **Lava que sube** desde la base hasta la cima: el circuito se corre de una tirada.
 - **Géiseres**, **lluvia de meteoros** con aviso, **vórtices de ceniza** y **cortinas de magma**.
@@ -73,7 +86,7 @@ La final es una **espiral de cuatro vueltas** alrededor de una montaña, con 116
 
 ## 7. Abyss Run (carrera clásica)
 
-El quinto circuito no entra en el torneo: se elige en la carrera clásica. Es un **túnel submarino de 428 m** con islas secas, tramos de agua y seis checkpoints.
+Este circuito no entra en el torneo: se elige en la carrera clásica. Es un **túnel submarino** con islas secas, tramos de agua y checkpoints; la longitud y el recuento están en [Datos de referencia](Datos_circuitos.md#circuitos).
 
 - **Nado:** flotabilidad, arrastre, inclinación del cuerpo y descenso con `Shift`/`Ctrl` o gatillo derecho.
 - **Hazards marinos:** erizos, medusas, minas de burbujas, estrellas giratorias y aros de impulso.
@@ -81,13 +94,13 @@ El quinto circuito no entra en el torneo: se elige en la carrera clásica. Es un
 
 ## 8. Récords y medallas
 
-Cada circuito guarda su propio récord y sus splits en `user://profile.json` (`best_times` y `best_splits_by_level`). Los tiempos de medalla son los de la tabla de la sección 1.
+Cada circuito guarda su propio récord y sus splits en `user://profile.json` (`best_times` y `best_splits_by_level`). Los tiempos de medalla son los de la [tabla de datos](Datos_circuitos.md#circuitos).
 
 El HUD muestra la medalla de oro del circuito cargado y el panel de resultados indica la ronda y el puesto. Al clasificarse, «Siguiente ronda» avanza a la escena correspondiente; en la final el torneo se cierra.
 
 ## 9. Cómo se generan las escenas
 
-- **Pivot Push:** construido a mano en `scenes/main.tscn`.
+- **Pivot Push:** construido a mano en `scenes/levels/pivot_push.tscn`.
 - **Spin Go Round:** `tools/build_levels.gd` comparte el entorno (cielo, luces, postproceso, HUD, RaceManager, KillPlane, RaceDirector, jugador y pausa), construye cada plataforma y obstáculo y empaqueta el resultado en `scenes/levels/spin_go_round.tscn`.
 - **Glacier Gallop, Lava Vortex y Abyss Run:** `scripts/levels/level_builder.gd` (modo `@tool`) genera el mapa al abrir la escena y lo hornea al guardar; después cada circuito se guarda en tres actos (`_act1..3.tscn`) que el nivel instancia. Ninguno se genera en runtime.
 
@@ -98,12 +111,7 @@ godot --headless --path . res://tools/build_levels.tscn   # regenera Spin Go Rou
 
 ## 10. Verificación
 
-Resultados reales de la batería con Godot 4.7.2 (`bash tools/run_tests.sh`):
-
-- `tools/check_scenes.gd`: **40/40 escenas OK**.
-- Suite obligatoria (12 tests): **todos en verde**, incluidos `levels_test`, `lod_test`, `flow_test`, `features_test` y `iteration3/4/5`.
-- `tools/bots_test.gd` y `tools/slow_test.gd` (tests largos): **TODO OK**.
-- `tools/levels_bots_test.gd` (test largo): los bots completan Spin Go Round (126,0 s), Glacier Gallop (183,0 s) y Lava Vortex (116,5 s).
+Resultados reales de la batería con Godot 4.7.2 (`bash tools/run_tests.sh`). El recuento de tests, las escenas comprobadas y los tiempos de los tests largos están en [Datos de referencia](Datos_circuitos.md#verificacion). La suite obligatoria incluye `levels_test`, `lod_test`, `flow_test`, `features_test`, `iteration3/4/5` y `check_docs`; los tests de bots (`--long`) van en el job aparte.
 
 ## 11. Uso de inteligencia artificial
 
@@ -111,7 +119,8 @@ La IA (Freebuff, de Codebuff) se ha usado para revisar el estado real del proyec
 
 ## 12. Créditos
 
-- Referencias de composición: Pivot Push y Spin Go Round de **amogusstrikesback2** en Sketchfab, **CC-BY 4.0** (vistas previas en `documentacion/referencias/`).
+- Referencias de composición **ajenas**: Pivot Push y Spin Go Round de **amogusstrikesback2** en Sketchfab, **CC-BY 4.0** (vistas previas en `documentacion/referencias/`).
+- Capturas propias: [Capturas](Capturas.md), generadas con `proyecto/tools/capture_docs.gd`.
 - Pelota de playa: [beach ball](https://poly.pizza/m/4IwPTeOmq6c) de **the_ normalgamer**, **CC-BY 3.0** (ver `proyecto/assets/props/README.md`).
 - Personajes: [Ultimate Animated Character Pack](https://quaternius.com/packs/ultimatedanimatedcharacter.html) de **Quaternius**, **CC0**.
 - Tipografía: **Baloo 2** de Ek Type, **SIL OFL 1.1**.

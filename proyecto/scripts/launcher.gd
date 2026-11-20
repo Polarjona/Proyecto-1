@@ -7,14 +7,18 @@ extends Area3D
 ## bots que llega junto vuela entero de una vez en vez de esperar turno.
 
 @export var launch_force: float = 8.0
+
 @export var launch_up: float = 8.0
+
 @export var launch_direction: Vector3 = Vector3(0.0, 0.0, -1.0)
+
 @export var affects_bots: bool = true
 
-@onready var tube: Node3D = $Tube
-@onready var ring: MeshInstance3D = $Ring
-
 var _time: float = 0.0
+
+@onready var tube: Node3D = $Tube
+
+@onready var ring: MeshInstance3D = $Ring
 
 
 func _ready() -> void:
@@ -40,7 +44,9 @@ func _can_launch(body: Node3D) -> bool:
 
 
 func _launch(body: Node3D) -> void:
-	var impulse := global_transform.basis * (launch_direction * launch_force + Vector3.UP * launch_up)
+	var impulse := (
+		global_transform.basis * (launch_direction * launch_force + Vector3.UP * launch_up)
+	)
 	if body.has_method("launch"):
 		body.launch(impulse)
 	elif body is CharacterBody3D:

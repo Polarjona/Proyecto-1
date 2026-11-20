@@ -1,13 +1,16 @@
 extends Area3D
 
 @export var checkpoint_name: String = "Checkpoint"
+
 @export var spawn_height_offset: float = 0.5
 
-@onready var spawn_marker: Marker3D = $SpawnMarker
-@onready var floor_band: MeshInstance3D = $FloorBand
-@onready var particles: CPUParticles3D = $Particles
-
 var _activated: bool = false
+
+@onready var spawn_marker: Marker3D = $SpawnMarker
+
+@onready var floor_band: MeshInstance3D = $FloorBand
+
+@onready var particles: CPUParticles3D = $Particles
 
 
 func _ready() -> void:

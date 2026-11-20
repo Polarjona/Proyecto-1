@@ -8,6 +8,7 @@ extends SceneTree
 
 ## Personaje de pago con el que se prueba la compra (y la fila del roster que
 ## le corresponde).
+const MENU_SCENE := "res://scenes/menu/main_menu.tscn"
 const PAID_ID := "worker"
 const PAID_ROW := "Worker"
 ## Última fila del roster, para comprobar que la lista entera cabe en el panel.
@@ -46,72 +47,133 @@ func _run() -> void:
 	var original_profile: Dictionary = (save.get("data") as Dictionary).duplicate(true)
 
 	# --- Menú: dos modos y submenú Personaje ------------------------------
-	var menu := (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate() as Control
+	var menu := (load(MENU_SCENE) as PackedScene).instantiate() as Control
 	root.add_child(menu)
 	current_scene = menu
 	await process_frame
 	await process_frame
-	_check(menu.get_node_or_null("ModePanel/VBox/ClassicCard") != null,
-		"El menú ofrece la carrera clásica")
-	_check(menu.get_node_or_null("ModePanel/VBox/TournamentCard") != null,
-		"El menú ofrece el torneo con bots")
-	_check(menu.get_node_or_null("ModePanel/VBox/BotsButton") == null,
-		"Ya no hay un tercer modo de juego")
-	_check(String(ProjectSettings.get_setting("application/config/name")) == "Tumble Rush",
-		"El juego tiene nombre propio: %s" % ProjectSettings.get_setting("application/config/name"))
-	_check((menu.get_node("TopBar/HBox/Logo/Title") as Label).text == "TUMBLE RUSH",
-		"El lobby muestra el nombre nuevo")
+	_check(
+		menu.get_node_or_null("ModePanel/VBox/ClassicCard") != null,
+		"El menú ofrece la carrera clásica"
+	)
+	_check(
+		menu.get_node_or_null("ModePanel/VBox/TournamentCard") != null,
+		"El menú ofrece el torneo con bots"
+	)
+	_check(
+		menu.get_node_or_null("ModePanel/VBox/BotsButton") == null,
+		"Ya no hay un tercer modo de juego"
+	)
+	_check(
+		String(ProjectSettings.get_setting("application/config/name")) == "Tumble Rush",
+		"El juego tiene nombre propio: %s" % ProjectSettings.get_setting("application/config/name")
+	)
+	_check(
+		(menu.get_node("TopBar/HBox/Logo/Title") as Label).text == "TUMBLE RUSH",
+		"El lobby muestra el nombre nuevo"
+	)
 
 	# --- Lobby: fondo y estilo cartoon ------------------------------------
 	var background := menu.get_node_or_null("Background") as ColorRect
-	_check(background != null and background.material is ShaderMaterial
-		and menu.get_node_or_null("Rings") == null,
-		"El fondo del lobby es un degradado, sin líneas")
+	_check(
+		(
+			background != null
+			and background.material is ShaderMaterial
+			and menu.get_node_or_null("Rings") == null
+		),
+		"El fondo del lobby es un degradado, sin líneas"
+	)
 
 	# --- Lobby: puesta en escena ------------------------------------------
 	var mode_panel: Control = menu.get_node("ModePanel")
 	var play_button: Button = menu.get_node("PlayButton")
 	var play_style := play_button.get_theme_stylebox("normal") as StyleBoxFlat
 	var play_pressed := play_button.get_theme_stylebox("pressed") as StyleBoxFlat
-	_check(play_style != null and play_style.corner_radius_top_left >= 16
-		and play_style.border_width_top >= 4 and play_style.shadow_size == 0
-		and play_style.shadow_offset.y >= 4,
-		"JUGAR es una pegatina 3D (radio %d, borde %d, sombra sólida %d px)" % [
-			play_style.corner_radius_top_left if play_style else 0,
-			play_style.border_width_top if play_style else 0,
-			play_style.shadow_offset.y if play_style else 0])
-	_check(play_style != null and play_pressed != null
-		and play_pressed.shadow_offset.y < play_style.shadow_offset.y
-		and play_pressed.content_margin_top > play_style.content_margin_top,
-		"Al pulsar JUGAR se hunde (sombra %d -> %d px, texto %d -> %d px)" % [
-			play_style.shadow_offset.y if play_style else 0,
-			play_pressed.shadow_offset.y if play_pressed else 0,
-			play_style.content_margin_top if play_style else 0,
-			play_pressed.content_margin_top if play_pressed else 0])
+	_check(
+		(
+			play_style != null
+			and play_style.corner_radius_top_left >= 16
+			and play_style.border_width_top >= 4
+			and play_style.shadow_size == 0
+			and play_style.shadow_offset.y >= 4
+		),
+		(
+			"JUGAR es una pegatina 3D (radio %d, borde %d, sombra sólida %d px)"
+			% [
+				play_style.corner_radius_top_left if play_style else 0,
+				play_style.border_width_top if play_style else 0,
+				play_style.shadow_offset.y if play_style else 0
+			]
+		)
+	)
+	_check(
+		(
+			play_style != null
+			and play_pressed != null
+			and play_pressed.shadow_offset.y < play_style.shadow_offset.y
+			and play_pressed.content_margin_top > play_style.content_margin_top
+		),
+		(
+			"Al pulsar JUGAR se hunde (sombra %d -> %d px, texto %d -> %d px)"
+			% [
+				play_style.shadow_offset.y if play_style else 0,
+				play_pressed.shadow_offset.y if play_pressed else 0,
+				play_style.content_margin_top if play_style else 0,
+				play_pressed.content_margin_top if play_pressed else 0
+			]
+		)
+	)
 	var nav_button: Button = menu.get_node("TopBar/HBox/NavRow/CharacterButton")
 	var nav_style := nav_button.get_theme_stylebox("normal") as StyleBoxFlat
-	_check(nav_style != null and nav_button.theme_type_variation == &"NavButton"
-		and nav_style.border_width_top >= 3 and nav_style.shadow_size == 0
-		and nav_style.shadow_offset.y >= 4,
-		"Los botones del lobby usan la variante de navegación con sombra sólida (borde %d)" % [
-			nav_style.border_width_top if nav_style else 0])
-	var panel_style := (menu.get_node("SeasonCard") as PanelContainer).get_theme_stylebox("panel") as StyleBoxFlat
-	_check(panel_style != null and panel_style.border_width_top >= 5
-		and panel_style.shadow_size == 0 and panel_style.shadow_offset.y >= 8,
-		"Las tarjetas son pegatinas con borde grueso y sombra sólida")
-	_check(menu.theme != null and menu.theme.default_font != null,
-		"El lobby usa una tipografía redondeada propia")
+	_check(
+		(
+			nav_style != null
+			and nav_button.theme_type_variation == &"NavButton"
+			and nav_style.border_width_top >= 3
+			and nav_style.shadow_size == 0
+			and nav_style.shadow_offset.y >= 4
+		),
+		(
+			"Los botones del lobby usan la variante de navegación con sombra sólida (borde %d)"
+			% [nav_style.border_width_top if nav_style else 0]
+		)
+	)
+	var panel_style := (
+		(menu.get_node("SeasonCard") as PanelContainer).get_theme_stylebox("panel") as StyleBoxFlat
+	)
+	_check(
+		(
+			panel_style != null
+			and panel_style.border_width_top >= 5
+			and panel_style.shadow_size == 0
+			and panel_style.shadow_offset.y >= 8
+		),
+		"Las tarjetas son pegatinas con borde grueso y sombra sólida"
+	)
+	_check(
+		menu.theme != null and menu.theme.default_font != null,
+		"El lobby usa una tipografía redondeada propia"
+	)
 	_check(not mode_panel.visible, "El lobby empieza con la lista de modos cerrada")
-	_check(play_button.get_global_rect().size.x >= 280.0
-		and play_button.get_global_rect().size.y >= 80.0,
-		"El botón JUGAR es el protagonista (%.0fx%.0f)" % [
-			play_button.get_global_rect().size.x, play_button.get_global_rect().size.y])
+	_check(
+		(
+			play_button.get_global_rect().size.x >= 280.0
+			and play_button.get_global_rect().size.y >= 80.0
+		),
+		(
+			"El botón JUGAR es el protagonista (%.0fx%.0f)"
+			% [play_button.get_global_rect().size.x, play_button.get_global_rect().size.y]
+		)
+	)
 	play_button.pressed.emit()
 	await process_frame
 	_check(mode_panel.visible, "JUGAR abre la elección de modo")
-	_check(mode_panel.get_global_rect().encloses(
-		(menu.get_node("ModePanel/VBox/TournamentCard") as Control).get_global_rect()),
-		"Los dos modos caben dentro del panel del lobby")
+	_check(
+		mode_panel.get_global_rect().encloses(
+			(menu.get_node("ModePanel/VBox/TournamentCard") as Control).get_global_rect()
+		),
+		"Los dos modos caben dentro del panel del lobby"
+	)
 
 	var lobby_stage: Node3D = menu.get_node("LobbyStage/SubViewport/Stage")
 	var lobby_viewport := menu.get_node("LobbyStage/SubViewport") as SubViewport
@@ -120,20 +182,39 @@ func _run() -> void:
 	_check(lobby_model != null, "El lobby enseña al corredor equipado en 3D")
 	if lobby_model != null:
 		var bounds := _screen_bounds(lobby_stage, lobby_camera)
-		_check(int(bounds["in_frustum"]) == 8
-			and float(bounds["top"]) > 6.0
-			and float(bounds["bottom"]) < float(lobby_viewport.size.y) - 6.0
-			and float(bounds["left"]) > 6.0
-			and float(bounds["right"]) < float(lobby_viewport.size.x) - 6.0,
-			"El lobby encuadra al personaje y su peana enteros (%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)" % [
-				float(bounds["top"]), float(bounds["bottom"]), lobby_viewport.size.y,
-				int(bounds["in_frustum"]), float(bounds["left"]), float(bounds["right"])])
+		_check(
+			(
+				int(bounds["in_frustum"]) == 8
+				and float(bounds["top"]) > 6.0
+				and float(bounds["bottom"]) < float(lobby_viewport.size.y) - 6.0
+				and float(bounds["left"]) > 6.0
+				and float(bounds["right"]) < float(lobby_viewport.size.x) - 6.0
+			),
+			(
+				(
+					"El lobby encuadra al personaje y su peana enteros "
+					+ "(%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)"
+				)
+				% [
+					float(bounds["top"]),
+					float(bounds["bottom"]),
+					lobby_viewport.size.y,
+					int(bounds["in_frustum"]),
+					float(bounds["left"]),
+					float(bounds["right"])
+				]
+			)
+		)
 	var player_name: Label = menu.get_node("PlayerBadge/HBox/VBox/PlayerNameLabel")
-	_check(player_name.text == CharacterCatalog.display_name(save.call("character_id")),
-		"El lobby muestra el nombre del corredor equipado (%s)" % player_name.text)
+	_check(
+		player_name.text == CharacterCatalog.display_name(save.call("character_id")),
+		"El lobby muestra el nombre del corredor equipado (%s)" % player_name.text
+	)
 	var season_progress: ProgressBar = menu.get_node("SeasonCard/VBox/LobbyProgress")
-	_check(season_progress.value >= 0.0 and season_progress.value <= 100.0,
-		"La tarjeta de temporada muestra un progreso válido (%.0f%%)" % season_progress.value)
+	_check(
+		season_progress.value >= 0.0 and season_progress.value <= 100.0,
+		"La tarjeta de temporada muestra un progreso válido (%.0f%%)" % season_progress.value
+	)
 	var pieces: Array[Rect2] = [
 		(menu.get_node("SeasonCard") as Control).get_global_rect(),
 		(menu.get_node("PlayerBadge") as Control).get_global_rect(),
@@ -149,25 +230,35 @@ func _run() -> void:
 	_check(overlapping == 0, "Las piezas del lobby no se solapan (%d cruces)" % overlapping)
 
 	var character_panel: Control = menu.get_node("CharacterPanel")
-	_check(character_panel != null and not character_panel.visible,
-		"El submenú Personaje empieza cerrado")
+	_check(
+		character_panel != null and not character_panel.visible,
+		"El submenú Personaje empieza cerrado"
+	)
 	var character_button: Button = menu.get_node("TopBar/HBox/NavRow/CharacterButton")
 	character_button.pressed.emit()
 	await process_frame
 	_check(character_panel.visible, "El botón PERSONAJE abre su submenú")
 	var panel_rect := character_panel.get_global_rect()
 	var last_row: Control = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus" % [LAST_ROW, LAST_ROW, LAST_ROW, LAST_ROW])
-	_check(panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y,
-		"El submenú cabe en la pantalla")
+		(
+			"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus"
+			% [LAST_ROW, LAST_ROW, LAST_ROW, LAST_ROW]
+		)
+	)
+	_check(
+		panel_rect.size.x <= menu.size.x and panel_rect.size.y <= menu.size.y,
+		"El submenú cabe en la pantalla"
+	)
 	# Con diez personajes la lista es más alta que su ventana: se baja hasta el
 	# final y se comprueba que el último también queda dentro del panel.
 	var scroll: ScrollContainer = menu.get_node("CharacterPanel/VBox/Body/RosterScroll")
 	scroll.scroll_vertical = 100000
 	await process_frame
 	await process_frame
-	_check(panel_rect.encloses(last_row.get_global_rect()),
-		"Al bajar del todo, el último personaje sigue dentro del panel")
+	_check(
+		panel_rect.encloses(last_row.get_global_rect()),
+		"Al bajar del todo, el último personaje sigue dentro del panel"
+	)
 	scroll.scroll_vertical = 0
 	await process_frame
 
@@ -177,24 +268,44 @@ func _run() -> void:
 	for row in menu.get_node("CharacterPanel/VBox/Body/RosterScroll/Roster").get_children():
 		if row is Button:
 			roster += 1
-	_check(roster == CharacterCatalog.CHARACTERS.size(),
-		"El submenú lista los %d personajes (%d)" % [CharacterCatalog.CHARACTERS.size(), roster])
+	_check(
+		roster == CharacterCatalog.CHARACTERS.size(),
+		"El submenú lista los %d personajes (%d)" % [CharacterCatalog.CHARACTERS.size(), roster]
+	)
 	var preview_stage: Node3D = menu.get_node(
-		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage")
-	var preview_viewport := menu.get_node(
-		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport") as SubViewport
+		"CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport/Stage"
+	)
+	var preview_viewport := (
+		menu.get_node("CharacterPanel/VBox/Body/PreviewBox/CharacterPreview/SubViewport")
+		as SubViewport
+	)
 	await process_frame
 	var framed_model := preview_stage.get_node_or_null("PreviewModel") as Node3D
 	_check(framed_model != null, "El submenú muestra una vista previa 3D")
 	if framed_model != null:
 		var preview_camera := preview_viewport.get_node("Camera3D") as Camera3D
 		var bounds := _screen_bounds(preview_stage, preview_camera)
-		_check(int(bounds["in_frustum"]) == 8
-			and float(bounds["top"]) > 6.0
-			and float(bounds["bottom"]) < float(preview_viewport.size.y) - 6.0,
-			"La vista previa encuadra al personaje y su peana enteros (%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)" % [
-				float(bounds["top"]), float(bounds["bottom"]), preview_viewport.size.y,
-				int(bounds["in_frustum"]), float(bounds["left"]), float(bounds["right"])])
+		_check(
+			(
+				int(bounds["in_frustum"]) == 8
+				and float(bounds["top"]) > 6.0
+				and float(bounds["bottom"]) < float(preview_viewport.size.y) - 6.0
+			),
+			(
+				(
+					"La vista previa encuadra al personaje y su peana enteros "
+					+ "(%.0f..%.0f de %d px, %d esquinas, x %.0f..%.0f)"
+				)
+				% [
+					float(bounds["top"]),
+					float(bounds["bottom"]),
+					preview_viewport.size.y,
+					int(bounds["in_frustum"]),
+					float(bounds["left"]),
+					float(bounds["right"])
+				]
+			)
+		)
 
 	# --- Desbloqueos con monedas ------------------------------------------
 	var profile: Dictionary = save.get("data")
@@ -206,49 +317,79 @@ func _run() -> void:
 	profile["character"] = CharacterCatalog.default_id()
 	save.call("save_profile")
 
-	_check(bool(save.call("is_character_unlocked", CharacterCatalog.default_id())),
-		"El personaje gratis viene desbloqueado de fábrica")
-	_check(not bool(save.call("is_character_unlocked", PAID_ID)),
-		"%s empieza bloqueado" % CharacterCatalog.display_name(PAID_ID))
+	_check(
+		bool(save.call("is_character_unlocked", CharacterCatalog.default_id())),
+		"El personaje gratis viene desbloqueado de fábrica"
+	)
+	_check(
+		not bool(save.call("is_character_unlocked", PAID_ID)),
+		"%s empieza bloqueado" % CharacterCatalog.display_name(PAID_ID)
+	)
 	save.call("set_character", PAID_ID)
-	_check(String(save.call("character_id")) == CharacterCatalog.default_id(),
-		"No se puede equipar un personaje bloqueado")
-	_check(not bool(save.call("buy_character", PAID_ID)),
-		"Sin monedas suficientes no se desbloquea %s" % CharacterCatalog.display_name(PAID_ID))
+	_check(
+		String(save.call("character_id")) == CharacterCatalog.default_id(),
+		"No se puede equipar un personaje bloqueado"
+	)
+	_check(
+		not bool(save.call("buy_character", PAID_ID)),
+		"Sin monedas suficientes no se desbloquea %s" % CharacterCatalog.display_name(PAID_ID)
+	)
 
 	menu.call("_refresh_character_panel")
 	var paid_button: Button = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton" % PAID_ROW)
+		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton" % PAID_ROW
+	)
 	paid_button.pressed.emit()
 	await process_frame
 	var buy_button: Button = menu.get_node("CharacterPanel/VBox/Body/PreviewBox/BuyButton")
-	_check(buy_button.disabled and buy_button.text.begins_with("NECESITAS"),
-		"El botón de compra avisa de las monedas que faltan (%s)" % buy_button.text)
+	_check(
+		buy_button.disabled and buy_button.text.begins_with("NECESITAS"),
+		"El botón de compra avisa de las monedas que faltan (%s)" % buy_button.text
+	)
 
 	profile["coins"] = 1000
 	save.call("save_profile")
 	menu.call("_refresh_character_panel")
-	_check(not buy_button.disabled and buy_button.text.begins_with("DESBLOQUEAR"),
-		"Con monedas suficientes se puede comprar (%s)" % buy_button.text)
+	_check(
+		not buy_button.disabled and buy_button.text.begins_with("DESBLOQUEAR"),
+		"Con monedas suficientes se puede comprar (%s)" % buy_button.text
+	)
 	buy_button.pressed.emit()
 	await process_frame
-	_check(bool(save.call("is_character_unlocked", PAID_ID)),
-		"%s queda desbloqueado al comprarlo" % CharacterCatalog.display_name(PAID_ID))
-	_check(int(save.call("coins")) == 1000 - int(save.call("character_price", PAID_ID)),
-		"La compra descuenta su precio (%d monedas)" % int(save.call("coins")))
+	_check(
+		bool(save.call("is_character_unlocked", PAID_ID)),
+		"%s queda desbloqueado al comprarlo" % CharacterCatalog.display_name(PAID_ID)
+	)
+	_check(
+		int(save.call("coins")) == 1000 - int(save.call("character_price", PAID_ID)),
+		"La compra descuenta su precio (%d monedas)" % int(save.call("coins"))
+	)
 	_check(String(save.call("character_id")) == PAID_ID, "El personaje comprado queda equipado")
 	var paid_status: Label = menu.get_node(
-		"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus" % [PAID_ROW, PAID_ROW, PAID_ROW, PAID_ROW])
-	_check(paid_status.text == "ELEGIDO", "El submenú marca el personaje elegido (%s)" % paid_status.text)
+		(
+			"CharacterPanel/VBox/Body/RosterScroll/Roster/%sButton/%sRow/%sLabels/%sStatus"
+			% [PAID_ROW, PAID_ROW, PAID_ROW, PAID_ROW]
+		)
+	)
+	_check(
+		paid_status.text == "ELEGIDO",
+		"El submenú marca el personaje elegido (%s)" % paid_status.text
+	)
 	var preview_model: Node3D = preview_stage.get_node_or_null("PreviewModel")
-	_check(preview_model != null and String(menu.get("_preview_id")) == PAID_ID,
-		"La vista previa muestra el personaje comprado (%s)" % String(menu.get("_preview_id")))
+	_check(
+		preview_model != null and String(menu.get("_preview_id")) == PAID_ID,
+		"La vista previa muestra el personaje comprado (%s)" % String(menu.get("_preview_id"))
+	)
 
 	# El elegido se guarda en el perfil y sobrevive a una recarga.
 	save.call("load_profile")
-	_check(String(save.call("character_id")) == PAID_ID
-		and bool(save.call("is_character_unlocked", PAID_ID)),
-		"El desbloqueo y el personaje se conservan en el perfil")
+	_check(
+		(
+			String(save.call("character_id")) == PAID_ID
+			and bool(save.call("is_character_unlocked", PAID_ID))
+		),
+		"El desbloqueo y el personaje se conservan en el perfil"
+	)
 
 	# Restaura el perfil de quien ejecuta el test.
 	profile = save.get("data")
@@ -267,16 +408,28 @@ func _run() -> void:
 	var slow_last: Dictionary = save.call("coin_reward", 150.0, "none", 8, bronze)
 	var slow_win: Dictionary = save.call("coin_reward", 125.0, "bronze", 1, bronze)
 	var no_bonus: Dictionary = save.call("coin_reward", 400.0, "none", 0, bronze)
-	_check(int(fast_win["total"]) > int(slow_last["total"]),
-		"Una carrera rápida y ganada paga más que una lenta y última (%d vs %d)" % [
-			int(fast_win["total"]), int(slow_last["total"])])
-	_check(int(fast_win["time"]) > int(slow_win["time"]),
-		"Mejor tiempo paga más monedas de tiempo (%d vs %d)" % [
-			int(fast_win["time"]), int(slow_win["time"])])
-	_check(int(slow_win["position"]) > int(no_bonus["position"]),
-		"Mejor puesto paga más monedas de clasificación")
-	_check(int(no_bonus["total"]) == int(no_bonus["base"]),
-		"Sin tiempo ni puesto solo queda la base (%d)" % int(no_bonus["total"]))
+	_check(
+		int(fast_win["total"]) > int(slow_last["total"]),
+		(
+			"Una carrera rápida y ganada paga más que una lenta y última (%d vs %d)"
+			% [int(fast_win["total"]), int(slow_last["total"])]
+		)
+	)
+	_check(
+		int(fast_win["time"]) > int(slow_win["time"]),
+		(
+			"Mejor tiempo paga más monedas de tiempo (%d vs %d)"
+			% [int(fast_win["time"]), int(slow_win["time"])]
+		)
+	)
+	_check(
+		int(slow_win["position"]) > int(no_bonus["position"]),
+		"Mejor puesto paga más monedas de clasificación"
+	)
+	_check(
+		int(no_bonus["total"]) == int(no_bonus["base"]),
+		"Sin tiempo ni puesto solo queda la base (%d)" % int(no_bonus["total"])
+	)
 
 	# --- Carrera: arranque del modo correcto ------------------------------
 	session.call("start_classic")
@@ -284,7 +437,7 @@ func _run() -> void:
 	_check(bool(session.call("is_tournament")) == false, "El modo clásico no es torneo")
 
 	# --- Repaso geométrico del circuito ----------------------------------
-	var game := (load("res://scenes/main.tscn") as PackedScene).instantiate() as Node3D
+	var game := (load(LevelPaths.PIVOT_PUSH) as PackedScene).instantiate() as Node3D
 	root.add_child(game)
 	current_scene = game
 	for i in 3:
@@ -297,9 +450,13 @@ func _run() -> void:
 		var marker := checkpoint.get_node("SpawnMarker") as Node3D
 		var spawn: Vector3 = marker.global_position + Vector3.UP * 0.5
 		var floor_y := _floor_y(space, Vector3(spawn.x, spawn.y + 0.05, spawn.z))
-		_check(floor_y > -50.0 and floor_y < spawn.y,
-			"%s respawnea sobre suelo firme (suelo %.2f, spawn %.2f)" % [
-				String(checkpoint.get("checkpoint_name")), floor_y, spawn.y])
+		_check(
+			floor_y > -50.0 and floor_y < spawn.y,
+			(
+				"%s respawnea sobre suelo firme (suelo %.2f, spawn %.2f)"
+				% [String(checkpoint.get("checkpoint_name")), floor_y, spawn.y]
+			)
+		)
 
 	# Respawn real en el checkpoint del pasillo de cintas: el jugador debe
 	# quedarse sobre la plataforma, no caer al vacío.
@@ -314,8 +471,13 @@ func _run() -> void:
 		player.call("respawn_at", spawn)
 		for i in 60:
 			await physics_frame
-		_check(player.is_on_floor() and player.global_position.y > -1.0,
-			"Tras el respawn del pasillo de cintas el jugador sigue en la plataforma (y=%.2f)" % player.global_position.y)
+		_check(
+			player.is_on_floor() and player.global_position.y > -1.0,
+			(
+				"Tras el respawn del pasillo de cintas el jugador sigue en la plataforma (y=%.2f)"
+				% player.global_position.y
+			)
+		)
 
 	# El jugador real cruza el balancín y llega andando a su plataforma.
 	player.call("respawn_at", Transform3D(Basis.IDENTITY, Vector3(0, 1.0, -45.5)))
@@ -330,9 +492,13 @@ func _run() -> void:
 			crossed = player.is_on_floor() and player.global_position.y > -3.5
 			break
 	Input.action_release("move_forward")
-	_check(crossed,
-		"Se puede cruzar del balancín a su landing (z=%.2f, y=%.2f)" % [
-			player.global_position.z, player.global_position.y])
+	_check(
+		crossed,
+		(
+			"Se puede cruzar del balancín a su landing (z=%.2f, y=%.2f)"
+			% [player.global_position.z, player.global_position.y]
+		)
+	)
 
 	# La salida del balancín tiene que ser continua hasta la plataforma.
 	var max_step := 0.0
@@ -351,18 +517,25 @@ func _run() -> void:
 		first = false
 	_check(void_gaps == 0, "No hay huecos entre el balancín y su landing (%d)" % void_gaps)
 	_check(max_step <= 0.65, "La salida del balancín es pisable (escalón máx %.2f m)" % max_step)
-	_check(_floor_y(space, Vector3(0, 20, -58)) < -1.0,
-		"Hay rampa descendente tras la tabla")
-	_check(absf(_floor_y(space, Vector3(0, 20, -65))) < 0.3,
-		"La rampa termina al nivel de la plataforma de llegada")
+	_check(_floor_y(space, Vector3(0, 20, -58)) < -1.0, "Hay rampa descendente tras la tabla")
+	_check(
+		absf(_floor_y(space, Vector3(0, 20, -65))) < 0.3,
+		"La rampa termina al nivel de la plataforma de llegada"
+	)
 
 	# La punta volcada de la tabla cae sobre la rampa, no al vacío.
 	var board := game.get_node("Course/SeeSaw") as Node3D
-	var tip: Vector3 = board.global_position + Basis(Vector3.RIGHT, -0.5) * Vector3(0.0, 0.175, -5.0)
+	var tip: Vector3 = (
+		board.global_position + Basis(Vector3.RIGHT, -0.5) * Vector3(0.0, 0.175, -5.0)
+	)
 	var landing_under_tip := _floor_y(space, Vector3(tip.x, tip.y + 2.0, tip.z))
-	_check(landing_under_tip > -50.0 and absf(landing_under_tip - tip.y) < 1.2,
-		"La punta volcada del balancín tiene rampa debajo (punta %.2f, suelo %.2f)" % [
-			tip.y, landing_under_tip])
+	_check(
+		landing_under_tip > -50.0 and absf(landing_under_tip - tip.y) < 1.2,
+		(
+			"La punta volcada del balancín tiene rampa debajo (punta %.2f, suelo %.2f)"
+			% [tip.y, landing_under_tip]
+		)
+	)
 
 	# --- El balancín empuja a los bots igual que al jugador ---------------
 	var saw := (load("res://scenes/obstacles/see_saw.tscn") as PackedScene).instantiate() as Node3D
@@ -378,16 +551,20 @@ func _run() -> void:
 	var riders: Array[Node3D] = [bot]
 	saw.call("_apply_slide", riders)
 	var external: Vector3 = bot.get("_external")
-	_check(external.z < -1.0,
-		"La tabla volcada desliza al bot cuesta abajo (empuje z=%.2f)" % external.z)
-	_check(absf(external.z) >= float(saw.get("slide_speed")) * 0.95,
-		"El bot recibe el mismo deslizamiento que el jugador")
+	_check(
+		external.z < -1.0,
+		"La tabla volcada desliza al bot cuesta abajo (empuje z=%.2f)" % external.z
+	)
+	_check(
+		absf(external.z) >= float(saw.get("slide_speed")) * 0.95,
+		"El bot recibe el mismo deslizamiento que el jugador"
+	)
 
 	# --- La tarjeta de torneo arranca el modo con bots --------------------
 	game.queue_free()
 	await process_frame
 	await process_frame
-	var menu2 := (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate() as Control
+	var menu2 := (load(MENU_SCENE) as PackedScene).instantiate() as Control
 	root.add_child(menu2)
 	current_scene = menu2
 	await process_frame
@@ -397,12 +574,18 @@ func _run() -> void:
 	var tournament_card: Button = menu2.get_node("ModePanel/VBox/TournamentCard")
 	tournament_card.pressed.emit()
 	await process_frame
-	_check(bool(session.call("is_tournament")) and bool(session.call("is_bot_race")),
-		"La tarjeta de torneo activa el modo con bots")
+	_check(
+		bool(session.call("is_tournament")) and bool(session.call("is_bot_race")),
+		"La tarjeta de torneo activa el modo con bots"
+	)
 	await create_timer(1.2).timeout
-	_check(current_scene != null
-		and current_scene.scene_file_path.ends_with("scenes/main.tscn"),
-		"El torneo carga la escena de carrera")
+	_check(
+		(
+			current_scene != null
+			and current_scene.scene_file_path.ends_with("scenes/levels/pivot_push.tscn")
+		),
+		"El torneo carga la escena de carrera"
+	)
 
 	# --- Resultado de una carrera con bots ---------------------------------
 	var race_manager: Node = get_first_node_in_group("race_manager")
@@ -415,45 +598,70 @@ func _run() -> void:
 	# dejan de correr, así el puesto del panel no cambia después de mostrarse.
 	var racing_player := get_first_node_in_group("player")
 	var director := get_first_node_in_group("race_director")
-	_check(racing_player != null and bool(racing_player.get("input_locked")),
-		"Al terminar, el jugador deja de responder")
-	_check(director != null and bool(director.call("is_frozen")),
-		"Al terminar, los bots se congelan")
-	_check(int(_last_results.get("position", 0)) >= 1,
-		"La carrera con bots registra el puesto (%d)" % int(_last_results.get("position", 0)))
-	_check(int(_last_results.get("coins", 0)) > 0
-		and not (_last_results.get("coins_breakdown", {}) as Dictionary).is_empty(),
-		"El resultado trae monedas y su desglose (%d)" % int(_last_results.get("coins", 0)))
+	_check(
+		racing_player != null and bool(racing_player.get("input_locked")),
+		"Al terminar, el jugador deja de responder"
+	)
+	_check(
+		director != null and bool(director.call("is_frozen")), "Al terminar, los bots se congelan"
+	)
+	_check(
+		int(_last_results.get("position", 0)) >= 1,
+		"La carrera con bots registra el puesto (%d)" % int(_last_results.get("position", 0))
+	)
+	_check(
+		(
+			int(_last_results.get("coins", 0)) > 0
+			and not (_last_results.get("coins_breakdown", {}) as Dictionary).is_empty()
+		),
+		"El resultado trae monedas y su desglose (%d)" % int(_last_results.get("coins", 0))
+	)
 	var hud := current_scene.get_node_or_null("HUD")
 	var breakdown_label: Label = null
 	if hud != null:
-		breakdown_label = hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsCoinBreakdown") as Label
-	_check(breakdown_label != null and not breakdown_label.text.is_empty(),
-		"El HUD enseña el desglose de monedas (%s)" % (breakdown_label.text if breakdown_label else "sin HUD"))
+		breakdown_label = (
+			hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsCoinBreakdown") as Label
+		)
+	_check(
+		breakdown_label != null and not breakdown_label.text.is_empty(),
+		(
+			"El HUD enseña el desglose de monedas (%s)"
+			% (breakdown_label.text if breakdown_label else "sin HUD")
+		)
+	)
 
 	# --- Canción de victoria ----------------------------------------------
 	var audio: Node = root.get_node("AudioManager")
-	_check(bool(audio.call("is_victory_playing")),
-		"Al acabar la partida suena la canción de victoria")
+	_check(
+		bool(audio.call("is_victory_playing")), "Al acabar la partida suena la canción de victoria"
+	)
 	var victory_stream := audio.get("_victory_stream") as AudioStream
 	var victory_length := victory_stream.get_length() if victory_stream else 0.0
-	_check(victory_stream != null and victory_length > 20.0 and victory_length < 24.0,
-		"La fanfarria está recortada a ~22 s (%.1f s)" % victory_length)
+	_check(
+		victory_stream != null and victory_length > 20.0 and victory_length < 24.0,
+		"La fanfarria está recortada a ~22 s (%.1f s)" % victory_length
+	)
 	var victory_player: AudioStreamPlayer = audio.get_node("VictoryPlayer")
-	_check(victory_player.bus == "Victory",
-		"La fanfarria suena en su propio bus, sin depender del volumen de música")
-	_check(victory_player.volume_db <= -6.0,
-		"La fanfarria deja margen en el Master (%.1f dB)" % victory_player.volume_db)
+	_check(
+		victory_player.bus == "Victory",
+		"La fanfarria suena en su propio bus, sin depender del volumen de música"
+	)
+	_check(
+		victory_player.volume_db <= -6.0,
+		"La fanfarria deja margen en el Master (%.1f dB)" % victory_player.volume_db
+	)
 	audio.call("play_music", false)
-	_check(not bool(audio.call("is_victory_playing")) and bool(audio.call("is_music_playing")),
-		"Volver al lobby corta la fanfarria y recupera la música")
+	_check(
+		not bool(audio.call("is_victory_playing")) and bool(audio.call("is_music_playing")),
+		"Volver al lobby corta la fanfarria y recupera la música"
+	)
 
 	# --- Carrera clásica: el circuito se elige en el menú ----------------
 	# El circuito vive en el perfil, así que se deja en el primero para que el
 	# test no dependa de lo que guardara la partida anterior.
 	save.call("set_setting", "classic_level", 0)
 	session.set("classic_level", 0)
-	var menu3 := (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate() as Control
+	var menu3 := (load(MENU_SCENE) as PackedScene).instantiate() as Control
 	root.add_child(menu3)
 	current_scene = menu3
 	await process_frame
@@ -463,24 +671,42 @@ func _run() -> void:
 	var level_two := level_row.get_node("Level2") as Button
 	(menu3.get_node("PlayButton") as Button).pressed.emit()
 	await process_frame
-	var level_count := (session.get("LEVELS") as Array).size()
-	_check(level_row.get_child_count() == level_count,
-		"El menú ofrece los %d circuitos (%d botones)" % [level_count, level_row.get_child_count()])
-	_check(level_two.text == String(session.call("level_name", 1)) and level_one.button_pressed,
-		"La carrera clásica empieza en %s y el elegido está marcado" % level_one.text)
+	var level_count := int(session.call("level_count"))
+	_check(
+		level_row.get_child_count() == level_count,
+		"El menú ofrece los %d circuitos (%d botones)" % [level_count, level_row.get_child_count()]
+	)
+	_check(
+		level_two.text == String(session.call("level_name", 1)) and level_one.button_pressed,
+		"La carrera clásica empieza en %s y el elegido está marcado" % level_one.text
+	)
 	level_two.pressed.emit()
 	await process_frame
-	_check(int(session.get("classic_level")) == 1 and level_two.button_pressed
-		and not level_one.button_pressed,
-		"Elegir circuito marca el botón y lo recuerda en la sesión")
-	_check(int(save.call("get_setting", "classic_level", -1)) == 1,
-		"El circuito elegido se guarda en el perfil")
+	_check(
+		(
+			int(session.get("classic_level")) == 1
+			and level_two.button_pressed
+			and not level_one.button_pressed
+		),
+		"Elegir circuito marca el botón y lo recuerda en la sesión"
+	)
+	_check(
+		int(save.call("get_setting", "classic_level", -1)) == 1,
+		"El circuito elegido se guarda en el perfil"
+	)
 	(menu3.get_node("ModePanel/VBox/ClassicCard") as Button).pressed.emit()
 	await create_timer(1.2).timeout
-	_check(String(session.get("mode")) == "classic" and current_scene != null
-		and current_scene.scene_file_path.ends_with("scenes/levels/spin_go_round.tscn"),
-		"La carrera clásica arranca en el circuito elegido (%s)"
-			% (current_scene.scene_file_path if current_scene else "sin escena"))
+	_check(
+		(
+			String(session.get("mode")) == "classic"
+			and current_scene != null
+			and current_scene.scene_file_path.ends_with("scenes/levels/spin_go_round.tscn")
+		),
+		(
+			"La carrera clásica arranca en el circuito elegido (%s)"
+			% (current_scene.scene_file_path if current_scene else "sin escena")
+		)
+	)
 
 	# Deja el perfil como estaba antes de ejecutar el test.
 	save.set("data", original_profile)
@@ -507,8 +733,11 @@ func _screen_bounds(model: Node3D, camera: Camera3D) -> Dictionary:
 		box = mesh_box if first else box.merge(mesh_box)
 		first = false
 	var bounds := {
-		"in_frustum": 0, "top": 9999.0, "bottom": -9999.0,
-		"left": 9999.0, "right": -9999.0,
+		"in_frustum": 0,
+		"top": 9999.0,
+		"bottom": -9999.0,
+		"left": 9999.0,
+		"right": -9999.0,
 	}
 	if first:
 		return bounds

@@ -5,10 +5,13 @@ extends AnimatableBody3D
 ## and a visible central axle, so the obstacle reads clearly while it turns.
 
 const YELLOW := preload("res://materials/yellow.tres")
+
 const PINK := preload("res://materials/pink.tres")
+
 const PURPLE := preload("res://materials/purple.tres")
 
 @export var spin_speed: float = 1.2
+
 ## Luz y chispas del disco. Con muchos discos juntos conviene apagarlas para no
 ## llenar la sala de luces dinámicas.
 @export var glow: bool = true

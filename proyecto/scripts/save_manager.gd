@@ -6,44 +6,70 @@ extends Node
 ## se importa automaticamente la primera vez para no perder el record.
 
 signal profile_saved
+
 signal settings_changed
+
 signal medal_unlocked(medal: String)
 
 const SAVE_PATH := "user://profile.json"
+
 const SAVE_TMP_PATH := "user://profile.json.tmp"
+
 const SAVE_BACKUP_PATH := "user://profile.json.bak"
+
 ## En headless (la bateria de tests) se usa un perfil aparte: correr los tests
 ## no debe tocar records, monedas ni personajes del jugador.
 const HEADLESS_SAVE_PATH := "user://profile.headless.json"
+
 ## Los ajustes se guardan en diferido: arrastrar un slider no debe escribir en
 ## disco una vez por píxel.
 const SAVE_DEBOUNCE := 0.4
+
 const LEGACY_BEST_PATH := "user://best_time.save"
+
 ## Carpetas de datos que usaba el juego antes de llamarse Tumble Rush.
 ## Se prueban en orden: primero el nombre inmediatamente anterior.
 const LEGACY_APP_DIRS := ["Trompicón", "Stumble Guys"]
+
 const PROFILE_VERSION := 2
+
+## Se carga por ruta: este autoload arranca antes de que el editor haya
+## registrado las clases globales nuevas.
+const LocalizationScript := preload("res://scripts/localization.gd")
 
 # Recompensa en monedas: una parte fija, otra por medalla, otra por tiempo y,
 # en los modos con bots, otra por puesto en la clasificación.
 const COIN_BASE := 10
+
 const COIN_MEDAL_GOLD := 40
+
 const COIN_MEDAL_SILVER := 25
+
 const COIN_MEDAL_BRONZE := 10
+
 const COIN_TIME_CAP := 40
+
 ## Cada 2,5 s por debajo del tiempo de bronce suma una moneda.
 const COIN_TIME_STEP := 2.5
+
 const COIN_PLACE := {1: 40, 2: 25, 3: 15}
+
 const COIN_PLACE_OTHER := 5
 
 var data: Dictionary = {}
 
 var _save_timer: Timer
+
 var _pending_save: bool = false
+
 var _save_path := SAVE_PATH
+
 var _save_tmp_path := SAVE_TMP_PATH
+
 var _save_backup_path := SAVE_BACKUP_PATH
+
 var _test_path_resolved: bool = false
+
 var _forced_path: String = ""
 
 
@@ -148,6 +174,15 @@ func save_profile() -> void:
 	profile_saved.emit()
 
 
+## Borra el progreso (récord, monedas, medallas, desbloqueos y tutorial) y
+## conserva los ajustes, para que el profesor pueda probar el juego desde cero.
+func reset_profile() -> void:
+	var settings: Dictionary = (data.get("settings", {}) as Dictionary).duplicate(true)
+	data = _default_data()
+	data["settings"] = settings
+	save_profile()
+
+
 ## Guardado diferido. Los ajustes y los contadores de carrera lo usan para no
 ## escribir en disco en cada cambio de slider o cada caida.
 func _request_save() -> void:
@@ -233,15 +268,23 @@ func _default_data() -> Dictionary:
 		"unlocked_characters": CharacterCatalog.free_ids(),
 		"medals": {"gold": 0, "silver": 0, "bronze": 0},
 		"tutorial_seen": false,
-		"settings": {
+		"settings":
+		{
+			"master": 1.0,
 			"music": 0.75,
+			"quality": 2,
 			"sfx": 0.9,
 			"shake": 1.0,
 			"sensitivity": 1.0,
+			"fov": 55.0,
+			"vsync": true,
+			"assisted": false,
+			"language": "es",
 			"fullscreen": false,
 			"reduced_motion": false,
 		},
-		"stats": {
+		"stats":
+		{
 			"best_falls": 0,
 			"runs": 0,
 		},
@@ -336,6 +379,7 @@ func _migrate_legacy_best() -> void:
 
 # --- Ajustes ---------------------------------------------------------------
 
+
 func get_setting(key: String, fallback: Variant = null) -> Variant:
 	var settings: Dictionary = data.get("settings", {})
 	return settings.get(key, fallback)
@@ -352,6 +396,10 @@ func set_setting(key: String, value: Variant) -> void:
 
 func apply_settings() -> void:
 	var settings: Dictionary = data.get("settings", _default_data()["settings"])
+	# El maestro multiplica al resto de buses: a cero calla también la fanfarria.
+	_apply_bus_volume("Master", float(settings.get("master", 1.0)))
+	_apply_quality(int(settings.get("quality", 2)))
+	LocalizationScript.apply(String(settings.get("language", "es")))
 	var music_linear := float(settings.get("music", 0.75))
 	_apply_bus_volume("Music", music_linear)
 	_apply_bus_volume("SFX", float(settings.get("sfx", 0.9)))
@@ -362,12 +410,33 @@ func apply_settings() -> void:
 		AudioServer.set_bus_mute(victory_index, music_linear <= 0.001)
 	if DisplayServer.get_name() == "headless":
 		return
+	var vsync := bool(settings.get("vsync", true))
+	DisplayServer.window_set_vsync_mode(
+		DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED
+	)
 	var fullscreen := bool(settings.get("fullscreen", false))
 	var mode := DisplayServer.window_get_mode()
 	if fullscreen and mode != DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	elif not fullscreen and mode == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+
+## Calidad (0 = bajo, 1 = medio, 2 = alto): MSAA 2x y SSAO/SSIL solo en alto,
+## bloom desde medio. Se reaplica al cargar cada escena porque el
+## WorldEnvironment es de la escena, no del autoload.
+func _apply_quality(quality: int) -> void:
+	var viewport := get_tree().root
+	if viewport != null:
+		viewport.msaa_3d = Viewport.MSAA_2X if quality >= 2 else Viewport.MSAA_DISABLED
+	for node in get_tree().root.find_children("*", "WorldEnvironment", true, false):
+		var world := node as WorldEnvironment
+		if world == null or world.environment == null:
+			continue
+		var environment := world.environment
+		environment.ssao_enabled = quality >= 2
+		environment.ssil_enabled = quality >= 2
+		environment.glow_enabled = quality >= 1
 
 
 func _apply_bus_volume(bus_name: String, linear: float) -> void:
@@ -379,6 +448,7 @@ func _apply_bus_volume(bus_name: String, linear: float) -> void:
 
 
 # --- Progreso --------------------------------------------------------------
+
 
 ## Record del circuito. Sin argumento devuelve el record "clasico" del menu
 ## (que sigue siendo el de Pivot Push, el primer circuito).
@@ -476,8 +546,16 @@ func coin_reward(time: float, medal: String, position: int, bronze_time: float) 
 ## Guarda el resultado de una carrera. Devuelve un resumen para la UI.
 ## `level_id` separa los records de los cinco circuitos; los tiempos de medalla
 ## y la moneda por tiempo se calculan con los del nivel.
-func register_finish(time: float, falls: int, splits: Array, position: int,
-		level_id: String, gold: float, silver: float, bronze: float) -> Dictionary:
+func register_finish(
+	time: float,
+	falls: int,
+	splits: Array,
+	position: int,
+	level_id: String,
+	gold: float,
+	silver: float,
+	bronze: float
+) -> Dictionary:
 	var medal := medal_for_values(time, gold, silver, bronze)
 	var info := {
 		"time": time,
@@ -563,6 +641,7 @@ func coins() -> int:
 
 # --- Personaje -------------------------------------------------------------
 
+
 ## Id del personaje elegido en el menú (si el guardado apunta a uno que ya no
 ## existe, se cae al primero del catálogo).
 func character_id() -> String:
@@ -602,9 +681,11 @@ func character_price(id: String) -> int:
 
 
 func can_buy_character(id: String) -> bool:
-	return CharacterCatalog.ids().has(id) \
-		and not is_character_unlocked(id) \
+	return (
+		CharacterCatalog.ids().has(id)
+		and not is_character_unlocked(id)
 		and coins() >= CharacterCatalog.price(id)
+	)
 
 
 ## Compra un personaje con monedas. Devuelve true solo si se ha desbloqueado.

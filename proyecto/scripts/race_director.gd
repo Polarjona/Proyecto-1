@@ -4,29 +4,46 @@ extends Node
 ## player qualifies. Only active in "bots" and "tournament" modes.
 
 signal rank_updated(rank: int, total: int)
+
 signal qualification_result(qualified: bool, rank: int, qualifiers: int)
+
 signal bot_finished(bot_name: String, rank: int)
 
 @export var bot_scene: PackedScene
+
 @export var finish_z: float = -205.0
+
 ## Z of the starting line and total length of the course, for live ranking.
 @export var start_z: float = 5.0
+
 @export var course_length: float = 210.0
 
 var total_racers: int = 0
+
 var player_rank: int = 0
+
 var player_qualified: bool = true
+
 var qualifiers: int = 3
+
 var bot_count: int = 7
 
 var _bots: Array[Node3D] = []
+
 var _finish_order: Array[Node] = []
+
 var _player_finished: bool = false
+
 var _manager: RaceManager
+
 var _player: Node3D
+
 var _rank_timer: float = 0.0
+
 var _level_info: LevelInfo
+
 var _spawn_origin: Vector3 = Vector3.ZERO
+
 ## La carrera terminó: los bots se quedan quietos y el puesto del panel deja de
 ## moverse aunque el jugador tarde en cerrarlo.
 var _frozen: bool = false
@@ -67,9 +84,13 @@ func _spawn_bots() -> void:
 		var bot := bot_scene.instantiate() as Node3D
 		if bot == null:
 			continue
-		bot.set("speed_scale", GameSession.bot_speed_scale())
+		var bot_scale := GameSession.bot_speed_scale()
+		# La dificultad asistida afloja a los bots un 10 % sin tocar el jugador.
+		if bool(SaveManager.get_setting("assisted", false)):
+			bot_scale *= 0.9
+		bot.set("speed_scale", bot_scale)
 		# El mismo bot recorre todos los circuitos: la ruta y la meta viven en
-		# LevelInfo. Sin ruta (main.tscn) conserva su tabla por defecto.
+		# LevelInfo. Sin ruta (pivot_push.tscn) conserva su tabla por defecto.
 		if _level_info != null:
 			bot.set("finish_z", finish_z)
 			bot.set("path_corridor", _level_info.path_corridor)

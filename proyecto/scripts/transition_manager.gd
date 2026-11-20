@@ -1,14 +1,16 @@
 extends CanvasLayer
 
 ## Autoload singleton: fade-to-black transitions between scenes.
-## Usage: TransitionManager.change_scene("res://scenes/main.tscn")
+## Usage: TransitionManager.change_scene("res://scenes/levels/pivot_push.tscn")
 
 signal fade_out_finished
+
 signal fade_in_finished
 
 const FADE_DURATION := 0.4
 
 var _rect: ColorRect
+
 var _busy: bool = false
 
 
@@ -35,6 +37,9 @@ func change_scene(path: String) -> void:
 	get_tree().paused = false
 	get_tree().change_scene_to_file(path)
 	await get_tree().process_frame
+	# El WorldEnvironment es de la escena recién cargada: la calidad se aplica
+	# aquí para que el ajuste valga también al cambiar de circuito.
+	SaveManager.apply_settings()
 	await fade_in()
 	_busy = false
 

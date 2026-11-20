@@ -9,27 +9,43 @@ extends Node3D
 ## aparece, y la roca rueda con un giro real proporcional a la velocidad.
 
 @export var travel: Vector3 = Vector3(0.0, 0.0, 18.0)
+
 @export var speed: float = 5.4
+
 @export var radius: float = 1.0
+
 @export var push_force: float = 7.0
+
 @export var push_lift: float = 1.2
+
 @export var stuns: bool = true
+
 @export var phase_offset: float = 0.0
+
 @export var respawn_delay: float = 1.4
+
 ## Tiempo mínimo sin nadie en la boca antes de volver a salir.
 @export var clear_radius: float = 2.4
 
-@onready var ball: AnimatableBody3D = $Ball
-@onready var push_area: Area3D = $Ball/PushArea
-@onready var spawn_ring: Node3D = $SpawnRing
-
 var _distance: float = 0.0
+
 var _length: float = 1.0
+
 var _speed: float = 5.4
+
 var _rolling: bool = false
+
 var _wait: float = 0.0
+
 var _hit_cooldowns: Dictionary = {}
+
 var _time: float = 0.0
+
+@onready var ball: AnimatableBody3D = $Ball
+
+@onready var push_area: Area3D = $Ball/PushArea
+
+@onready var spawn_ring: Node3D = $SpawnRing
 
 
 func _ready() -> void:

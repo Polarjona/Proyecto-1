@@ -9,20 +9,27 @@ extends Node3D
 ## anterior, y su contrapeso marca siempre dónde va a caer.
 
 @export var spin_speed: float = 1.0
+
 ## -1.0 invierte el sentido de giro (dos aspas seguidas giran al revés).
 @export var spin_direction: float = 1.0
+
 @export var push_force: float = 5.5
+
 ## Empuje vertical pequeño: el aspa aparta al que pilla de lado, pero no lo
 ## lanza por los aires ni lo tira del puente.
 @export var push_lift: float = 1.2
+
 @export var stuns: bool = true
+
 @export var phase_offset: float = 0.0
+
 @export var arm_length: float = 2.5
 
-@onready var rotor: AnimatableBody3D = $Rotor
-@onready var push_area: Area3D = $Rotor/PushArea
-
 var _whoosh_timer: float = 0.0
+
+@onready var rotor: AnimatableBody3D = $Rotor
+
+@onready var push_area: Area3D = $Rotor/PushArea
 
 
 func _ready() -> void:
@@ -31,7 +38,7 @@ func _ready() -> void:
 	push_area.body_entered.connect(_on_body_entered)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	rotor.rotation.z += spin_speed * spin_direction * delta
 	_whoosh_timer -= delta
 	if _whoosh_timer <= 0.0:

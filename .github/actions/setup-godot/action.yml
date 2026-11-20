@@ -14,7 +14,7 @@ runs:
     # El binario (~50 MB) se descarga una vez por versión y sistema operativo.
     - name: Cachear el binario de Godot
       id: binario
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/godot
         key: godot-${{ runner.os }}-${{ inputs.version }}
@@ -40,7 +40,7 @@ runs:
     # La importación (`.godot/`) es lo que más tarda del arranque: se cachea por
     # huella de los recursos y, si cambia, se rehace desde la copia más cercana.
     - name: Cachear la importación de recursos
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: proyecto/.godot
         key: godot-import-${{ runner.os }}-${{ inputs.version }}-${{ hashFiles('proyecto/project.godot', 'proyecto/**/*.tscn', 'proyecto/**/*.tres', 'proyecto/**/*.gd', 'proyecto/**/*.gdshader', 'proyecto/**/*.glb', 'proyecto/**/*.wav', 'proyecto/**/*.mp3') }}

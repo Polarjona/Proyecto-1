@@ -23,6 +23,17 @@ LONG_TIMEOUT="${LONG_TIMEOUT:-900}"
 LOG_DIR="tools/test-logs"
 SUMMARY="$LOG_DIR/summary.md"
 
+# `check_docs` es Python (no GDScript); en Linux CI existe python3 y en Git
+# Bash de Windows el alias de python3 puede estar roto, así que se comprueba
+# que el intérprete arranca antes de elegirlo.
+if python3 -c 'import sys' >/dev/null 2>&1; then
+  PYTHON=python3
+elif python -c 'import sys' >/dev/null 2>&1; then
+  PYTHON=python
+else
+  PYTHON=python3
+fi
+
 SUITE=(
   persistence_test
   check_scenes
@@ -32,10 +43,12 @@ SUITE=(
   lod_test
   progression_test
   settings_test
+  ux_test
   features_test
   iteration3_test
   iteration4_test
   iteration5_test
+  check_docs
 )
 LONG_SUITE=(
   levels_bots_test
@@ -73,7 +86,14 @@ fail=0
 for test_name in "${TESTS[@]}"; do
   script="tools/${test_name}.gd"
   printf '\n== %s ==\n' "$test_name"
-  if [[ ! -f "$script" ]]; then
+  if [[ "$test_name" == "check_docs" ]]; then
+    if [[ ! -f tools/check_docs.py ]]; then
+      printf 'AVISO: no existe tools/check_docs.py, se omite\n'
+      rows+=("| \`$test_name\` | omitido (no existe) |")
+      fail=1
+      continue
+    fi
+  elif [[ ! -f "$script" ]]; then
     printf 'AVISO: no existe %s, se omite\n' "$script"
     rows+=("| \`$test_name\` | omitido (no existe) |")
     fail=1
@@ -86,10 +106,15 @@ for test_name in "${TESTS[@]}"; do
   esac
 
   log="$LOG_DIR/${test_name}.log"
-  if [[ $HAS_TIMEOUT -eq 1 ]]; then
-    timeout "$limit" "$GODOT" --headless --path . -s "res://${script}" > "$log" 2>&1
+  if [[ "$test_name" == "check_docs" ]]; then
+    cmd=("$PYTHON" tools/check_docs.py)
   else
-    "$GODOT" --headless --path . -s "res://${script}" > "$log" 2>&1
+    cmd=("$GODOT" --headless --path . -s "res://${script}")
+  fi
+  if [[ $HAS_TIMEOUT -eq 1 ]]; then
+    timeout "$limit" "${cmd[@]}" > "$log" 2>&1
+  else
+    "${cmd[@]}" > "$log" 2>&1
   fi
   status=$?
 

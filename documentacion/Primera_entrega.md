@@ -6,7 +6,7 @@
 **Lenguaje:** GDScript
 **Fecha:** Septiembre 2026
 
-> **Nota:** este documento es el histórico de la **primera entrega** y se conserva tal como se entregó. El estado actual del juego (cinco circuitos, torneo de cuatro rondas, rendimiento y verificación vigente) está en `README.md` y `documentacion/Segunda_iteracio.md`.
+> **Nota:** este documento es el histórico de la **primera entrega** y se conserva tal como se entregó. El estado actual y las cifras vigentes están en `README.md`, [`Datos_circuitos.md`](Datos_circuitos.md) y `documentacion/Segunda_iteracio.md`.
 
 ---
 
@@ -20,7 +20,7 @@
   - Definición de la propuesta: carrera de obstáculos en 3D estilo _Fall Guys_.
   - Motor elegido: Godot Engine 4.7 con física Jolt.
   - Creación del repositorio Git con la estructura de carpetas correcta (`proyecto/`, `documentacion/`).
-  - Escena principal de juego configurada con iluminación, entorno y circuito completo.
+  - Primer circuito de juego (Pivot Push) configurado con iluminación, entorno y circuito completo.
   - Primeros assets: materiales de colores en `materials/`.
 
 - **Hito 2 — Core del proyecto: COMPLETADO (mecánica principal)**
@@ -76,7 +76,7 @@ Menú principal → INICIAR (fade) → Carrera → [Escape → Pausa] → Meta
 | ----------------------------------------- | ------------ | ----------------------------------------------------------------------------- |
 | `scenes/menu/main_menu.tscn`              | ✅ Operativa | Menú principal: iniciar, controles, créditos, salir, récord                   |
 | `scenes/menu/pause_menu.tscn`             | ✅ Operativa | Menú de pausa (CanvasLayer): continuar, reiniciar, menú                       |
-| `scenes/main.tscn`                        | ✅ Operativa | Escena principal de juego: circuito, jugador, obstáculos, HUD, RaceManager, PauseMenu |
+| `scenes/levels/pivot_push.tscn`           | ✅ Operativa | Primer circuito (Pivot Push): jugador, obstáculos, HUD, RaceManager, PauseMenu |
 | `scenes/player/player.tscn`               | ✅ Operativa | Personaje jugable con CharacterBody3D y animación procedural                  |
 | `scenes/obstacles/conveyor.tscn`          | ✅ Operativa | Cinta transportadora (Area3D)                                                 |
 | `scenes/obstacles/pendulum.tscn`          | ✅ Operativa | Péndulo con AnimatableBody3D                                                  |
@@ -174,7 +174,8 @@ proyecto/
 │   ├── orange.tres, pink.tres
 │   ├── purple.tres, yellow.tres
 ├── scenes/
-│   ├── main.tscn               # Escena principal de juego (incluye PauseMenu)
+│   ├── levels/
+│   │   └── pivot_push.tscn     # Primer circuito (Pivot Push), incluye PauseMenu
 │   ├── menu/
 │   │   ├── main_menu.tscn      # Menú principal
 │   │   └── pause_menu.tscn     # Menú de pausa
@@ -266,7 +267,7 @@ El alcance actual es realista y todo lo que se pedía para la primera entrega es
 - **Checkpoint repetido:** cruzar el mismo checkpoint varias veces incrementaba el contador. Solucionado con una bandera `_activated` en `checkpoint.gd` que hace que cada checkpoint solo se registre una vez.
 - **La pausa con Escape abría y cerraba en el mismo frame:** la misma pulsación detectada por el `RaceManager` y por los botones del menú podía alternar el estado dos veces. Solucionado centralizando la detección en `pause_menu.gd` vía `_unhandled_input` (es la única acción `pause` del InputMap) y protegiendo `show_menu()`/`hide_menu()` para que ignoren llamadas redundantes.
 - **Audio sin archivos:** en lugar de romperse cuando falta un archivo, el `AudioManager` hace `ResourceLoader.exists()` e imprime un mensaje en consola; el juego se mantiene jugable en silencio.
-- **Error de parseo en el menú principal:** el archivo `main_menu.tscn` contenía un `sub_resource` con sintaxis inválida (`Gradient(1, 1, 1, 1)`), lo que hacía que la ventana se cerrara inmediatamente al arrancar (la escena principal no cargaba). Solucionado eliminando el recurso, que además no era usado por ningún nodo.
+- **Error de parseo en el menú principal:** el archivo `main_menu.tscn` contenía un `sub_resource` con sintaxis inválida (`Gradient(1, 1, 1, 1)`), lo que hacía que la ventana se cerrara inmediatamente al arrancar (la escena de arranque no cargaba). Solucionado eliminando el recurso, que además no era usado por ningún nodo.
 - **Rutas de botones del menú:** los botones «Volver» de los paneles de controles/créditos se buscaban con la ruta incorrecta (`BackButton` en lugar de `VBoxContainer/BackButton`), rompiendo el `_ready()` del menú. Solucionado corrigiendo las rutas.
 - **API de prioridad física:** `physics_process_priority` no existe en Godot 4; la propiedad correcta es `process_physics_priority`. Solucionado en `conveyor.gd`.
 - **Verificación automática:** se añadieron scripts de comprobación en `proyecto/tools/` (`check_scenes.gd`, `smoke_test.gd` y `flow_test.gd`) que permiten validar todas las escenas, ejecutar unos frames de juego y recorrer el flujo completo en modo headless desde consola.

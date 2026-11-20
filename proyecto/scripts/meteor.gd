@@ -5,11 +5,15 @@ extends Node3D
 ## lo que lo hace peligroso en la espiral: te aparta del borde.
 
 @export var target_y: float = 0.0
+
 @export var fall_speed: float = 38.0
+
 @export var blast_radius: float = 3.2
+
 @export var push_force: float = 8.0
 
 var _exploded: bool = false
+
 var _area: Area3D
 
 

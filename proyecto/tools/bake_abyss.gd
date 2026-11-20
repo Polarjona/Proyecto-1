@@ -57,7 +57,7 @@ func _run() -> void:
 	await process_frame
 	var text := FileAccess.get_file_as_string(BAKED_PATH)
 	var ok := true
-	if text.contains("name=\"Model\""):
+	if text.contains('name="Model"'):
 		_fail("el horneado incluye el modelo del jugador")
 		ok = false
 	var baked := load(BAKED_PATH) as PackedScene

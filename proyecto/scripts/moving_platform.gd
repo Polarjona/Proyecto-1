@@ -4,12 +4,17 @@ extends AnimatableBody3D
 ## Rides are handled by move_and_slide, so sync_to_physics keeps it solid.
 
 @export var travel: Vector3 = Vector3(0.0, 0.0, -6.0)
+
 @export var speed: float = 2.5
+
 @export var pause_time: float = 0.6
 
 var _origin: Vector3
+
 var _progress: float = 0.0
+
 var _direction: float = 1.0
+
 var _pause: float = 0.0
 
 

@@ -8,96 +8,69 @@ extends RefCounted
 ## El kit no es un nodo: recibe `host` (el `level_builder` dueño de la escena) y
 ## le cuelga todo lo que construye.
 
-var host: Node3D
-var _path: Array[Vector3] = []
-var _widths: Array[float] = []
-
-
 const PLAYER_SCENE := preload("res://scenes/player/player.tscn")
-
 
 const HUD_SCENE := preload("res://scenes/race/hud.tscn")
 
-
 const KILL_SCENE := preload("res://scenes/race/kill_plane.tscn")
-
 
 const PAUSE_SCENE := preload("res://scenes/menu/pause_menu.tscn")
 
-
 const CHECKPOINT_SCENE := preload("res://scenes/race/checkpoint.tscn")
-
 
 const FINISH_SCENE := preload("res://scenes/race/finish_line.tscn")
 
-
 const BOT_SCENE := preload("res://scenes/race/bot_racer.tscn")
-
 
 const SWEEPER_SCENE := preload("res://scenes/obstacles/sweeper.tscn")
 
-
 const SPIN_SCENE := preload("res://scenes/obstacles/spinning_platform.tscn")
-
 
 const MOVING_SCENE := preload("res://scenes/obstacles/moving_platform.tscn")
 
-
 const DROPPER_SCENE := preload("res://scenes/obstacles/ball_dropper.tscn")
-
 
 const PISTON_SCENE := preload("res://scenes/obstacles/piston.tscn")
 
-
 const CRUMBLE_SCENE := preload("res://scenes/obstacles/crumble_tile.tscn")
-
 
 const WIND_SCENE := preload("res://scenes/obstacles/wind_tunnel.tscn")
 
-
 const ROTOR_SCENE := preload("res://scenes/obstacles/rotor_gate.tscn")
-
 
 const BOULDER_SCENE := preload("res://scenes/obstacles/boulder.tscn")
 
-
 const SPIKE_SCENE := preload("res://scenes/obstacles/spike_trap.tscn")
-
 
 const CONVEYOR_SCENE := preload("res://scenes/obstacles/conveyor.tscn")
 
-
 const LAVA_RISE_SCRIPT := preload("res://scripts/lava_rise.gd")
-
 
 const GEYSER_SCRIPT := preload("res://scripts/lava_geyser.gd")
 
-
 const METEOR_RAIN_SCRIPT := preload("res://scripts/meteor_rain.gd")
-
 
 const ASH_VORTEX_SCRIPT := preload("res://scripts/ash_vortex.gd")
 
-
 const MAGMA_CURTAIN_SCRIPT := preload("res://scripts/magma_curtain.gd")
-
 
 const WATER_ZONE_SCRIPT := preload("res://scripts/water_zone.gd")
 
-
 const OCEAN_HAZARDS := preload("res://scripts/ocean_hazards.gd")
-
 
 const PLATFORM_SHADER := preload("res://shaders/platform.gdshader")
 
-
 const POST_SHADER := preload("res://shaders/post_process.gdshader")
-
 
 const SKY_SHADER := preload("res://shaders/sky_clouds.gdshader")
 
-
 const SEA_SHADER := preload("res://shaders/void_sea.gdshader")
+
+var host: Node3D
+
+var _path: Array[Vector3] = []
+
+var _widths: Array[float] = []
 
 
 func _platform_mat(base: Color, accent: Color, grout: Color, glow: float) -> ShaderMaterial:
@@ -310,8 +283,9 @@ func _add_pause() -> void:
 # ------------------------------------------------------------------ helpers
 
 
-func _slab(parent: Node3D, node_name: String, center: Vector3, size: Vector3,
-		material: Material) -> StaticBody3D:
+func _slab(
+	parent: Node3D, node_name: String, center: Vector3, size: Vector3, material: Material
+) -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.name = node_name
 	body.position = center
@@ -333,30 +307,56 @@ func _slab(parent: Node3D, node_name: String, center: Vector3, size: Vector3,
 	return body
 
 
-func _slab_top(parent: Node3D, node_name: String, x: float, z: float,
-		sx: float, sz: float, top: float, material: Material) -> StaticBody3D:
-	return _slab(parent, node_name, Vector3(x, top - 0.25, z),
-		Vector3(sx, 0.5, sz), material)
+func _slab_top(
+	parent: Node3D,
+	node_name: String,
+	x: float,
+	z: float,
+	sx: float,
+	sz: float,
+	top: float,
+	material: Material
+) -> StaticBody3D:
+	return _slab(parent, node_name, Vector3(x, top - 0.25, z), Vector3(sx, 0.5, sz), material)
 
 
-func _ramp_z(parent: Node3D, node_name: String, x: float, z_from: float,
-		z_to: float, y_from: float, y_to: float, width: float,
-		material: Material) -> StaticBody3D:
+func _ramp_z(
+	parent: Node3D,
+	node_name: String,
+	x: float,
+	z_from: float,
+	z_to: float,
+	y_from: float,
+	y_to: float,
+	width: float,
+	material: Material
+) -> StaticBody3D:
 	var run := z_from - z_to
 	var rise := y_to - y_from
 	var length := sqrt(run * run + rise * rise)
 	var pitch := atan2(rise, run)
-	var body := _slab(parent, node_name, Vector3(x,
-		(y_from + y_to) * 0.5 - 0.25 * cos(pitch),
-		(z_from + z_to) * 0.5 - 0.25 * sin(pitch)),
-		Vector3(width, 0.5, length), material)
+	var body := _slab(
+		parent,
+		node_name,
+		Vector3(
+			x, (y_from + y_to) * 0.5 - 0.25 * cos(pitch), (z_from + z_to) * 0.5 - 0.25 * sin(pitch)
+		),
+		Vector3(width, 0.5, length),
+		material
+	)
 	body.rotation.x = pitch
 	return body
 
 
-func _obstacle(parent: Node3D, node_name: String, scene: PackedScene,
-		position: Vector3, values: Dictionary = {}, yaw: float = 0.0,
-		pitch: float = 0.0) -> Node3D:
+func _obstacle(
+	parent: Node3D,
+	node_name: String,
+	scene: PackedScene,
+	position: Vector3,
+	values: Dictionary = {},
+	yaw: float = 0.0,
+	pitch: float = 0.0
+) -> Node3D:
 	var node := scene.instantiate() as Node3D
 	node.name = node_name
 	node.position = position
@@ -367,8 +367,14 @@ func _obstacle(parent: Node3D, node_name: String, scene: PackedScene,
 	return node
 
 
-func _mesh_box(parent: Node3D, node_name: String, position: Vector3,
-		size: Vector3, material: Material, rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _mesh_box(
+	parent: Node3D,
+	node_name: String,
+	position: Vector3,
+	size: Vector3,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
 	var instance := MeshInstance3D.new()
@@ -382,10 +388,17 @@ func _mesh_box(parent: Node3D, node_name: String, position: Vector3,
 	return instance
 
 
-func _mesh_cylinder(parent: Node3D, node_name: String, position: Vector3,
-		top_radius: float, bottom_radius: float, height: float,
-		material: Material, rot: Vector3 = Vector3.ZERO,
-		segments: int = 16) -> MeshInstance3D:
+func _mesh_cylinder(
+	parent: Node3D,
+	node_name: String,
+	position: Vector3,
+	top_radius: float,
+	bottom_radius: float,
+	height: float,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO,
+	segments: int = 16
+) -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = top_radius
 	mesh.bottom_radius = bottom_radius
@@ -403,8 +416,9 @@ func _mesh_cylinder(parent: Node3D, node_name: String, position: Vector3,
 	return instance
 
 
-func _mesh_sphere(parent: Node3D, node_name: String, position: Vector3,
-		radius: float, material: Material) -> MeshInstance3D:
+func _mesh_sphere(
+	parent: Node3D, node_name: String, position: Vector3, radius: float, material: Material
+) -> MeshInstance3D:
 	var mesh := SphereMesh.new()
 	mesh.radius = radius
 	mesh.height = radius * 2.0
@@ -420,9 +434,15 @@ func _mesh_sphere(parent: Node3D, node_name: String, position: Vector3,
 	return instance
 
 
-func _mesh_torus(parent: Node3D, node_name: String, position: Vector3,
-		inner_radius: float, outer_radius: float, material: Material,
-		rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _mesh_torus(
+	parent: Node3D,
+	node_name: String,
+	position: Vector3,
+	inner_radius: float,
+	outer_radius: float,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = inner_radius
 	mesh.outer_radius = outer_radius
@@ -439,15 +459,37 @@ func _mesh_torus(parent: Node3D, node_name: String, position: Vector3,
 	return instance
 
 
-func _arch(parent: Node3D, node_name: String, position: Vector3, width: float,
-		height: float, post_material: Material, glow_material: Material,
-		label: String) -> void:
-	_mesh_box(parent, node_name + "PostL", position + Vector3(-width * 0.5, height * 0.5, 0.0),
-		Vector3(0.7, height, 0.9), post_material)
-	_mesh_box(parent, node_name + "PostR", position + Vector3(width * 0.5, height * 0.5, 0.0),
-		Vector3(0.7, height, 0.9), post_material)
-	_mesh_box(parent, node_name + "Beam", position + Vector3(0.0, height, 0.0),
-		Vector3(width + 0.8, 0.6, 1.0), glow_material)
+func _arch(
+	parent: Node3D,
+	node_name: String,
+	position: Vector3,
+	width: float,
+	height: float,
+	post_material: Material,
+	glow_material: Material,
+	label: String
+) -> void:
+	_mesh_box(
+		parent,
+		node_name + "PostL",
+		position + Vector3(-width * 0.5, height * 0.5, 0.0),
+		Vector3(0.7, height, 0.9),
+		post_material
+	)
+	_mesh_box(
+		parent,
+		node_name + "PostR",
+		position + Vector3(width * 0.5, height * 0.5, 0.0),
+		Vector3(0.7, height, 0.9),
+		post_material
+	)
+	_mesh_box(
+		parent,
+		node_name + "Beam",
+		position + Vector3(0.0, height, 0.0),
+		Vector3(width + 0.8, 0.6, 1.0),
+		glow_material
+	)
 	# (Los aros flotantes del arco se han quitado: no pegaban con ningún mapa.)
 	var text := Label3D.new()
 	text.name = node_name + "Label"
@@ -473,7 +515,14 @@ func _path_add(start: Vector3, end: Vector3, width: float, step: float = 3.0) ->
 		_widths.append(width)
 
 
-func _add_checkpoint(course: Node3D, node_name: String, position: Vector3,
-		yaw: float = 0.0) -> void:
-	_obstacle(course, node_name, CHECKPOINT_SCENE, position,
-		{"checkpoint_name": node_name.replace("CP", "Checkpoint ")}, yaw)
+func _add_checkpoint(
+	course: Node3D, node_name: String, position: Vector3, yaw: float = 0.0
+) -> void:
+	_obstacle(
+		course,
+		node_name,
+		CHECKPOINT_SCENE,
+		position,
+		{"checkpoint_name": node_name.replace("CP", "Checkpoint ")},
+		yaw
+	)

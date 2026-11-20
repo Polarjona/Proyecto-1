@@ -8,8 +8,11 @@ extends Node3D
 const METEOR_SCRIPT := preload("res://scripts/meteor.gd")
 
 @export var interval: float = 4.2
+
 @export var warn_time: float = 1.5
+
 @export var fall_height: float = 18.0
+
 @export var spread: float = 3.6
 
 var _timer: float = 5.0
@@ -36,8 +39,10 @@ func _spawn_marker() -> void:
 		return
 	# Sondea justo debajo del jugador, no desde muy arriba: en la espiral el
 	# primer suelo que aparece 50 m más arriba es otra vuelta de la rampa.
-	var target := player.global_position + Vector3(
-		randf_range(-spread, spread), 0.0, randf_range(-spread, spread))
+	var target := (
+		player.global_position
+		+ Vector3(randf_range(-spread, spread), 0.0, randf_range(-spread, spread))
+	)
 	var space := get_world_3d().direct_space_state
 	if space == null:
 		return

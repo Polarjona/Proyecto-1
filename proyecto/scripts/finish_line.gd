@@ -3,24 +3,35 @@ extends Area3D
 ## Puerto de meta: dos torres, un dintel y un cartel de cuadros con META.
 ## Al cruzarlo avisa al RaceManager y dispara toda la celebración.
 
-@onready var glow: OmniLight3D = $Arch/Glow
-@onready var spot_left: SpotLight3D = $Arch/PillarLeft/Spot
-@onready var spot_right: SpotLight3D = $Arch/PillarRight/Spot
-@onready var confetti: Array[CPUParticles3D] = [
-	$ConfettiLeft, $ConfettiRight, $ConfettiBurst,
-]
-
 const FIREWORKS := preload("res://scripts/fireworks.gd")
 
 const PARTY_COLORS := [
-	Color(0.93, 0.4, 0.45), Color(0.4, 0.72, 0.95), Color(0.96, 0.8, 0.4),
-	Color(0.55, 0.85, 0.55), Color(0.8, 0.55, 0.9),
+	Color(0.93, 0.4, 0.45),
+	Color(0.4, 0.72, 0.95),
+	Color(0.96, 0.8, 0.4),
+	Color(0.55, 0.85, 0.55),
+	Color(0.8, 0.55, 0.9),
 ]
 
 var _triggered: bool = false
+
 var _time: float = 0.0
+
 var _balloons: Array[Node3D] = []
+
 var _balloon_base: Array[float] = []
+
+@onready var glow: OmniLight3D = $Arch/Glow
+
+@onready var spot_left: SpotLight3D = $Arch/PillarLeft/Spot
+
+@onready var spot_right: SpotLight3D = $Arch/PillarRight/Spot
+
+@onready var confetti: Array[CPUParticles3D] = [
+	$ConfettiLeft,
+	$ConfettiRight,
+	$ConfettiBurst,
+]
 
 
 func _ready() -> void:
@@ -40,8 +51,9 @@ func _build_celebration() -> void:
 		var side := -1.0 if i % 2 == 0 else 1.0
 		var balloon := Node3D.new()
 		balloon.name = "Balloon%d" % i
-		balloon.position = Vector3(side * (6.1 + float(i % 3) * 0.85),
-			4.2 + float(i % 4) * 0.75, -1.7 + float(i % 3) * 1.5)
+		balloon.position = Vector3(
+			side * (6.1 + float(i % 3) * 0.85), 4.2 + float(i % 4) * 0.75, -1.7 + float(i % 3) * 1.5
+		)
 		var balloon_material := StandardMaterial3D.new()
 		balloon_material.albedo_color = PARTY_COLORS[i % PARTY_COLORS.size()]
 		balloon_material.roughness = 0.35
@@ -77,8 +89,7 @@ func _build_celebration() -> void:
 		flag_material.roughness = 0.5
 		flag.material_override = flag_material
 		var t := float(i) / 15.0
-		flag.position = Vector3(lerpf(-6.4, 6.4, t),
-			5.85 - absf(t - 0.5) * 0.7, 0.5)
+		flag.position = Vector3(lerpf(-6.4, 6.4, t), 5.85 - absf(t - 0.5) * 0.7, 0.5)
 		flag.rotation_degrees = Vector3(0.0, 0.0, 45.0 if i % 2 == 0 else -45.0)
 		flag.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(flag)

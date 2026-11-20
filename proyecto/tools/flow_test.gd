@@ -43,8 +43,11 @@ func _run() -> void:
 	var race_path := ""
 	if race != null:
 		race_path = race.scene_file_path
-	_check(race_path.ends_with("scenes/main.tscn"), "INICIAR carga la escena de carrera (%s)" % race_path)
-	if not race_path.ends_with("scenes/main.tscn"):
+	_check(
+		race_path.ends_with("scenes/levels/pivot_push.tscn"),
+		"INICIAR carga la escena de carrera (%s)" % race_path
+	)
+	if not race_path.ends_with("scenes/levels/pivot_push.tscn"):
 		print("RESULT: %d fallos (no se puede seguir sin escena de carrera)" % _failures)
 		quit(1)
 		return
@@ -53,8 +56,14 @@ func _run() -> void:
 	var manager: Node = get_first_node_in_group("race_manager")
 	var checkpoints: Array = get_nodes_in_group("checkpoints")
 	_check(manager != null, "RaceManager presente y en su grupo")
-	_check(checkpoints.size() == 11, "Se detectan los 11 checkpoints (encontrados: %d)" % checkpoints.size())
-	_check(manager.checkpoints_total == 11, "El contador total del HUD es 11 (leído: %d)" % manager.checkpoints_total)
+	_check(
+		checkpoints.size() == 11,
+		"Se detectan los 11 checkpoints (encontrados: %d)" % checkpoints.size()
+	)
+	_check(
+		manager.checkpoints_total == 11,
+		"El contador total del HUD es 11 (leído: %d)" % manager.checkpoints_total
+	)
 	_check(manager.is_running and not manager.is_finished, "El cronómetro está en marcha")
 
 	# --- 3. El jugador se mueve al pulsar avanzar -------------------------
@@ -68,7 +77,9 @@ func _run() -> void:
 	Input.action_release("move_forward")
 	var travelled := (player.global_position - origin).length()
 	_check(travelled > 0.5, "El jugador avanza al pulsar W (%.2f m)" % travelled)
-	_check(manager.elapsed_time > time_before, "El cronómetro avanza (%.2f s)" % manager.elapsed_time)
+	_check(
+		manager.elapsed_time > time_before, "El cronómetro avanza (%.2f s)" % manager.elapsed_time
+	)
 
 	# --- 4. Saltar deja al jugador en el aire -----------------------------
 	# OJO: `physics_frame` se emite ANTES de los `_physics_process`, así que hay
@@ -78,8 +89,10 @@ func _run() -> void:
 	await physics_frame
 	await physics_frame
 	Input.action_release("jump")
-	_check(not player.is_on_floor() and player.velocity.y > 0.0,
-		"Saltar impulsa al jugador hacia arriba (vel.y=%+.2f m/s)" % player.velocity.y)
+	_check(
+		not player.is_on_floor() and player.velocity.y > 0.0,
+		"Saltar impulsa al jugador hacia arriba (vel.y=%+.2f m/s)" % player.velocity.y
+	)
 	for i in 45:
 		await physics_frame  # dejarlo aterrizar de nuevo
 
@@ -89,11 +102,21 @@ func _run() -> void:
 	player.global_position = checkpoint.global_position + Vector3.UP * 1.0
 	for i in 25:
 		await physics_frame
-	_check(manager.checkpoints_completed == completed_before + 1,
-		"Cruzar un checkpoint incrementa el contador (%d -> %d)" % [completed_before, manager.checkpoints_completed])
+	_check(
+		manager.checkpoints_completed == completed_before + 1,
+		(
+			"Cruzar un checkpoint incrementa el contador (%d -> %d)"
+			% [completed_before, manager.checkpoints_completed]
+		)
+	)
 	var hud: Node = race.get_node_or_null("HUD")
-	_check(hud != null and hud.get_node("Root/CheckpointsLabel").text.begins_with("1/"),
-		"El HUD refleja el checkpoint (%s)" % (hud.get_node("Root/CheckpointsLabel").text if hud else "sin HUD"))
+	_check(
+		hud != null and hud.get_node("Root/CheckpointsLabel").text.begins_with("1/"),
+		(
+			"El HUD refleja el checkpoint (%s)"
+			% (hud.get_node("Root/CheckpointsLabel").text if hud else "sin HUD")
+		)
+	)
 
 	# --- 6. Cruzar la meta -------------------------------------------------
 	var finish: Area3D = race.get_node("Course/FinishLine")
@@ -110,8 +133,10 @@ func _run() -> void:
 	player.global_position = kill_plane.global_position
 	for i in 25:
 		await physics_frame
-	_check(manager.elapsed_time >= penalty_before + manager.time_penalty - 0.5,
-		"La caída aplica la penalización de +%.1f s" % manager.time_penalty)
+	_check(
+		manager.elapsed_time >= penalty_before + manager.time_penalty - 0.5,
+		"La caída aplica la penalización de +%.1f s" % manager.time_penalty
+	)
 
 	if is_instance_valid(race):
 		root.remove_child(race)

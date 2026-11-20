@@ -19,15 +19,24 @@ func _ready() -> void:
 	await get_tree().create_timer(1.6).timeout
 	var music := await _sample(MENU_SECONDS)
 	var music_player := AudioManager.get_node("MusicPlayer") as AudioStreamPlayer
-	print("PROBE menu bus_peak=%.1f dBFS master=%.1f player_db=%.1f bus_db=%.1f music_setting=%.2f" % [
-		music["Music"], music["Master"], music_player.volume_db, _bus_db("Music"),
-		float(SaveManager.get_setting("music", 0.75))])
+	print(
+		(
+			"PROBE menu bus_peak=%.1f dBFS master=%.1f player_db=%.1f bus_db=%.1f music_setting=%.2f"
+			% [
+				music["Music"],
+				music["Master"],
+				music_player.volume_db,
+				_bus_db("Music"),
+				float(SaveManager.get_setting("music", 0.75))
+			]
+		)
+	)
 	menu.queue_free()
 	await get_tree().process_frame
 
 	# --- Carrera real: cruzar la meta dispara el HUD y la fanfarria -------
 	GameSession.start_classic()
-	var game: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
+	var game: Node = (load(LevelPaths.PIVOT_PUSH) as PackedScene).instantiate()
 	get_tree().root.add_child(game)
 	for i in 6:
 		await get_tree().process_frame
@@ -39,12 +48,28 @@ func _ready() -> void:
 	race_manager.call("finish_race")
 	var victory := await _sample(VICTORY_SECONDS)
 	var victory_player := AudioManager.get_node("VictoryPlayer") as AudioStreamPlayer
-	print("PROBE victory bus_peak=%.1f dBFS master=%.1f player_db=%.1f bus_db=%.1f victory_muted=%s" % [
-		victory["Victory"], victory["Master"], victory_player.volume_db, _bus_db("Victory"),
-		str(AudioServer.is_bus_mute(AudioServer.get_bus_index("Victory")))])
-	print("PROBE delta=%.1f dB headroom=%.1f dB playing=%s" % [
-		victory["Victory"] - music["Music"], -1.0 - victory["Master"],
-		str(AudioManager.is_victory_playing())])
+	print(
+		(
+			"PROBE victory bus_peak=%.1f dBFS master=%.1f player_db=%.1f bus_db=%.1f victory_muted=%s"
+			% [
+				victory["Victory"],
+				victory["Master"],
+				victory_player.volume_db,
+				_bus_db("Victory"),
+				str(AudioServer.is_bus_mute(AudioServer.get_bus_index("Victory")))
+			]
+		)
+	)
+	print(
+		(
+			"PROBE delta=%.1f dB headroom=%.1f dB playing=%s"
+			% [
+				victory["Victory"] - music["Music"],
+				-1.0 - victory["Master"],
+				str(AudioManager.is_victory_playing())
+			]
+		)
+	)
 
 	# --- Música a cero: la fanfarria no debe sonar ------------------------
 	AudioManager.stop_victory()
@@ -54,15 +79,28 @@ func _ready() -> void:
 	SaveManager.set_setting("music", 0.0)
 	AudioManager.play_victory()
 	var muted := await _sample(0.8)
-	print("PROBE muted playing=%s victory_bus_peak=%.1f master_before=%.1f master=%.1f" % [
-		str(AudioManager.is_victory_playing()), muted["Victory"], master_peak_before, muted["Master"]])
+	print(
+		(
+			"PROBE muted playing=%s victory_bus_peak=%.1f master_before=%.1f master=%.1f"
+			% [
+				str(AudioManager.is_victory_playing()),
+				muted["Victory"],
+				master_peak_before,
+				muted["Master"]
+			]
+		)
+	)
 	# --- Referencia con el volumen de música por defecto (0.75) ----------
 	SaveManager.set_setting("music", 0.75)
 	AudioManager.play_music(false)
 	await get_tree().create_timer(0.4).timeout
 	var menu_default := await _sample(MENU_SECONDS)
-	print("PROBE menu_default bus_peak=%.1f delta_vs_victory=%.1f dB" % [
-		menu_default["Music"], victory["Victory"] - menu_default["Music"]])
+	print(
+		(
+			"PROBE menu_default bus_peak=%.1f delta_vs_victory=%.1f dB"
+			% [menu_default["Music"], victory["Victory"] - menu_default["Music"]]
+		)
+	)
 	SaveManager.set_setting("music", music_before)
 	get_tree().quit(0)
 

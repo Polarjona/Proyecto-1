@@ -10,26 +10,40 @@ extends Node3D
 ## dispararse y el golpe no contaría.
 
 @export var travel: Vector3 = Vector3(4.6, 0.0, 0.0)
+
 @export var idle_time: float = 1.2
+
 @export var warn_time: float = 0.7
+
 @export var punch_time: float = 0.22
+
 @export var hold_time: float = 0.35
+
 @export var return_time: float = 1.0
+
 @export var push_force: float = 7.5
+
 @export var stuns: bool = true
+
 ## Desfase del ciclo, para que dos pistones seguidos no golpeen a la vez.
 @export var phase_offset: float = 0.0
 
-@onready var head: AnimatableBody3D = $Head
-@onready var push_area: Area3D = $Head/PushArea
-@onready var warning: OmniLight3D = $Warning
-@onready var lamp: MeshInstance3D = $Lamp
-
 var _time: float = 0.0
+
 var _cycle: float = 1.0
+
 var _pushing: bool = false
+
 ## Cuerpos ya golpeados en el golpe actual, para no repetir el empujón.
 var _hit_ids: Dictionary = {}
+
+@onready var head: AnimatableBody3D = $Head
+
+@onready var push_area: Area3D = $Head/PushArea
+
+@onready var warning: OmniLight3D = $Warning
+
+@onready var lamp: MeshInstance3D = $Lamp
 
 
 func _ready() -> void:

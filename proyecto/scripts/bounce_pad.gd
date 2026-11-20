@@ -4,11 +4,12 @@ extends Area3D
 ## The pad squashes down and springs back for visual feedback.
 
 @export var bounce_strength: float = 10.5
+
 @export var cooldown: float = 0.35
 
-@onready var pad: Node3D = $Pad
-
 var _cooldowns: Dictionary = {}
+
+@onready var pad: Node3D = $Pad
 
 
 func _ready() -> void:

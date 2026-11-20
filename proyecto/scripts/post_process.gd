@@ -3,11 +3,13 @@ extends CanvasLayer
 ## Postproceso global: viñeta, grano, aberración, líneas de velocidad,
 ## aturdimiento y flash de impacto. Se dibuja por debajo del HUD.
 
-@onready var rect: ColorRect = $Rect
-
 var _material: ShaderMaterial
+
 var _player: CharacterBody3D
+
 var _stun: float = 0.0
+
+@onready var rect: ColorRect = $Rect
 
 
 func _ready() -> void:
@@ -34,6 +36,8 @@ func _process(delta: float) -> void:
 	_material.set_shader_parameter("stun", _stun)
 	_material.set_shader_parameter("vignette", 0.3 + _stun * 0.28)
 	_material.set_shader_parameter("grain", 0.025)
-	_material.set_shader_parameter("aberration", 0.0012 + speed_ratio * 0.0035 + GameFeel.flash_amount * 0.02)
+	_material.set_shader_parameter(
+		"aberration", 0.0012 + speed_ratio * 0.0035 + GameFeel.flash_amount * 0.02
+	)
 	_material.set_shader_parameter("flash_amount", GameFeel.flash_amount)
 	_material.set_shader_parameter("flash_color", GameFeel.flash_color)

@@ -8,7 +8,7 @@ extends Node
 ## Se ejecuta una sola vez con:
 ##   godot --headless --path . res://tools/build_levels.tscn
 ##
-## El script empaqueta las escenas con los mismos nodos que main.tscn
+## El script empaqueta las escenas con los mismos nodos que pivot_push.tscn
 ## (WorldEnvironment, RaceManager, HUD, Course, KillPlane, RaceDirector...),
 ## así que el flujo de carrera, los bots y el torneo funcionan sin cambios.
 
@@ -118,6 +118,7 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- utilidades
 
+
 func _add(parent: Node, child: Node, owner_node: Node) -> Node:
 	parent.add_child(child)
 	child.owner = owner_node
@@ -138,8 +139,15 @@ func _set_all(node: Object, values: Dictionary) -> void:
 		node.set(key, values[key])
 
 
-func _platform(course: Node3D, root: Node3D, node_name: String, center: Vector3,
-		size: Vector3, material: Material, rot_x: float = 0.0) -> CSGBox3D:
+func _platform(
+	course: Node3D,
+	root: Node3D,
+	node_name: String,
+	center: Vector3,
+	size: Vector3,
+	material: Material,
+	rot_x: float = 0.0
+) -> CSGBox3D:
 	var box := CSGBox3D.new()
 	box.name = node_name
 	box.size = size
@@ -151,18 +159,37 @@ func _platform(course: Node3D, root: Node3D, node_name: String, center: Vector3,
 	return box
 
 
-func _slab(course: Node3D, root: Node3D, node_name: String, x: float, z: float,
-		sx: float, sz: float, top: float, material: Material) -> CSGBox3D:
-	return _platform(course, root, node_name, Vector3(x, top - 0.25, z),
-		Vector3(sx, 0.5, sz), material)
+func _slab(
+	course: Node3D,
+	root: Node3D,
+	node_name: String,
+	x: float,
+	z: float,
+	sx: float,
+	sz: float,
+	top: float,
+	material: Material
+) -> CSGBox3D:
+	return _platform(
+		course, root, node_name, Vector3(x, top - 0.25, z), Vector3(sx, 0.5, sz), material
+	)
 
 
 ## Rampa de 0,5 m de grosor cuya cara superior va de (z_from, y_from) a
 ## (z_to, y_to). El avance del circuito es hacia -Z, así que una subida tiene
 ## y_to > y_from y un giro positivo sobre X.
-func _ramp(course: Node3D, root: Node3D, node_name: String, x: float,
-		z_from: float, z_to: float, y_from: float, y_to: float,
-		width: float, material: Material) -> CSGBox3D:
+func _ramp(
+	course: Node3D,
+	root: Node3D,
+	node_name: String,
+	x: float,
+	z_from: float,
+	z_to: float,
+	y_from: float,
+	y_to: float,
+	width: float,
+	material: Material
+) -> CSGBox3D:
 	var run := z_from - z_to
 	var rise := y_to - y_from
 	var length := sqrt(run * run + rise * rise)
@@ -170,8 +197,9 @@ func _ramp(course: Node3D, root: Node3D, node_name: String, x: float,
 	var box := CSGBox3D.new()
 	box.name = node_name
 	box.size = Vector3(width, 0.5, length)
-	box.position = Vector3(x, (y_from + y_to) * 0.5 - 0.25 * cos(pitch),
-		(z_from + z_to) * 0.5 - 0.25 * sin(pitch))
+	box.position = Vector3(
+		x, (y_from + y_to) * 0.5 - 0.25 * cos(pitch), (z_from + z_to) * 0.5 - 0.25 * sin(pitch)
+	)
 	box.rotation = Vector3(pitch, 0.0, 0.0)
 	box.material = material
 	box.use_collision = true
@@ -179,8 +207,14 @@ func _ramp(course: Node3D, root: Node3D, node_name: String, x: float,
 	return box
 
 
-func _obstacle(course: Node3D, root: Node3D, node_name: String, scene: PackedScene,
-		position: Vector3, values: Dictionary = {}) -> Node3D:
+func _obstacle(
+	course: Node3D,
+	root: Node3D,
+	node_name: String,
+	scene: PackedScene,
+	position: Vector3,
+	values: Dictionary = {}
+) -> Node3D:
 	var node := scene.instantiate() as Node3D
 	node.name = node_name
 	node.position = position
@@ -189,8 +223,15 @@ func _obstacle(course: Node3D, root: Node3D, node_name: String, scene: PackedSce
 	return node
 
 
-func _mesh_box(parent: Node3D, root: Node3D, node_name: String, position: Vector3,
-		size: Vector3, material: Material, rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _mesh_box(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	position: Vector3,
+	size: Vector3,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
 	var instance := MeshInstance3D.new()
@@ -204,9 +245,16 @@ func _mesh_box(parent: Node3D, root: Node3D, node_name: String, position: Vector
 	return instance
 
 
-func _mesh_torus(parent: Node3D, root: Node3D, node_name: String, position: Vector3,
-		inner_radius: float, outer_radius: float, material: Material,
-		rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _mesh_torus(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	position: Vector3,
+	inner_radius: float,
+	outer_radius: float,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = inner_radius
 	mesh.outer_radius = outer_radius
@@ -223,9 +271,17 @@ func _mesh_torus(parent: Node3D, root: Node3D, node_name: String, position: Vect
 	return instance
 
 
-func _mesh_cylinder(parent: Node3D, root: Node3D, node_name: String, position: Vector3,
-		top_radius: float, bottom_radius: float, height: float, material: Material,
-		rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+func _mesh_cylinder(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	position: Vector3,
+	top_radius: float,
+	bottom_radius: float,
+	height: float,
+	material: Material,
+	rot: Vector3 = Vector3.ZERO
+) -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = top_radius
 	mesh.bottom_radius = bottom_radius
@@ -243,8 +299,14 @@ func _mesh_cylinder(parent: Node3D, root: Node3D, node_name: String, position: V
 	return instance
 
 
-func _mesh_sphere(parent: Node3D, root: Node3D, node_name: String, position: Vector3,
-		radius: float, material: Material) -> MeshInstance3D:
+func _mesh_sphere(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	position: Vector3,
+	radius: float,
+	material: Material
+) -> MeshInstance3D:
 	var mesh := SphereMesh.new()
 	mesh.radius = radius
 	mesh.height = radius * 2.0
@@ -260,24 +322,68 @@ func _mesh_sphere(parent: Node3D, root: Node3D, node_name: String, position: Vec
 	return instance
 
 
-func _rail(parent: Node3D, root: Node3D, node_name: String, x: float, z: float,
-		length: float, top: float, material: Material, sideways: bool = false) -> void:
+func _rail(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	x: float,
+	z: float,
+	length: float,
+	top: float,
+	material: Material,
+	sideways: bool = false
+) -> void:
 	var size := Vector3(0.18, 0.18, length) if sideways else Vector3(length, 0.18, 0.18)
 	_mesh_box(parent, root, node_name, Vector3(x, top + 0.55, z), size, material)
 
 
-func _arch(parent: Node3D, root: Node3D, node_name: String, z: float, top: float,
-		width: float, height: float, post_material: Material, gold_material: Material,
-		label: String = "") -> void:
+func _arch(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	z: float,
+	top: float,
+	width: float,
+	height: float,
+	post_material: Material,
+	gold_material: Material,
+	label: String = ""
+) -> void:
 	var half := width * 0.5
-	_mesh_box(parent, root, node_name + "PostLeft",
-		Vector3(-half, top + height * 0.5, z), Vector3(0.7, height, 0.9), post_material)
-	_mesh_box(parent, root, node_name + "PostRight",
-		Vector3(half, top + height * 0.5, z), Vector3(0.7, height, 0.9), post_material)
-	_mesh_box(parent, root, node_name + "Beam",
-		Vector3(0.0, top + height, z), Vector3(width + 0.8, 0.6, 1.0), gold_material)
-	_mesh_torus(parent, root, node_name + "Ring", Vector3(0.0, top + height * 0.62, z),
-		width * 0.18, width * 0.22, gold_material, Vector3(90.0, 0.0, 0.0))
+	_mesh_box(
+		parent,
+		root,
+		node_name + "PostLeft",
+		Vector3(-half, top + height * 0.5, z),
+		Vector3(0.7, height, 0.9),
+		post_material
+	)
+	_mesh_box(
+		parent,
+		root,
+		node_name + "PostRight",
+		Vector3(half, top + height * 0.5, z),
+		Vector3(0.7, height, 0.9),
+		post_material
+	)
+	_mesh_box(
+		parent,
+		root,
+		node_name + "Beam",
+		Vector3(0.0, top + height, z),
+		Vector3(width + 0.8, 0.6, 1.0),
+		gold_material
+	)
+	_mesh_torus(
+		parent,
+		root,
+		node_name + "Ring",
+		Vector3(0.0, top + height * 0.62, z),
+		width * 0.18,
+		width * 0.22,
+		gold_material,
+		Vector3(90.0, 0.0, 0.0)
+	)
 	if not label.is_empty():
 		var text := Label3D.new()
 		text.name = node_name + "Label"
@@ -291,18 +397,32 @@ func _arch(parent: Node3D, root: Node3D, node_name: String, z: float, top: float
 		_add(parent, text, root)
 
 
-func _hazard(parent: Node3D, root: Node3D, node_name: String, x: float, z: float,
-		top: float, width: float) -> void:
-	_mesh_box(parent, root, node_name, Vector3(x, top + 0.01, z),
-		Vector3(width, 0.02, 0.55), MAT_SPIN_HAZARD)
-	# La placa frena a quien la pisa, igual que en main.tscn.
+func _hazard(
+	parent: Node3D, root: Node3D, node_name: String, x: float, z: float, top: float, width: float
+) -> void:
+	_mesh_box(
+		parent,
+		root,
+		node_name,
+		Vector3(x, top + 0.01, z),
+		Vector3(width, 0.02, 0.55),
+		MAT_SPIN_HAZARD
+	)
+	# La placa frena a quien la pisa, igual que en pivot_push.tscn.
 	var plate := parent.get_node_or_null(NodePath(node_name)) as MeshInstance3D
 	if plate != null:
 		plate.set_script(HAZARD_PAD_SCRIPT)
 
 
-func _prop(parent: Node3D, root: Node3D, node_name: String, path: String,
-		position: Vector3, scale: float, rotation_degrees_y: float = 0.0) -> Node3D:
+func _prop(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	path: String,
+	position: Vector3,
+	scale: float,
+	rotation_degrees_y: float = 0.0
+) -> Node3D:
 	var node := (load(path) as PackedScene).instantiate() as Node3D
 	node.name = node_name
 	node.position = position
@@ -312,19 +432,53 @@ func _prop(parent: Node3D, root: Node3D, node_name: String, path: String,
 	return node
 
 
-func _decor_top(parent: Node3D, root: Node3D, node_name: String, position: Vector3,
-		scale: float, color_a: Material, color_b: Material) -> void:
+func _decor_top(
+	parent: Node3D,
+	root: Node3D,
+	node_name: String,
+	position: Vector3,
+	scale: float,
+	color_a: Material,
+	color_b: Material
+) -> void:
 	# Peonza decorativa: cono, aro y bola, sin colisión.
-	_mesh_cylinder(parent, root, node_name + "Cone", position + Vector3(0, 0.9 * scale, 0),
-		0.08 * scale, 1.25 * scale, 1.8 * scale, color_a)
-	_mesh_torus(parent, root, node_name + "Ring", position + Vector3(0, 0.55 * scale, 0),
-		1.15 * scale, 1.42 * scale, color_b)
-	_mesh_sphere(parent, root, node_name + "Bola", position + Vector3(0, 2.0 * scale, 0),
-		0.52 * scale, color_b)
+	_mesh_cylinder(
+		parent,
+		root,
+		node_name + "Cone",
+		position + Vector3(0, 0.9 * scale, 0),
+		0.08 * scale,
+		1.25 * scale,
+		1.8 * scale,
+		color_a
+	)
+	_mesh_torus(
+		parent,
+		root,
+		node_name + "Ring",
+		position + Vector3(0, 0.55 * scale, 0),
+		1.15 * scale,
+		1.42 * scale,
+		color_b
+	)
+	_mesh_sphere(
+		parent,
+		root,
+		node_name + "Bola",
+		position + Vector3(0, 2.0 * scale, 0),
+		0.52 * scale,
+		color_b
+	)
 
 
-func _lights(parent: Node3D, root: Node3D, positions: Array, color: Color,
-		energy: float = 1.2, light_range: float = 16.0) -> void:
+func _lights(
+	parent: Node3D,
+	root: Node3D,
+	positions: Array,
+	color: Color,
+	energy: float = 1.2,
+	light_range: float = 16.0
+) -> void:
 	var index := 0
 	for position: Vector3 in positions:
 		index += 1
@@ -537,6 +691,7 @@ func _arena_decor(root: Node3D, cfg: Dictionary) -> void:
 
 # ------------------------------------------------------------ ronda 2: Spin
 
+
 func _build_spin_go_round() -> void:
 	var root := Node3D.new()
 	root.name = "SpinGoRound"
@@ -545,19 +700,22 @@ func _build_spin_go_round() -> void:
 	_add_lights(root, cfg)
 	_add_sky(root, cfg)
 
-	_add_level_info(root, {
-		"level_id": "spin_go_round",
-		"display_name": "Spin Go Round",
-		"round_index": 2,
-		"start_z": 5.0,
-		"finish_z": -334.0,
-		"course_length": 339.0,
-		"gold_time": 115.0,
-		"silver_time": 145.0,
-		"bronze_time": 185.0,
-		"waypoints": _spin_waypoints(),
-		"lane_widths": _spin_lanes(),
-	})
+	_add_level_info(
+		root,
+		{
+			"level_id": "spin_go_round",
+			"display_name": "Spin Go Round",
+			"round_index": 2,
+			"start_z": 5.0,
+			"finish_z": -334.0,
+			"course_length": 339.0,
+			"gold_time": 115.0,
+			"silver_time": 145.0,
+			"bronze_time": 185.0,
+			"waypoints": _spin_waypoints(),
+			"lane_widths": _spin_lanes(),
+		}
+	)
 	_add_race_manager(root)
 	_add_hud(root)
 	_add_kill_plane(root, -42.0)
@@ -575,10 +733,22 @@ func _build_spin_go_round() -> void:
 	_ramp(course, root, "SpinClimb", 0.0, -87.0, -93.5, 0.0, 2.6, 10.2, MAT_SPIN_FLOOR)
 	_slab(course, root, "PressDeck", 0.0, -100.5, 12.0, 14.0, 2.6, MAT_SPIN_FLOOR)
 	# Paredes del pasillo de pistones: el bloque se recoge oculto tras ellas.
-	_platform(course, root, "PressWallLeft", Vector3(-5.55, 4.0, -100.5),
-		Vector3(0.9, 2.8, 14.0), MAT_SPIN_WALL)
-	_platform(course, root, "PressWallRight", Vector3(5.55, 4.0, -100.5),
-		Vector3(0.9, 2.8, 14.0), MAT_SPIN_WALL)
+	_platform(
+		course,
+		root,
+		"PressWallLeft",
+		Vector3(-5.55, 4.0, -100.5),
+		Vector3(0.9, 2.8, 14.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"PressWallRight",
+		Vector3(5.55, 4.0, -100.5),
+		Vector3(0.9, 2.8, 14.0),
+		MAT_SPIN_WALL
+	)
 	_slab(course, root, "CrumbleLanding", 0.0, -122.75, 10.2, 6.5, 2.6, MAT_SPIN_FLOOR)
 	_ramp(course, root, "SpinDrop", 0.0, -126.0, -133.0, 2.6, 0.0, 10.2, MAT_SPIN_FLOOR)
 	_slab(course, root, "LowRun", 0.0, -139.0, 12.0, 12.0, 0.0, MAT_SPIN_FLOOR)
@@ -599,213 +769,683 @@ func _build_spin_go_round() -> void:
 	_slab(course, root, "FinishPlaza", 0.0, -334.0, 16.0, 16.0, 3.0, MAT_SPIN_FLOOR)
 	# Muros de los tramos nuevos: cierran la cornisa para que ni las rocas ni
 	# los pinchos se puedan rodear caminando por el borde de la plataforma.
-	_platform(course, root, "BoulderWallLeft", Vector3(-6.0, 3.0, -182.5),
-		Vector3(0.9, 2.8, 22.0), MAT_SPIN_WALL)
-	_platform(course, root, "BoulderWallRight", Vector3(6.0, 3.0, -182.5),
-		Vector3(0.9, 2.8, 22.0), MAT_SPIN_WALL)
-	_platform(course, root, "SpikeWallLeft", Vector3(-6.7, 5.0, -207.5),
-		Vector3(0.9, 2.8, 17.0), MAT_SPIN_WALL)
-	_platform(course, root, "SpikeWallRight", Vector3(6.7, 5.0, -207.5),
-		Vector3(0.9, 2.8, 17.0), MAT_SPIN_WALL)
-	_platform(course, root, "FinalWallLeft", Vector3(-7.5, 4.3, -317.0),
-		Vector3(0.9, 2.6, 18.0), MAT_SPIN_WALL)
-	_platform(course, root, "FinalWallRight", Vector3(7.5, 4.3, -317.0),
-		Vector3(0.9, 2.6, 18.0), MAT_SPIN_WALL)
+	_platform(
+		course,
+		root,
+		"BoulderWallLeft",
+		Vector3(-6.0, 3.0, -182.5),
+		Vector3(0.9, 2.8, 22.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"BoulderWallRight",
+		Vector3(6.0, 3.0, -182.5),
+		Vector3(0.9, 2.8, 22.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"SpikeWallLeft",
+		Vector3(-6.7, 5.0, -207.5),
+		Vector3(0.9, 2.8, 17.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"SpikeWallRight",
+		Vector3(6.7, 5.0, -207.5),
+		Vector3(0.9, 2.8, 17.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"FinalWallLeft",
+		Vector3(-7.5, 4.3, -317.0),
+		Vector3(0.9, 2.6, 18.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"FinalWallRight",
+		Vector3(7.5, 4.3, -317.0),
+		Vector3(0.9, 2.6, 18.0),
+		MAT_SPIN_WALL
+	)
 
 	# Pasillos solidos: las barras cubren todo el ancho jugable, asi que no se
 	# pueden esquivar caminando por el borde del tramo.
-	_platform(course, root, "ArenaBarrierLeft", Vector3(-5.55, 1.4, -16.0),
-		Vector3(0.9, 2.8, 22.0), MAT_SPIN_WALL)
-	_platform(course, root, "ArenaBarrierRight", Vector3(5.55, 1.4, -16.0),
-		Vector3(0.9, 2.8, 22.0), MAT_SPIN_WALL)
+	_platform(
+		course,
+		root,
+		"ArenaBarrierLeft",
+		Vector3(-5.55, 1.4, -16.0),
+		Vector3(0.9, 2.8, 22.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"ArenaBarrierRight",
+		Vector3(5.55, 1.4, -16.0),
+		Vector3(0.9, 2.8, 22.0),
+		MAT_SPIN_WALL
+	)
 	# Tapas del borde ancho de la arena: cierran la cornisa por la que se
 	# podia entrar a la espalda de los barridos desde la salida.
-	_platform(course, root, "ArenaCapLeft", Vector3(-9.1, 1.4, -5.0),
-		Vector3(6.2, 2.8, 0.9), MAT_SPIN_WALL)
-	_platform(course, root, "ArenaCapRight", Vector3(9.1, 1.4, -5.0),
-		Vector3(6.2, 2.8, 0.9), MAT_SPIN_WALL)
-	_platform(course, root, "SpinRowBarrierLeft", Vector3(-5.55, 1.4, -61.0),
-		Vector3(0.9, 2.8, 14.0), MAT_SPIN_WALL)
-	_platform(course, root, "SpinRowBarrierRight", Vector3(5.55, 1.4, -61.0),
-		Vector3(0.9, 2.8, 14.0), MAT_SPIN_WALL)
+	_platform(
+		course,
+		root,
+		"ArenaCapLeft",
+		Vector3(-9.1, 1.4, -5.0),
+		Vector3(6.2, 2.8, 0.9),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"ArenaCapRight",
+		Vector3(9.1, 1.4, -5.0),
+		Vector3(6.2, 2.8, 0.9),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"SpinRowBarrierLeft",
+		Vector3(-5.55, 1.4, -61.0),
+		Vector3(0.9, 2.8, 14.0),
+		MAT_SPIN_WALL
+	)
+	_platform(
+		course,
+		root,
+		"SpinRowBarrierRight",
+		Vector3(5.55, 1.4, -61.0),
+		Vector3(0.9, 2.8, 14.0),
+		MAT_SPIN_WALL
+	)
 
-	_obstacle(course, root, "SweeperA", SWEEPER_SCENE, Vector3(0.0, 0.35, -11.0), {
-		"spin_speed": 2.0, "push_force": 6.0, "stuns": true,
-	})
-	_obstacle(course, root, "SweeperB", SWEEPER_SCENE, Vector3(0.0, 0.35, -21.0), {
-		"spin_speed": 2.5, "spin_direction": -1.0, "push_force": 6.4, "stuns": true,
-	})
-	_obstacle(course, root, "Checkpoint1", CHECKPOINT_SCENE, Vector3(0.0, 0.0, -28.0), {
-		"checkpoint_name": "Checkpoint 1",
-	})
-	_obstacle(course, root, "MovingPlatform", MOVING_SCENE, Vector3(0.0, -0.2, -38.0), {
-		"travel": Vector3(0.0, 0.0, -6.0), "speed": 2.2, "pause_time": 0.4,
-	})
-	_obstacle(course, root, "Checkpoint2", CHECKPOINT_SCENE, Vector3(0.0, 0.0, -49.0), {
-		"checkpoint_name": "Checkpoint 2",
-	})
-	_obstacle(course, root, "SweeperC", SWEEPER_SCENE, Vector3(0.0, 0.35, -57.0), {
-		"spin_speed": 2.8, "push_force": 6.8, "stuns": true,
-	})
+	_obstacle(
+		course,
+		root,
+		"SweeperA",
+		SWEEPER_SCENE,
+		Vector3(0.0, 0.35, -11.0),
+		{
+			"spin_speed": 2.0,
+			"push_force": 6.0,
+			"stuns": true,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"SweeperB",
+		SWEEPER_SCENE,
+		Vector3(0.0, 0.35, -21.0),
+		{
+			"spin_speed": 2.5,
+			"spin_direction": -1.0,
+			"push_force": 6.4,
+			"stuns": true,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint1",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 0.0, -28.0),
+		{
+			"checkpoint_name": "Checkpoint 1",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"MovingPlatform",
+		MOVING_SCENE,
+		Vector3(0.0, -0.2, -38.0),
+		{
+			"travel": Vector3(0.0, 0.0, -6.0),
+			"speed": 2.2,
+			"pause_time": 0.4,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint2",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 0.0, -49.0),
+		{
+			"checkpoint_name": "Checkpoint 2",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"SweeperC",
+		SWEEPER_SCENE,
+		Vector3(0.0, 0.35, -57.0),
+		{
+			"spin_speed": 2.8,
+			"push_force": 6.8,
+			"stuns": true,
+		}
+	)
 	# Levantada 4,5 cm: con el disco a ras del suelo su cara superior y las
 	# franjas peleaban con la losa (z-fighting) y los colores parpadeaban.
-	_obstacle(course, root, "Centrifuge", SPIN_SCENE, Vector3(0.0, -0.155, -63.0), {
-		"spin_speed": 1.8,
-	})
-	_obstacle(course, root, "BallRain", DROPPER_SCENE, Vector3(0.0, 8.5, -61.0), {
-		"interval": 2.3, "drop_radius": 3.6, "max_balls": 5,
-		"start_delay": 2.0, "column_spread": 1.8,
-	})
-	_obstacle(course, root, "Checkpoint3", CHECKPOINT_SCENE, Vector3(0.0, 0.0, -72.0), {
-		"checkpoint_name": "Checkpoint 3",
-	})
-	_obstacle(course, root, "Checkpoint4", CHECKPOINT_SCENE, Vector3(0.0, 2.6, -95.5), {
-		"checkpoint_name": "Checkpoint 4",
-	})
+	_obstacle(
+		course,
+		root,
+		"Centrifuge",
+		SPIN_SCENE,
+		Vector3(0.0, -0.155, -63.0),
+		{
+			"spin_speed": 1.8,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"BallRain",
+		DROPPER_SCENE,
+		Vector3(0.0, 8.5, -61.0),
+		{
+			"interval": 2.3,
+			"drop_radius": 3.6,
+			"max_balls": 5,
+			"start_delay": 2.0,
+			"column_spread": 1.8,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint3",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 0.0, -72.0),
+		{
+			"checkpoint_name": "Checkpoint 3",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint4",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 2.6, -95.5),
+		{
+			"checkpoint_name": "Checkpoint 4",
+		}
+	)
 	# Pistones nuevos: uno por lado, alternos, con luz de aviso antes del golpe.
-	_obstacle(course, root, "PistonLeft", PISTON_SCENE, Vector3(-6.0, 2.6, -99.0), {
-		"travel": Vector3(4.6, 0.0, 0.0), "push_force": 7.5, "phase_offset": 0.0,
-	})
-	_obstacle(course, root, "PistonRight", PISTON_SCENE, Vector3(6.0, 2.6, -104.0), {
-		"travel": Vector3(-4.6, 0.0, 0.0), "push_force": 7.5, "phase_offset": 2.4,
-	})
+	_obstacle(
+		course,
+		root,
+		"PistonLeft",
+		PISTON_SCENE,
+		Vector3(-6.0, 2.6, -99.0),
+		{
+			"travel": Vector3(4.6, 0.0, 0.0),
+			"push_force": 7.5,
+			"phase_offset": 0.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"PistonRight",
+		PISTON_SCENE,
+		Vector3(6.0, 2.6, -104.0),
+		{
+			"travel": Vector3(-4.6, 0.0, 0.0),
+			"push_force": 7.5,
+			"phase_offset": 2.4,
+		}
+	)
 	# Puente de losas frágiles: 3 columnas x 4 filas, sin huecos entre ellas.
 	var tile_colors := [MAT_SPIN_ORANGE, MAT_SPIN_BLUE, MAT_SPIN_MAGENTA]
 	for row in 4:
 		for col in 3:
-			_obstacle(course, root, "CrumbleTile%d_%d" % [row, col], CRUMBLE_TILE_SCENE,
-				Vector3(-3.4 + float(col) * 3.4, 2.6, -109.0 - float(row) * 3.0), {
+			_obstacle(
+				course,
+				root,
+				"CrumbleTile%d_%d" % [row, col],
+				CRUMBLE_TILE_SCENE,
+				Vector3(-3.4 + float(col) * 3.4, 2.6, -109.0 - float(row) * 3.0),
+				{
 					"tile_material": tile_colors[(row + col) % tile_colors.size()],
-				})
-	_obstacle(course, root, "Checkpoint5", CHECKPOINT_SCENE, Vector3(0.0, 2.6, -121.5), {
-		"checkpoint_name": "Checkpoint 5",
-	})
-	_obstacle(course, root, "Checkpoint6", CHECKPOINT_SCENE, Vector3(0.0, 0.0, -136.0), {
-		"checkpoint_name": "Checkpoint 6",
-	})
-	_obstacle(course, root, "Checkpoint7", CHECKPOINT_SCENE, Vector3(0.0, 3.0, -161.0), {
-		"checkpoint_name": "Checkpoint 7",
-	})
+				}
+			)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint5",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 2.6, -121.5),
+		{
+			"checkpoint_name": "Checkpoint 5",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint6",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 0.0, -136.0),
+		{
+			"checkpoint_name": "Checkpoint 6",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint7",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 3.0, -161.0),
+		{
+			"checkpoint_name": "Checkpoint 7",
+		}
+	)
 	# Tres rocas ruedan por el pasillo en contra de la marcha, cada una por su
 	# carril y con su desfase: siempre queda un hueco por el que colarse.
-	_obstacle(course, root, "BoulderA", BOULDER_SCENE, Vector3(-2.7, 2.6, -189.0), {
-		"travel": Vector3(0.0, 0.0, 18.0), "speed": 5.2, "phase_offset": 0.0,
-	})
-	_obstacle(course, root, "BoulderB", BOULDER_SCENE, Vector3(0.0, 2.6, -189.0), {
-		"travel": Vector3(0.0, 0.0, 18.0), "speed": 5.8, "phase_offset": 2.0,
-	})
-	_obstacle(course, root, "BoulderC", BOULDER_SCENE, Vector3(2.7, 2.6, -189.0), {
-		"travel": Vector3(0.0, 0.0, 18.0), "speed": 6.4, "phase_offset": 4.0,
-	})
-	_obstacle(course, root, "Checkpoint8", CHECKPOINT_SCENE, Vector3(0.0, 1.6, -173.5), {
-		"checkpoint_name": "Checkpoint 8",
-	})
+	_obstacle(
+		course,
+		root,
+		"BoulderA",
+		BOULDER_SCENE,
+		Vector3(-2.7, 2.6, -189.0),
+		{
+			"travel": Vector3(0.0, 0.0, 18.0),
+			"speed": 5.2,
+			"phase_offset": 0.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"BoulderB",
+		BOULDER_SCENE,
+		Vector3(0.0, 2.6, -189.0),
+		{
+			"travel": Vector3(0.0, 0.0, 18.0),
+			"speed": 5.8,
+			"phase_offset": 2.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"BoulderC",
+		BOULDER_SCENE,
+		Vector3(2.7, 2.6, -189.0),
+		{
+			"travel": Vector3(0.0, 0.0, 18.0),
+			"speed": 6.4,
+			"phase_offset": 4.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint8",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 1.6, -173.5),
+		{
+			"checkpoint_name": "Checkpoint 8",
+		}
+	)
 	# Galería de pinchos: 4x4 trampas desfasadas entre sí. Los pinchos salen
 	# del suelo con aviso previo, así que se cruza corriendo por las que duermen.
 	for row in 4:
 		for col in 4:
-			_obstacle(course, root, "Spike%d_%d" % [row, col], SPIKE_SCENE,
-				Vector3(-4.6 + float(col) * 3.05, 3.6, -202.5 - float(row) * 4.0), {
+			_obstacle(
+				course,
+				root,
+				"Spike%d_%d" % [row, col],
+				SPIKE_SCENE,
+				Vector3(-4.6 + float(col) * 3.05, 3.6, -202.5 - float(row) * 4.0),
+				{
 					"phase_offset": float(row) * 1.7 + float(col) * 0.55,
-				})
-	_obstacle(course, root, "Checkpoint9", CHECKPOINT_SCENE, Vector3(0.0, 3.6, -200.0), {
-		"checkpoint_name": "Checkpoint 9",
-	})
+				}
+			)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint9",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 3.6, -200.0),
+		{
+			"checkpoint_name": "Checkpoint 9",
+		}
+	)
 	# Puente de aspas: tres brazos girando en sentidos alternos sobre una
 	# pasarela estrecha. Cuando el brazo pasa abajo hay que saltarlo.
-	_obstacle(course, root, "RotorA", ROTOR_SCENE, Vector3(0.0, 4.5, -220.0), {
-		"spin_speed": 0.95, "phase_offset": 0.0,
-	})
-	_obstacle(course, root, "RotorB", ROTOR_SCENE, Vector3(0.0, 4.5, -227.0), {
-		"spin_speed": 1.05, "spin_direction": -1.0, "phase_offset": 2.1,
-	})
-	_obstacle(course, root, "RotorC", ROTOR_SCENE, Vector3(0.0, 4.5, -234.0), {
-		"spin_speed": 1.15, "phase_offset": 0.7,
-	})
-	_obstacle(course, root, "GateBelt", CONVEYOR_SCENE, Vector3(0.0, 3.475, -243.0), {
-		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.2, "arrow_span": 2.0,
-	})
-	_obstacle(course, root, "Checkpoint10", CHECKPOINT_SCENE, Vector3(0.0, 3.6, -239.5), {
-		"checkpoint_name": "Checkpoint 10",
-	})
+	_obstacle(
+		course,
+		root,
+		"RotorA",
+		ROTOR_SCENE,
+		Vector3(0.0, 4.5, -220.0),
+		{
+			"spin_speed": 0.95,
+			"phase_offset": 0.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"RotorB",
+		ROTOR_SCENE,
+		Vector3(0.0, 4.5, -227.0),
+		{
+			"spin_speed": 1.05,
+			"spin_direction": -1.0,
+			"phase_offset": 2.1,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"RotorC",
+		ROTOR_SCENE,
+		Vector3(0.0, 4.5, -234.0),
+		{
+			"spin_speed": 1.15,
+			"phase_offset": 0.7,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"GateBelt",
+		CONVEYOR_SCENE,
+		Vector3(0.0, 3.475, -243.0),
+		{
+			"direction": Vector3(0.0, 0.0, 1.0),
+			"force": 3.2,
+			"arrow_span": 2.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint10",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 3.6, -239.5),
+		{
+			"checkpoint_name": "Checkpoint 10",
+		}
+	)
 	# Subida larga al mirador, con lluvia de bolas en mitad de la cuesta.
-	_obstacle(course, root, "SummitDropper", DROPPER_SCENE, Vector3(0.0, 16.5, -260.0), {
-		"interval": 2.6, "drop_radius": 2.8, "max_balls": 4,
-		"start_delay": 1.5, "column_spread": 3.0,
-	})
-	_obstacle(course, root, "Checkpoint11", CHECKPOINT_SCENE, Vector3(0.0, 9.0, -274.0), {
-		"checkpoint_name": "Checkpoint 11",
-	})
-	_obstacle(course, root, "SweeperSummit", SWEEPER_SCENE, Vector3(0.0, 9.35, -277.0), {
-		"spin_speed": 2.4, "push_force": 6.6, "stuns": true,
-	})
-	_obstacle(course, root, "PendulumSummitA", PENDULUM_SCENE, Vector3(0.0, 13.2, -280.0), {
-		"max_angle": 1.0, "swing_speed": 0.0023, "push_force": 12.0,
-		"phase_offset": 0.2,
-	})
-	_obstacle(course, root, "PendulumSummitB", PENDULUM_SCENE, Vector3(0.0, 13.2, -284.5), {
-		"max_angle": 1.05, "swing_speed": 0.0026, "push_force": 12.0,
-		"phase_offset": 1.8,
-	})
+	_obstacle(
+		course,
+		root,
+		"SummitDropper",
+		DROPPER_SCENE,
+		Vector3(0.0, 16.5, -260.0),
+		{
+			"interval": 2.6,
+			"drop_radius": 2.8,
+			"max_balls": 4,
+			"start_delay": 1.5,
+			"column_spread": 3.0,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint11",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 9.0, -274.0),
+		{
+			"checkpoint_name": "Checkpoint 11",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"SweeperSummit",
+		SWEEPER_SCENE,
+		Vector3(0.0, 9.35, -277.0),
+		{
+			"spin_speed": 2.4,
+			"push_force": 6.6,
+			"stuns": true,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"PendulumSummitA",
+		PENDULUM_SCENE,
+		Vector3(0.0, 13.2, -280.0),
+		{
+			"max_angle": 1.0,
+			"swing_speed": 0.0023,
+			"push_force": 12.0,
+			"phase_offset": 0.2,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"PendulumSummitB",
+		PENDULUM_SCENE,
+		Vector3(0.0, 13.2, -284.5),
+		{
+			"max_angle": 1.05,
+			"swing_speed": 0.0026,
+			"push_force": 12.0,
+			"phase_offset": 1.8,
+		}
+	)
 	# Bajada final: bolas que ruedan cuesta abajo y dos barridos de cierre.
-	_obstacle(course, root, "DropDropper", DROPPER_SCENE, Vector3(0.0, 15.5, -294.0), {
-		"interval": 2.9, "drop_radius": 3.2, "max_balls": 4,
-		"start_delay": 2.0, "column_spread": 3.4,
-	})
-	_obstacle(course, root, "Checkpoint12", CHECKPOINT_SCENE, Vector3(0.0, 3.0, -309.5), {
-		"checkpoint_name": "Checkpoint 12",
-	})
-	_obstacle(course, root, "SweeperFinalA", SWEEPER_SCENE, Vector3(0.0, 3.35, -313.0), {
-		"spin_speed": 2.6, "push_force": 7.0, "stuns": true,
-	})
-	_obstacle(course, root, "SweeperFinalB", SWEEPER_SCENE, Vector3(0.0, 3.35, -321.0), {
-		"spin_speed": 2.9, "spin_direction": -1.0, "push_force": 7.2, "stuns": true,
-	})
-	_obstacle(course, root, "FinalBelt", CONVEYOR_SCENE, Vector3(0.0, 2.875, -317.0), {
-		"direction": Vector3(0.0, 0.0, 1.0), "force": 3.6, "arrow_span": 2.2,
-	})
+	_obstacle(
+		course,
+		root,
+		"DropDropper",
+		DROPPER_SCENE,
+		Vector3(0.0, 15.5, -294.0),
+		{
+			"interval": 2.9,
+			"drop_radius": 3.2,
+			"max_balls": 4,
+			"start_delay": 2.0,
+			"column_spread": 3.4,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"Checkpoint12",
+		CHECKPOINT_SCENE,
+		Vector3(0.0, 3.0, -309.5),
+		{
+			"checkpoint_name": "Checkpoint 12",
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"SweeperFinalA",
+		SWEEPER_SCENE,
+		Vector3(0.0, 3.35, -313.0),
+		{
+			"spin_speed": 2.6,
+			"push_force": 7.0,
+			"stuns": true,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"SweeperFinalB",
+		SWEEPER_SCENE,
+		Vector3(0.0, 3.35, -321.0),
+		{
+			"spin_speed": 2.9,
+			"spin_direction": -1.0,
+			"push_force": 7.2,
+			"stuns": true,
+		}
+	)
+	_obstacle(
+		course,
+		root,
+		"FinalBelt",
+		CONVEYOR_SCENE,
+		Vector3(0.0, 2.875, -317.0),
+		{
+			"direction": Vector3(0.0, 0.0, 1.0),
+			"force": 3.6,
+			"arrow_span": 2.2,
+		}
+	)
 	_obstacle(course, root, "FinishLine", FINISH_SCENE, Vector3(0.0, 3.0, -334.0))
 
 	var decor := _group(root, "Decor")
-	_arch(decor, root, "StartGate", -2.5, 0.0, 21.0, 6.4, MAT_SPIN_BLUE,
-		MAT_SPIN_GOLD, "SPIN GO ROUND")
+	_arch(
+		decor,
+		root,
+		"StartGate",
+		-2.5,
+		0.0,
+		21.0,
+		6.4,
+		MAT_SPIN_BLUE,
+		MAT_SPIN_GOLD,
+		"SPIN GO ROUND"
+	)
 	# Muros azules del estadio y pasamanos dorados.
-	_mesh_box(decor, root, "ArenaWallLeft", Vector3(-12.2, 1.3, -16.0),
-		Vector3(1.2, 2.6, 22.0), MAT_SPIN_WALL)
-	_mesh_box(decor, root, "ArenaWallRight", Vector3(12.2, 1.3, -16.0),
-		Vector3(1.2, 2.6, 22.0), MAT_SPIN_WALL)
-	_mesh_box(decor, root, "ArenaTrimLeft", Vector3(-12.2, 2.65, -16.0),
-		Vector3(1.4, 0.2, 22.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "ArenaTrimRight", Vector3(12.2, 2.65, -16.0),
-		Vector3(1.4, 0.2, 22.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "ArenaBarrierTrimLeft", Vector3(-5.55, 2.9, -16.0),
-		Vector3(1.1, 0.2, 22.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "ArenaBarrierTrimRight", Vector3(5.55, 2.9, -16.0),
-		Vector3(1.1, 0.2, 22.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "ArenaCapTrimLeft", Vector3(-9.1, 2.9, -5.0),
-		Vector3(6.4, 0.2, 1.1), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "ArenaCapTrimRight", Vector3(9.1, 2.9, -5.0),
-		Vector3(6.4, 0.2, 1.1), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "StartWallLeft", Vector3(-9.6, 1.0, 2.0),
-		Vector3(1.0, 2.0, 12.0), MAT_SPIN_WALL)
-	_mesh_box(decor, root, "StartWallRight", Vector3(9.6, 1.0, 2.0),
-		Vector3(1.0, 2.0, 12.0), MAT_SPIN_WALL)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaWallLeft",
+		Vector3(-12.2, 1.3, -16.0),
+		Vector3(1.2, 2.6, 22.0),
+		MAT_SPIN_WALL
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaWallRight",
+		Vector3(12.2, 1.3, -16.0),
+		Vector3(1.2, 2.6, 22.0),
+		MAT_SPIN_WALL
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaTrimLeft",
+		Vector3(-12.2, 2.65, -16.0),
+		Vector3(1.4, 0.2, 22.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaTrimRight",
+		Vector3(12.2, 2.65, -16.0),
+		Vector3(1.4, 0.2, 22.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaBarrierTrimLeft",
+		Vector3(-5.55, 2.9, -16.0),
+		Vector3(1.1, 0.2, 22.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaBarrierTrimRight",
+		Vector3(5.55, 2.9, -16.0),
+		Vector3(1.1, 0.2, 22.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaCapTrimLeft",
+		Vector3(-9.1, 2.9, -5.0),
+		Vector3(6.4, 0.2, 1.1),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"ArenaCapTrimRight",
+		Vector3(9.1, 2.9, -5.0),
+		Vector3(6.4, 0.2, 1.1),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"StartWallLeft",
+		Vector3(-9.6, 1.0, 2.0),
+		Vector3(1.0, 2.0, 12.0),
+		MAT_SPIN_WALL
+	)
+	_mesh_box(
+		decor,
+		root,
+		"StartWallRight",
+		Vector3(9.6, 1.0, 2.0),
+		Vector3(1.0, 2.0, 12.0),
+		MAT_SPIN_WALL
+	)
 	_rail(decor, root, "StartRailLeft", -9.0, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "StartRailRight", 9.0, 2.0, 11.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "BridgeRailLeft", -4.1, -31.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "BridgeRailRight", 4.1, -31.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "LandingRailLeft", -5.1, -49.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "LandingRailRight", 5.1, -49.0, 8.0, 0.0, MAT_SPIN_GOLD, true)
-	_mesh_box(decor, root, "SpinRowBarrierTrimLeft", Vector3(-5.55, 2.9, -61.0),
-		Vector3(1.1, 0.2, 14.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "SpinRowBarrierTrimRight", Vector3(5.55, 2.9, -61.0),
-		Vector3(1.1, 0.2, 14.0), MAT_SPIN_GOLD)
+	_mesh_box(
+		decor,
+		root,
+		"SpinRowBarrierTrimLeft",
+		Vector3(-5.55, 2.9, -61.0),
+		Vector3(1.1, 0.2, 14.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"SpinRowBarrierTrimRight",
+		Vector3(5.55, 2.9, -61.0),
+		Vector3(1.1, 0.2, 14.0),
+		MAT_SPIN_GOLD
+	)
 	_rail(decor, root, "FinishRailLeft", -8.1, -80.0, 14.0, 0.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "FinishRailRight", 8.1, -80.0, 14.0, 0.0, MAT_SPIN_GOLD, true)
-	_mesh_box(decor, root, "PressWallTrimLeft", Vector3(-5.55, 5.5, -100.5),
-		Vector3(1.1, 0.2, 14.0), MAT_SPIN_GOLD)
-	_mesh_box(decor, root, "PressWallTrimRight", Vector3(5.55, 5.5, -100.5),
-		Vector3(1.1, 0.2, 14.0), MAT_SPIN_GOLD)
+	_mesh_box(
+		decor,
+		root,
+		"PressWallTrimLeft",
+		Vector3(-5.55, 5.5, -100.5),
+		Vector3(1.1, 0.2, 14.0),
+		MAT_SPIN_GOLD
+	)
+	_mesh_box(
+		decor,
+		root,
+		"PressWallTrimRight",
+		Vector3(5.55, 5.5, -100.5),
+		Vector3(1.1, 0.2, 14.0),
+		MAT_SPIN_GOLD
+	)
 	_rail(decor, root, "CrumbleRailLeft", -5.2, -122.75, 6.5, 2.6, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "CrumbleRailRight", 5.2, -122.75, 6.5, 2.6, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "LowRailLeft", -6.1, -139.0, 12.0, 0.0, MAT_SPIN_GOLD, true)
@@ -827,8 +1467,9 @@ func _build_spin_go_round() -> void:
 	_rail(decor, root, "FinalDeckRailRight", 7.5, -317.0, 18.0, 3.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "PlazaRailLeft", -8.1, -334.0, 16.0, 3.0, MAT_SPIN_GOLD, true)
 	_rail(decor, root, "PlazaRailRight", 8.1, -334.0, 16.0, 3.0, MAT_SPIN_GOLD, true)
-	_arch(decor, root, "SummitGate", -272.5, 9.0, 10.2, 5.2, MAT_SPIN_BLUE,
-		MAT_SPIN_GOLD, "MIRADOR")
+	_arch(
+		decor, root, "SummitGate", -272.5, 9.0, 10.2, 5.2, MAT_SPIN_BLUE, MAT_SPIN_GOLD, "MIRADOR"
+	)
 	_arch(decor, root, "FinalGate", -308.5, 3.0, 14.0, 5.2, MAT_SPIN_BLUE, MAT_SPIN_GOLD)
 	for i in 3:
 		_hazard(decor, root, "HazardBoulder%d" % i, 0.0, -176.0 - float(i) * 6.0, 1.6, 10.4)
@@ -839,88 +1480,192 @@ func _build_spin_go_round() -> void:
 	for i in 3:
 		_hazard(decor, root, "HazardLow%d" % i, 0.0, -136.0 - float(i) * 3.0, 0.0, 9.6)
 	# Peonzas y bolas fuera del recorrido.
-	_decor_top(decor, root, "TopLeft", Vector3(-9.6, 0.0, -12.0), 1.2,
-		MAT_SPIN_MAGENTA, MAT_SPIN_GOLD)
-	_decor_top(decor, root, "TopRight", Vector3(9.6, 0.0, -20.0), 1.0,
-		MAT_SPIN_LIME, MAT_SPIN_ORANGE)
-	_decor_top(decor, root, "TopSpinLeft", Vector3(-9.2, 0.0, -61.0), 0.9,
-		MAT_SPIN_ORANGE, MAT_SPIN_GOLD)
-	_decor_top(decor, root, "TopSpinRight", Vector3(9.2, 0.0, -66.0), 0.8,
-		MAT_SPIN_MAGENTA, MAT_SPIN_LIME)
+	_decor_top(
+		decor, root, "TopLeft", Vector3(-9.6, 0.0, -12.0), 1.2, MAT_SPIN_MAGENTA, MAT_SPIN_GOLD
+	)
+	_decor_top(
+		decor, root, "TopRight", Vector3(9.6, 0.0, -20.0), 1.0, MAT_SPIN_LIME, MAT_SPIN_ORANGE
+	)
+	_decor_top(
+		decor, root, "TopSpinLeft", Vector3(-9.2, 0.0, -61.0), 0.9, MAT_SPIN_ORANGE, MAT_SPIN_GOLD
+	)
+	_decor_top(
+		decor, root, "TopSpinRight", Vector3(9.2, 0.0, -66.0), 0.8, MAT_SPIN_MAGENTA, MAT_SPIN_LIME
+	)
 	_mesh_sphere(decor, root, "BallLeftA", Vector3(-9.2, 1.0, -7.0), 1.0, MAT_SPIN_MAGENTA)
 	_mesh_sphere(decor, root, "BallLeftB", Vector3(-9.2, 2.8, -7.0), 0.85, MAT_SPIN_LIME)
 	_mesh_sphere(decor, root, "BallRightA", Vector3(9.2, 1.0, -24.0), 1.0, MAT_SPIN_ORANGE)
 	_mesh_sphere(decor, root, "BallRightB", Vector3(9.2, 2.8, -24.0), 0.85, MAT_SPIN_BLUE)
 	# Pelota de playa CC-BY de Poly Pizza (the_ normalgamer), integrada como
 	# atrezo del circuito de las bolas.
-	_prop(decor, root, "BeachBallA", "res://assets/props/beach_ball.glb",
-		Vector3(-9.2, 1.0, -9.0), 2.0, 18.0)
-	_prop(decor, root, "BeachBallB", "res://assets/props/beach_ball.glb",
-		Vector3(9.4, 1.0, -23.0), 1.5, -35.0)
-	_prop(decor, root, "BeachBallC", "res://assets/props/beach_ball.glb",
-		Vector3(8.8, 1.0, -78.0), 1.6, 55.0)
-	_prop(decor, root, "BeachBallD", "res://assets/props/beach_ball.glb",
-		Vector3(-20.0, -5.0, -45.0), 4.0, 10.0)
-	_lights(decor, root, [Vector3(0.0, 4.5, -16.0), Vector3(0.0, 4.5, -61.0),
-		Vector3(0.0, 4.5, -80.0), Vector3(0.0, 5.6, -100.0),
-		Vector3(0.0, 5.6, -113.0), Vector3(0.0, 5.6, -122.0),
-		Vector3(0.0, 4.5, -139.0), Vector3(0.0, 6.2, -149.0),
-		Vector3(0.0, 6.2, -158.0), Vector3(0.0, 4.6, -182.5),
-		Vector3(0.0, 6.6, -207.5), Vector3(0.0, 6.6, -227.0),
-		Vector3(0.0, 6.6, -243.0), Vector3(0.0, 11.4, -260.0),
-		Vector3(0.0, 12.0, -278.0), Vector3(0.0, 8.4, -296.0),
-		Vector3(0.0, 6.6, -317.0), Vector3(0.0, 6.6, -334.0)],
-		Color(0.55, 0.95, 1.0), 1.4, 20.0)
+	_prop(
+		decor,
+		root,
+		"BeachBallA",
+		"res://assets/props/beach_ball.glb",
+		Vector3(-9.2, 1.0, -9.0),
+		2.0,
+		18.0
+	)
+	_prop(
+		decor,
+		root,
+		"BeachBallB",
+		"res://assets/props/beach_ball.glb",
+		Vector3(9.4, 1.0, -23.0),
+		1.5,
+		-35.0
+	)
+	_prop(
+		decor,
+		root,
+		"BeachBallC",
+		"res://assets/props/beach_ball.glb",
+		Vector3(8.8, 1.0, -78.0),
+		1.6,
+		55.0
+	)
+	_prop(
+		decor,
+		root,
+		"BeachBallD",
+		"res://assets/props/beach_ball.glb",
+		Vector3(-20.0, -5.0, -45.0),
+		4.0,
+		10.0
+	)
+	_lights(
+		decor,
+		root,
+		[
+			Vector3(0.0, 4.5, -16.0),
+			Vector3(0.0, 4.5, -61.0),
+			Vector3(0.0, 4.5, -80.0),
+			Vector3(0.0, 5.6, -100.0),
+			Vector3(0.0, 5.6, -113.0),
+			Vector3(0.0, 5.6, -122.0),
+			Vector3(0.0, 4.5, -139.0),
+			Vector3(0.0, 6.2, -149.0),
+			Vector3(0.0, 6.2, -158.0),
+			Vector3(0.0, 4.6, -182.5),
+			Vector3(0.0, 6.6, -207.5),
+			Vector3(0.0, 6.6, -227.0),
+			Vector3(0.0, 6.6, -243.0),
+			Vector3(0.0, 11.4, -260.0),
+			Vector3(0.0, 12.0, -278.0),
+			Vector3(0.0, 8.4, -296.0),
+			Vector3(0.0, 6.6, -317.0),
+			Vector3(0.0, 6.6, -334.0)
+		],
+		Color(0.55, 0.95, 1.0),
+		1.4,
+		20.0
+	)
 
-	_arena_decor(root, {
-		"section_centers": PackedVector3Array([
-			Vector3(0.0, 0.0, 1.5), Vector3(0.0, 0.0, -16.0),
-			Vector3(0.0, 0.0, -31.0), Vector3(0.0, 0.0, -49.0),
-			Vector3(0.0, 0.0, -61.0), Vector3(0.0, 0.0, -72.0),
-			Vector3(0.0, 0.0, -80.0), Vector3(0.0, 2.6, -100.5),
-			Vector3(0.0, 2.6, -113.5), Vector3(0.0, 2.6, -122.75),
-			Vector3(0.0, 0.0, -139.0), Vector3(0.0, 3.0, -158.0),
-			Vector3(0.0, 1.6, -182.5), Vector3(0.0, 3.6, -207.5),
-			Vector3(0.0, 3.6, -227.0), Vector3(0.0, 3.6, -243.0),
-			Vector3(0.0, 9.0, -278.0), Vector3(0.0, 3.0, -317.0),
-			Vector3(0.0, 3.0, -334.0),
-		]),
-		"section_sizes": PackedVector2Array([
-			Vector2(19.0, 13.0), Vector2(24.0, 22.0), Vector2(8.0, 8.0),
-			Vector2(10.0, 8.0), Vector2(12.0, 14.0), Vector2(10.0, 6.0),
-			Vector2(16.0, 14.0), Vector2(12.0, 14.0), Vector2(10.2, 12.0),
-			Vector2(10.2, 6.5), Vector2(12.0, 12.0), Vector2(14.0, 14.0),
-			Vector2(11.0, 22.0), Vector2(12.4, 17.0), Vector2(4.6, 22.0),
-			Vector2(9.0, 10.0), Vector2(13.0, 12.0), Vector2(14.0, 18.0),
-			Vector2(16.0, 16.0),
-		]),
-		"section_colors": PackedColorArray([
-			Color(1.0, 0.8, 0.2), Color(0.2, 0.9, 1.0), Color(1.0, 0.6, 0.2),
-			Color(0.2, 0.9, 1.0), Color(1.0, 0.45, 0.8), Color(1.0, 0.8, 0.2),
-			Color(1.0, 0.86, 0.3), Color(1.0, 0.6, 0.2), Color(0.2, 0.9, 1.0),
-			Color(1.0, 0.45, 0.8), Color(0.2, 0.9, 1.0), Color(1.0, 0.86, 0.3),
-			Color(1.0, 0.6, 0.2), Color(0.2, 0.9, 1.0), Color(1.0, 0.45, 0.8),
-			Color(1.0, 0.8, 0.2), Color(0.55, 1.0, 0.4), Color(1.0, 0.6, 0.2),
-			Color(1.0, 0.86, 0.3),
-		]),
-		"sea_deep": Color(0.02, 0.14, 0.4),
-		"sea_mid": Color(0.1, 0.5, 0.8),
-		"sea_foam": Color(0.72, 0.95, 1.0),
-		"island_palette": PackedColorArray([
-			Color(0.15, 0.7, 1.0), Color(1.0, 0.6, 0.2),
-			Color(1.0, 0.36, 0.68), Color(0.55, 1.0, 0.4),
-			Color(0.2, 0.9, 0.9),
-		]),
-		"rock_color": Color(0.08, 0.18, 0.42),
-		"distant_color": Color(0.42, 0.72, 0.96),
-		"build_arches": false,
-		"build_pendulum_frames": false,
-		"build_light_towers": false,
-	})
-	_crowd(root, {
-		"per_row": 50, "stand_offset": 18.0, "stand_length": 380.0,
-		"stand_center_z": -168.0,
-	})
+	_arena_decor(
+		root,
+		{
+			"section_centers":
+			PackedVector3Array(
+				[
+					Vector3(0.0, 0.0, 1.5),
+					Vector3(0.0, 0.0, -16.0),
+					Vector3(0.0, 0.0, -31.0),
+					Vector3(0.0, 0.0, -49.0),
+					Vector3(0.0, 0.0, -61.0),
+					Vector3(0.0, 0.0, -72.0),
+					Vector3(0.0, 0.0, -80.0),
+					Vector3(0.0, 2.6, -100.5),
+					Vector3(0.0, 2.6, -113.5),
+					Vector3(0.0, 2.6, -122.75),
+					Vector3(0.0, 0.0, -139.0),
+					Vector3(0.0, 3.0, -158.0),
+					Vector3(0.0, 1.6, -182.5),
+					Vector3(0.0, 3.6, -207.5),
+					Vector3(0.0, 3.6, -227.0),
+					Vector3(0.0, 3.6, -243.0),
+					Vector3(0.0, 9.0, -278.0),
+					Vector3(0.0, 3.0, -317.0),
+					Vector3(0.0, 3.0, -334.0),
+				]
+			),
+			"section_sizes":
+			PackedVector2Array(
+				[
+					Vector2(19.0, 13.0),
+					Vector2(24.0, 22.0),
+					Vector2(8.0, 8.0),
+					Vector2(10.0, 8.0),
+					Vector2(12.0, 14.0),
+					Vector2(10.0, 6.0),
+					Vector2(16.0, 14.0),
+					Vector2(12.0, 14.0),
+					Vector2(10.2, 12.0),
+					Vector2(10.2, 6.5),
+					Vector2(12.0, 12.0),
+					Vector2(14.0, 14.0),
+					Vector2(11.0, 22.0),
+					Vector2(12.4, 17.0),
+					Vector2(4.6, 22.0),
+					Vector2(9.0, 10.0),
+					Vector2(13.0, 12.0),
+					Vector2(14.0, 18.0),
+					Vector2(16.0, 16.0),
+				]
+			),
+			"section_colors":
+			PackedColorArray(
+				[
+					Color(1.0, 0.8, 0.2),
+					Color(0.2, 0.9, 1.0),
+					Color(1.0, 0.6, 0.2),
+					Color(0.2, 0.9, 1.0),
+					Color(1.0, 0.45, 0.8),
+					Color(1.0, 0.8, 0.2),
+					Color(1.0, 0.86, 0.3),
+					Color(1.0, 0.6, 0.2),
+					Color(0.2, 0.9, 1.0),
+					Color(1.0, 0.45, 0.8),
+					Color(0.2, 0.9, 1.0),
+					Color(1.0, 0.86, 0.3),
+					Color(1.0, 0.6, 0.2),
+					Color(0.2, 0.9, 1.0),
+					Color(1.0, 0.45, 0.8),
+					Color(1.0, 0.8, 0.2),
+					Color(0.55, 1.0, 0.4),
+					Color(1.0, 0.6, 0.2),
+					Color(1.0, 0.86, 0.3),
+				]
+			),
+			"sea_deep": Color(0.02, 0.14, 0.4),
+			"sea_mid": Color(0.1, 0.5, 0.8),
+			"sea_foam": Color(0.72, 0.95, 1.0),
+			"island_palette":
+			PackedColorArray(
+				[
+					Color(0.15, 0.7, 1.0),
+					Color(1.0, 0.6, 0.2),
+					Color(1.0, 0.36, 0.68),
+					Color(0.55, 1.0, 0.4),
+					Color(0.2, 0.9, 0.9),
+				]
+			),
+			"rock_color": Color(0.08, 0.18, 0.42),
+			"distant_color": Color(0.42, 0.72, 0.96),
+			"build_arches": false,
+			"build_pendulum_frames": false,
+			"build_light_towers": false,
+		}
+	)
+	_crowd(
+		root,
+		{
+			"per_row": 50,
+			"stand_offset": 18.0,
+			"stand_length": 380.0,
+			"stand_center_z": -168.0,
+		}
+	)
 	_add_post(root, cfg)
 	_add_director(root, 5.0, -334.0, 339.0)
 	_add_player(root)
@@ -929,45 +1674,198 @@ func _build_spin_go_round() -> void:
 
 
 func _spin_waypoints() -> PackedVector3Array:
-	return PackedVector3Array([
-		Vector3(0.0, 0.20, 1.00), Vector3(0.0, 0.20, -5.00), Vector3(0.0, 0.20, -9.00), Vector3(0.0, 0.20, -14.00),
-		Vector3(0.0, 0.20, -20.00), Vector3(0.0, 0.20, -25.00), Vector3(0.0, 0.20, -28.00), Vector3(0.0, 0.20, -31.00),
-		Vector3(0.0, 0.20, -34.50), Vector3(0.0, 0.20, -37.00), Vector3(0.0, 0.20, -40.00), Vector3(0.0, 0.20, -44.00),
-		Vector3(0.0, 0.20, -47.00), Vector3(0.0, 0.20, -50.00), Vector3(0.0, 0.20, -54.00), Vector3(0.0, 0.20, -59.00),
-		Vector3(0.0, 0.20, -63.00), Vector3(0.0, 0.20, -67.00), Vector3(0.0, 0.20, -70.00), Vector3(0.0, 0.20, -73.00),
-		Vector3(0.0, 0.20, -77.00), Vector3(0.0, 0.20, -80.00), Vector3(0.0, 0.20, -84.00), Vector3(0.0, 1.00, -89.00),
-		Vector3(0.0, 2.40, -92.50), Vector3(0.0, 2.80, -95.50), Vector3(0.0, 2.80, -99.00), Vector3(0.0, 2.80, -102.00),
-		Vector3(0.0, 2.80, -104.50), Vector3(0.0, 2.80, -107.00), Vector3(0.0, 2.80, -109.00), Vector3(0.0, 2.80, -112.00),
-		Vector3(0.0, 2.80, -115.00), Vector3(0.0, 2.80, -118.00), Vector3(0.0, 2.80, -121.50), Vector3(0.0, 2.80, -124.00),
-		Vector3(0.0, 2.20, -127.50), Vector3(0.0, 0.90, -131.00), Vector3(0.0, 0.20, -134.00), Vector3(0.0, 0.20, -138.00),
-		Vector3(0.0, 0.20, -142.00), Vector3(0.0, 0.20, -145.00), Vector3(0.0, 1.70, -148.00), Vector3(0.0, 2.90, -150.50),
-		Vector3(0.0, 3.20, -153.00), Vector3(0.0, 3.20, -156.00), Vector3(0.0, 3.20, -158.00), Vector3(0.0, 3.20, -161.00),
-		Vector3(0.0, 3.20, -165.00), Vector3(0.0, 2.55, -168.00), Vector3(0.0, 1.80, -171.50), Vector3(0.0, 1.80, -175.00),
-		Vector3(0.0, 1.80, -180.00), Vector3(0.0, 1.80, -186.00), Vector3(0.0, 1.80, -191.00), Vector3(0.0, 2.70, -196.00),
-		Vector3(0.0, 3.80, -199.00), Vector3(0.0, 3.80, -203.00), Vector3(0.0, 3.80, -207.00), Vector3(0.0, 3.80, -211.00),
-		Vector3(0.0, 3.80, -215.00), Vector3(0.0, 3.80, -219.00), Vector3(0.0, 3.80, -223.00), Vector3(0.0, 3.80, -227.00),
-		Vector3(0.0, 3.80, -231.00), Vector3(0.0, 3.80, -235.00), Vector3(0.0, 3.80, -238.00), Vector3(0.0, 3.80, -241.00),
-		Vector3(0.0, 3.80, -245.00), Vector3(0.0, 3.80, -248.00), Vector3(0.0, 4.90, -253.00), Vector3(0.0, 6.05, -258.00),
-		Vector3(0.0, 7.17, -263.00), Vector3(0.0, 8.30, -268.00), Vector3(0.0, 9.20, -272.00), Vector3(0.0, 9.20, -276.00),
-		Vector3(0.0, 9.20, -280.00), Vector3(0.0, 9.20, -284.00), Vector3(0.0, 8.20, -288.00), Vector3(0.0, 6.95, -293.00),
-		Vector3(0.0, 5.70, -298.00), Vector3(0.0, 4.45, -303.00), Vector3(0.0, 3.20, -308.00), Vector3(0.0, 3.20, -312.00),
-		Vector3(0.0, 3.20, -316.00), Vector3(0.0, 3.20, -320.00), Vector3(0.0, 3.20, -324.00), Vector3(0.0, 3.20, -326.00),
-		Vector3(0.0, 3.20, -330.00), Vector3(0.0, 3.20, -334.00), Vector3(0.0, 3.20, -338.00),
-	])
+	return PackedVector3Array(
+		[
+			Vector3(0.0, 0.20, 1.00),
+			Vector3(0.0, 0.20, -5.00),
+			Vector3(0.0, 0.20, -9.00),
+			Vector3(0.0, 0.20, -14.00),
+			Vector3(0.0, 0.20, -20.00),
+			Vector3(0.0, 0.20, -25.00),
+			Vector3(0.0, 0.20, -28.00),
+			Vector3(0.0, 0.20, -31.00),
+			Vector3(0.0, 0.20, -34.50),
+			Vector3(0.0, 0.20, -37.00),
+			Vector3(0.0, 0.20, -40.00),
+			Vector3(0.0, 0.20, -44.00),
+			Vector3(0.0, 0.20, -47.00),
+			Vector3(0.0, 0.20, -50.00),
+			Vector3(0.0, 0.20, -54.00),
+			Vector3(0.0, 0.20, -59.00),
+			Vector3(0.0, 0.20, -63.00),
+			Vector3(0.0, 0.20, -67.00),
+			Vector3(0.0, 0.20, -70.00),
+			Vector3(0.0, 0.20, -73.00),
+			Vector3(0.0, 0.20, -77.00),
+			Vector3(0.0, 0.20, -80.00),
+			Vector3(0.0, 0.20, -84.00),
+			Vector3(0.0, 1.00, -89.00),
+			Vector3(0.0, 2.40, -92.50),
+			Vector3(0.0, 2.80, -95.50),
+			Vector3(0.0, 2.80, -99.00),
+			Vector3(0.0, 2.80, -102.00),
+			Vector3(0.0, 2.80, -104.50),
+			Vector3(0.0, 2.80, -107.00),
+			Vector3(0.0, 2.80, -109.00),
+			Vector3(0.0, 2.80, -112.00),
+			Vector3(0.0, 2.80, -115.00),
+			Vector3(0.0, 2.80, -118.00),
+			Vector3(0.0, 2.80, -121.50),
+			Vector3(0.0, 2.80, -124.00),
+			Vector3(0.0, 2.20, -127.50),
+			Vector3(0.0, 0.90, -131.00),
+			Vector3(0.0, 0.20, -134.00),
+			Vector3(0.0, 0.20, -138.00),
+			Vector3(0.0, 0.20, -142.00),
+			Vector3(0.0, 0.20, -145.00),
+			Vector3(0.0, 1.70, -148.00),
+			Vector3(0.0, 2.90, -150.50),
+			Vector3(0.0, 3.20, -153.00),
+			Vector3(0.0, 3.20, -156.00),
+			Vector3(0.0, 3.20, -158.00),
+			Vector3(0.0, 3.20, -161.00),
+			Vector3(0.0, 3.20, -165.00),
+			Vector3(0.0, 2.55, -168.00),
+			Vector3(0.0, 1.80, -171.50),
+			Vector3(0.0, 1.80, -175.00),
+			Vector3(0.0, 1.80, -180.00),
+			Vector3(0.0, 1.80, -186.00),
+			Vector3(0.0, 1.80, -191.00),
+			Vector3(0.0, 2.70, -196.00),
+			Vector3(0.0, 3.80, -199.00),
+			Vector3(0.0, 3.80, -203.00),
+			Vector3(0.0, 3.80, -207.00),
+			Vector3(0.0, 3.80, -211.00),
+			Vector3(0.0, 3.80, -215.00),
+			Vector3(0.0, 3.80, -219.00),
+			Vector3(0.0, 3.80, -223.00),
+			Vector3(0.0, 3.80, -227.00),
+			Vector3(0.0, 3.80, -231.00),
+			Vector3(0.0, 3.80, -235.00),
+			Vector3(0.0, 3.80, -238.00),
+			Vector3(0.0, 3.80, -241.00),
+			Vector3(0.0, 3.80, -245.00),
+			Vector3(0.0, 3.80, -248.00),
+			Vector3(0.0, 4.90, -253.00),
+			Vector3(0.0, 6.05, -258.00),
+			Vector3(0.0, 7.17, -263.00),
+			Vector3(0.0, 8.30, -268.00),
+			Vector3(0.0, 9.20, -272.00),
+			Vector3(0.0, 9.20, -276.00),
+			Vector3(0.0, 9.20, -280.00),
+			Vector3(0.0, 9.20, -284.00),
+			Vector3(0.0, 8.20, -288.00),
+			Vector3(0.0, 6.95, -293.00),
+			Vector3(0.0, 5.70, -298.00),
+			Vector3(0.0, 4.45, -303.00),
+			Vector3(0.0, 3.20, -308.00),
+			Vector3(0.0, 3.20, -312.00),
+			Vector3(0.0, 3.20, -316.00),
+			Vector3(0.0, 3.20, -320.00),
+			Vector3(0.0, 3.20, -324.00),
+			Vector3(0.0, 3.20, -326.00),
+			Vector3(0.0, 3.20, -330.00),
+			Vector3(0.0, 3.20, -334.00),
+			Vector3(0.0, 3.20, -338.00),
+		]
+	)
 
 
 func _spin_lanes() -> PackedFloat32Array:
-	return PackedFloat32Array([
-		3.50, 3.00, 2.40, 2.60, 2.60, 2.20, 1.80, 2.00, 1.40, 1.20, 1.20, 1.40,
-		1.80, 2.20, 2.20, 1.80, 1.60, 1.80, 2.00, 2.00, 2.20, 2.60, 2.60, 2.00,
-		1.80, 2.00, 1.50, 1.80, 1.50, 2.00, 2.40, 2.40, 2.40, 2.40, 2.00, 1.80,
-		1.80, 1.80, 2.00, 2.40, 2.40, 1.80, 1.80, 2.20, 2.40, 2.60, 2.60, 2.60,
-		2.60, 2.20, 2.40, 3.00, 3.00, 3.00, 2.80, 2.20, 2.40, 2.40, 2.40, 2.40,
-		2.40, 0.80, 0.80, 0.80, 0.80, 0.80, 1.00, 2.60, 2.60, 2.20, 2.20, 2.20,
-		2.20, 2.20, 2.60, 2.60, 2.60, 2.60, 2.20, 2.20, 2.20, 2.20, 2.20, 2.80,
-		2.80, 2.80, 2.80, 2.80, 3.00, 3.00, 3.00,
-	])
-
+	return PackedFloat32Array(
+		[
+			3.50,
+			3.00,
+			2.40,
+			2.60,
+			2.60,
+			2.20,
+			1.80,
+			2.00,
+			1.40,
+			1.20,
+			1.20,
+			1.40,
+			1.80,
+			2.20,
+			2.20,
+			1.80,
+			1.60,
+			1.80,
+			2.00,
+			2.00,
+			2.20,
+			2.60,
+			2.60,
+			2.00,
+			1.80,
+			2.00,
+			1.50,
+			1.80,
+			1.50,
+			2.00,
+			2.40,
+			2.40,
+			2.40,
+			2.40,
+			2.00,
+			1.80,
+			1.80,
+			1.80,
+			2.00,
+			2.40,
+			2.40,
+			1.80,
+			1.80,
+			2.20,
+			2.40,
+			2.60,
+			2.60,
+			2.60,
+			2.60,
+			2.20,
+			2.40,
+			3.00,
+			3.00,
+			3.00,
+			2.80,
+			2.20,
+			2.40,
+			2.40,
+			2.40,
+			2.40,
+			2.40,
+			0.80,
+			0.80,
+			0.80,
+			0.80,
+			0.80,
+			1.00,
+			2.60,
+			2.60,
+			2.20,
+			2.20,
+			2.20,
+			2.20,
+			2.20,
+			2.60,
+			2.60,
+			2.60,
+			2.60,
+			2.20,
+			2.20,
+			2.20,
+			2.20,
+			2.20,
+			2.80,
+			2.80,
+			2.80,
+			2.80,
+			2.80,
+			3.00,
+			3.00,
+			3.00,
+		]
+	)
 
 # ------------------------------------------------------------ ronda 3: Pivot
-

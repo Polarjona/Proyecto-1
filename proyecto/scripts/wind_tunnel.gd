@@ -7,27 +7,42 @@ extends Area3D
 ## contradicts the wind it pushes.
 
 @export var wind_direction: Vector3 = Vector3.RIGHT
+
 @export var strength: float = 5.2
+
 @export var gust_amplitude: float = 2.2
+
 @export var gust_speed: float = 1.4
+
 @export var vertical_strength: float = 0.0
+
 @export var stream_span: float = 4.6
+
 @export var stream_speed: float = 7.0
+
 @export var fan_spin_speed: float = 8.0
+
 ## Pone el ventilador y su peana. Se apaga en los mapas donde la máquina
 ## cantaba demasiado (el glaciar): queda solo la corriente de aire.
 @export var show_fan: bool = true
 
-@onready var streams: Array = [$StreamA, $StreamB, $StreamC]
-@onready var fan: Node3D = $Fan
-@onready var fan_platform: Node3D = $FanPlatform
-@onready var rotor: Node3D = $Fan/Rotor
-
 var _bodies: Array[Node3D] = []
+
 var _base_positions: Array[Vector3] = []
+
 var _time: float = 0.0
+
 var _flow_sign: float = 1.0
+
 var _wind_audio: AudioStreamPlayer3D
+
+@onready var streams: Array = [$StreamA, $StreamB, $StreamC]
+
+@onready var fan: Node3D = $Fan
+
+@onready var fan_platform: Node3D = $FanPlatform
+
+@onready var rotor: Node3D = $Fan/Rotor
 
 
 func _ready() -> void:
@@ -122,9 +137,7 @@ func _animate_streams() -> void:
 		var offset := fmod(_time * (stream_speed + float(i) * 1.6), stream_span)
 		var base := _base_positions[i]
 		stream.position = Vector3(
-			base.x + _flow_sign * (-stream_span * 0.5 + offset),
-			base.y,
-			base.z
+			base.x + _flow_sign * (-stream_span * 0.5 + offset), base.y, base.z
 		)
 		var fade := sin((offset / stream_span) * PI)
 		stream.scale = Vector3(1.0, 1.0, 0.6 + fade * 0.8)
