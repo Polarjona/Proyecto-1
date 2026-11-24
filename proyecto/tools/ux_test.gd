@@ -177,7 +177,7 @@ func _run() -> void:
 	# --- C6. Los avisos traducidos también se retiran solos -----------------
 	save.call("set_setting", "language", "en")
 	await process_frame
-	var medal: Label = hud.get_node("Root/MedalLabel")
+	var medal: Label = hud.get_node("Root/TopRightChip/HBox/MedalLabel")
 	_check(medal.text.begins_with("Gold"), "El HUD cambia de idioma en caliente")
 	hud.call("_on_split", "Checkpoint 1", 12.0, -1.0)
 	await process_frame

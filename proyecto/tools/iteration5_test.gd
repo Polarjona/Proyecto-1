@@ -43,6 +43,12 @@ func _run() -> void:
 		if FileAccess.file_exists(path):
 			DirAccess.remove_absolute(path)
 	save.call("load_profile")
+	# El perfil aislado nace en español; sin esto el idioma del perfil real manda.
+	save.call("apply_settings")
+	# GameSession ya se ha inicializado con el perfil real: fija el circuito del
+	# perfil aislado para que la ruta empiece en el primer nodo, pase lo que pase
+	# en la partida del usuario.
+	session.call("set_classic_level", 0)
 	await process_frame
 	var original_profile: Dictionary = (save.get("data") as Dictionary).duplicate(true)
 
@@ -53,15 +59,15 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	_check(
-		menu.get_node_or_null("ModePanel/VBox/ClassicCard") != null,
+		menu.get_node_or_null("ModeCards/ClassicCard") != null,
 		"El menú ofrece la carrera clásica"
 	)
 	_check(
-		menu.get_node_or_null("ModePanel/VBox/TournamentCard") != null,
+		menu.get_node_or_null("ModeCards/TournamentCard") != null,
 		"El menú ofrece el torneo con bots"
 	)
 	_check(
-		menu.get_node_or_null("ModePanel/VBox/BotsButton") == null,
+		menu.get_node_or_null("ModeCards/BotsButton") == null,
 		"Ya no hay un tercer modo de juego"
 	)
 	_check(
@@ -81,45 +87,45 @@ func _run() -> void:
 			and background.material is ShaderMaterial
 			and menu.get_node_or_null("Rings") == null
 		),
-		"El fondo del lobby es un degradado, sin líneas"
+		"El fondo del lobby es un campo de color con foco, sin líneas"
 	)
 
 	# --- Lobby: puesta en escena ------------------------------------------
-	var mode_panel: Control = menu.get_node("ModePanel")
-	var play_button: Button = menu.get_node("PlayButton")
-	var play_style := play_button.get_theme_stylebox("normal") as StyleBoxFlat
-	var play_pressed := play_button.get_theme_stylebox("pressed") as StyleBoxFlat
+	var classic_card: Button = menu.get_node("ModeCards/ClassicCard")
+	var tournament_card: Button = menu.get_node("ModeCards/TournamentCard")
+	var classic_style := classic_card.get_theme_stylebox("normal") as StyleBoxFlat
+	var classic_pressed := classic_card.get_theme_stylebox("pressed") as StyleBoxFlat
 	_check(
 		(
-			play_style != null
-			and play_style.corner_radius_top_left >= 16
-			and play_style.border_width_top >= 4
-			and play_style.shadow_size == 0
-			and play_style.shadow_offset.y >= 4
+			classic_style != null
+			and classic_style.corner_radius_top_left >= 16
+			and classic_style.border_width_top >= 4
+			and classic_style.shadow_size >= 1
+			and classic_style.shadow_offset.y >= 3
 		),
 		(
-			"JUGAR es una pegatina 3D (radio %d, borde %d, sombra sólida %d px)"
+			"La tarjeta clásica es una pegatina con sombra real (radio %d, borde %d, sombra %d px)"
 			% [
-				play_style.corner_radius_top_left if play_style else 0,
-				play_style.border_width_top if play_style else 0,
-				play_style.shadow_offset.y if play_style else 0
+				classic_style.corner_radius_top_left if classic_style else 0,
+				classic_style.border_width_top if classic_style else 0,
+				classic_style.shadow_size if classic_style else 0
 			]
 		)
 	)
 	_check(
 		(
-			play_style != null
-			and play_pressed != null
-			and play_pressed.shadow_offset.y < play_style.shadow_offset.y
-			and play_pressed.content_margin_top > play_style.content_margin_top
+			classic_style != null
+			and classic_pressed != null
+			and classic_pressed.shadow_offset.y < classic_style.shadow_offset.y
+			and classic_pressed.content_margin_top > classic_style.content_margin_top
 		),
 		(
-			"Al pulsar JUGAR se hunde (sombra %d -> %d px, texto %d -> %d px)"
+			"Al pulsar la tarjeta clásica se hunde (sombra %d -> %d px, texto %d -> %d px)"
 			% [
-				play_style.shadow_offset.y if play_style else 0,
-				play_pressed.shadow_offset.y if play_pressed else 0,
-				play_style.content_margin_top if play_style else 0,
-				play_pressed.content_margin_top if play_pressed else 0
+				classic_style.shadow_offset.y if classic_style else 0,
+				classic_pressed.shadow_offset.y if classic_pressed else 0,
+				classic_style.content_margin_top if classic_style else 0,
+				classic_pressed.content_margin_top if classic_pressed else 0
 			]
 		)
 	)
@@ -129,13 +135,13 @@ func _run() -> void:
 		(
 			nav_style != null
 			and nav_button.theme_type_variation == &"NavButton"
-			and nav_style.border_width_top >= 3
+			and nav_style.border_width_top == 0
 			and nav_style.shadow_size == 0
-			and nav_style.shadow_offset.y >= 4
+			and nav_style.bg_color.a < 0.1
 		),
 		(
-			"Los botones del lobby usan la variante de navegación con sombra sólida (borde %d)"
-			% [nav_style.border_width_top if nav_style else 0]
+			"Los accesos del lobby son enlaces callados, sin pegatina (fondo %.2f)"
+			% [nav_style.bg_color.a if nav_style else -1.0]
 		)
 	)
 	var panel_style := (
@@ -144,35 +150,57 @@ func _run() -> void:
 	_check(
 		(
 			panel_style != null
-			and panel_style.border_width_top >= 5
+			and panel_style.border_width_top <= 1
 			and panel_style.shadow_size == 0
-			and panel_style.shadow_offset.y >= 8
+			and panel_style.bg_color.a > 0.9
 		),
-		"Las tarjetas son pegatinas con borde grueso y sombra sólida"
+		"La ruta de circuitos es un panel callado, no una pegatina"
 	)
 	_check(
 		menu.theme != null and menu.theme.default_font != null,
 		"El lobby usa una tipografía redondeada propia"
 	)
-	_check(not mode_panel.visible, "El lobby empieza con la lista de modos cerrada")
+	_check(
+		not (menu.get_node("Scrim") as ColorRect).visible,
+		"El lobby empieza sin scrim ni modal de modos"
+	)
+	_check(
+		classic_card.visible and tournament_card.visible,
+		"El lobby muestra las dos tarjetas de modo"
+	)
 	_check(
 		(
-			play_button.get_global_rect().size.x >= 280.0
-			and play_button.get_global_rect().size.y >= 80.0
+			classic_card.get_global_rect().size.x >= 280.0
+			and classic_card.get_global_rect().size.y >= 80.0
 		),
 		(
-			"El botón JUGAR es el protagonista (%.0fx%.0f)"
-			% [play_button.get_global_rect().size.x, play_button.get_global_rect().size.y]
+			"La tarjeta clásica es el protagonista (%.0fx%.0f)"
+			% [classic_card.get_global_rect().size.x, classic_card.get_global_rect().size.y]
 		)
 	)
-	play_button.pressed.emit()
-	await process_frame
-	_check(mode_panel.visible, "JUGAR abre la elección de modo")
 	_check(
-		mode_panel.get_global_rect().encloses(
-			(menu.get_node("ModePanel/VBox/TournamentCard") as Control).get_global_rect()
-		),
-		"Los dos modos caben dentro del panel del lobby"
+		classic_card.theme_type_variation == &"ActionCard",
+		"La carrera clásica es la tarjeta de acción"
+	)
+	_check(
+		tournament_card.theme_type_variation == &"InfoCard",
+		"El torneo es una tarjeta informativa, no la acción principal"
+	)
+	var route_list: VBoxContainer = menu.get_node("SeasonCard/VBox/RouteList")
+	var route_count := int(session.call("level_count"))
+	_check(
+		route_list.get_child_count() == route_count,
+		"La ruta ofrece los %d circuitos (%d nodos)" % [route_count, route_list.get_child_count()]
+	)
+	var route_one := route_list.get_child(0) as Button
+	_check(route_one.button_pressed, "El circuito guardado aparece seleccionado en la ruta")
+	var route_medal := route_one.get_node("Row/Medal") as Label
+	_check(
+		route_medal != null and not route_medal.text.is_empty(),
+		(
+			"Cada nodo de la ruta muestra su medalla (%s)"
+			% (route_medal.text if route_medal else "sin medalla")
+		)
 	)
 
 	var lobby_stage: Node3D = menu.get_node("LobbyStage/SubViewport/Stage")
@@ -210,15 +238,32 @@ func _run() -> void:
 		player_name.text == CharacterCatalog.display_name(save.call("character_id")),
 		"El lobby muestra el nombre del corredor equipado (%s)" % player_name.text
 	)
-	var season_progress: ProgressBar = menu.get_node("SeasonCard/VBox/LobbyProgress")
+	var removed_season_nodes := [
+		"SeasonCard/VBox/Separator",
+		"SeasonCard/VBox/BestTimeLabel",
+		"SeasonCard/VBox/MedalLabel",
+		"SeasonCard/VBox/LobbyProgress",
+		"SeasonCard/VBox/LobbyProgressLabel",
+	]
+	var removed_found := 0
+	for path in removed_season_nodes:
+		if menu.get_node_or_null(path) != null:
+			removed_found += 1
 	_check(
-		season_progress.value >= 0.0 and season_progress.value <= 100.0,
-		"La tarjeta de temporada muestra un progreso válido (%.0f%%)" % season_progress.value
+		removed_found == 0,
+		"La tarjeta de temporada no conserva récord, umbrales, progreso ni ayuda (%d restos)"
+		% removed_found
+	)
+	var season_vbox: VBoxContainer = menu.get_node("SeasonCard/VBox") as VBoxContainer
+	_check(
+		season_vbox.get_child_count() == 3 and season_vbox.get_node_or_null("RouteList") != null,
+		"La tarjeta de temporada queda en cabecera y ruta, sin bloques extra"
 	)
 	var pieces: Array[Rect2] = [
 		(menu.get_node("SeasonCard") as Control).get_global_rect(),
 		(menu.get_node("PlayerBadge") as Control).get_global_rect(),
-		play_button.get_global_rect(),
+		classic_card.get_global_rect(),
+		tournament_card.get_global_rect(),
 		(menu.get_node("LobbyStage") as Control).get_global_rect(),
 		(menu.get_node("TopBar") as Control).get_global_rect(),
 	]
@@ -234,6 +279,70 @@ func _run() -> void:
 		character_panel != null and not character_panel.visible,
 		"El submenú Personaje empieza cerrado"
 	)
+	# La insignia es el propio botón: sin panel de fondo ni capa transparente
+	# encima, cualquier punto de la pastilla recibe el clic.
+	var coins_badge: Button = menu.get_node("TopBar/HBox/CoinsBadge") as Button
+	var coins_skin: StyleBoxFlat = null
+	if coins_badge != null:
+		coins_skin = coins_badge.get_theme_stylebox("normal") as StyleBoxFlat
+	_check(
+		(
+			coins_badge != null
+			and coins_badge.get_child_count() == 0
+			and coins_badge.focus_mode == Control.FOCUS_ALL
+			and coins_badge.mouse_default_cursor_shape == Control.CURSOR_POINTING_HAND
+			and not coins_badge.text.is_empty()
+			and coins_skin != null
+			and coins_skin.bg_color.a > 0.9
+		),
+		"La insignia de monedas es un único botón con la piel de la barra"
+	)
+	var top_bar: Control = menu.get_node("TopBar")
+	_check(
+		(
+			coins_badge != null
+			and is_equal_approx(coins_badge.size.x, 132.0)
+			and top_bar.get_global_rect().encloses(coins_badge.get_global_rect())
+		),
+		"La insignia conserva su hueco de 132 px dentro de la barra"
+	)
+	# Una sola conexión: la misma ruta que abre el resto del lobby, sin un
+	# manejador paralelo que pueda duplicar la navegación.
+	var coins_links: Array = []
+	if coins_badge != null:
+		coins_links = coins_badge.pressed.get_connections()
+	_check(
+		(
+			coins_links.size() == 1
+			and coins_links[0]["callable"].get_object() == menu
+			and coins_links[0]["callable"].get_method() == &"_on_character_pressed"
+		),
+		"La insignia abre Personaje por una sola conexión"
+	)
+	coins_badge.pressed.emit()
+	await process_frame
+	_check(character_panel.visible, "La insignia de monedas abre Personaje")
+	menu.call("_close_panels")
+	await process_frame
+	_check(not character_panel.visible, "Cerrar Personaje desde monedas devuelve el lobby")
+	# La ficha del jugador ya no es una pegatina muerta: abre Personaje.
+	var change_button: Button = menu.get_node("PlayerBadge/ChangeButton") as Button
+	_check(change_button != null, "La ficha del jugador tiene zona pulsable")
+	change_button.pressed.emit()
+	await process_frame
+	_check(character_panel.visible, "La ficha del jugador abre Personaje")
+	menu.call("_close_panels")
+	await process_frame
+	_check(not character_panel.visible, "Cerrar el panel devuelve el lobby")
+	# La peana también es una zona clicable: el escaparate no es decorativo.
+	var stage_button: Button = menu.get_node("LobbyStageButton") as Button
+	_check(stage_button != null, "El corredor y su peana tienen zona clicable")
+	stage_button.pressed.emit()
+	await process_frame
+	_check(character_panel.visible, "Clicar el corredor abre Personaje")
+	menu.call("_close_panels")
+	await process_frame
+	_check(not character_panel.visible, "Cerrar Personaje devuelve el lobby")
 	var character_button: Button = menu.get_node("TopBar/HBox/NavRow/CharacterButton")
 	character_button.pressed.emit()
 	await process_frame
@@ -568,11 +677,8 @@ func _run() -> void:
 	root.add_child(menu2)
 	current_scene = menu2
 	await process_frame
-	var play2: Button = menu2.get_node("PlayButton")
-	play2.pressed.emit()
-	await process_frame
-	var tournament_card: Button = menu2.get_node("ModePanel/VBox/TournamentCard")
-	tournament_card.pressed.emit()
+	var tournament_card2: Button = menu2.get_node("ModeCards/TournamentCard")
+	tournament_card2.pressed.emit()
 	await process_frame
 	_check(
 		bool(session.call("is_tournament")) and bool(session.call("is_bot_race")),
@@ -629,6 +735,36 @@ func _run() -> void:
 			% (breakdown_label.text if breakdown_label else "sin HUD")
 		)
 	)
+	_check(
+		breakdown_label != null and breakdown_label.text.contains("\n"),
+		"El desglose de monedas se lee como un recibo de varias líneas"
+	)
+	var results_time5: Label = (
+		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsTime") as Label if hud else null
+	)
+	_check(
+		(
+			results_time5 != null
+			and results_time5.get_theme_font_size("font_size") >= 60
+			and not results_time5.text.begins_with("Tiempo")
+		),
+		(
+			"El tiempo manda en los resultados (%s, %d px)"
+			% [
+				results_time5.text if results_time5 else "sin tiempo",
+				results_time5.get_theme_font_size("font_size") if results_time5 else 0,
+			]
+		)
+	)
+	var medal_chip5: PanelContainer = (
+		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsMedalChip") as PanelContainer
+		if hud
+		else null
+	)
+	_check(
+		medal_chip5 != null and medal_chip5.visible,
+		"La medalla aparece en un chip visible"
+	)
 
 	# --- Canción de victoria ----------------------------------------------
 	var audio: Node = root.get_node("AudioManager")
@@ -666,35 +802,43 @@ func _run() -> void:
 	current_scene = menu3
 	await process_frame
 	await process_frame
-	var level_row: Control = menu3.get_node("ModePanel/VBox/LevelPicker/LevelRow")
-	var level_one := level_row.get_node("Level1") as Button
-	var level_two := level_row.get_node("Level2") as Button
-	(menu3.get_node("PlayButton") as Button).pressed.emit()
-	await process_frame
+	var route_list3: VBoxContainer = menu3.get_node("SeasonCard/VBox/RouteList")
+	var route_one3 := route_list3.get_node("Route1") as Button
+	var route_two3 := route_list3.get_node("Route2") as Button
 	var level_count := int(session.call("level_count"))
 	_check(
-		level_row.get_child_count() == level_count,
-		"El menú ofrece los %d circuitos (%d botones)" % [level_count, level_row.get_child_count()]
+		route_list3.get_child_count() == level_count,
+		(
+			"El menú ofrece los %d circuitos (%d nodos)"
+			% [level_count, route_list3.get_child_count()]
+		)
 	)
 	_check(
-		level_two.text == String(session.call("level_name", 1)) and level_one.button_pressed,
-		"La carrera clásica empieza en %s y el elegido está marcado" % level_one.text
+		(
+			(route_two3.get_node("Row/Name") as Label).text
+			== String(session.call("level_name", 1))
+			and route_one3.button_pressed
+		),
+		(
+			"La carrera clásica empieza en %s y el nodo elegido está marcado"
+			% (route_one3.get_node("Row/Name") as Label).text
+		)
 	)
-	level_two.pressed.emit()
+	route_two3.pressed.emit()
 	await process_frame
 	_check(
 		(
 			int(session.get("classic_level")) == 1
-			and level_two.button_pressed
-			and not level_one.button_pressed
+			and route_two3.button_pressed
+			and not route_one3.button_pressed
 		),
-		"Elegir circuito marca el botón y lo recuerda en la sesión"
+		"Elegir circuito marca el nodo y lo recuerda en la sesión"
 	)
 	_check(
 		int(save.call("get_setting", "classic_level", -1)) == 1,
 		"El circuito elegido se guarda en el perfil"
 	)
-	(menu3.get_node("ModePanel/VBox/ClassicCard") as Button).pressed.emit()
+	(menu3.get_node("ModeCards/ClassicCard") as Button).pressed.emit()
 	await create_timer(1.2).timeout
 	_check(
 		(

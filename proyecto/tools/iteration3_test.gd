@@ -340,8 +340,33 @@ func _run() -> void:
 		"El HUD incluye barra de progreso"
 	)
 	_check(
+		hud != null and hud.get_node_or_null("Root/ProgressGoal") != null,
+		"La barra de progreso marca la meta"
+	)
+	_check(
+		hud != null and hud.get_node_or_null("Root/ProgressMarker") != null,
+		"La barra de progreso muestra al jugador"
+	)
+	_check(
 		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsSplits") == null,
 		"La pantalla de victoria no muestra los tiempos de los checkpoints"
+	)
+	var results_time := (
+		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsTime") as Label
+	)
+	_check(
+		results_time != null and results_time.get_theme_font_size("font_size") >= 60,
+		"El tiempo es el héroe de los resultados (%d px)"
+		% (results_time.get_theme_font_size("font_size") if results_time else 0)
+	)
+	_check(
+		hud.get_node_or_null("Root/ResultsPanel/VBox/ResultsMedalChip") != null,
+		"La medalla se presenta como un chip"
+	)
+	var keys := hud.get_node_or_null("Root/TutorialPanel/VBox/Keys")
+	_check(
+		keys != null and keys.get_child_count() == 3,
+		"El tutorial enseña tres filas de teclas"
 	)
 
 	# --- Modos ------------------------------------------------------------

@@ -41,25 +41,28 @@ var assisted_button: Button
 
 var language_button: Button
 
-@onready var music_slider: HSlider = $Panel/VBox/MusicRow/MusicSlider
+@onready var music_slider: HSlider = $Panel/VBox/Scroll/Content/AudioGroup/MusicRow/MusicSlider
 
-@onready var sfx_slider: HSlider = $Panel/VBox/SfxRow/SfxSlider
+@onready var sfx_slider: HSlider = $Panel/VBox/Scroll/Content/AudioGroup/SfxRow/SfxSlider
 
-@onready var shake_slider: HSlider = $Panel/VBox/ShakeRow/ShakeSlider
+@onready
+var shake_slider: HSlider = $Panel/VBox/Scroll/Content/ControlsGroup/ShakeRow/ShakeSlider
 
-@onready var sens_slider: HSlider = $Panel/VBox/SensRow/SensSlider
+@onready
+var sens_slider: HSlider = $Panel/VBox/Scroll/Content/ControlsGroup/SensRow/SensSlider
 
-@onready var music_value: Label = $Panel/VBox/MusicRow/MusicValue
+@onready var music_value: Label = $Panel/VBox/Scroll/Content/AudioGroup/MusicRow/MusicValue
 
-@onready var sfx_value: Label = $Panel/VBox/SfxRow/SfxValue
+@onready var sfx_value: Label = $Panel/VBox/Scroll/Content/AudioGroup/SfxRow/SfxValue
 
-@onready var shake_value: Label = $Panel/VBox/ShakeRow/ShakeValue
+@onready var shake_value: Label = $Panel/VBox/Scroll/Content/ControlsGroup/ShakeRow/ShakeValue
 
-@onready var sens_value: Label = $Panel/VBox/SensRow/SensValue
+@onready var sens_value: Label = $Panel/VBox/Scroll/Content/ControlsGroup/SensRow/SensValue
 
-@onready var fullscreen_check: Button = $Panel/VBox/FullscreenCheck
+@onready
+var fullscreen_check: CheckButton = $Panel/VBox/Scroll/Content/VideoGroup/FullscreenCheck
 
-@onready var back_button: Button = $Panel/VBox/BackButton
+@onready var back_button: Button = $Panel/VBox/Footer/BackButton
 
 
 func _ready() -> void:
@@ -129,10 +132,10 @@ func _build_master_row() -> void:
 	master_row.add_child(label)
 	master_row.add_child(master_slider)
 	master_row.add_child(master_value)
-	var box := $Panel/VBox
-	box.add_child(master_row)
-	# Debajo del titulo y su separador, no por encima del rotulo AJUSTES.
-	box.move_child(master_row, box.get_node("HSeparator").get_index() + 1)
+	var group := $Panel/VBox/Scroll/Content/AudioGroup
+	group.add_child(master_row)
+	# General es la primera fila de Audio, por encima de Música y Efectos.
+	group.move_child(master_row, 0)
 
 
 func _build_quality_row() -> void:
@@ -143,17 +146,19 @@ func _build_quality_row() -> void:
 	label.name = "QualityLabel"
 	label.text = "Calidad"
 	label.custom_minimum_size = Vector2(154, 0)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 17)
 	quality_button = Button.new()
 	quality_button.name = "QualityButton"
-	quality_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	quality_button.custom_minimum_size = Vector2(150, 38)
+	quality_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	quality_button.pressed.connect(_on_quality_pressed)
 	quality_row.add_child(label)
 	quality_row.add_child(quality_button)
-	var box := $Panel/VBox
-	box.add_child(quality_row)
-	box.move_child(quality_row, master_row.get_index() + 1)
+	var group := $Panel/VBox/Scroll/Content/VideoGroup
+	group.add_child(quality_row)
+	group.move_child(quality_row, 0)
 
 
 func _build_fov_row() -> void:
@@ -186,9 +191,9 @@ func _build_fov_row() -> void:
 	fov_row.add_child(label)
 	fov_row.add_child(fov_slider)
 	fov_row.add_child(fov_value)
-	var box := $Panel/VBox
-	box.add_child(fov_row)
-	box.move_child(fov_row, quality_row.get_index() + 1)
+	var group := $Panel/VBox/Scroll/Content/VideoGroup
+	group.add_child(fov_row)
+	group.move_child(fov_row, quality_row.get_index() + 1)
 
 
 func _build_extras_row() -> void:
@@ -204,9 +209,8 @@ func _build_extras_row() -> void:
 	extras_row.add_child(vsync_button)
 	extras_row.add_child(assisted_button)
 	extras_row.add_child(language_button)
-	var box := $Panel/VBox
-	box.add_child(extras_row)
-	box.move_child(extras_row, fov_row.get_index() + 1)
+	var group := $Panel/VBox/Scroll/Content/SystemGroup
+	group.add_child(extras_row)
 
 
 func _extras_button(node_name: String) -> Button:
@@ -220,11 +224,11 @@ func _extras_button(node_name: String) -> Button:
 func _build_reset_button() -> void:
 	reset_button = Button.new()
 	reset_button.name = "ResetProgressButton"
+	reset_button.theme_type_variation = &"DangerButton"
 	reset_button.text = "BORRAR PROGRESO"
 	reset_button.pressed.connect(_on_reset_pressed)
-	var box := $Panel/VBox
-	box.add_child(reset_button)
-	box.move_child(reset_button, back_button.get_index())
+	var content := $Panel/VBox/Scroll/Content
+	content.add_child(reset_button)
 	reset_dialog = ConfirmationDialog.new()
 	reset_dialog.name = "ResetProgressDialog"
 	reset_dialog.confirmed.connect(_on_reset_confirmed)
@@ -237,7 +241,7 @@ func _build_motion_row() -> void:
 	motion_row.add_theme_constant_override("separation", 12)
 	motion_label = Label.new()
 	motion_label.name = "MotionLabel"
-	motion_label.text = "REDUCIR MOVIMIENTO"
+	motion_label.text = "Reducir movimiento"
 	motion_label.custom_minimum_size = Vector2(154, 0)
 	motion_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	motion_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -250,9 +254,8 @@ func _build_motion_row() -> void:
 	motion_check.toggled.connect(_on_motion_toggled)
 	motion_row.add_child(motion_label)
 	motion_row.add_child(motion_check)
-	var box := $Panel/VBox
-	box.add_child(motion_row)
-	box.move_child(motion_row, back_button.get_index())
+	var group := $Panel/VBox/Scroll/Content/AccessibilityGroup
+	group.add_child(motion_row)
 
 
 func _sync_from_settings() -> void:
@@ -396,8 +399,6 @@ func _update_motion_label() -> void:
 	motion_check.text = "SÍ" if motion_check.button_pressed else "NO"
 
 
-## El botón no lleva icono de check: el estado se lee en el propio texto.
+## El CheckButton muestra el estado en el interruptor; el texto es fijo.
 func _update_fullscreen_label() -> void:
-	fullscreen_check.text = (
-		"PANTALLA COMPLETA: %s" % ("SÍ" if fullscreen_check.button_pressed else "NO")
-	)
+	fullscreen_check.text = tr("PANTALLA COMPLETA")

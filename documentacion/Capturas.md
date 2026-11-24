@@ -4,14 +4,14 @@ Todas las imágenes están generadas con el render real del juego mediante [`pro
 
 | Archivo | Estado | Qué muestra |
 | --- | --- | --- |
-| `menu_principal.webp` | Menú | Lobby con la tarjeta de temporada y el corredor equipado. |
-| `menu_torneo.webp` | Menú | Panel de elección de modo con la tarjeta del torneo enfocada. |
-| `pivot_push.webp` | Circuito | Salida de Pivot Push con la paleta azul, magenta y oro. |
+| `menu_principal.webp` | Menú | Lobby con la ruta de cinco circuitos, el corredor equipado y las dos tarjetas de modo. |
+| `menu_torneo.webp` | Menú | Lobby con la tarjeta de torneo enfocada, sin panel modal. |
+| `pivot_push.webp` | Circuito | Salida de Pivot Push con el HUD de chips y la barra con meta, marcador y checkpoints. |
 | `spin_go_round.webp` | Circuito | Vista de Spin Go Round con sus obstáculos de suelo. |
 | `glacier_gallop.webp` | Circuito | Vista del glaciar con hielo, nieve y niebla. |
 | `lava_vortex.webp` | Circuito | Espiral del volcán con lava y atmósfera rojiza. |
 | `abyss_run.webp` | Circuito | Túnel submarino de Abyss Run con islas y agua. |
-| `resultados.webp` | Resultados | Panel de resultados con medalla, splits y récord. |
+| `resultados.webp` | Resultados | Tiempo como protagonista, chip de medalla, monedas y recibo del desglose. |
 | `torneo_carrera.webp` | Torneo | Salida de una carrera de torneo con bots. |
 
 Todas son **WebP de 1280 × 720** y se regeneran desde `proyecto/` con `capture_docs.gd`. En `resultados.webp` el tiempo de **64,20 s**, la caída y el estado del perfil son sintéticos: el script los fija para que la captura sea reproducible. En `torneo_carrera.webp`, `Récord: --` indica que el perfil aislado todavía no tiene una marca guardada; no es un fallo del HUD.
@@ -20,7 +20,7 @@ Todas son **WebP de 1280 × 720** y se regeneran desde `proyecto/` con `capture_
 
 <p align="center">
   <img src="capturas/menu_principal.webp" alt="Menú principal de Tumble Rush" width="49%">
-  <img src="capturas/menu_torneo.webp" alt="Panel de elección de modo con el torneo" width="49%">
+  <img src="capturas/menu_torneo.webp" alt="Lobby con la tarjeta de torneo enfocada" width="49%">
 </p>
 
 ## Circuitos
@@ -48,7 +48,7 @@ Todas son **WebP de 1280 × 720** y se regeneran desde `proyecto/` con `capture_
 ## Resultados y torneo
 
 <p align="center">
-  <img src="capturas/resultados.webp" alt="Pantalla de resultados con medalla y récord" width="49%">
+  <img src="capturas/resultados.webp" alt="Resultados con el tiempo como protagonista y chip de medalla" width="49%">
   <img src="capturas/torneo_carrera.webp" alt="Salida de una carrera de torneo con bots" width="49%">
 </p>
 
