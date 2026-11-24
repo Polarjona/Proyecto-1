@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Ajustes: las filas REDUCIR MOVIMIENTO, GENERAL, CALIDAD y BORRAR PROGRESO
+## Ajustes: las filas Reducir movimiento, General, Calidad y Borrar progreso
 ## caben dentro del panel y de su columna, no se solapan con las vecinas y sus
 ## ajustes persisten. La Calidad se comprueba sobre un WorldEnvironment real y
 ## el borrado devuelve el perfil al personaje por defecto. Todo corre sobre un
@@ -25,6 +25,18 @@ func _initialize() -> void:
 
 func _rect_text(r: Rect2) -> String:
 	return "(%.1f,%.1f %.1fx%.1f)" % [r.position.x, r.position.y, r.size.x, r.size.y]
+
+
+## Busca por nombre dentro del panel: la estructura interna puede agruparse o
+## meterse en un scroll sin que el test dependa de la ruta exacta.
+func _find(node: Node, target: String) -> Node:
+	if node.name == target:
+		return node
+	for child in node.get_children():
+		var found := _find(child, target)
+		if found != null:
+			return found
+	return null
 
 
 func _check_quality_effect(quality: int, environment: Environment) -> void:
@@ -81,36 +93,42 @@ func _run() -> void:
 		await process_frame
 
 	var panel: Control = menu.get_node("Panel")
-	var box: Control = menu.get_node("Panel/VBox")
 	var title: Label = menu.get_node("Panel/VBox/Title")
 	var separator: Control = menu.get_node("Panel/VBox/HSeparator")
-	var music_row: Control = menu.get_node("Panel/VBox/MusicRow")
-	var row: Control = menu.get_node_or_null("Panel/VBox/MotionRow")
-	var label: Label = menu.get_node_or_null("Panel/VBox/MotionRow/MotionLabel")
-	var check: CheckButton = menu.get_node_or_null("Panel/VBox/MotionRow/MotionCheck")
-	var master_row: Control = menu.get_node_or_null("Panel/VBox/MasterRow")
-	var master_label: Label = menu.get_node_or_null("Panel/VBox/MasterRow/MasterLabel")
-	var master_slider: HSlider = menu.get_node_or_null("Panel/VBox/MasterRow/MasterSlider")
-	var master_value: Label = menu.get_node_or_null("Panel/VBox/MasterRow/MasterValue")
-	var quality_row: Control = menu.get_node_or_null("Panel/VBox/QualityRow")
-	var quality_label: Label = menu.get_node_or_null("Panel/VBox/QualityRow/QualityLabel")
-	var quality_button: Button = menu.get_node_or_null("Panel/VBox/QualityRow/QualityButton")
-	var fov_row: Control = menu.get_node_or_null("Panel/VBox/FovRow")
-	var fov_label: Label = menu.get_node_or_null("Panel/VBox/FovRow/FovLabel")
-	var fov_slider: HSlider = menu.get_node_or_null("Panel/VBox/FovRow/FovSlider")
-	var fov_value: Label = menu.get_node_or_null("Panel/VBox/FovRow/FovValue")
-	var extras_row: Control = menu.get_node_or_null("Panel/VBox/ExtrasRow")
-	var vsync_button: Button = menu.get_node_or_null("Panel/VBox/ExtrasRow/VsyncButton")
-	var assisted_button: Button = menu.get_node_or_null("Panel/VBox/ExtrasRow/AssistedButton")
-	var language_button: Button = menu.get_node_or_null("Panel/VBox/ExtrasRow/LanguageButton")
-	var reset_button: Button = menu.get_node_or_null("Panel/VBox/ResetProgressButton")
-	var reset_dialog: ConfirmationDialog = menu.get_node_or_null("ResetProgressDialog")
-	var previous: Control = menu.get_node("Panel/VBox/FullscreenCheck")
-	var following: Control = menu.get_node("Panel/VBox/BackButton")
+	var scroll: ScrollContainer = menu.get_node("Panel/VBox/Scroll") as ScrollContainer
+	var content: Control = menu.get_node("Panel/VBox/Scroll/Content") as Control
+	var footer: Control = menu.get_node("Panel/VBox/Footer") as Control
+	var music_row: Control = _find(menu, "MusicRow") as Control
+	var sfx_row: Control = _find(menu, "SfxRow") as Control
+	var row: Control = _find(menu, "MotionRow") as Control
+	var label: Label = _find(menu, "MotionLabel") as Label
+	var check: CheckButton = _find(menu, "MotionCheck") as CheckButton
+	var master_row: Control = _find(menu, "MasterRow") as Control
+	var master_label: Label = _find(menu, "MasterLabel") as Label
+	var master_slider: HSlider = _find(menu, "MasterSlider") as HSlider
+	var master_value: Label = _find(menu, "MasterValue") as Label
+	var quality_row: Control = _find(menu, "QualityRow") as Control
+	var quality_label: Label = _find(menu, "QualityLabel") as Label
+	var quality_button: Button = _find(menu, "QualityButton") as Button
+	var fov_row: Control = _find(menu, "FovRow") as Control
+	var fov_label: Label = _find(menu, "FovLabel") as Label
+	var fov_slider: HSlider = _find(menu, "FovSlider") as HSlider
+	var fov_value: Label = _find(menu, "FovValue") as Label
+	var extras_row: Control = _find(menu, "ExtrasRow") as Control
+	var vsync_button: Button = _find(menu, "VsyncButton") as Button
+	var assisted_button: Button = _find(menu, "AssistedButton") as Button
+	var language_button: Button = _find(menu, "LanguageButton") as Button
+	var reset_button: Button = _find(menu, "ResetProgressButton") as Button
+	var reset_dialog: ConfirmationDialog = _find(menu, "ResetProgressDialog") as ConfirmationDialog
+	var fullscreen: Control = _find(menu, "FullscreenCheck") as Control
+	var fullscreen_switch := fullscreen as CheckButton
+	var accessibility_label: Control = _find(menu, "AccessibilityLabel") as Control
+	var system_label: Control = _find(menu, "SystemLabel") as Control
+	var back_button: Button = _find(menu, "BackButton") as Button
 
 	_check(
 		row != null and label != null and check != null,
-		"Existe la fila REDUCIR MOVIMIENTO con etiqueta y control"
+		"Existe la fila Reducir movimiento con etiqueta y control"
 	)
 	if row == null or label == null or check == null:
 		print("RESULT: %d FALLOS" % _failures)
@@ -118,56 +136,70 @@ func _run() -> void:
 		return
 
 	var rect_panel := panel.get_global_rect()
-	var rect_box := box.get_global_rect()
+	var rect_content := content.get_global_rect()
 	var rect_row := row.get_global_rect()
 	var rect_label := label.get_global_rect()
 	var rect_check := check.get_global_rect()
-	var rect_previous := previous.get_global_rect()
-	var rect_following := following.get_global_rect()
 	var rect_title := title.get_global_rect()
 	var rect_separator := separator.get_global_rect()
 	var rect_music := music_row.get_global_rect()
+	var rect_sfx := sfx_row.get_global_rect()
 	var rect_master := master_row.get_global_rect() if master_row != null else Rect2()
 	var rect_quality := quality_row.get_global_rect() if quality_row != null else Rect2()
 	var rect_fov := fov_row.get_global_rect() if fov_row != null else Rect2()
+	var rect_fullscreen := fullscreen.get_global_rect()
 	var rect_extras := extras_row.get_global_rect() if extras_row != null else Rect2()
+	var rect_reset := reset_button.get_global_rect() if reset_button != null else Rect2()
+	var rect_accessibility := accessibility_label.get_global_rect()
+	var rect_system := system_label.get_global_rect()
+	var rect_back := back_button.get_global_rect()
 	print(
 		(
-			"MEDIDAS panel=%s box=%s row=%s label=%s check=%s anterior=%s siguiente=%s"
+			"MEDIDAS panel=%s contenido=%s fila=%s etiqueta=%s control=%s rotulo=%s sistema=%s"
 			% [
 				_rect_text(rect_panel),
-				_rect_text(rect_box),
+				_rect_text(rect_content),
 				_rect_text(rect_row),
 				_rect_text(rect_label),
 				_rect_text(rect_check),
-				_rect_text(rect_previous),
-				_rect_text(rect_following),
+				_rect_text(rect_accessibility),
+				_rect_text(rect_system),
 			]
 		)
 	)
 
 	_check(row.is_visible_in_tree(), "La fila se ve")
 	_check(root.get_visible_rect().encloses(rect_panel), "El panel de ajustes cabe en la ventana")
-	_check(rect_panel.encloses(rect_row), "La fila cae entera dentro del panel")
-	_check(rect_box.encloses(rect_row), "La fila cae entera dentro de la columna")
+	_check(
+		rect_panel.position.y >= 24.0 and rect_panel.end.y <= root.get_visible_rect().end.y - 24.0,
+		"El panel deja aire arriba y abajo"
+	)
+	_check(rect_content.encloses(rect_row), "La fila cae entera dentro de la columna")
 	_check(rect_row.encloses(rect_label), "La etiqueta cae entera dentro de la fila")
 	_check(rect_row.encloses(rect_check), "El control cae entero dentro de la fila")
 	_check(
-		rect_box.encloses(rect_label) and rect_box.encloses(rect_check),
+		rect_content.encloses(rect_label) and rect_content.encloses(rect_check),
 		"Etiqueta y control caen dentro de la columna"
 	)
 	_check(
-		rect_row.position.y >= rect_previous.end.y - 0.5, "La fila empieza despues de la anterior"
+		rect_row.position.y >= rect_accessibility.end.y - 0.5,
+		"La fila empieza despues de su rotulo de grupo"
 	)
-	_check(rect_following.position.y >= rect_row.end.y - 0.5, "VOLVER empieza despues de la fila")
-	_check(not rect_row.intersects(rect_previous), "La fila no se solapa con la anterior")
-	_check(not rect_row.intersects(rect_following), "La fila no se solapa con VOLVER")
-	_check(label.text == "REDUCIR MOVIMIENTO", "La etiqueta dice REDUCIR MOVIMIENTO")
+	_check(rect_system.position.y >= rect_row.end.y - 0.5, "El grupo Sistema va despues de la fila")
+	_check(not rect_row.intersects(rect_accessibility), "La fila no se solapa con su rotulo")
+	_check(not rect_row.intersects(rect_system), "La fila no se solapa con el grupo siguiente")
+	_check(label.text == "Reducir movimiento", "La etiqueta dice Reducir movimiento")
 	_check(title.text == "AJUSTES", "El titulo dice AJUSTES")
 	_check(
 		rect_title.end.y <= rect_separator.position.y + 0.5,
 		"El titulo AJUSTES va antes de su separador"
 	)
+	_check(rect_panel.encloses(rect_back), "VOLVER cabe dentro del panel")
+	_check(
+		rect_back.position.y >= scroll.get_global_rect().end.y - 0.5,
+		"VOLVER vive en el pie, debajo del scroll"
+	)
+	_check(content.size.y > scroll.size.y + 1.0, "El contenido largo usa scroll")
 
 	# --- Persistencia -------------------------------------------------------
 	check.button_pressed = true
@@ -219,8 +251,7 @@ func _run() -> void:
 			rect_separator.end.y <= rect_master.position.y + 0.5,
 			"GENERAL va debajo del titulo AJUSTES"
 		)
-		_check(rect_panel.encloses(rect_master), "La fila GENERAL cae dentro del panel")
-		_check(rect_box.encloses(rect_master), "La fila GENERAL cae dentro de la columna")
+		_check(rect_content.encloses(rect_master), "La fila GENERAL cae dentro de la columna")
 		_check(
 			rect_master.encloses(master_label.get_global_rect()),
 			"La etiqueta de GENERAL cae en su fila"
@@ -271,9 +302,9 @@ func _run() -> void:
 	else:
 		_check(quality_row.is_visible_in_tree(), "La fila CALIDAD se ve")
 		_check(rect_master.end.y <= rect_quality.position.y + 0.5, "CALIDAD va debajo de GENERAL")
-		_check(rect_quality.end.y <= rect_music.position.y + 0.5, "MUSICA va debajo de CALIDAD")
-		_check(rect_panel.encloses(rect_quality), "La fila CALIDAD cae dentro del panel")
-		_check(rect_box.encloses(rect_quality), "La fila CALIDAD cae dentro de la columna")
+		_check(rect_music.end.y <= rect_sfx.position.y + 0.5, "EFECTOS va debajo de MUSICA")
+		_check(rect_sfx.end.y <= rect_quality.position.y + 0.5, "CALIDAD va debajo de AUDIO")
+		_check(rect_content.encloses(rect_quality), "La fila CALIDAD cae dentro de la columna")
 		_check(
 			rect_quality.encloses(quality_label.get_global_rect()),
 			"La etiqueta de CALIDAD cae en su fila"
@@ -317,9 +348,17 @@ func _run() -> void:
 	else:
 		_check(fov_row.is_visible_in_tree(), "La fila FOV se ve")
 		_check(rect_quality.end.y <= rect_fov.position.y + 0.5, "FOV va debajo de CALIDAD")
-		_check(rect_fov.end.y <= rect_extras.position.y + 0.5, "EXTRAS va debajo de FOV")
-		_check(rect_panel.encloses(rect_fov), "La fila FOV cae dentro del panel")
-		_check(rect_box.encloses(rect_fov), "La fila FOV cae dentro de la columna")
+		_check(rect_fov.end.y <= rect_fullscreen.position.y + 0.5, "PANTALLA COMPLETA va debajo de FOV")
+		_check(fullscreen_switch != null, "Existe el switch de pantalla completa")
+		_check(
+			fullscreen_switch != null and fullscreen_switch.text == "PANTALLA COMPLETA",
+			"El switch usa una etiqueta fija, sin el estado pegado al texto"
+		)
+		_check(
+			fullscreen_switch != null and fullscreen_switch.flat,
+			"El switch no se pinta como un botón de acción"
+		)
+		_check(rect_content.encloses(rect_fov), "La fila FOV cae dentro de la columna")
 		_check(rect_fov.encloses(fov_label.get_global_rect()), "La etiqueta de FOV cae en su fila")
 		_check(rect_fov.encloses(fov_slider.get_global_rect()), "El slider de FOV cae en su fila")
 		_check(rect_fov.encloses(fov_value.get_global_rect()), "El valor de FOV cae en su fila")
@@ -364,10 +403,9 @@ func _run() -> void:
 		_check(false, "No se puede recorrer EXTRAS sin sus nodos")
 	else:
 		_check(extras_row.is_visible_in_tree(), "La fila EXTRAS se ve")
-		_check(rect_fov.end.y <= rect_extras.position.y + 0.5, "EXTRAS va debajo de FOV")
-		_check(rect_extras.end.y <= rect_music.position.y + 0.5, "MUSICA va debajo de EXTRAS")
-		_check(rect_panel.encloses(rect_extras), "La fila EXTRAS cae dentro del panel")
-		_check(rect_box.encloses(rect_extras), "La fila EXTRAS cae dentro de la columna")
+		_check(rect_row.end.y <= rect_extras.position.y + 0.5, "EXTRAS va debajo de ACCESIBILIDAD")
+		_check(rect_extras.end.y <= rect_reset.position.y + 0.5, "BORRAR PROGRESO va debajo de SISTEMA")
+		_check(rect_content.encloses(rect_extras), "La fila EXTRAS cae dentro de la columna")
 		for button: Button in [vsync_button, assisted_button, language_button]:
 			_check(
 				rect_extras.encloses(button.get_global_rect()),
@@ -468,20 +506,25 @@ func _run() -> void:
 	if reset_button == null or reset_dialog == null:
 		_check(false, "No se puede probar el borrado sin sus nodos")
 	else:
-		var rect_reset := reset_button.get_global_rect()
 		_check(reset_button.text == "BORRAR PROGRESO", "El boton dice BORRAR PROGRESO")
-		_check(rect_panel.encloses(rect_reset), "BORRAR PROGRESO cae dentro del panel")
-		_check(rect_box.encloses(rect_reset), "BORRAR PROGRESO cae dentro de la columna")
+		_check(rect_content.encloses(rect_reset), "BORRAR PROGRESO cae dentro de la columna")
 		_check(
 			rect_reset.position.y >= rect_row.end.y - 0.5,
 			"BORRAR PROGRESO va despues de REDUCIR MOVIMIENTO"
 		)
 		_check(
-			rect_following.position.y >= rect_reset.end.y - 0.5,
-			"VOLVER va despues de BORRAR PROGRESO"
+			reset_button.get_index() == content.get_child_count() - 1,
+			"BORRAR PROGRESO cierra la lista de ajustes"
 		)
 		_check(not rect_reset.intersects(rect_row), "BORRAR PROGRESO no pisa la fila anterior")
-		_check(not rect_reset.intersects(rect_following), "BORRAR PROGRESO no pisa VOLVER")
+		_check(back_button.get_parent() == footer, "VOLVER vive en el pie fijo")
+		scroll.scroll_vertical = 100000
+		await process_frame
+		await process_frame
+		_check(
+			rect_panel.encloses(reset_button.get_global_rect()),
+			"Al bajar del todo, BORRAR PROGRESO queda dentro del panel"
+		)
 		_check(
 			String(save.get("_save_path")) == SAVE, "El test sigue escribiendo en su perfil aislado"
 		)

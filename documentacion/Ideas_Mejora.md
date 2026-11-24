@@ -195,7 +195,7 @@ Cada uno debería ser una escena instanciable con `_ready`/`_physics_process` pr
 
 | ID | Idea | Detalle | Coste |
 |----|------|---------|-------|
-| **G24** | **Tema de UI completo** | Ya existe `ui/theme.tres`: añadir tipografía redondeada, iconos propios, estados *hover/pressed/disabled*, `StyleBox` con borde grueso y sombra. | S |
+| **G24** | **Tema de UI completo** | `UITheme` ya centraliza paleta, tipografía y estilos; añadir iconos propios, estados *hover/pressed/disabled* y *focus* de teclado. | S |
 | **G25** | **Animaciones de UI** | `Tween` en botones (escala 1.05, rebote), paneles que entran con *overshoot*, contadores que cuentan hacia arriba. | S |
 | **G26** | **HUD más limpio y con jerarquía** | Tiempo grande y centrado, récord pequeño, posición a la izquierda, monedas con icono, barra de progreso con avatares de los rivales. | M |
 | **G27** | **Menú principal como escena viva** | El personaje del jugador en 3D girando en el menú con su cosmético equipado; fondo animado. | M |

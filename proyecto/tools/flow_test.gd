@@ -26,16 +26,13 @@ func _run() -> void:
 	save.call("set_setting", "classic_level", 0)
 	root.get_node("GameSession").set("classic_level", 0)
 
-	# --- 1. Menú principal -> botón INICIAR -------------------------------
+	# --- 1. Menú principal -> tarjeta de carrera clásica ------------------
 	var menu: Node = (load("res://scenes/menu/main_menu.tscn") as PackedScene).instantiate()
 	root.add_child(menu)
 	current_scene = menu
 	await process_frame
 	await process_frame
-	var play_button: Button = menu.get_node("PlayButton")
-	play_button.pressed.emit()
-	await process_frame
-	var start_button: Button = menu.get_node("ModePanel/VBox/ClassicCard")
+	var start_button: Button = menu.get_node("ModeCards/ClassicCard")
 	start_button.pressed.emit()
 	await create_timer(1.5).timeout  # el fade dura 0.4 s
 
@@ -111,10 +108,17 @@ func _run() -> void:
 	)
 	var hud: Node = race.get_node_or_null("HUD")
 	_check(
-		hud != null and hud.get_node("Root/CheckpointsLabel").text.begins_with("1/"),
+		(
+			hud != null
+			and hud.get_node("Root/TopLeftChip/HBox/CheckpointsLabel").text.begins_with("CP 1/")
+		),
 		(
 			"El HUD refleja el checkpoint (%s)"
-			% (hud.get_node("Root/CheckpointsLabel").text if hud else "sin HUD")
+			% (
+				hud.get_node("Root/TopLeftChip/HBox/CheckpointsLabel").text
+				if hud
+				else "sin HUD"
+			)
 		)
 	)
 

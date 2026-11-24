@@ -81,18 +81,13 @@ func _capture_mode_panel(out_dir: String) -> void:
 		push_error("No hay menú para la captura del panel de modos")
 		_failures += 1
 		return
-	var play := menu.get_node_or_null("PlayButton") as Button
-	if play == null:
-		push_error("No hay PlayButton para la captura del panel de modos")
-		_failures += 1
-		return
-	play.pressed.emit()
-	await _wait(0.4)
-	var tournament := menu.get_node_or_null("ModePanel/VBox/TournamentCard") as Button
+	var tournament := menu.get_node_or_null("ModeCards/TournamentCard") as Button
 	if tournament == null:
-		push_error("No hay TournamentCard para la captura del panel de modos")
+		push_error("No hay TournamentCard para la captura del lobby")
 		_failures += 1
 		return
+	# El modo ya no vive en un modal: la captura enfoca la tarjeta de torneo
+	# dentro del propio lobby.
 	tournament.grab_focus()
 	await _wait(0.2)
 	await _save(out_dir, "menu_torneo")

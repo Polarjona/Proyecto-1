@@ -13,7 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.043, 0.02, 0.09, 0.8)
+color = Color(0.024, 0.094, 0.231, 0.8)
 
 [node name="Panel" type="PanelContainer" parent="."]
 anchors_preset = 8
@@ -21,41 +21,60 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -240.0
-offset_right = 280.0
-offset_bottom = 240.0
+offset_left = -300.0
+offset_top = -310.0
+offset_right = 300.0
+offset_bottom = 310.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.988, 0.894, 0.047, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 30
 text = "AJUSTES"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
 layout_mode = 2
 
-[node name="MusicRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Content" type="VBoxContainer" parent="Panel/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="AudioLabel" type="Label" parent="Panel/VBox/Scroll/Content"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "Audio"
+vertical_alignment = 1
+
+[node name="AudioGroup" type="VBoxContainer" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/VBox/Scroll/Content/AudioGroup"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="MusicLabel" type="Label" parent="Panel/VBox/MusicRow"]
+[node name="MusicLabel" type="Label" parent="Panel/VBox/Scroll/Content/AudioGroup/MusicRow"]
 custom_minimum_size = Vector2(154, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 16
 text = "Música"
 vertical_alignment = 1
 
-[node name="MusicSlider" type="HSlider" parent="Panel/VBox/MusicRow"]
+[node name="MusicSlider" type="HSlider" parent="Panel/VBox/Scroll/Content/AudioGroup/MusicRow"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -64,27 +83,27 @@ max_value = 1.0
 step = 0.01
 value = 0.75
 
-[node name="MusicValue" type="Label" parent="Panel/VBox/MusicRow"]
+[node name="MusicValue" type="Label" parent="Panel/VBox/Scroll/Content/AudioGroup/MusicRow"]
 custom_minimum_size = Vector2(54, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.8)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 15
 text = "75%"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="SfxRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="SfxRow" type="HBoxContainer" parent="Panel/VBox/Scroll/Content/AudioGroup"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="SfxLabel" type="Label" parent="Panel/VBox/SfxRow"]
+[node name="SfxLabel" type="Label" parent="Panel/VBox/Scroll/Content/AudioGroup/SfxRow"]
 custom_minimum_size = Vector2(154, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 16
 text = "Efectos"
 vertical_alignment = 1
 
-[node name="SfxSlider" type="HSlider" parent="Panel/VBox/SfxRow"]
+[node name="SfxSlider" type="HSlider" parent="Panel/VBox/Scroll/Content/AudioGroup/SfxRow"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -93,56 +112,61 @@ max_value = 1.0
 step = 0.01
 value = 0.9
 
-[node name="SfxValue" type="Label" parent="Panel/VBox/SfxRow"]
+[node name="SfxValue" type="Label" parent="Panel/VBox/Scroll/Content/AudioGroup/SfxRow"]
 custom_minimum_size = Vector2(54, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.8)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 15
 text = "90%"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="ShakeRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="VideoLabel" type="Label" parent="Panel/VBox/Scroll/Content"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "Vídeo"
+vertical_alignment = 1
+
+[node name="VideoGroup" type="VBoxContainer" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FullscreenCheck" type="CheckButton" parent="Panel/VBox/Scroll/Content/VideoGroup"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+toggle_mode = true
+flat = true
+alignment = 0
+theme_override_font_sizes/font_size = 15
+text = "PANTALLA COMPLETA"
+tooltip_text = "Activar o desactivar pantalla completa"
+
+[node name="ControlsLabel" type="Label" parent="Panel/VBox/Scroll/Content"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "Controles"
+vertical_alignment = 1
+
+[node name="ControlsGroup" type="VBoxContainer" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SensRow" type="HBoxContainer" parent="Panel/VBox/Scroll/Content/ControlsGroup"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ShakeLabel" type="Label" parent="Panel/VBox/ShakeRow"]
+[node name="SensLabel" type="Label" parent="Panel/VBox/Scroll/Content/ControlsGroup/SensRow"]
 custom_minimum_size = Vector2(154, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Sacudida"
-vertical_alignment = 1
-
-[node name="ShakeSlider" type="HSlider" parent="Panel/VBox/ShakeRow"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="ShakeValue" type="Label" parent="Panel/VBox/ShakeRow"]
-custom_minimum_size = Vector2(54, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.8)
 theme_override_font_sizes/font_size = 16
-text = "100%"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="SensRow" type="HBoxContainer" parent="Panel/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="SensLabel" type="Label" parent="Panel/VBox/SensRow"]
-custom_minimum_size = Vector2(154, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
 text = "Sensibilidad"
 vertical_alignment = 1
 
-[node name="SensSlider" type="HSlider" parent="Panel/VBox/SensRow"]
+[node name="SensSlider" type="HSlider" parent="Panel/VBox/Scroll/Content/ControlsGroup/SensRow"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -152,27 +176,80 @@ max_value = 2.5
 step = 0.05
 value = 1.0
 
-[node name="SensValue" type="Label" parent="Panel/VBox/SensRow"]
+[node name="SensValue" type="Label" parent="Panel/VBox/Scroll/Content/ControlsGroup/SensRow"]
 custom_minimum_size = Vector2(54, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.8)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 15
 text = "100%"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="HSeparator2" type="HSeparator" parent="Panel/VBox"]
+[node name="ShakeRow" type="HBoxContainer" parent="Panel/VBox/Scroll/Content/ControlsGroup"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="FullscreenCheck" type="Button" parent="Panel/VBox"]
-custom_minimum_size = Vector2(0, 42)
+[node name="ShakeLabel" type="Label" parent="Panel/VBox/Scroll/Content/ControlsGroup/ShakeRow"]
+custom_minimum_size = Vector2(154, 0)
 layout_mode = 2
-toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "Sacudida"
+vertical_alignment = 1
+
+[node name="ShakeSlider" type="HSlider" parent="Panel/VBox/Scroll/Content/ControlsGroup/ShakeRow"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="ShakeValue" type="Label" parent="Panel/VBox/Scroll/Content/ControlsGroup/ShakeRow"]
+custom_minimum_size = Vector2(54, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 15
-text = "PANTALLA COMPLETA: NO"
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
 
-[node name="BackButton" type="Button" parent="Panel/VBox"]
-custom_minimum_size = Vector2(0, 44)
+[node name="AccessibilityLabel" type="Label" parent="Panel/VBox/Scroll/Content"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "Accesibilidad"
+vertical_alignment = 1
+
+[node name="AccessibilityGroup" type="VBoxContainer" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SystemLabel" type="Label" parent="Panel/VBox/Scroll/Content"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "Sistema"
+vertical_alignment = 1
+
+[node name="SystemGroup" type="VBoxContainer" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HSeparator2" type="HSeparator" parent="Panel/VBox/Scroll/Content"]
+layout_mode = 2
+
+[node name="FooterSeparator" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+alignment = 2
+
+[node name="BackButton" type="Button" parent="Panel/VBox/Footer"]
+custom_minimum_size = Vector2(150, 44)
 layout_mode = 2
 theme_type_variation = &"GhostButton"
 text = "VOLVER"

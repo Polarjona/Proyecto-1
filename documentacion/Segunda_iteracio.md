@@ -39,7 +39,7 @@ Todas las imágenes salen del render real del juego. Se generaron con [`proyecto
 
 <p align="center">
   <img src="capturas/menu_principal.webp" alt="Menú principal" width="49%">
-  <img src="capturas/menu_torneo.webp" alt="Selección de modo y torneo" width="49%">
+  <img src="capturas/menu_torneo.webp" alt="Lobby con la tarjeta de torneo enfocada" width="49%">
 </p>
 <p align="center">
   <img src="capturas/pivot_push.webp" alt="Pivot Push" width="49%">
@@ -109,7 +109,7 @@ Además de los obstáculos reutilizables (recuento en [Datos de referencia](Dato
 ### 3.6 Personajes, lobby y audio
 
 - **Personajes CC0 de Quaternius** con cuerpo masculino y femenino, animaciones de idle, andar, caída y celebración, más una capa procedural de esprint, salto y aterrizaje. El catálogo y sus recuentos están en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido).
-- **Lobby** con escaparate 3D del corredor equipado, tarjeta de temporada, monedas y panel de personajes con compra y vista previa.
+- **Lobby** con escaparate 3D del corredor equipado, ruta de circuitos con medallas, las dos tarjetas de modo siempre visibles, monedas y panel de personajes (también se abre al clicar al corredor) con compra y vista previa.
 - **Audio:** tema de menú, canción de victoria en bus propio y SFX sintetizados con `tools/generate_audio.py` (recuento en [Datos de referencia](Datos_circuitos.md#recuentos-de-contenido)).
 
 ---

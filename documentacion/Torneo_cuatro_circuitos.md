@@ -52,7 +52,7 @@ Todas las imágenes salen del render real del juego, con un perfil aislado. La g
 </p>
 <p align="center">
   <img src="capturas/torneo_carrera.webp" alt="Salida de una carrera de torneo con bots" width="49%">
-  <img src="capturas/menu_torneo.webp" alt="Panel de elección de modo" width="49%">
+  <img src="capturas/menu_torneo.webp" alt="Lobby con la tarjeta de torneo enfocada" width="49%">
 </p>
 
 ## 3. Pivot Push (ronda 1)
@@ -96,7 +96,7 @@ Este circuito no entra en el torneo: se elige en la carrera clásica. Es un **t�
 
 Cada circuito guarda su propio récord y sus splits en `user://profile.json` (`best_times` y `best_splits_by_level`). Los tiempos de medalla son los de la [tabla de datos](Datos_circuitos.md#circuitos).
 
-El HUD muestra la medalla de oro del circuito cargado y el panel de resultados indica la ronda y el puesto. Al clasificarse, «Siguiente ronda» avanza a la escena correspondiente; en la final el torneo se cierra.
+El HUD muestra el oro del circuito y, en torneo, la ronda y el puesto en un chip; el panel de resultados destaca el tiempo, la medalla y el puesto. Al clasificarse, «Siguiente ronda» avanza a la escena correspondiente; en la final el torneo se cierra.
 
 ## 9. Cómo se generan las escenas
 
